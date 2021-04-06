@@ -1,0 +1,116 @@
+<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:inputToolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.WPFToolkit" 
+    xmlns:layoutToolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Layout.Toolkit" 
+    xmlns:System="clr-namespace:System;assembly=mscorlib" 
+    mc:Ignorable="d" 
+    d:DesignWidth="330" d:DesignHeight="600"
+    xmlns:local="clr-namespace:Rawr.Bear"
+    x:Class="Rawr.Bear.CalculationOptionsPanelBear"
+    >
+
+    <UserControl.Resources>
+        <local:CalculationOptionsBear x:Key="CalculationOptionsBearDataSource" d:IsDataSource="True"/>
+        <local:GuardianConverters x:Key="SymbiosisValueConverter" />
+        <local:GuardianConverters x:Key="ThreatValueConverter" />
+    </UserControl.Resources>
+
+    <Grid x:Name="LayoutRoot" DataContext="{Binding Source={StaticResource CalculationOptionsBearDataSource}}">
+        <controls:TabControl>
+            <controls:TabItem Header="Basics">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- ========= Basic Information ========= -->
+                    <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Background="AliceBlue" BorderBrush="LightSteelBlue" BorderThickness="1">
+                        <TextBlock Margin="4" FontWeight="Bold" Text="Basic Information" VerticalAlignment="Center" />
+                    </Border>
+                    <TextBlock FontSize="10" Grid.ColumnSpan="3" Margin="4,2" Grid.Row="2"
+                               Text="Use the follow settings for basic level information and if available, enabling PTR mode." TextWrapping="Wrap" />
+                    <TextBlock Text="Character Level: *" VerticalAlignment="Center" Margin="4,2" Grid.Row="3" 
+                              ToolTipService.ToolTip="This is the level of the character you wish to evaluate." />
+                    <inputToolkit:NumericUpDown Grid.ColumnSpan="1" Margin="1" Grid.Column="2" Grid.Row="3" Value="{Binding Path=CharacterLevel, Mode=TwoWay}" Minimum="0" Maximum="90" Increment="1" DecimalPlaces="0" MinWidth="50" Name="nudCharacterLevel" />
+                    <TextBlock Text="Target Level: *" VerticalAlignment="Center" Margin="4,2" Grid.Row="4" 
+                              ToolTipService.ToolTip="This is the level of the target you wish to evaluate." />
+                    <inputToolkit:NumericUpDown Grid.ColumnSpan="1" Margin="1" Grid.Column="2" Grid.Row="4" Value="{Binding Path=TargetLevel, Mode=TwoWay}" Minimum="0" Maximum="93" Increment="1" DecimalPlaces="0" MinWidth="50" Name="nudTargetLevel" />
+                    <TextBlock Text="Use PTR mode: *" VerticalAlignment="Center" Margin="4,2" Grid.Row="5"
+                              ToolTipService.ToolTip="Checking this box will enable PTR mode if it is available." />
+                    <CheckBox Grid.Row="5" Grid.Column="3" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Name="ckbPTRMode" IsChecked="{Binding Path=PTRMode, Mode=TwoWay}" IsEnabled="true" Margin="0,3,0,-3" Padding="0" />
+
+                    <!-- ========= Weighting Adjustments ========= -->
+                    <Border Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Background="AliceBlue" BorderBrush="LightSteelBlue" BorderThickness="1">
+                        <TextBlock Margin="4" FontWeight="Bold" Text="Weighting Adjustments" VerticalAlignment="Center" />
+                    </Border>
+                    <TextBlock FontSize="10" Grid.ColumnSpan="3" Margin="4,2" Grid.Row="7"
+                               Text="The following settings will adjust the overall scores for each type. This does not involve Stat Weights as described by Pawn, SimCraft or other similar utilities. These are meant to describe your general importance to each point." TextWrapping="Wrap" />
+                    <TextBlock Text="Use Boss Handler: *" VerticalAlignment="Center" Margin="4,2" Grid.Row="8"
+                              ToolTipService.ToolTip="Checking this box will automatically add damage information from the Boss Handler." />
+                    <CheckBox Grid.Row="8" Grid.Column="3" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Name="ckbUseBossHandler" IsChecked="{Binding Path=UseBossHandler, Mode=TwoWay}" Margin="0,3,0,-3" />
+                    <TextBlock Text="Symbiosis: *" VerticalAlignment="Center" Margin="4,2" Grid.Row="9"
+                              ToolTipService.ToolTip="Class player is casting Symbiosis on." />
+                    <ComboBox Margin="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="9" SelectedIndex="{Binding Path=Symbiosis, Mode=TwoWay }" Padding="4,3" Name="cmbSymbiosis">
+                        <System:String>None</System:String>
+                        <System:String>Death Knight: Bone Shield</System:String>
+                        <System:String>Hunter: Ice Trap</System:String>
+                        <System:String>Mage: Mage Ward</System:String>
+                        <System:String>Monk: Elusive Brew</System:String>
+                        <System:String>Paladin: Consecration</System:String>
+                        <System:String>Priest: Fear Ward</System:String>
+                        <System:String>Rogue: Feint</System:String>
+                        <System:String>Shaman: Lightning Shield</System:String>
+                        <System:String>Warlock: Life Tap</System:String>
+                        <System:String>Warrior: Spell Reflection</System:String>
+                    </ComboBox>
+                    <TextBlock Text="Boss Unmitigate Damage: *" VerticalAlignment="Center" Margin="4,2" Grid.Row="10"
+                              ToolTipService.ToolTip="This is the unmitigated damage that bosses do as white attacks." />
+                    <inputToolkit:NumericUpDown Grid.ColumnSpan="2" Margin="2" Grid.Column="1" Grid.Row="10" Value="{Binding Path=BossUnmitigatedDamage, Mode=TwoWay}" Maximum="10000000" Increment="10000" DecimalPlaces="0" MinWidth="50" Name="NUD_BossUnmitigatedDamage" />
+                    <TextBlock Text="Boss Swing Speed: *" VerticalAlignment="Center" Margin="4,2" Grid.Row="11"
+                              ToolTipService.ToolTip="This is the swing speed of the boss white attacks. Most bosses have a 1.5 second swing speed but there are exceptions." />
+                    <inputToolkit:NumericUpDown Grid.ColumnSpan="1" Margin="1" Grid.Column="2" Grid.Row="11" Value="{Binding Path=BossSwingSpeed, Mode=TwoWay}" Maximum="10000000" Increment="0.5" DecimalPlaces="1" MinWidth="50" Name="NUD_SwingSpeed" />
+                    <TextBlock Text="Hits to Live: *" VerticalAlignment="Center" Margin="4,1" Grid.Row="12"
+                              ToolTipService.ToolTip="This is the number of hits from the boss without any heals.&#x0a;If you're not close to dying to burst damage, especially if&#x0a;healers are running OOM, you should lower this." />
+                    <inputToolkit:NumericUpDown Grid.ColumnSpan="1" Margin="1" Grid.Column="2" Grid.Row="12" Value="{Binding Path=HitsToLive, Mode=TwoWay}" Maximum="10000000" Increment="0.1" DecimalPlaces="1" MinWidth="50" Name="NUD_HitsToSurvive" />
+                    <TextBlock Text="Mitigation or Threat Scale: * " VerticalAlignment="Center" Margin="4,2" Grid.Row="13"
+                               ToolTipService.ToolTip="Determines how much threat is factored into the calculation.&#x0a;- Values closer to 0 percent, favor mitigation.&#x0a;- Values closer to 100 percent, favors threat.&#x0a;&#x0a;The closer the value is to 100, the more value Hit, Expertise, Crit, and Haste are to generating Rage.&#x0a;Increasing this value will also allow for more Frenzied Regeneration to be cast; which will in turn increase your Recovery value." />
+                    <inputToolkit:NumericUpDown Margin="2" Grid.Column="1" Grid.Row="13" Value="{Binding Mode=TwoWay, Converter={StaticResource ThreatValueConverter}, Path=MitigationOrDPS}" Minimum="0" Maximum="100" DecimalPlaces="1" Increment="0.1" MinWidth="50" />
+                    <TextBlock Text="%" VerticalAlignment="Center" Margin="4,2" Grid.Row="13" Grid.Column="2" />
+
+                    <!-- ========= Notices ========= -->
+                    <!-- Notices about needing to use the Boss Handler -->
+                    
+                    <StackPanel Grid.Row="15" Grid.ColumnSpan="3">
+                        <Border Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="3" Background="AliceBlue" BorderBrush="LightSteelBlue" BorderThickness="1">
+                            <TextBlock Margin="4" FontWeight="Bold" Text="Notices" VerticalAlignment="Center" />
+                        </Border><!-- Explanations -->
+                        <TextBlock TextWrapping="Wrap" Margin="4" FontSize="10" Text="Rawr.Bear now uses the Boss Handler for things like Target Level, Target Damage, Parry Haste, etc. Please see the Boss Handler tab for those options.&#x0a;&#x0a;Note that the Boss MUST have an active attack for many of Bear's numbers to be valid." />
+                    </StackPanel>
+                </Grid>
+            </controls:TabItem>
+        </controls:TabControl>
+    </Grid>
+</UserControl>
