@@ -1,0 +1,495 @@
+<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:System="clr-namespace:System;assembly=mscorlib"
+    xmlns:controls="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:toolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Toolkit" 
+    xmlns:layoutToolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Layout.Toolkit"
+    xmlns:input="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input"
+    xmlns:splitButton="clr-namespace:Delay;assembly=SplitButton"
+    xmlns:menu="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
+    xmlns:local="clr-namespace:Rawr.UI"
+    xmlns:Rawr="clr-namespace:Rawr;assembly=Rawr.Base"
+    mc:Ignorable="d"
+    x:Class="Rawr.UI.MainPage"
+    d:DesignWidth="915" d:DesignHeight="844"
+    VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+    <UserControl.DataContext>
+        <Rawr:Character/>
+    </UserControl.DataContext>
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="24"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="350"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                <GradientStop Color="#FFFFFFFF" Offset="0"/>
+                <GradientStop Color="#FFDADADA" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <local:ItemTooltip x:Name="ItemTooltip"/>
+        <!--IFSL-->
+        <Rectangle VerticalAlignment="Stretch" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" Margin="0">
+            <Rectangle.Stroke>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFA3AEB9"/>
+                    <GradientStop Color="#FF8399A9" Offset="0.375"/>
+                    <GradientStop Color="#FF718597" Offset="0.375"/>
+                    <GradientStop Color="#FF617584" Offset="1"/>
+                </LinearGradientBrush>
+            </Rectangle.Stroke>
+            <Rectangle.Fill>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFDEDEDE" Offset="1"/>
+                    <GradientStop Color="#FFFFFFFF" Offset="0"/>
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <StackPanel Margin="0,4,0,0" VerticalAlignment="Top" Grid.ColumnSpan="4" Grid.Row="0" Grid.Column="0" Orientation="Horizontal" d:IsHidden="True">
+            <splitButton:MenuButton Content="File" x:Name="FileMenu" HorizontalAlignment="Left" Margin="2,0,2,0" Padding="6,3,6,3">
+                <splitButton:MenuButton.ButtonMenuItemsSource>
+                    <menu:MenuItem Header="New Character..." Click="NewCharacter"/>
+                    <menu:Separator/>
+                    <menu:MenuItem Header="Open Character File..." Click="OpenCharacter"/>
+                    <menu:MenuItem Header="Load from Battle.Net..." Click="LoadFromBNet"/>
+                    <menu:MenuItem Header="Load from Rawr Addon..." Click="LoadFromRawrAddon"/>
+                    <menu:MenuItem Header="Load from Rawr4 Repository..." Click="LoadFromRawr4Repository"/>
+                    <menu:Separator/>
+                    <menu:MenuItem x:Name="TMI_Save" Header="Save to Character File..." Click="SaveCharacter"/>
+                    <menu:MenuItem x:Name="TMI_SaveAs" Header="Save As to Character File..." Click="SaveAsCharacter"/>
+                    <menu:MenuItem Header="Save to Rawr4 Repository..." Click="SaveToRawr4Repository"/>
+                    <menu:MenuItem Header="Export to Rawr Addon..." Click="ExportToRawrAddon"/>
+                    <menu:Separator/>
+                    <menu:MenuItem Header="Open Saved Upgrade List..." Click="OpenSavedUpgradeList"/>
+                </splitButton:MenuButton.ButtonMenuItemsSource>
+            </splitButton:MenuButton>
+            <splitButton:MenuButton Content="Tools" x:Name="ToolsMenu" HorizontalAlignment="Left" Margin="2,0,2,0" Padding="6,3,6,3">
+                <splitButton:MenuButton.ButtonMenuItemsSource>
+                    <menu:MenuItem Header="Optimizer..." Click="ShowOptimizer"/>
+                    <menu:MenuItem Header="Batch Tools..." Click="ShowBatchTools"/>
+                    <menu:Separator />
+                    <menu:MenuItem Header="Save Item Set" Click="SaveItemSet_Click"/>
+                    <menu:MenuItem Header="Remove Item Set" Click="RemoveItemSet_Click"/>
+                    <menu:MenuItem Header="Equip Item Set" Click="EquipItemSet_Click"/>
+                    <menu:MenuItem Header="Compare Item Set to Equipped" Click="CompareItemSet_Click"/>
+                    <menu:Separator />
+                    <menu:MenuItem Header="Reset Item Cost" Click="ResetItemCost_Click"/>
+                    <menu:MenuItem Header="Load Justice Cost" Click="LoadItemCostJustice_Click"/>
+                    <menu:MenuItem Header="Load Valor Cost" Click="LoadItemCostValor_Click"/>
+                    <menu:MenuItem Header="Load Honor Cost" Click="LoadItemCostHonor_Click"/>
+                    <menu:MenuItem Header="Load Conquest Cost" Click="LoadItemCostConquest_Click"/>
+                    <menu:MenuItem Header="Load Crystallized Firestone Cost" Click="LoadItemCostCrystallizedFirestone_Click"/>
+                    <menu:Separator />
+                    <menu:MenuItem Header="Compare Character to Another" Click="CompareCharacters_Click"/>
+                </splitButton:MenuButton.ButtonMenuItemsSource>
+            </splitButton:MenuButton>
+            <splitButton:MenuButton Content="Import" x:Name="ImportMenu" HorizontalAlignment="Left" Margin="2,0,2,0" Padding="6,3,6,3">
+                <splitButton:MenuButton.ButtonMenuItemsSource>
+                    <menu:MenuItem Header="Reload Current Character from Battle.Net" Click="ReloadFromBNet_Click"/>
+                    <menu:MenuItem Header="Reload Current Character from Rawr Addon" Click="RawrAddonReload_Click"/>
+                    <menu:Separator/>
+                    <menu:MenuItem Header="Load Possible Upgrades from Wowhead (NYI)"/>
+                    <menu:MenuItem Header="Load Items From Wowhead Filter (NYI)"/>
+                    <menu:Separator/>
+                    <menu:MenuItem Header="Refresh Items Currently Worn from Wowhead" Click="RefreshItemsCurrentlyWorn_Click"/>
+                    <menu:MenuItem Header="Update Item Cache from Wowhead (NYI)" Click="UpdateItemCacheFromWowhead_Click"/>
+                </splitButton:MenuButton.ButtonMenuItemsSource>
+            </splitButton:MenuButton>
+            <splitButton:MenuButton Content="Options" x:Name="OptionsMenu" HorizontalAlignment="Left" Margin="2,0,2,0" Padding="6,3,6,3">
+                <splitButton:MenuButton.ButtonMenuItemsSource>
+                    <menu:MenuItem Header="Edit Options..." Click="ShowOptions"/>
+                    <menu:Separator/>
+                    <menu:MenuItem Header="Edit Items..." Click="ShowItemEditor"/>
+                    <menu:MenuItem Header="Refine Types of Items Listed..." Click="ShowItemRefinement" Visibility="Collapsed"/>
+                    <menu:MenuItem Header="Edit Item Filters..." Click="ShowItemFilters" Visibility="Collapsed"/>
+                    <menu:MenuItem Header="Edit Gemming Templates..." Click="ShowGemmingTemplates"/>
+                    <menu:Separator Visibility="Collapsed"/>
+                    <menu:MenuItem Header="Reset Item Cost" Click="ResetItemCost" Visibility="Collapsed"/>
+                    <menu:MenuItem Header="Load Item Cost" Click="LoadItemCost" Visibility="Collapsed"/>
+                    <menu:MenuItem Header="Save Item Cost" Click="SaveItemCost" Visibility="Collapsed"/>
+                    <menu:MenuItem Header="Load Emblem of Frost Cost" Click="LoadEmblemOfFrostCost" Visibility="Collapsed"/>
+                    <menu:Separator/>
+                    <menu:MenuItem Header="Reset Item Cache" Click="ResetItemCache"/>
+                    <menu:MenuItem Header="Reset All Caches" Click="ResetAllCaches"/>
+                    <menu:MenuItem Header="Manually Edit a Cache (NYI)"/>
+                </splitButton:MenuButton.ButtonMenuItemsSource>
+            </splitButton:MenuButton>
+            <splitButton:MenuButton Content="Windows" x:Name="WindowsMenu" HorizontalAlignment="Left" Margin="2,0,2,0" Padding="6,3,6,3" Visibility="Collapsed">
+                <splitButton:MenuButton.ButtonMenuItemsSource>
+                </splitButton:MenuButton.ButtonMenuItemsSource>
+            </splitButton:MenuButton>
+            <splitButton:MenuButton Content="Help" x:Name="HelpMenu" HorizontalAlignment="Left" Margin="2,0,2,0" Padding="6,3,6,3">
+                <splitButton:MenuButton.ButtonMenuItemsSource>
+                    <menu:MenuItem Header="Rawr Help Page" Click="ShowRawrHelpPage"/>
+                    <menu:MenuItem Header="Tour of Rawr" Click="ShowTourOfRawr"/>
+                    <menu:MenuItem Header="Gemmings" Click="ShowGemmingsHelp"/>
+                    <menu:MenuItem Header="Gear Optimization" Click="ShowGearOptimizationHelp"/>
+                    <menu:MenuItem Header="Item Filtering" Click="ShowItemFilteringHelp"/>
+                    <menu:MenuItem Header="Model Status" Click="ShowModelStatusHelp"/>
+                    <menu:MenuItem Header="Welcome Screen" Click="ShowWelcomeScreen"/>
+                    <menu:Separator/>
+                    <menu:MenuItem Header="Rawr Website" Click="ShowRawrWebsite"/>
+                    <menu:MenuItem Header="Donate" Click="ShowDonate"/>
+                </splitButton:MenuButton.ButtonMenuItemsSource>
+            </splitButton:MenuButton>
+        </StackPanel>
+        <!--ENDIFSL-->
+        <!--IFWPF
+        <Menu Margin="0,4,0,0" VerticalAlignment="Stretch" Grid.ColumnSpan="4" Grid.Row="0" Grid.Column="0">
+            <MenuItem x:Name="FileMenu" Header="File" HorizontalAlignment="Left" Margin="4,0,4,0">
+                <MenuItem Header="New Character..." Click="NewCharacter"/>
+                <Separator/>
+                <MenuItem Header="Open Character File..." Click="OpenCharacter"/>
+                <MenuItem Header="Load from Battle.Net..." Click="LoadFromBNet"/>
+                <MenuItem Header="Load from Rawr Addon..." Click="LoadFromRawrAddon"/>
+                <MenuItem Header="Load from Rawr4 Repository..." Click="LoadFromRawr4Repository"/>
+                <Separator/>
+                <MenuItem x:Name="TMI_Save" Header="Save Character File..." Click="SaveCharacter"/>
+                <MenuItem x:Name="TMI_SaveAs" Header="Save As to Character File..." Click="SaveAsCharacter"/>
+                <MenuItem Header="Save to Rawr4 Repository..." Click="SaveToRawr4Repository"/>
+                <MenuItem Header="Export to Rawr Addon..." Click="ExportToRawrAddon"/>
+                <Separator/>
+                <MenuItem Header="Open Saved Upgrade List..." Click="OpenSavedUpgradeList"/>
+            </MenuItem>
+            <MenuItem x:Name="ToolsMenu" Header="Tools" HorizontalAlignment="Left" Margin="4,0,4,0">
+                <MenuItem Header="Optimizer..." Click="ShowOptimizer"/>
+                <MenuItem Header="Batch Tools..." Click="ShowBatchTools"/>
+                <Separator/>
+                <MenuItem Header="Save Item Set" Click="SaveItemSet_Click"/>
+                <MenuItem Header="Remove Item Set" Click="RemoveItemSet_Click"/>
+                <MenuItem Header="Equip Item Set" Click="EquipItemSet_Click"/>
+                <MenuItem Header="Compare Item Set to Equipped" Click="CompareItemSet_Click"/>
+                <Separator />
+                <MenuItem Header="Reset Item Cost" Click="ResetItemCost_Click"/>
+                <MenuItem Header="Load Item Cost">
+                    <MenuItem Header="Justice" Click="LoadItemCostJustice_Click"/>
+                    <MenuItem Header="Valor" Click="LoadItemCostValor_Click"/>
+                    <MenuItem Header="Honor" Click="LoadItemCostHonor_Click"/>
+                    <MenuItem Header="Conquest" Click="LoadItemCostConquest_Click"/>
+                    <MenuItem Header="Crystallized Firestone" Click="LoadItemCostCrystallizedFirestone_Click"/>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Compare Character to Another" Click="CompareCharacters_Click"/>
+            </MenuItem>
+            <MenuItem x:Name="ImportMenu" Header="Import" HorizontalAlignment="Left" Margin="4,0,4,0">
+                <MenuItem Header="Reload Current Character from Battle.Net" Click="ReloadFromBNet_Click"/>
+                <MenuItem Header="Reload Current Character from Rawr Addon" Click="RawrAddonReload_Click"/>
+                <Separator/>
+                <MenuItem Header="Load Possible Upgrades from Wowhead (NYI)"/>
+                <MenuItem Header="Load Items From Wowhead Filter (NYI)" Click="LoadItemsFromWowheadFilter_Click"/>
+                <Separator/>
+                <MenuItem Header="Refresh Items Currently Worn from Wowhead" Click="RefreshItemsCurrentlyWorn_Click"/>
+                <MenuItem Header="Update Item Cache from Wowhead (NYI)" Click="UpdateItemCacheFromWowhead_Click"/>
+            </MenuItem>
+            <MenuItem x:Name="OptionsMenu" Header="Options" HorizontalAlignment="Left" Margin="4,0,4,0">
+                <MenuItem Header="Edit Options..." Click="ShowOptions"/>
+                <Separator/>
+                <MenuItem Header="Edit Items..." Click="ShowItemEditor"/>
+                <MenuItem Header="Refine Types of Items Listed..." Click="ShowItemRefinement" Visibility="Collapsed"/>
+                <MenuItem Header="Edit Item Filters..." Click="ShowItemFilters" Visibility="Collapsed"/>
+                <MenuItem Header="Edit Gemming Templates..." Click="ShowGemmingTemplates"/>
+                <Separator/>
+                <MenuItem Header="Reset Item Cache" Click="ResetItemCache"/>
+                <MenuItem Header="Reset All Caches" Click="ResetAllCaches"/>
+                <MenuItem Header="Manually Edit a Cache... (NYI)"/>
+            </MenuItem>
+            <MenuItem x:Name="HelpMenu" Header="Help" HorizontalAlignment="Left" Margin="4,0,4,0">
+                <MenuItem Header="Rawr Help Page" Click="ShowRawrHelpPage"/>
+                <MenuItem Header="Tour of Rawr" Click="ShowTourOfRawr"/>
+                <MenuItem Header="Gemmings" Click="ShowGemmingsHelp"/>
+                <MenuItem Header="Gear Optimization" Click="ShowGearOptimizationHelp"/>
+                <MenuItem Header="Item Filtering" Click="ShowItemFilteringHelp"/>
+                <MenuItem Header="Model Status" Click="ShowModelStatusHelp"/>
+                <MenuItem Header="Welcome Screen" Click="ShowWelcomeScreen"/>
+                <Separator/>
+                <MenuItem Header="Rawr Website" Click="ShowRawrWebsite"/>
+                <MenuItem Header="Donate" Click="ShowDonate"/>
+            </MenuItem>
+        </Menu>
+        ENDIFWPF-->
+        <toolkit:WrapPanel x:Name="Wrap_LeftSide" Margin="2,2,0,0" Grid.Column="0" Grid.Row="1" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Right">
+            <local:ItemButtonWithEnchant x:Name="HeadButton" Margin="2">
+                <local:ItemButtonWithEnchant.RenderTransform>
+                    <ScaleTransform />
+                </local:ItemButtonWithEnchant.RenderTransform>
+            </local:ItemButtonWithEnchant>
+            <local:ItemButtonWithEnchant x:Name="NeckButton" Margin="2" ShowEnchant="False">
+                <local:ItemButtonWithEnchant.RenderTransform>
+                    <ScaleTransform />
+                </local:ItemButtonWithEnchant.RenderTransform>
+            </local:ItemButtonWithEnchant>
+            <local:ItemButtonWithEnchant x:Name="ShoulderButton" Margin="2">
+                <local:ItemButtonWithEnchant.RenderTransform>
+                    <ScaleTransform />
+                </local:ItemButtonWithEnchant.RenderTransform>
+            </local:ItemButtonWithEnchant>
+            <local:ItemButtonWithEnchant x:Name="BackButton" Margin="2" ShowTinker="True">
+                <local:ItemButtonWithEnchant.RenderTransform>
+                    <ScaleTransform />
+                </local:ItemButtonWithEnchant.RenderTransform>
+            </local:ItemButtonWithEnchant>
+            <local:ItemButtonWithEnchant x:Name="ChestButton" Margin="2">
+                <local:ItemButtonWithEnchant.RenderTransform>
+                    <ScaleTransform />
+                </local:ItemButtonWithEnchant.RenderTransform>
+            </local:ItemButtonWithEnchant>
+            <local:ItemButtonWithEnchant x:Name="ShirtButton" Margin="2" ShowEnchant="False" ShowReforge="False" ShowGems="False">
+                <local:ItemButtonWithEnchant.RenderTransform>
+                    <ScaleTransform />
+                </local:ItemButtonWithEnchant.RenderTransform>
+            </local:ItemButtonWithEnchant>
+            <local:ItemButtonWithEnchant x:Name="TabardButton" Margin="2" ShowEnchant="False" ShowReforge="False" ShowGems="False">
+                <local:ItemButtonWithEnchant.RenderTransform>
+                    <ScaleTransform />
+                </local:ItemButtonWithEnchant.RenderTransform>
+            </local:ItemButtonWithEnchant>
+            <local:ItemButtonWithEnchant x:Name="WristButton" Margin="2" ShowBSSocket="True" EnableBSSocket="False">
+                <local:ItemButtonWithEnchant.RenderTransform>
+                    <ScaleTransform />
+                </local:ItemButtonWithEnchant.RenderTransform>
+            </local:ItemButtonWithEnchant>
+        </toolkit:WrapPanel>
+        <toolkit:DockPanel Grid.Column="1" Grid.Row="1" LastChildFill="True" Margin="2">
+            <StackPanel toolkit:DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Top" Orientation="Horizontal" Margin="2,2,2,0">
+                <local:ItemButtonWithEnchant x:Name="MainHandButton" d:LayoutOverrides="Width, Height" HorizontalAlignment="Center" Margin="8,0"/>
+                <local:ItemButtonWithEnchant x:Name="OffHandButton" d:LayoutOverrides="Height" HorizontalAlignment="Center" Margin="8,0" />
+            </StackPanel>
+            <controls:TabControl toolkit:DockPanel.Dock="Top" VerticalAlignment="Stretch">
+                <controls:TabItem x:Name="StatsTab" Header="Stats">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock x:Name="LB_BasicInfos" Grid.Row="0" TextAlignment="Center" FontWeight="Bold" FontSize="10" Text="Char@US-Server&#x0a;Night Elf Druid-Bear, BS/Mi"/>
+                        <layoutToolkit:Accordion Grid.Row="1" HorizontalAlignment="Stretch" MinHeight="23" SelectionMode="ZeroOrOne">
+                            <layoutToolkit:AccordionItem Header="Expand to Edit Basic Information" IsSelected="False" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="24" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid Grid.ColumnSpan="2">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="Name:" TextWrapping="Wrap" Margin="1,0,2,0"/>
+                                        <TextBlock Margin="2,0" Text="Realm:" TextWrapping="Wrap" d:LayoutOverrides="Width" Grid.Column="1"/>
+                                        <TextBlock Text="Region:" TextWrapping="Wrap" Margin="2,0,1,0" Grid.Column="2"/>
+                                        <TextBox x:Name="NameText" Margin="1,0,2,0" TextWrapping="Wrap" Text="{Binding Mode=TwoWay, Path=Name}" Grid.Row="1" TextChanged="BasicInfoField_TextChanged"/>
+                                        <TextBox x:Name="RealmText" Margin="2,0" Text="{Binding Mode=TwoWay, Path=Realm}" TextWrapping="Wrap" RenderTransformOrigin="1.13,0.417" Grid.Column="1" Grid.Row="1" TextChanged="BasicInfoField_TextChanged"/>
+                                        <ComboBox x:Name="RegionCombo" Margin="2,0,1,0" Width="54" Height="22" IsDropDownOpen="False" SelectedIndex="{Binding Mode=TwoWay, Path=RegionIndex}" Grid.Column="2" Grid.Row="1" SelectionChanged="BasicInfoField_SelectionChanged">
+                                            <ComboBoxItem Content="US"/>
+                                            <ComboBoxItem Content="EU"/>
+                                            <ComboBoxItem Content="KR"/>
+                                            <ComboBoxItem Content="TW"/>
+                                            <ComboBoxItem Content="CN"/>
+                                        </ComboBox>
+                                    </Grid>
+                                    <ComboBox x:Name="ClassCombo" Margin="111,60,108,0" VerticalAlignment="Top" Height="24" SelectionChanged="ClassCombo_SelectionChanged" Visibility="Collapsed" Grid.Row="2">
+                                        <ComboBoxItem Visibility="Collapsed"/>
+                                        <ComboBoxItem Content="Warrior"/>
+                                        <ComboBoxItem Content="Paladin"/>
+                                        <ComboBoxItem Content="Hunter"/>
+                                        <ComboBoxItem Content="Rogue"/>
+                                        <ComboBoxItem Content="Priest"/>
+                                        <ComboBoxItem Content="Death Knight"/>
+                                        <ComboBoxItem Content="Shaman"/>
+                                        <ComboBoxItem Content="Mage"/>
+                                        <ComboBoxItem Content="Warlock"/>
+                                        <ComboBoxItem Content="Monk"/>
+                                        <ComboBoxItem Content="Druid"/>
+                                    </ComboBox>
+                                    <TextBlock x:Name="LB_Race" Margin="1,2,2,2" Text="Race:" TextWrapping="Wrap" Grid.Row="3"/>
+                                    <ComboBox x:Name="RaceCombo" Margin="1,0,2,2" SelectedIndex="{Binding Mode=TwoWay, Path=RaceIndex}" Grid.Row="4" Height="22" SelectionChanged="BasicInfoField_SelectionChanged">
+                                        <ComboBoxItem Visibility="Collapsed"/> <!-- 0 -->
+                                        <ComboBoxItem Content="Human"/><!-- 1 -->
+                                        <ComboBoxItem Content="Orc"/><!-- 2 -->
+                                        <ComboBoxItem Content="Dwarf"/><!-- 3 -->
+                                        <ComboBoxItem Content="Night Elf"/><!-- 4 -->
+                                        <ComboBoxItem Content="Undead"/><!-- 5 -->
+                                        <ComboBoxItem Content="Tauren"/><!-- 6 -->
+                                        <ComboBoxItem Content="Gnome"/><!-- 7 -->
+                                        <ComboBoxItem Content="Troll"/><!-- 8 -->
+                                        <ComboBoxItem Content="Goblin" /><!-- 9 -->
+                                        <ComboBoxItem Content="Blood Elf"/><!-- 10 -->
+                                        <ComboBoxItem Content="Draenei"/><!-- 11 -->
+                                        <ComboBoxItem Visibility="Collapsed"/><!-- 12 -->
+                                        <ComboBoxItem Visibility="Collapsed"/><!-- 13 -->
+                                        <ComboBoxItem Visibility="Collapsed"/><!-- 14 -->
+                                        <ComboBoxItem Visibility="Collapsed"/><!-- 15 -->
+                                        <ComboBoxItem Visibility="Collapsed"/><!-- 16 -->
+                                        <ComboBoxItem Visibility="Collapsed"/><!-- 17 -->
+                                        <ComboBoxItem Visibility="Collapsed"/><!-- 18 -->
+                                        <ComboBoxItem Visibility="Collapsed"/><!-- 19 -->
+                                        <ComboBoxItem Visibility="Collapsed"/><!-- 20 -->
+                                        <ComboBoxItem Visibility="Collapsed"/><!-- 21 -->
+                                        <ComboBoxItem Content="Worgen" /><!-- 22 -->
+                                        <ComboBoxItem Visibility="Collapsed"/><!-- 23 -->
+                                        <ComboBoxItem Visibility="Collapsed"/><!-- 24 -->
+                                        <ComboBoxItem Content="Pandaren (Alliance)" /><!-- 25 -->
+                                        <ComboBoxItem Content="Pandaren (Horde)" /><!-- 26 -->
+                                    </ComboBox>
+                                    <ComboBox x:Name="ModelCombo" SelectionChanged="ModelCombo_SelectionChanged" Margin="1,0,2,0" d:LayoutOverrides="HorizontalAlignment" Visibility="Collapsed" Grid.Row="2" Height="22" VerticalAlignment="Top" />
+                                    <TextBlock x:Name="LB_ClassModel" Margin="1,2,2,2" Text="Class/Model:" TextWrapping="Wrap" Grid.Row="1"/>
+                                    <local:ClassModelPicker x:Name="CMP_ClassModel" Margin="1,0,2,0" Grid.Row="2" Height="22" VerticalAlignment="Top" />
+                                    <TextBlock x:Name="LB_Prof1" Text="First Profession:" TextWrapping="Wrap" Margin="2,2,1,2" Grid.Row="1" Grid.Column="1"/>
+                                    <ComboBox x:Name="CB_Prof1" Margin="2,0,1,0" SelectedIndex="{Binding Mode=TwoWay, Path=PriProfIndex}" d:LayoutOverrides="HorizontalAlignment" Grid.Row="2" Grid.Column="1" Height="22" VerticalAlignment="Top" SelectionChanged="ProfChanged">
+                                        <System:String>None</System:String>
+                                        <System:String>Alchemy</System:String>
+                                        <System:String>Blacksmithing</System:String>
+                                        <System:String>Enchanting</System:String>
+                                        <System:String>Engineering</System:String>
+                                        <System:String>Herbalism</System:String>
+                                        <System:String>Inscription</System:String>
+                                        <System:String>Jewelcrafting</System:String>
+                                        <System:String>Leatherworking</System:String>
+                                        <System:String>Mining</System:String>
+                                        <System:String>Skinning</System:String>
+                                        <System:String>Tailoring</System:String>
+                                    </ComboBox>
+                                    <TextBlock x:Name="LB_Prof2" Text="Second Profession:" TextWrapping="Wrap" Margin="2,2,1,2" Grid.Row="3" Grid.Column="1"/>
+                                    <ComboBox x:Name="CB_Prof2" Margin="2,0,1,2" SelectedIndex="{Binding Mode=TwoWay, Path=SecProfIndex}" Grid.Row="4" Grid.Column="1" Height="22" SelectionChanged="ProfChanged">
+                                        <System:String>None</System:String>
+                                        <System:String>Alchemy</System:String>
+                                        <System:String>Blacksmithing</System:String>
+                                        <System:String>Enchanting</System:String>
+                                        <System:String>Engineering</System:String>
+                                        <System:String>Herbalism</System:String>
+                                        <System:String>Inscription</System:String>
+                                        <System:String>Jewelcrafting</System:String>
+                                        <System:String>Leatherworking</System:String>
+                                        <System:String>Mining</System:String>
+                                        <System:String>Skinning</System:String>
+                                        <System:String>Tailoring</System:String>
+                                    </ComboBox>
+                                </Grid>
+                            </layoutToolkit:AccordionItem>
+                        </layoutToolkit:Accordion>
+                        <local:CalculationDisplay x:Name="CalculationDisplay" Margin="1,4,1,0" Grid.Row="2"/>
+                    </Grid>
+                </controls:TabItem>
+                <controls:TabItem x:Name="TalentTreeTab" Header="Talents">
+                    <Grid>
+                        <local:TalentPicker x:Name="TalentPicker"/>
+                    </Grid>
+                </controls:TabItem>
+                <controls:TabItem x:Name="BuffsTab" Header="Buffs">
+                    <Grid>
+                        <local:BuffsControl x:Name="BuffControl" VerticalAlignment="Stretch" Height="Auto"/>
+                    </Grid>
+                </controls:TabItem>
+                <controls:TabItem x:Name="OptionsTab" Header="Options">
+                    <ScrollViewer x:Name="OptionsView" Margin="0,0,0,0" BorderThickness="0,0,0,0" Padding="0,0,0,0" VerticalScrollBarVisibility="Auto"/>
+                </controls:TabItem>
+                <controls:TabItem x:Name="BossTab" Header="Boss Handler">
+                    <Grid>
+                        <local:BossPicker x:Name="BossPicker" VerticalAlignment="Stretch" Height="Auto"/>
+                    </Grid>
+                </controls:TabItem>
+            </controls:TabControl>
+        </toolkit:DockPanel>
+        <toolkit:WrapPanel x:Name="Wrap_RightSide" Margin="0,2,2,0" Grid.Column="2" Grid.Row="1" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left">
+            <local:ItemButtonWithEnchant x:Name="HandButton" Margin="2" ShowBSSocket="True" EnableBSSocket="False" ShowTinker="True">
+                <local:ItemButtonWithEnchant.RenderTransform>
+                    <ScaleTransform />
+                </local:ItemButtonWithEnchant.RenderTransform>
+            </local:ItemButtonWithEnchant>
+            <local:ItemButtonWithEnchant x:Name="BeltButton" Margin="2" ShowEnchant="False" ShowBSSocket="True" EnableBSSocket="True" ShowTinker="True">
+                <local:ItemButtonWithEnchant.RenderTransform>
+                    <ScaleTransform />
+                </local:ItemButtonWithEnchant.RenderTransform>
+            </local:ItemButtonWithEnchant>
+            <local:ItemButtonWithEnchant x:Name="LegButton" Margin="2">
+                <local:ItemButtonWithEnchant.RenderTransform>
+                    <ScaleTransform />
+                </local:ItemButtonWithEnchant.RenderTransform>
+            </local:ItemButtonWithEnchant>
+            <local:ItemButtonWithEnchant x:Name="FeetButton" Margin="2">
+                <local:ItemButtonWithEnchant.RenderTransform>
+                    <ScaleTransform />
+                </local:ItemButtonWithEnchant.RenderTransform>
+            </local:ItemButtonWithEnchant>
+            <local:ItemButtonWithEnchant x:Name="Ring1Button" Margin="2">
+                <local:ItemButtonWithEnchant.RenderTransform>
+                    <ScaleTransform />
+                </local:ItemButtonWithEnchant.RenderTransform>
+            </local:ItemButtonWithEnchant>
+            <local:ItemButtonWithEnchant x:Name="Ring2Button" Margin="2">
+                <local:ItemButtonWithEnchant.RenderTransform>
+                    <ScaleTransform />
+                </local:ItemButtonWithEnchant.RenderTransform>
+            </local:ItemButtonWithEnchant>
+            <local:ItemButtonWithEnchant x:Name="Trinket1Button" Margin="2" ShowEnchant="False">
+                <local:ItemButtonWithEnchant.RenderTransform>
+                    <ScaleTransform />
+                </local:ItemButtonWithEnchant.RenderTransform>
+            </local:ItemButtonWithEnchant>
+            <local:ItemButtonWithEnchant x:Name="Trinket2Button" Margin="2" ShowEnchant="False">
+                <local:ItemButtonWithEnchant.RenderTransform>
+                    <ScaleTransform />
+                </local:ItemButtonWithEnchant.RenderTransform>
+            </local:ItemButtonWithEnchant>
+        </toolkit:WrapPanel>
+        <local:GraphDisplay x:Name="ComparisonGraph" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="3" Margin="0,-2" Grid.Row="1"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="0" Grid.ColumnSpan="4">
+            <Button x:Name="BT_SubmitIssue" Content="Submit an Issue" Click="SubmitIssue_Click" Margin="0,4,8,4" />
+            <Button x:Name="PerformanceTestButton" Content="Test Calculation Performance" Margin="0,4,8,4" Click="PerformanceTest"/>
+            <Button x:Name="OfflineInstallButton" Content="Install Offline" Margin="0,4,8,4" Click="InstallOffline"/>
+        </StackPanel>
+        <Rectangle VerticalAlignment="Stretch" Margin="0" Grid.ColumnSpan="4" Grid.Row="2">
+            <Rectangle.Stroke>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFA3AEB9"/>
+                    <GradientStop Color="#FF8399A9" Offset="0.375"/>
+                    <GradientStop Color="#FF718597" Offset="0.375"/>
+                    <GradientStop Color="#FF617584" Offset="1"/>
+                </LinearGradientBrush>
+            </Rectangle.Stroke>
+            <Rectangle.Fill>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFDEDEDE" Offset="1"/>
+                    <GradientStop Color="#FFFFFFFF" Offset="0"/>
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Grid Grid.Row="2" Grid.ColumnSpan="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="StatusText" Grid.Column="0" Margin="4" Text="Status"/>
+            <TextBlock x:Name="LB_Models" Grid.Column="1" Margin="4" Text="Check the Model Status Page for information on the Development Status" />
+            <TextBlock x:Name="VersionText" Grid.Column="2" Margin="4" Text="Rawr X.X.X.X" Foreground="#99393939" />
+        </Grid>
+    </Grid>
+</UserControl>
