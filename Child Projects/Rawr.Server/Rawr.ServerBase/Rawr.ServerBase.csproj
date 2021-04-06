@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6A7EBF1A-B8EC-4417-A6B3-862144AA8219}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Rawr.ServerBase</RootNamespace>
+    <AssemblyName>Rawr.ServerBase</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;RAWR4;RAWRSERVER</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;RAWR4;RAWRSERVER</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\Rawr.Base\Algorithms\ArrayPool.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Algorithms\CalculationCache.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Algorithms\LP.cs">
+      <Link>LP.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Rawr.Base\Algorithms\LU.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Algorithms\MarkovProcess.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Algorithms\SparseMatrix.cs">
+      <Link>SparseMatrix.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Rawr.Base\Algorithms\StateSpace.cs" />
+    <Compile Include="..\..\..\Rawr.Base\BaseCombatRating.cs">
+      <Link>BaseCombatRating.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Rawr.Base\Bosses\BossesT13.cs">
+      <Link>BossesT13.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Rawr.Base\Bosses\BossesT14.cs">
+      <Link>BossesT14.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Rawr.Base\Bosses\BossesT7.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Bosses\BossesT8.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Bosses\BossesT9.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Bosses\BossesT10.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Bosses\BossesT11.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Bosses\BossesT12.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Bosses\BossHandler.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Bosses\BossList.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Bosses\BossStuff.cs" />
+    <Compile Include="..\..\..\Rawr.Base\CustomControls\ErrorBox.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Items\Item.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Items\ItemCache.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Items\ItemLocation.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Items\ItemUpdater.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Networking\AltoholicImporter.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Networking\Armory.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Networking\CharacterProfilerData.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Networking\JsonParser.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Networking\NetworkUtils.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Networking\Rawr4ArmoryService.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Networking\Rawr4RepoService.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Networking\RawrAddonData.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Networking\Wowhead.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Optimizer\AvailableItemGenerator.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Optimizer\BatchCharacter.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Optimizer\BatchOptimizer.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Optimizer\BatchTools.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Optimizer\Optimizer.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Optimizer\OptimizerBase.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Optimizer\OptimizerResults.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Settings\CacheSettings.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Settings\GeneralSettings.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Settings\NetworkSettings.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Settings\OptimizerSettings.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Settings\RecentSettings.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Settings\Settings.cs" />
+    <Compile Include="..\..\..\Rawr.Base\SpecialEffects\SpecialEffect.cs" />
+    <Compile Include="..\..\..\Rawr.Base\SpecialEffects\SpecialEffectCombination.cs" />
+    <Compile Include="..\..\..\Rawr.Base\SpecialEffects\SpecialEffectInterpolator.cs" />
+    <Compile Include="..\..\..\Rawr.Base\SpecialEffects\SpecialEffects.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Utility Files\ArrayUtils.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Utility Files\EnumHelper.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Utility Files\Enums.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Utility Files\EventArgsT.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Utility Files\ListUtils.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Utility Files\SavedVariablesParser.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Utility Files\SerializableDictionary.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Utility Files\SpecialFunction.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Utility Files\StatusMessaging.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Utility Files\Utilities.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Utility Files\XMLUtils.cs" />
+    <Compile Include="..\..\..\Rawr.Base\BaseStats.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Buff.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Calculations.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Character.cs" />
+    <Compile Include="..\..\..\Rawr.Base\ClassGlyphs.cs" />
+    <Compile Include="..\..\..\Rawr.Base\ClassTalents.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Enchant.cs" />
+    <Compile Include="..\..\..\Rawr.Base\GemIDConvertor.cs" />
+    <Compile Include="..\..\..\Rawr.Base\GemmingTemplate.cs" />
+    <Compile Include="..\..\..\Rawr.Base\ICharacterCalculationOptions.cs" />
+    <Compile Include="..\..\..\Rawr.Base\ItemFilter.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Profs.cs" />
+    <Compile Include="..\..\..\Rawr.Base\RandomSuffix.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Reforging.cs" />
+    <Compile Include="..\..\..\Rawr.Base\SavedBuffSet.cs" />
+    <Compile Include="..\..\..\Rawr.Base\SavedTalentSpec.cs" />
+    <Compile Include="..\..\..\Rawr.Base\SpecialDamageProcs.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Stats.cs" />
+    <Compile Include="..\..\..\Rawr.Base\StatConversion.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Tinkering.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
