@@ -1,0 +1,231 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E3BD9BA4-C2BE-4F01-A447-14C56733CA91}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Rawr.UnitTests</RootNamespace>
+    <AssemblyName>Rawr.UnitTests</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Controls, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Controls.DataVisualization.Toolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Controls.Input, Version=2.0.5.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Controls.Input.WPFToolkit, Version=2.0.5.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AttackTest.cs" />
+    <Compile Include="CalculationsBaseTest.cs" />
+    <Compile Include="CalculationsTest.cs" />
+    <Compile Include="DK\AbilityDKTest.cs" />
+    <Compile Include="DK\DKDPS.cs" />
+    <Compile Include="DK\DKTank.cs" />
+    <Compile Include="DK\WeaponTest.cs" />
+    <Compile Include="LPTest.cs" />
+    <Compile Include="MarkovProcessTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RestoSham\CalculationsTests.cs" />
+    <Compile Include="RestoSham\RelevantStatsTests.cs" />
+    <Compile Include="RestoSham\RestoShamTestCharacter.cs" />
+    <Compile Include="Rogue\CombatFactorsTests.cs" />
+    <Compile Include="Rogue\RogueTestCharacter.cs" />
+    <Compile Include="Rogue\TimingTests.cs" />
+    <Compile Include="Rogue\FinishingMoves\RuptureTest.cs" />
+    <Compile Include="DK\RotationTest.cs" />
+    <Compile Include="ShadowPriest\Calculations_GetCharacterStatsBase.cs" />
+    <Compile Include="ShadowPriest\Calculations_GetCharacterStats_Naked.cs" />
+    <Compile Include="ShadowPriest\Calculations_GetCharacterStats_Talented_ItemSet1.cs" />
+    <Compile Include="ShadowPriest\Calculations_GetCharacterStats_Talented_ItemSet2.cs" />
+    <Compile Include="ShadowPriest\Calculations_GetCharacterStats_Talented_ItemSet3.cs" />
+    <Compile Include="ShadowPriest\Calculations_GetCharacterStats_Untalented_ItemSet1.cs" />
+    <Compile Include="ShadowPriest\Calculations_GetCharacterStats_Untalented_ItemSet2.cs" />
+    <Compile Include="ShadowPriest\Calculations_GetCharacterStats_Untalented_ItemSet3.cs" />
+    <Compile Include="ShadowPriest\Mechanics_MissChanceTests.cs" />
+    <Compile Include="ShadowPriest\StatConversion_MissChanceTests.cs" />
+    <Compile Include="ShadowPriest\TestItemSets.cs" />
+    <Compile Include="ShadowPriest\TestTalentSets.cs" />
+    <Compile Include="SpecialEffectsTest.cs" />
+    <Compile Include="SpecialEffectTest.cs" />
+    <Compile Include="StatConversionTest.cs" />
+    <Compile Include="StateSpaceGeneratorTest.cs" />
+    <Compile Include="StatsTest.cs" />
+    <Compile Include="Stats_SpecialEffectEnumeratorTest.cs" />
+    <Compile Include="BasicCharacterTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Rawr.Base\Rawr.Base.WPF.csproj">
+      <Project>{542537D3-F86B-4022-A161-B2FC6F0218B7}</Project>
+      <Name>Rawr.Base.WPF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rawr.Bear\Rawr.Bear.WPF.csproj">
+      <Project>{E0A8CF5D-FB5B-49EB-8666-44255E87AF27}</Project>
+      <Name>Rawr.Bear.WPF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rawr.DPSDK\Rawr.DPSDK.WPF.csproj">
+      <Project>{F39559FE-191D-47AA-B1CB-FBECD11E0C20}</Project>
+      <Name>Rawr.DPSDK.WPF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rawr.Mage\Rawr.Mage.WPF.csproj">
+      <Project>{C61A1D1A-21F8-4234-9085-5ECD33978DEF}</Project>
+      <Name>Rawr.Mage.WPF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rawr.Moonkin\Rawr.Moonkin.WPF.csproj">
+      <Project>{29946D37-91C4-4D46-9625-D11C8CEE8AFC}</Project>
+      <Name>Rawr.Moonkin.WPF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rawr.ProtPaladin\Rawr.ProtPaladin.WPF.csproj">
+      <Project>{086E2C96-2540-414A-8E35-82D286147593}</Project>
+      <Name>Rawr.ProtPaladin.WPF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rawr.TankDK\Rawr.TankDK.WPF.csproj">
+      <Project>{5C7D2251-55E7-4A90-8A97-B5DCC9D35807}</Project>
+      <Name>Rawr.TankDK.WPF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rawr.Tree\Rawr.Tree.WPF.csproj">
+      <Project>{1B85DA42-90D5-46FA-99AC-9E21785B3AC8}</Project>
+      <Name>Rawr.Tree.WPF</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="testdata\Alathas.xml" />
+    <Content Include="testdata\BatchTools-Unshiz.xml" />
+    <Content Include="testdata\kona.xml" />
+    <Content Include="testdata\Opus_FromRawrAddon.xml" />
+    <Content Include="testdata\Opus_RawrAddon.txt" />
+    <Content Include="testdata\Opus_standalone_saved_chr.xml" />
+    <Content Include="testdata\Professional-Tank.xml" />
+    <Content Include="testdata\Shizu-shadow.xml" />
+    <Content Include="testdata\unshiz-DPSDK_FrostDW - Copy.xml" />
+    <Content Include="testdata\unshiz-DPSDK_FrostDW.xml" />
+    <Content Include="testdata\unshiz-DPSDK_FrostDW_filtered.xml" />
+    <Content Include="testdata\unshiz-DPSDK_FrostDW_Rawr4.xml" />
+    <Content Include="testdata\unshiz-tankDK - Copy.xml" />
+    <Content Include="testdata\unshiz-tankDK 2011-3-26 8-2.xml" />
+    <Content Include="testdata\unshiz-tankDK.xml" />
+    <Content Include="testdata\unshiz-TankDK_Armory.xml" />
+    <Content Include="testdata\unshiz-TankDK_Rawr4.xml" />
+    <Content Include="testdata\~Test_EmptyBear.xml" />
+    <Content Include="testdata\~Test_EmptyCat.xml" />
+    <Content Include="testdata\~Test_EmptyDPSDK.xml" />
+    <Content Include="testdata\~Test_EmptyDPSWarr.xml" />
+    <Content Include="testdata\~Test_EmptyElemental.xml" />
+    <Content Include="testdata\~Test_EmptyEnhance.xml" />
+    <Content Include="testdata\~Test_EmptyHealadin.xml" />
+    <Content Include="testdata\~Test_EmptyHealPriest.xml" />
+    <Content Include="testdata\~Test_EmptyHunter.xml" />
+    <Content Include="testdata\~Test_EmptyMage.xml" />
+    <Content Include="testdata\~Test_EmptyMoonkin.xml" />
+    <Content Include="testdata\~Test_EmptyProtPaladin.xml" />
+    <Content Include="testdata\~Test_EmptyProtWarr.xml" />
+    <Content Include="testdata\~Test_EmptyRestoSham.xml" />
+    <Content Include="testdata\~Test_EmptyRetribution.xml" />
+    <Content Include="testdata\~Test_EmptyRogue.xml" />
+    <Content Include="testdata\~Test_EmptyShadowPriest.xml" />
+    <Content Include="testdata\~Test_EmptyTankDK.xml" />
+    <Content Include="testdata\~Test_EmptyTree.xml" />
+    <Content Include="testdata\~Test_EmptyWarlock.xml" />
+    <Content Include="testdata\~Test_Rawr4_Blood2h.xml" />
+    <Content Include="testdata\~Test_Rawr4_Blood2h_2.xml" />
+    <Content Include="testdata\~Test_Rawr4_Unholy2h.xml" />
+    <Content Include="testdata\~Test_TankDK.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Hunter\" />
+    <Folder Include="Test References\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
