@@ -1,0 +1,28 @@
+<basics2:ChildWindow
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:basics="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:basics2="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    mc:Ignorable="d"
+    x:Class="Rawr.UI.ImportTalentSpecDialog"
+    Title="Import Talent Spec..." Width="500">
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <TextBlock Text="Full Talent Link:" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="4,4,4,4"/>
+        <TextBox x:Name="TB_Link" TextWrapping="Wrap" Margin="4" Grid.Column="1" />
+
+        <Button x:Name="BT_OK" Content="OK" Click="BT_OK_Click" Width="75" HorizontalAlignment="Right" Margin="4" Grid.Row="2" Grid.Column="1" />
+        <Button x:Name="BT_Cancel" Content="Cancel" Click="BT_Cancel_Click" Width="75" HorizontalAlignment="Right" Margin="4,4,83,4" Grid.Row="2" Grid.Column="1" />
+    </Grid>
+</basics2:ChildWindow>
