@@ -1,0 +1,30 @@
+Display:
+Base Stats - without procs
+Average Stats - averaged procs
+Max Stats - full value of procs
+Spell Data - dps, uses, ave damage per use, dp cast time (or equiv), cast time
+Time to OOM
+Overall dps + total damage
+
+Options:
+Include idle gcds - for time spent on non dps things:
+Healing, totems (excluding FE, EE, ST, MT), interupts, purges.
+
+Cooldowns:
+Ascendance - 15s/3min
+Elemental Mastery - 20s/1.5min
+Trinkets
+Fire Elemental Totem - 1min/5min or 30s/2.5min
+Earth Elemental Totem - 1min/5min
+Storm Elemental Totem - ?/5min
+
+Sync EM and Ascendance always
+Use EM on CD
+Option to hold FET 1min/30s to sync with EM or use on CD
+
+Average out all procs and on use trinkets.
+Ignore for now Heroism and legendary meta gem
+Calculate for when ascendance is up, then calculate for when it is down
+First EM used with ascendance, second without
+
+How to calculate EM random stat boost?

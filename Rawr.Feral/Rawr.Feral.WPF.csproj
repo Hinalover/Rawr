@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A5B3AAD4-0B20-42E8-AA12-9D3B1FA0507D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Rawr.Feral.WPF</RootNamespace>
+    <AssemblyName>Rawr.Feral.WPF</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Controls">
+      <HintPath>..\binaries\System.Windows.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.DataVisualization.Toolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\WPF Toolkit\v3.5.50211.1\System.Windows.Controls.DataVisualization.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Input">
+      <HintPath>..\binaries\System.Windows.Controls.Input.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Input.WPFToolkit">
+      <HintPath>..\binaries\System.Windows.Controls.Input.WPFToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Layout.Toolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\binaries\System.Windows.Controls.Layout.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Abilities\AbilityFeral_Base.cs" />
+    <Compile Include="Abilities\AbilityFeral_Berserk.cs" />
+    <Compile Include="Abilities\AbilityFeral_Claw.cs" />
+    <Compile Include="Abilities\AbilityFeral_FeralChargeCat.cs" />
+    <Compile Include="Abilities\AbilityFeral_FerociousBite.cs" />
+    <Compile Include="Abilities\AbilityFeral_FieryClaws.cs" />
+    <Compile Include="Abilities\AbilityFeral_FurySwipe.cs" />
+    <Compile Include="Abilities\AbilityFeral_Incarnation.cs" />
+    <Compile Include="Abilities\AbilityFeral_MangleCat.cs" />
+    <Compile Include="Abilities\AbilityFeral_Pounce.cs" />
+    <Compile Include="Abilities\AbilityFeral_Rake.cs" />
+    <Compile Include="Abilities\AbilityFeral_Ravage.cs" />
+    <Compile Include="Abilities\AbilityFeral_RavageProc.cs" />
+    <Compile Include="Abilities\AbilityFeral_Rip.cs" />
+    <Compile Include="Abilities\AbilityFeral_SavageRoar.cs" />
+    <Compile Include="Abilities\AbilityFeral_Shred.cs" />
+    <Compile Include="Abilities\AbilityFeral_SwipeCat.cs" />
+    <Compile Include="Abilities\AbilityFeral_ThrashCat.cs" />
+    <Compile Include="Abilities\AbilityFeral_TigersFury.cs" />
+    <Compile Include="Abilities\AbilityFeral_WhiteSwing.cs" />
+    <Compile Include="Abilities\AbilityGuardian_Rip.cs" />
+    <Compile Include="Abilities\FeralCombatState.cs" />
+    <Compile Include="Abilities\FeralTemplate.cs" />
+    <Compile Include="CalculationOptionsFeral.cs" />
+    <Compile Include="CalculationOptionsPanelFeral.xaml.cs">
+      <DependentUpon>CalculationOptionsPanelFeral.WPF.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CalculationsFeral.cs" />
+    <Compile Include="CharacterCalculationsFeral.cs" />
+    <Compile Include="ComparisonCalculationFeral.cs" />
+    <Compile Include="FeralConverters.cs" />
+    <Compile Include="FeralEnums.cs" />
+    <Compile Include="FeralRotation.cs" />
+    <Compile Include="FeralSolver.cs" />
+    <Compile Include="FeralWeapon.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="StatsFeral.cs" />
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Rawr.Base\Rawr.Base.WPF.csproj">
+      <Project>{542537D3-F86B-4022-A161-B2FC6F0218B7}</Project>
+      <Name>Rawr.Base.WPF</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="CalculationOptionsPanelFeral.WPF.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
