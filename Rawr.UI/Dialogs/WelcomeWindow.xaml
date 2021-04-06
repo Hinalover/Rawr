@@ -1,0 +1,221 @@
+<basics2:ChildWindow
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:basics="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:basics2="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
+    xmlns:localUI="clr-namespace:Rawr.UI"
+    mc:Ignorable="d"
+    x:Class="Rawr.UI.WelcomeWindow"
+    Title="Welcome to Rawr4"
+    Width="655" Height="500">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <localUI:GroupBox Margin="4" x:Name="GB_Characters" Header="Characters" MinHeight="250">
+            <Grid Name="LO_Char">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                
+                <Button Content="Create New Character..." Padding="8,3" Grid.Row="0" Name="BT_CreateNew" Click="BT_CreateNew_Click" />
+                <Button Content="Open Character File..." Padding="8,3" Grid.Row="1" Name="BT_OpenFile" Click="BT_OpenFile_Click" />
+                <Button Content="Load from Battle.Net..." Padding="8,3" Grid.Row="2" Name="BT_LoadBNet" Click="BT_LoadBNet_Click" />
+                <Button Content="Load from Rawr AddOn..." Padding="8,3" Grid.Row="3" Name="BT_LoadRawrAddOn" Click="BT_LoadRawrAddOn_Click" />
+                <Button Content="Load from Rawr4 Repository..." Padding="8,3" Grid.Row="4" Name="BT_LoadRawrRepo" Click="BT_LoadRawrRepo_Click" />
+                <ScrollViewer Name="SV_RecentChars" Grid.Row="5" Padding="0" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Name="SP_RecentChars" Margin="0">
+                        <TextBlock Text="Recent Character Files" TextAlignment="Center" FontWeight="Bold" Margin="4,2" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </localUI:GroupBox>
+        <localUI:GroupBox Grid.Row="1" Grid.ColumnSpan="1" Margin="4" x:Name="GB_Help" Header="Help">
+            <Grid Margin="0,-6,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <!--IFSL-->
+                <HyperlinkButton Margin="2" Grid.Row="0" VerticalAlignment="Center" Content="I Don't Know Where to Start!" NavigateUri="http://rawr.codeplex.com/wikipage?title=WhereToStart" TargetName="_blank" FontWeight="Bold" Foreground="Purple" />
+                <!--ENDIFSL-->
+                <!--IFWPF
+                <TextBlock Margin="2" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                <Hyperlink NavigateUri="http://rawr.codeplex.com/wikipage?title=WhereToStart" RequestNavigate="Hyperlink_RequestNavigate">I Don't Know Where to Start!</Hyperlink>
+                </TextBlock>
+                ENDIFWPF-->
+                <!--IFSL-->
+                <HyperlinkButton Margin="2" VerticalAlignment="Center" Content="Tour of Rawr Video" NavigateUri="http://www.youtube.com/watch?v=OjRM5SUoOoQ" TargetName="_blank" Grid.Row="1" />
+                <!--ENDIFSL-->
+                <!--IFWPF
+                <TextBlock Margin="2" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
+                <Hyperlink NavigateUri="http://www.youtube.com/watch?v=OjRM5SUoOoQ" RequestNavigate="Hyperlink_RequestNavigate">Tour of Rawr Video</Hyperlink>
+                </TextBlock>
+                ENDIFWPF-->
+                <!--IFSL-->
+                <HyperlinkButton Margin="2" Grid.Row="2" VerticalAlignment="Center" Content="Model Status Page" NavigateUri="http://rawr.codeplex.com/wikipage?title=Models" TargetName="_blank" />
+                <!--ENDIFSL-->
+                <!--IFWPF
+                <TextBlock Margin="2" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center">
+                <Hyperlink NavigateUri="http://rawr.codeplex.com/wikipage?title=Models" RequestNavigate="Hyperlink_RequestNavigate">Model Status Page</Hyperlink>
+                </TextBlock>
+                ENDIFWPF-->
+                <!--IFSL-->
+                <HyperlinkButton Margin="2" Grid.Row="3" VerticalAlignment="Center" Content="General Posting Guidelines" NavigateUri="http://rawr.codeplex.com/wikipage?title=PostingGuidelines" TargetName="_blank"/>
+                <!--ENDIFSL-->
+                <!--IFWPF
+                <TextBlock Margin="2" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center">
+                <Hyperlink NavigateUri="http://rawr.codeplex.com/wikipage?title=PostingGuidelines" RequestNavigate="Hyperlink_RequestNavigate">General Posting Guidelines</Hyperlink>
+                </TextBlock>
+                ENDIFWPF-->
+                <!--IFSL-->
+                <HyperlinkButton Margin="2" Grid.Row="4" VerticalAlignment="Center" Content="Bug Reporting Format" NavigateUri="http://rawr.codeplex.com/wikipage?title=BugReportingFormatGuide" TargetName="_blank"/>
+                <!--ENDIFSL-->
+                <!--IFWPF
+                <TextBlock Margin="2" Grid.Row="4" Grid.Column="1" VerticalAlignment="Center">
+                <Hyperlink NavigateUri="http://rawr.codeplex.com/wikipage?title=BugReportingFormatGuide" RequestNavigate="Hyperlink_RequestNavigate">Bug Reporting Format</Hyperlink>
+                </TextBlock>
+                ENDIFWPF-->
+            </Grid>
+        </localUI:GroupBox>
+
+        <basics:TabControl Grid.Column="1" Name="tabControl1" Grid.RowSpan="2">
+            <basics:TabItem Header="Welcome!" Name="tabItem1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock TextWrapping="Wrap" Grid.Row="0" Grid.ColumnSpan="4" Grid.Column="0" Margin="4,4,4,0" FontWeight="Normal" Text="Rawr is a program for comparing and exploring gear for Bears, Cats, Moonkin, Healadins, Retadins, Mages, DPS Warriors, Protection Warriors, Trees, Hunters, Protection Paladins, Healing Priests, Shadow Priests, Enhancement Shamans, Warlocks, Rogues, Restoration Shamans, Elementals, and DPS &amp; Tank Death Knights, in the MMORPG, World of Warcraft at level 90 Mists of Pandaria Content (5.0.x)." />
+                    <TextBlock TextWrapping="Wrap" Grid.Row="1" Grid.ColumnSpan="4" Grid.Column="0" Margin="4,0,4,0" FontWeight="Normal" Text="Rawr has been designed from the start to be fun to use, and helpful in finding better combinations of gear, and what gear to obtain." />
+                    <TextBlock TextWrapping="Wrap" Grid.Row="2" Grid.ColumnSpan="4" Grid.Column="0" Margin="4,4,4,0" FontWeight="Bold"   Text="Notices:" Foreground="Red" />
+                    <TextBlock TextWrapping="Wrap" Grid.Row="3" Grid.ColumnSpan="4" Grid.Column="0" Margin="4,0,4,4" FontWeight="Normal" Text="Many classes/specs aren't supported yet. Model Status can be found in the lower right-hand corner of the screen or at the Model Status Page." />
+                    <TextBlock TextWrapping="Wrap" Grid.Row="4" Grid.ColumnSpan="4" Grid.Column="0" Margin="4,0,4,0" FontWeight="Normal" Text="This is a general status of models:"/>
+                    <TextBlock TextWrapping="Wrap" Grid.Row="5" Grid.ColumnSpan="1" Grid.Column="0" Margin="4,0,4,0" FontWeight="Bold"   Text="Inoperable *" Foreground="Red"
+                                ToolTipService.ToolTip="Inoperable means that there have been significant changes in the game&#x0a;that have not made it into the Model, such as a Major Patch (like&#x0a;Cataclysm). The model should not be used for gear recommendations until&#x0a;it leaves this status."/>
+                    <TextBlock TextWrapping="Wrap" Grid.Row="5" Grid.Column="1" Margin="0,0,8,97" FontWeight="Bold"   Text="Partially *" Foreground="Purple"
+                               ToolTipService.ToolTip="Partially means that the model's calculations should be taken as&#x0a;'suspect' and not solely relied on without external sources to back&#x0a;up its recommendations. The model should be in significant&#x0a;development to show major changes between version releases." Grid.RowSpan="2" />
+                    <TextBlock TextWrapping="Wrap" Grid.Row="5" Grid.ColumnSpan="1" Grid.Column="2" Margin="4,0,4,0" FontWeight="Bold"   Text="Mostly *" Foreground="Blue"
+                               ToolTipService.ToolTip="Mostly means that the model will be largely accurate but there could&#x0a;be certain abilities or talents that have not been fully modeled yet.&#x0a;The model should be in active development to complete these tasks."/>
+                    <TextBlock TextWrapping="Wrap" Grid.Row="5" Grid.ColumnSpan="1" Grid.Column="3" Margin="4,0,4,0" FontWeight="Bold"   Text="Fully *" Foreground="Green"
+                               ToolTipService.ToolTip="Fully means that every model-able method relevant to this Model has&#x0a;been implemented. The model is in Maintenance mode and will only change&#x0a;if a Bug is identified or the Theorycrafting Community discovers new&#x0a;information that will impact calculations, such as a more powerful&#x0a;rotation or a Blizzard Ability Bugfix."/>
+                    <TextBlock TextWrapping="Wrap" Grid.Row="6" Grid.ColumnSpan="1" Grid.Column="0" Margin="4,0,4,2" FontWeight="Normal" Text="- DPSWarr&#x0a;- Elemental&#x0a;- Enhance&#x0a;- ProtWarr&#x0a;- RestoSham&#x0a;- Retribution&#x0a;- Rogue&#x0a;- ShadowPriest&#x0a;- Warlock&#x0a;"/>
+                    <TextBlock TextWrapping="Wrap" Grid.Row="6" Grid.Column="1" Margin="3,1,5,78" FontWeight="Normal" Text="- Brewmaster&#x0a;- DPSDK&#x0a;- Hunter&#x0a;- TankDK&#x0a;- Windwalker&#x0a;- Tree&#x0a;"/>
+                    <TextBlock TextWrapping="Wrap" Grid.Row="6" Grid.ColumnSpan="1" Grid.Column="2" Margin="4,0,4,0" FontWeight="Normal" Text="- Feral&#x0a;- Mage&#x0a;- ProtPaladin&#x0a;" Grid.RowSpan="3" />
+                    <TextBlock TextWrapping="Wrap" Grid.Row="6" Grid.ColumnSpan="1" Grid.Column="3" Margin="4,0,4,0" FontWeight="Normal" Text="- Bear&#x0a;- Moonkin&#x0a;" Grid.RowSpan="3" />
+                </Grid>
+            </basics:TabItem>
+            <basics:TabItem Header="Tips" Name="tabItem5">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Select a Tip or choose All to display all" Margin="4,2" TextAlignment="Center" TextWrapping="Wrap" />
+                    <ComboBox Height="21" Name="CB_Tips" Grid.Row="1" Margin="0,2" SelectionChanged="CB_Tips_SelectedIndexChanged" />
+                    <TextBox IsReadOnly="True" Name="RTB_Tips" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Grid.Row="2" />
+                </Grid>
+            </basics:TabItem>
+            <basics:TabItem Header="F.A.Q." Name="tabItem2">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Select a Question or choose All to display all" Margin="4,2" TextAlignment="Center" TextWrapping="Wrap" />
+                    <ComboBox Height="21" Name="CB_FAQ_Questions" Grid.Row="1" Margin="0,2" SelectionChanged="CB_FAQ_Questions_SelectedIndexChanged" />
+                    <TextBox IsReadOnly="True" Name="RTB_FAQ" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Grid.Row="2" />
+                </Grid>
+            </basics:TabItem>
+            <basics:TabItem Header="Version History" Name="tabItem3">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Text="Select a Version or choose All to display all" Margin="4,2" TextAlignment="Center" TextWrapping="Wrap" />
+                    <ComboBox Height="21" Name="CB_Version" Grid.Row="1" Margin="0,2" SelectionChanged="CB_Version_SelectedIndexChanged" />
+                    <TextBox IsReadOnly="True" Name="RTB_Version" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Grid.Row="2" />
+                </Grid>
+            </basics:TabItem>
+            <basics:TabItem Header="Known Issues" Name="tabItem4">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Select an Issue or choose All to display all" Margin="4,2" TextAlignment="Center" TextWrapping="Wrap" />
+                    <ComboBox Height="21" Name="CB_Issues" Grid.Row="1" Margin="0,2" SelectionChanged="CB_Issues_SelectedIndexChanged" />
+                    <TextBox IsReadOnly="True" Name="RTB_Issues" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" Grid.Row="2" />
+                </Grid>
+            </basics:TabItem>
+            <basics:TabItem Header="Dev Openings" Name="tabItem_Openings">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Name="Openings" TextWrapping="Wrap" Margin="4,0,4,0" FontWeight="Normal" Text="The Rawr Staff is looking for volunteer developers for the following models:
+
+- Bear
+- Cat
+- DPSWarr.Fury
+- Hunter
+- Elemental
+- ProtPaladin
+- Rogue
+- ShadowPriest
+                               
+If you are interested, please start by looking in some of the open issues for that model, and submitted a patch for that issue.
+TODO: Re-write this to match Model status wiki page." />
+                </Grid>
+            </basics:TabItem>
+        </basics:TabControl>
+
+        <Button x:Name="OKButton" Content="OK" Grid.Row="2" Grid.ColumnSpan="3" Click="OKButton_Click" Width="75" Height="23" HorizontalAlignment="Center" Margin="4" Grid.Column="0" />
+    </Grid>
+</basics2:ChildWindow>

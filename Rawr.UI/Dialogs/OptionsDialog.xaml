@@ -1,0 +1,133 @@
+<basics2:ChildWindow
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:basics="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:basics2="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    xmlns:toolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Toolkit"
+    xmlns:local="clr-namespace:Rawr.UI"
+    mc:Ignorable="d"
+    x:Class="Rawr.UI.OptionsDialog"
+    Title="Options"
+    Height="495" Width="480">
+
+    <Grid x:Name="LayoutRoot">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <toolkit:WrapPanel Orientation="Vertical" Grid.Row="0">
+            <local:GroupBox Margin="4">
+                <local:GroupBox.Header><TextBlock FontWeight="Bold">Display Settings</TextBlock></local:GroupBox.Header>
+                <local:GroupBox.Content>
+                    <StackPanel>
+                        <CheckBox x:Name="CK_BuffSource" Margin="4,2" Content="Display Buff Sources"/>
+                        <CheckBox x:Name="CK_GemNames" Margin="4,2" Content="Display Gem Names in Item Tooltips"/>
+                        <TextBlock x:Name="LB_ItemNameWidthSetting" Margin="4,0" Text="List Names Width:" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                        <ComboBox x:Name="CB_ItemNameWidthSetting" Margin="4,0" VerticalAlignment="Top">
+                            <ComboBoxItem x:Name="CB_ItemNameWidthSetting0" Content="Normal"/>
+                            <ComboBoxItem x:Name="CB_ItemNameWidthSetting1" Content="Wide"/>
+                            <ComboBoxItem x:Name="CB_ItemNameWidthSetting2" Content="Widest"/>
+                        </ComboBox>
+                        <CheckBox x:Name="CK_ShowRelToEqu" Margin="4,2" Content="Show Bars Relative to Equipped Items *"
+                                  ToolTipService.ToolTip="Basically it shows the Bars in the Charts with the Equipped&#x0a;as 0 and everything else affected by that."/>
+                        <CheckBox x:Name="CK_CompactMode" Margin="4,2" Content="Enable Compact Paper Doll Mode *"
+                                  ToolTipService.ToolTip="Hides the Shirt and Tabard slots and moves the Gloves slot to the left side.&#x0a;Use on low resolution monitors."/>
+                        <StackPanel Orientation="Horizontal" Margin="12,0,0,0">
+                            <TextBlock Text="UI Scale:" VerticalAlignment="Center" Margin="2" />
+                            <!-- IFWPF
+                            <Slider Width="125" Margin="2" Name="SL_UIScale" Value="0.9" Maximum="1" LargeChange="0.1" SmallChange="0.05" TickFrequency="0.05" Minimum="0" IsEnabled="{Binding ElementName=CK_CompactMode, Path=IsChecked}" IsSnapToTickEnabled="True" TickPlacement="BottomRight" />
+                            ENDIFWPF -->
+                            <!-- IFSL -->
+                            <Slider Width="125" Margin="2" Name="SL_UIScale" Value="0.9" Maximum="1" LargeChange="0.1" SmallChange="0.05" Minimum="0" IsEnabled="{Binding ElementName=CK_CompactMode, Path=IsChecked}" />
+                            <!-- ENDIFSL -->
+                            <TextBlock Text="{Binding ElementName=SL_UIScale, Path=Value, StringFormat=\{0:P0\}}" VerticalAlignment="Center" Margin="2" />
+                        </StackPanel>
+                        <CheckBox x:Name="CK_DisplayUnusedStats" Margin="4,2" Content="Display Unused Stats on Items" />
+                    </StackPanel>
+                </local:GroupBox.Content>
+            </local:GroupBox>
+            <local:GroupBox Margin="4,1">
+                <local:GroupBox.Header>
+                    <TextBlock FontWeight="Bold">Calculations Settings</TextBlock>
+                </local:GroupBox.Header>
+                <local:GroupBox.Content>
+                    <StackPanel>
+                        <CheckBox x:Name="CK_HideEnchantsBasedOnProfs" Margin="4,2" Content="Enforce Profession Requirements *"
+                                  ToolTipService.ToolTip="If enabled, Blacksmith Wrist and Glove sockets will be disabled unless you are a Blacksmith.&#x0a;Engineering Enchants and Tinkerings will be disabled unless you are an Engineer.&#x0a;Enchanting Only Enchants will be disabled unless you are an Enchanter.&#x0a;The Toughness Buff will be disabled unless you are a Miner, etc"/>
+                        <CheckBox x:Name="CK_EnforceGemCheck" Margin="4,2" Content="Enforce Gem Requirements *" Checked="EnforceGemCheck_CheckedChanged" Unchecked="EnforceGemCheck_CheckedChanged"
+                                  ToolTipService.ToolTip="If enabled, metagems will only be counted if their gem color requirements are met,&#x0a;and gems will only be counted if their uniqueness is met."/>
+                        <StackPanel x:Name="LO_EnforceGemSubs" Orientation="Horizontal" Margin="20,0,10,0">
+                            <CheckBox x:Name="CK_EnforceMeta" Content="Meta" Margin="4,2,0,2" HorizontalAlignment="Left" ToolTipService.ToolTip="If Checked, Meta Gems will only be counted if their Color Requirements are met." Checked="EnforceGemCheck_CheckedChanged" Unchecked="EnforceGemCheck_CheckedChanged"/>
+                            <CheckBox x:Name="CK_EnforceJC" Content="JC" Margin="4,2,0,2" HorizontalAlignment="Left" ToolTipService.ToolTip="If Checked, JC Gems will only be counted if their Limit Requirement is met. For example, Dragonseye gems can only be counted if there are 3 or less gems equipped. Nightmare Tears can only be equipped once." Checked="EnforceGemCheck_CheckedChanged" Unchecked="EnforceGemCheck_CheckedChanged"/>
+                            <CheckBox x:Name="CK_EnforceUnique" Content="Unique" Margin="4,2,0,2" HorizontalAlignment="Left" ToolTipService.ToolTip="If Checked, JC Gems will only be counted if their Limit Requirement is met. For example, Dragonseye gems can only be counted if there are 3 or less gems equipped. Nightmare Tears can only be equipped once." Checked="EnforceGemCheck_CheckedChanged" Unchecked="EnforceGemCheck_CheckedChanged"/>
+                        </StackPanel>
+                        <CheckBox x:Name="CK_MultiThreading" Margin="4,2" Content="Use multithreading"
+                                  ToolTipService.ToolTip=""/>
+                        <TextBlock Text="Proc Effect Calculation Mode:" Margin="4,2,4,0"/>
+                        <ComboBox x:Name="ProcEffectModeCombo" Margin="4,0,4,2">
+                            <ComboBoxItem Content="Simple"/>
+                            <ComboBoxItem Content="Advanced - Low Precision"/>
+                            <ComboBoxItem Content="Advanced - High Precision"/>
+                            <ComboBoxItem Content="Advanced - Interpolation"/>
+                        </ComboBox>
+                        <TextBlock Text="Effect Combinations Calculation Mode:" Margin="4,2,4,0" TextWrapping="Wrap"/>
+                        <ComboBox x:Name="EffectCombinationsCalculationMode" Margin="4,0,4,2">
+                            <ComboBoxItem Content="Interpolation - Linear"/>
+                            <ComboBoxItem Content="Interpolation - Cubic"/>
+                            <ComboBoxItem Content="High Precision"/>
+                        </ComboBox>
+                        <CheckBox x:Name="CK_PTRModeCheck" Margin="4,2" Content="PTR Mode *"
+                                  ToolTipService.ToolTip="When a Patch is near coming out, this can enable global PTR options.&#x0a;Things like Gem Requirements changes, etc.&#x0a;Model specific changes, like a difference in Heroic Strike base damage, would require a model PTR Mode on its options pane." />
+                    </StackPanel>
+                </local:GroupBox.Content>
+            </local:GroupBox>
+            <local:GroupBox Margin="4">
+                <local:GroupBox.Header>
+                    <TextBlock FontWeight="Bold">Optimizer Settings</TextBlock>
+                </local:GroupBox.Header>
+                <local:GroupBox.Content>
+                    <StackPanel>
+                        <CheckBox x:Name="WarningsCheck" Content="Enabled warnings in&#x0a;optimizer" Margin="4,4,4,2"/>
+                        <CheckBox x:Name="TemplateGemsCheck" Margin="4,2,4,2">
+                            <TextBlock Text="Consider gems in enabled&#x0a;gemmings templates to&#x0a;be available" TextWrapping="Wrap"/>
+                        </CheckBox>
+                        <TextBlock Text="Optimization Method:" TextWrapping="Wrap" Margin="4,0"/>
+                        <ComboBox x:Name="OptimizationMethodCombo" Margin="4,2">
+                            <ComboBoxItem Content="Genetic Algorithm"/>
+                            <ComboBoxItem Content="Simulated Annealing"/>
+                        </ComboBox>
+                        <ComboBox x:Name="GreedyMethodCombo" Margin="4,2">
+                            <ComboBoxItem Content="All Combinations"/>
+                            <ComboBoxItem Content="Single Gem/Enchant Changes"/>
+                            <ComboBoxItem Content="Greedy Best Gem/Enchant"/>
+                        </ComboBox>
+                    </StackPanel>
+                </local:GroupBox.Content>
+            </local:GroupBox>
+            <!--IFWPF
+            <local:GroupBox Margin="4">
+                <local:GroupBox.Header>
+                    <TextBlock FontWeight="Bold">Release Alerts Settings</TextBlock>
+                </local:GroupBox.Header>
+                <local:GroupBox.Content>
+                    <StackPanel>
+                        <CheckBox x:Name="BetaAlertsCheck" Content="Alert me to Beta Releases" Margin="4,4,4,2"/>
+                    </StackPanel>
+                </local:GroupBox.Content>
+            </local:GroupBox>
+            ENDIFWPF-->
+        </toolkit:WrapPanel>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Right">
+            <Button x:Name="CancelButton" Content="Cancel" Click="CancelButton_Click" Width="75" HorizontalAlignment="Right"  Margin="2,4"/>
+            <Button x:Name="OKButton" Content="OK" Click="OKButton_Click" Width="75" HorizontalAlignment="Right" Margin="2,4" />
+        </StackPanel>
+    </Grid>
+</basics2:ChildWindow>
