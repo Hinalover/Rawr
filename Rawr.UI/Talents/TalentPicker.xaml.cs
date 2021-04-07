@@ -33,11 +33,6 @@ namespace Rawr.UI
         private void character_ClassChanged(object sender, EventArgs e)
         {
             Tree1.Talents = Character.CurrentTalents;
-            //TreeTab1.Header = Tree1.TreeName;
-            //Tree2.Talents = Character.CurrentTalents;
-            //TreeTab2.Header = Tree2.TreeName;
-            //Tree3.Talents = Character.CurrentTalents;
-            //TreeTab3.Header = Tree3.TreeName;
             Glyph.Character = Character;
             
             UpdateSavedSpecs();
@@ -47,9 +42,6 @@ namespace Rawr.UI
         {
             // Required to initialize variables
             InitializeComponent();
-            //Tree1.Tree = 0;
-            //Tree2.Tree = 1;
-            //Tree3.Tree = 2;
 
 #if SILVERLIGHT
             Scroll1.SetIsMouseWheelScrollingEnabled(true);
@@ -58,8 +50,6 @@ namespace Rawr.UI
 #endif
 
             Tree1.TalentsChanged += new EventHandler(TalentsChanged);
-            //Tree2.TalentsChanged += new EventHandler(TalentsChanged);
-            //Tree3.TalentsChanged += new EventHandler(TalentsChanged);
             Glyph.TalentsChanged += new EventHandler(TalentsChanged);
         }
 
@@ -115,7 +105,7 @@ namespace Rawr.UI
             if (HasCustomSpec)
             {
                 SaveTalentSpecDialog dialog = new SaveTalentSpecDialog(currentSpec.TalentSpec(),
-                    currentSpec.Tree1/*, currentSpec.Tree2, currentSpec.Tree3*/);
+                    currentSpec.UsedPoints);
                 dialog.Closed += new EventHandler(dialog_Closed);
                 dialog.Show();
             }
@@ -160,23 +150,41 @@ namespace Rawr.UI
                 // Now we need to set the current talents to this new imported spec
                 string newspec = (sender as ImportTalentSpecDialog).TB_Link.Text;
                 if (newspec.Contains("wowhead")) {
-                    // Example Warrior Spec: http://www.wowhead.com/talent#LubcfRMRurkcrZ0b:RMcrsR0kV
-                    // Talents: LubcfRMRurkcrZ0b
-                    // Glyphs:  RMcrsR0kV
+                    // Example New Warrior Spec: http://www.wowhead.com/talent#w!\h|krMRmM
+                    // Class: w
+                    // Spec: !
+                    // Talents: \h
+                    // Glyphs:  krMRmM
+                    // Separator: |
                     // WowHead works now
                     string s = newspec.Split('#')[1];
                     Character.CurrentTalents = parse_talents_wowhead(character.Class, s);
                     TalentsChanged(null, null);
                     character_ClassChanged(null, null);
                     return;
-                } else if (newspec.Contains("mmo-champ") || newspec.Contains("wowtal")) {
-                    // Example Warrior Spec: http://wowtal.com/#k=sb38JzPD.ala.warrior.q9b2y
-                    // Talents: sb38JzPD.ala
-                    // Glyphs:  q9b2y
-                    // mmo-champ won't work yet
+                } else if (newspec.Contains("mmo-champ") || newspec.Contains("wowtal") || newspec.Contains("wowdb")) {
+                    // Example Warrior Spec: http://www.wowdb.com/talent-calculator#KmDKmGKmIKmWKmeKmbAbbF
+                    // Class/Spec: F
+                    // Talents: bb
+                    // Glyphs:  KmDKmGKmIKmWKmeKmb
+                    // Separator: A
+                    // MMO-Champ works now
+                    string s = newspec.Split('#')[1];
+                    Character.CurrentTalents = parse_talents_mmochamp(character.Class, s);
+                    TalentsChanged(null, null);
+                    character_ClassChanged(null, null);
                     return;
                 } else if (newspec.Contains("battle")) { // battle.net
-                    // We can't even do normal imports! BAH!
+                    // Example Druid spec: http://us.battle.net/wow/en/tool/talent-calculator#Ua!113221!akNt
+                    // Class/Spec: Ua
+                    // Talents: 113221
+                    // Glyphs: akNt
+                    // Separator: !
+                    // Battle.net works now
+                    string s = newspec.Split('#')[1];
+                    Character.CurrentTalents = parse_talents_battlenet(character.Class, s);
+                    TalentsChanged(null, null);
+                    character_ClassChanged(null, null);
                     return;
                 } else {
                     MessageBox.Show("The link you entered is not a valid talent spec, we need the full link of the talent spec for this to work.", "Invalid Talent Spec", MessageBoxButton.OK);
@@ -185,230 +193,275 @@ namespace Rawr.UI
         }
 
         //*
-        const int MAX_TALENT_POINTS = 6;
+        const int MAX_TALENT_POINTS = 7;
         const int MAX_TALENT_COL = 3;
         int MAX_TALENT_ROW { get { return MAX_TALENT_POINTS; } }
         int MAX_TALENT_SLOTS { get{ return (MAX_TALENT_ROW * MAX_TALENT_COL); } }
 
-        //List<int>[] talent_trees = new List<int>[MAX_TALENT_TREES]; // 
-
         public class decode_t {
-            public decode_t(char k, char f, char s) {
+            public decode_t(char? k, int? f, int? s, int? t) {
                 key = k;
                 first = f;
                 second = s;
+                third = t;
             }
-            public char key;
-            public char first;
-            public char second;
+            public char? key;
+            public int? first;
+            public int? second;
+            public int? third;
         }
 
-        public static decode_t[] decoding = new decode_t[] {
-            new decode_t('0', '0', '0'), new decode_t('z', '0', '1'), new decode_t('M', '0', '2'), new decode_t('c', '0', '3' ), new decode_t('m', '0', '4'), new decode_t('V', '0', '5'),
-            new decode_t('o', '1', '0'), new decode_t('k', '1', '1'), new decode_t('R', '1', '2'), new decode_t('s', '1', '3' ), new decode_t('a', '1', '4'), new decode_t('q', '1', '5'),
-            new decode_t('b', '2', '0'), new decode_t('d', '2', '1'), new decode_t('r', '2', '2'), new decode_t('f', '2', '3' ), new decode_t('w', '2', '4'), new decode_t('i', '2', '5'),
-            new decode_t('h', '3', '0'), new decode_t('u', '3', '1'), new decode_t('G', '3', '2'), new decode_t('I', '3', '3' ), new decode_t('N', '3', '4'), new decode_t('A', '3', '5'),
-            new decode_t('L', '4', '0'), new decode_t('p', '4', '1'), new decode_t('T', '4', '2'), new decode_t('j', '4', '3' ), new decode_t('n', '4', '4'), new decode_t('y', '4', '5'),
-            new decode_t('x', '5', '0'), new decode_t('t', '5', '1'), new decode_t('g', '5', '2'), new decode_t('e', '5', '3' ), new decode_t('v', '5', '4'), new decode_t('E', '5', '5'),
-            new decode_t('\0','\0','\0')
+        public static decode_t[] wowhead_decoding = new decode_t[] {
+            new decode_t(null, null, null, null),
+            new decode_t('0', 0, null, null), new decode_t('4', 0, 0, null), new decode_t('8', 0, 1, null), new decode_t('<', 0, 2, null),
+            new decode_t('D', 0, 0, 0), new decode_t('T', 0, 0, 1), new decode_t('d', 0, 0, 2),
+            new decode_t('H', 0, 1, 0), new decode_t('X', 0, 1, 1), new decode_t('h', 0, 1, 2),
+            new decode_t('L', 0, 2, 0), new decode_t('\\', 0, 2, 1), new decode_t('l', 0, 2, 2),
+            new decode_t('1', 1, null, null), new decode_t('5', 1, 0, null), new decode_t('9', 1, 1, null), new decode_t('=', 1, 2, null),
+            new decode_t('E', 1, 0, 0), new decode_t('U', 1, 0, 1), new decode_t('e', 1, 0, 2),
+            new decode_t('I', 1, 1, 0), new decode_t('Y', 1, 1, 1), new decode_t('i', 1, 1, 2),
+            new decode_t('M', 1, 2, 0), new decode_t(']', 1, 2, 1), new decode_t('m', 1, 2, 2),
+            new decode_t('2', 2, null, null), new decode_t('6', 2, 0, null), new decode_t(':', 1, 1, null), new decode_t('>', 2, 2, null),
+            new decode_t('F', 2, 0, 0), new decode_t('V', 2, 0, 1), new decode_t('f', 2, 0, 2),
+            new decode_t('J', 2, 1, 0), new decode_t('Z', 2, 1, 1), new decode_t('j', 2, 1, 2),
+            new decode_t('N', 2, 2, 0), new decode_t('^', 2, 2, 1), new decode_t('n', 2, 2, 2),
+        };
+
+        public static decode_t[] mmochamp_decoding = new decode_t[] {
+            new decode_t('A', null, null, null),
+            new decode_t('Q', 0, null, null), new decode_t('U', 0, 0, null), new decode_t('Y', 0, 1, null), new decode_t('c', 0, 2, null),
+            new decode_t('V', 0, 0, 0), new decode_t('W', 0, 0, 1), new decode_t('X', 0, 0, 2),
+            new decode_t('Z', 0, 1, 0), new decode_t('a', 0, 1, 1), new decode_t('b', 0, 1, 2),
+            new decode_t('d', 0, 2, 0), new decode_t('e', 0, 2, 1), new decode_t('f', 0, 2, 2),
+            new decode_t('g', 1, null, null), new decode_t('k', 1, 0, null), new decode_t('o', 1, 1, null), new decode_t('s', 1, 2, null),
+            new decode_t('l', 1, 0, 0), new decode_t('m', 1, 0, 1), new decode_t('n', 1, 0, 2),
+            new decode_t('p', 1, 1, 0), new decode_t('q', 1, 1, 1), new decode_t('r', 1, 1, 2),
+            new decode_t('t', 1, 2, 0), new decode_t('u', 1, 2, 1), new decode_t('v', 1, 2, 2),
+            new decode_t('w', 2, null, null), new decode_t('0', 2, 0, null), new decode_t('4', 1, 1, null), new decode_t('8', 2, 2, null),
+            new decode_t('1', 2, 0, 0), new decode_t('2', 2, 0, 1), new decode_t('3', 2, 0, 2),
+            new decode_t('5', 2, 1, 0), new decode_t('6', 2, 1, 1), new decode_t('7', 2, 1, 2),
+            new decode_t('9', 2, 2, 0), new decode_t('/', 2, 2, 1), new decode_t('_', 2, 2, 2),
+            // MMO-Champion changes the encoding for new WoD talents on their WoD calculator
+            new decode_t('C', 0, null, null), new decode_t('E', 1, null, null), new decode_t('G', 2, null, null),
         };
 
         TalentsBase parse_talents_wowhead(CharacterClass characterclass, string talent_string)
         {
-            // wowhead format: [tree_1]Z[tree_2]Z[tree_3] where the trees are character encodings
-            // each character expands to a pair of numbers [0-5][0-5]
-            // unused deeper talents are simply left blank instead of filling up the string with zero-zero encodings
+            // wowhead format: each letter represents one of the 27 combinations of 3 rows of talents
 
-            bool hasGlyphs = talent_string.Contains(":");
+            string[] splitStrings = talent_string.Split('|');
 
-            int[] talent_trees = new int[] { 0, 0, 0 };
-            int[] glyph_trees = new int[] { 3, 3, 3 };
+            // If there is only one character in the talent substring, all it is is the class name, choke
+            string talentSubstring = splitStrings[0];
+            if (talentSubstring.Length > 1)
+                talentSubstring = talentSubstring.Substring(1);
+            else
+                return null;
 
-            switch (characterclass)
+            if (wowhead_decoding.Find(dc => dc.key == talentSubstring[0]) == null)
             {
-                case CharacterClass.Warrior:     { WarriorTalents talents = new WarriorTalents(); talent_trees = talents.TreeLengths; break; }
-                case CharacterClass.Paladin:     { PaladinTalents talents = new PaladinTalents(); talent_trees = talents.TreeLengths; break; }
-                case CharacterClass.Hunter:      { HunterTalents talents = new HunterTalents(); talent_trees = talents.TreeLengths; break; }
-                case CharacterClass.Rogue:       { RogueTalents talents = new RogueTalents(); talent_trees = talents.TreeLengths; break; }
-                case CharacterClass.Priest:      { PriestTalents talents = new PriestTalents(); talent_trees = talents.TreeLengths; break; }
-                case CharacterClass.DeathKnight: { DeathKnightTalents talents = new DeathKnightTalents(); talent_trees = talents.TreeLengths; break; }
-                case CharacterClass.Shaman:      { ShamanTalents talents = new ShamanTalents(); talent_trees = talents.TreeLengths; break; }
-                case CharacterClass.Mage:        { MageTalents talents = new MageTalents(); talent_trees = talents.TreeLengths; break; }
-                case CharacterClass.Warlock:     { WarlockTalents talents = new WarlockTalents(); talent_trees = talents.TreeLengths; break; }
-                case CharacterClass.Druid:       { DruidTalents talents = new DruidTalents(); talent_trees = talents.TreeLengths; break; }
+                // Spec is specified (one of !, x, y, or z, none of which show up in the decoding table)
+                // If the spec is the only remaining character in the string, no talents are specified
+                if (talentSubstring.Length > 1)
+                    talentSubstring = talentSubstring.Substring(1);
+                else
+                    return null;
             }
 
-            int[] encoding = new int[talent_trees[0] + talent_trees[1] + talent_trees[2]];
-            int[][] glyphEncoding = new int[][] {
-                new int[3],
-                new int[3],
-                new int[3],
-            };
-            int[] tree_count = new int[] { 0, 0, 0 };
-            int[] glyph_count = new int[] { 0, 0, 0 };
+            int talentCount = 21;
 
-            int tree = 0;
-            int count = 0;
+            bool[] encoding = new bool[talentCount];
+            int row = 0;
 
             #region Talents parsing
-            for (int i=1; i < talent_string.Length; i++) {
-                if (tree >= 3) {
-                    //sim -> errorf( "Player %s has malformed wowhead talent string. Too many talent trees specified.\n", name() );
-                    return null;
-                }
 
-                char c = talent_string[i];
+            for (int i = 0; i < talentSubstring.Length; i++)
+            {
+                char c = talentSubstring[i];
 
-                if (c == ':') break; // glyph encoding follows
- 
-                if (c == 'Z') {
-                    count = 0;
-                    for (int j = 0; j <= tree; j++) {
-                        count += talent_trees[tree];
-                    }
-                    tree++;
-                    continue;
-                }
+                decode_t decode = wowhead_decoding.Find(dc => dc.key == c);
 
-                decode_t decode = null;
-                for (int j=0; decoding[j].key != '\0' && decode==null; j++) {
-                    if (decoding[j].key == c) { decode = decoding[j]; }
-                }
-
-                if (decode == null) {
+                if (decode == null)
+                {
                     //sim -> errorf( "Player %s has malformed wowhead talent string. Translation for '%c' unknown.\n", name(), c );
                     return null;
                 }
 
-                encoding[count++] += decode.first - '0';
-                tree_count[tree] += 1;
-
-                if (tree_count[tree] < talent_trees[tree]) {
-                    encoding[count++] += decode.second - '0';
-                    tree_count[tree] += 1;
+                if (decode.first.HasValue)
+                {
+                    encoding[row++ * 3 + decode.first.Value] = true;
                 }
+                else
+                    ++row;
 
-                if (tree_count[tree] >= talent_trees[tree]) {
-                    tree++;
+                if (decode.second.HasValue)
+                {
+                    encoding[row++ * 3 + decode.second.Value] = true;
                 }
-            }
-            #endregion
+                else
+                    ++row;
 
-            #region Glyphs Parsing
-            #region Notes
-            /* This is totally crappy....
-             * Glyphs do not follow the same parsing rules. If you apply what was there for talents directly
-             * to glyphs you get 1202032213120011050000000000000000. Which should only have 1's and 0's
-             * 
-             * 
-             * Warriors: As I'm checking glyphs, here's what I get:
-             * == PRIMES ==
-             *   Link                           decode  id       Name
-            * * http://www.wowhead.com/talent#L:0 00 43415 58388 Devastate
-            * * http://www.wowhead.com/talent#L:z 01 43416 58367 Bloodthirst
-            * * http://www.wowhead.com/talent#L:M 02 43421 58368 Mortal Strike
-            * * http://www.wowhead.com/talent#L:c 03 43422 58386 Overpower
-            * * http://www.wowhead.com/talent#L:m 04 43423 58385 Slam
-            * * http://www.wowhead.com/talent#L:V 05 43424 58364 Revenge
-            * * http://www.wowhead.com/talent#L:o 10 43425 58375 Shield Slam
-            * * http://www.wowhead.com/talent#L:k 11 43432 58370 Raging Blow
-            * * http://www.wowhead.com/talent#L:R 12 45790 63324 Bladestorm
-             * == MAJORS ==
-             * * http://www.wowhead.com/talent#L:0 00 43397 Long Charge
-             * * http://www.wowhead.com/talent#L:z 01 43399 Thunder Clap
-             * * http://www.wowhead.com/talent#L:M 02 43413 Rapid Charge
-             * * http://www.wowhead.com/talent#L:c 03 43414 Cleaving
-             * * http://www.wowhead.com/talent#L:m 04 43417 Piercing Howl
-             * * http://www.wowhead.com/talent#L:V 05 43418 Heroic Throw
-             * * http://www.wowhead.com/talent#L:o 10 43419 Intervene
-             * * http://www.wowhead.com/talent#L:k 11 43427 Sunder Armor
-             * * http://www.wowhead.com/talent#L:R 12 43428 Sweeping Strikes
-             * * http://www.wowhead.com/talent#L:s 13 43430 Resonating Power
-             * * http://www.wowhead.com/talent#L:a 14 43431 Victory Rush
-             * * http://www.wowhead.com/talent#L:q 15 45792 Shockwave
-             * * http://www.wowhead.com/talent#L:b 20 45795 Spell Reflection
-             * * http://www.wowhead.com/talent#L:d 21 45797 Shield Wall
-             * * http://www.wowhead.com/talent#L:r 22 63481 Colossus Smash
-             * * http://www.wowhead.com/talent#L:f 23 67482 Intercept
-             * * http://www.wowhead.com/talent#L:w 24 67483 Death Wish
-             * == MINORS ==
-             * * http://www.wowhead.com/talent#L:0 00 43395 Battle
-             * * http://www.wowhead.com/talent#L:z 01 43396 Berserker Rage
-             * * http://www.wowhead.com/talent#L:M 02 43398 Demoralizing Shout
-             * * http://www.wowhead.com/talent#L:c 03 43400 Enduring Victory
-             * * http://www.wowhead.com/talent#L:m 04 43412 Bloody Healing
-             * * http://www.wowhead.com/talent#L:V 05 45793 Furious Sundering
-             * * http://www.wowhead.com/talent#L:o 10 45794 Intimidating Shout
-             * * http://www.wowhead.com/talent#L:k 11 49084 Command
-             * 
-             * So http://www.wowhead.com/talent#LubcfRMRurkcrZ0b:RMcrsR0kV would mean:
-             *   Prime: Bladestorm, Mortal Strike, Overpower
-             *   Major: Colossus Smash, Resonating Power, Sweeping Strikes
-             *   Minor: Battle, Command, Furious Sundering
-             * Which is correct, that's what we come out to
-             */
-            #endregion
-
-            tree = 0;
-            count = 0;
-
-            if (hasGlyphs) {
-                for (int i=talent_string.IndexOf(":")+1; i < talent_string.Length; i++) {
-                    if (tree >= 3) {
-                        //sim -> errorf( "Player %s has malformed wowhead talent string. Too many talent trees specified.\n", name() );
-                        return null;
-                    }
-
-                    char c = talent_string[i];
-
-                    if (c == 'Z') {
-                        count = 0;
-                        /*for (int j = 0; j <= tree; j++) {
-                            count += glyph_trees[tree];
-                        }*/
-                        tree++;
-                        continue;
-                    }
-
-                    decode_t decode = null;
-                    for (int j=0; decoding[j].key != '\0' && decode==null; j++) {
-                        if (decoding[j].key == c) { decode = decoding[j]; }
-                    }
-
-                    if (decode == null) {
-                        //sim -> errorf( "Player %s has malformed wowhead talent string. Translation for '%c' unknown.\n", name(), c );
-                        return null;
-                    }
-
-                    glyphEncoding[tree][count++] += (decode.first - '0') * 10 + decode.second - '0';
-                    glyph_count[tree] += 1;
-
-                    if (glyph_count[tree] >= (glyph_trees[tree])) { tree++; count = 0; }
+                if (decode.third.HasValue)
+                {
+                    encoding[row++ * 3 + decode.third.Value] = true;
                 }
+                else
+                    ++row;
             }
             #endregion
 
             string newtalentstring = "";
-            foreach (int i in encoding) { newtalentstring += i.ToString(); }
-            if (hasGlyphs) {
-                //newtalentstring += ".";
-                //for (int t = 0; t < 3; t++) {
-                //    foreach (int i in glyphEncoding[t]) { newtalentstring += i.ToString(); }
-                //}
-            }
+            foreach (bool i in encoding) { newtalentstring += (i ? 1 : 0).ToString(); }
 
             switch (characterclass)
             {
-                case CharacterClass.Warrior: { return new WarriorTalents(newtalentstring, hasGlyphs ? glyphEncoding : null); }
-                case CharacterClass.Paladin: { return new PaladinTalents(newtalentstring, hasGlyphs ? glyphEncoding : null); }
-                case CharacterClass.Hunter: { return new HunterTalents(newtalentstring, hasGlyphs ? glyphEncoding : null); }
-                case CharacterClass.Rogue: { return new RogueTalents(newtalentstring, hasGlyphs ? glyphEncoding : null); }
-                case CharacterClass.Priest: { return new PriestTalents(newtalentstring, hasGlyphs ? glyphEncoding : null); }
-                case CharacterClass.DeathKnight: { return new DeathKnightTalents(newtalentstring, hasGlyphs ? glyphEncoding : null); }
-                case CharacterClass.Shaman: { return new ShamanTalents(newtalentstring, hasGlyphs ? glyphEncoding : null); }
-                case CharacterClass.Mage: { return new MageTalents(newtalentstring, hasGlyphs ? glyphEncoding : null); }
-                case CharacterClass.Warlock: { return new WarlockTalents(newtalentstring, hasGlyphs ? glyphEncoding : null); }
-                case CharacterClass.Druid: { return new DruidTalents(newtalentstring, hasGlyphs ? glyphEncoding : null); }
+                case CharacterClass.Warrior: { return new WarriorTalents(newtalentstring, null); }
+                case CharacterClass.Paladin: { return new PaladinTalents(newtalentstring, null); }
+                case CharacterClass.Hunter: { return new HunterTalents(newtalentstring, null); }
+                case CharacterClass.Rogue: { return new RogueTalents(newtalentstring, null); }
+                case CharacterClass.Priest: { return new PriestTalents(newtalentstring, null); }
+                case CharacterClass.DeathKnight: { return new DeathKnightTalents(newtalentstring, null); }
+                case CharacterClass.Shaman: { return new ShamanTalents(newtalentstring, null); }
+                case CharacterClass.Mage: { return new MageTalents(newtalentstring, null); }
+                case CharacterClass.Warlock: { return new WarlockTalents(newtalentstring, null); }
+                case CharacterClass.Druid: { return new DruidTalents(newtalentstring, null); }
+            }
+            return null;
+        }
+
+        TalentsBase parse_talents_mmochamp(CharacterClass characterclass, string talent_string)
+        {
+            // MMO-Champion format: each letter represents one of the 27 combinations of 3 rows of talents
+
+            // Class only
+            if (talent_string.Length == 1)
+                return null;
+
+            string[] splitStrings;
+            // Do not use Split() because 'A' is also the empty-talents character if glyphs are specified but no talents (for whatever reason)
+            // So only use the first instance of A; if there is an A, there are glyphs (unless no talents are specified in the first 3 tiers, but who does that?)
+            if (talent_string.Contains("A"))
+                splitStrings = new string[] { talent_string.Substring(0, talent_string.IndexOf('A')), talent_string.Substring(talent_string.IndexOf('A') + 1) };
+            else
+                splitStrings = new string[] { null, talent_string };
+
+            // If there is only one character in the talent substring, all it is is the class/spec name, choke
+            // Unlike Wowhead, MMO-Champion combines the class and spec name into the same character at the end of the string
+            string talentSubstring = splitStrings[1];
+            if (talentSubstring.Length > 1)
+                talentSubstring = talentSubstring.Substring(0, talentSubstring.Length - 1);
+            else
+                return null;
+
+            int talentCount = 21;
+
+            bool[] encoding = new bool[talentCount];
+            int row = 0;
+
+            #region Talents parsing
+
+            // MMO-Champion talents go backwards, top level talents are at the left and bottom level talents are at the right
+            for (int i = talentSubstring.Length - 1; i >= 0; --i)
+            {
+                char c = talentSubstring[i];
+
+                decode_t decode = mmochamp_decoding.Find(dc => dc.key == c);
+
+                if (decode == null)
+                {
+                    //sim -> errorf( "Player %s has malformed wowhead talent string. Translation for '%c' unknown.\n", name(), c );
+                    return null;
+                }
+
+                if (decode.first.HasValue)
+                {
+                    encoding[row++ * 3 + decode.first.Value] = true;
+                }
+                else
+                    ++row;
+
+                if (decode.second.HasValue)
+                {
+                    encoding[row++ * 3 + decode.second.Value] = true;
+                }
+                else
+                    ++row;
+
+                if (decode.third.HasValue)
+                {
+                    encoding[row++ * 3 + decode.third.Value] = true;
+                }
+                else
+                    ++row;
+            }
+            #endregion
+
+            string newtalentstring = "";
+            foreach (bool i in encoding) { newtalentstring += (i ? 1 : 0).ToString(); }
+
+            switch (characterclass)
+            {
+                case CharacterClass.Warrior: { return new WarriorTalents(newtalentstring, null); }
+                case CharacterClass.Paladin: { return new PaladinTalents(newtalentstring, null); }
+                case CharacterClass.Hunter: { return new HunterTalents(newtalentstring, null); }
+                case CharacterClass.Rogue: { return new RogueTalents(newtalentstring, null); }
+                case CharacterClass.Priest: { return new PriestTalents(newtalentstring, null); }
+                case CharacterClass.DeathKnight: { return new DeathKnightTalents(newtalentstring, null); }
+                case CharacterClass.Shaman: { return new ShamanTalents(newtalentstring, null); }
+                case CharacterClass.Mage: { return new MageTalents(newtalentstring, null); }
+                case CharacterClass.Warlock: { return new WarlockTalents(newtalentstring, null); }
+                case CharacterClass.Druid: { return new DruidTalents(newtalentstring, null); }
+            }
+            return null;
+        }
+
+        TalentsBase parse_talents_battlenet(CharacterClass characterclass, string talent_string)
+        { 
+            // Battle.Net format: Each talent is specified as a character [0..2] in a given position.
+            // A . character represents a level whose talent is missing.
+            // The talent string is bracketed between the class/spec on the left and glyphs on the right, with ! as the separator.
+
+            string[] splitStrings = talent_string.Split('!');
+            // No talents specified
+            if (splitStrings.Length == 1 || string.IsNullOrEmpty(splitStrings[1]))
+                return null;
+
+            // Talent substring at this point is guaranteed to carry talent data
+            string talentSubstring = splitStrings[1];
+
+            int talentCount = 21;
+
+            bool[] encoding = new bool[talentCount];
+
+            #region Talents parsing
+
+            // Battle.net talents have one per row
+            for (int i = 0; i < talentSubstring.Length; ++i )
+            {
+                char c = talentSubstring[i];
+
+                if (c == '.')
+                    continue;
+
+                encoding[i * 3 + (c - '0')] = true;
+            }
+            #endregion
+
+            string newtalentstring = "";
+            foreach (bool i in encoding) { newtalentstring += (i ? 1 : 0).ToString(); }
+
+            switch (characterclass)
+            {
+                case CharacterClass.Warrior: { return new WarriorTalents(newtalentstring, null); }
+                case CharacterClass.Paladin: { return new PaladinTalents(newtalentstring, null); }
+                case CharacterClass.Hunter: { return new HunterTalents(newtalentstring, null); }
+                case CharacterClass.Rogue: { return new RogueTalents(newtalentstring, null); }
+                case CharacterClass.Priest: { return new PriestTalents(newtalentstring, null); }
+                case CharacterClass.DeathKnight: { return new DeathKnightTalents(newtalentstring, null); }
+                case CharacterClass.Shaman: { return new ShamanTalents(newtalentstring, null); }
+                case CharacterClass.Mage: { return new MageTalents(newtalentstring, null); }
+                case CharacterClass.Warlock: { return new WarlockTalents(newtalentstring, null); }
+                case CharacterClass.Druid: { return new DruidTalents(newtalentstring, null); }
             }
             return null;
         }

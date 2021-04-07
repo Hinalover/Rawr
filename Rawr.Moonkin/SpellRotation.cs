@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Rawr.Moonkin
 {
@@ -39,11 +40,21 @@ namespace Rawr.Moonkin
         public float MoonfireAvgHit { get; set; }
         public float MoonfireAvgCast { get; set; }
         public float MoonfireDuration { get; set; }
+        public float MoonfireAvgEnergy { get; set; }
+        public float SunfireCasts { get; set; }
+        public float SunfireTicks { get; set; }
+        public float SunfireAvgHit { get; set; }
+        public float SunfireAvgCast { get; set; }
+        public float SunfireDuration { get; set; }
+        public float SunfireAvgEnergy { get; set; }
+        public float InsectSwarmCasts { get; set; }
+        public float InsectSwarmTicks { get; set; }
+        public float InsectSwarmAvgHit { get; set; }
+        public float InsectSwarmAvgCast { get; set; }
+        public float InsectSwarmDuration { get; set; }
         public float StarfallCasts { get; set; }
         public float StarfallDamage { get; set; }
         public float StarfallStars { get; set; }
-        public float MushroomCasts { get; set; }
-        public float MushroomDamage { get; set; }
         public float TreantCasts { get; set; }
         public float TreantDamage { get; set; }
         public float SolarUptime { get; set; }
@@ -64,126 +75,84 @@ namespace Rawr.Moonkin
         }
 
         // Calculate damage and casting time for a single, direct-damage spell.
-        public void DoMainNuke(CharacterCalculationsMoonkin calcs, ref Spell mainNuke, float spellPower, float spellHit, float spellCrit, float spellHaste, float naturesGraceUptime, float latency)
+        public void DoMainNuke(CharacterCalculationsMoonkin calcs, ref Spell mainNuke, float spellPower, float spellCrit, float spellHaste, float multistrike, float versatility, float latency)
         {
-            float naturesGraceBonusHaste = 0.15f;
-
             float overallDamageModifier = mainNuke.AllDamageModifier * (1 + calcs.BasicStats.BonusSpellDamageMultiplier) * (1 + calcs.BasicStats.BonusDamageMultiplier);
             // Add a check for the higher of the two spell schools, as Starsurge always chooses the higher one
             overallDamageModifier *= mainNuke.School == SpellSchool.Arcane ? (1 + calcs.BasicStats.BonusArcaneDamageMultiplier) :
                 (mainNuke.School == SpellSchool.Nature ? (1 + calcs.BasicStats.BonusNatureDamageMultiplier) :
                 (1 + (calcs.BasicStats.BonusArcaneDamageMultiplier > calcs.BasicStats.BonusNatureDamageMultiplier ? calcs.BasicStats.BonusArcaneDamageMultiplier : calcs.BasicStats.BonusNatureDamageMultiplier)));
 
+            overallDamageModifier *= 1 + versatility;
+
             float gcd = 1.5f / (1.0f + spellHaste);
-            float ngGcd = gcd / (1 + naturesGraceBonusHaste);
             float instantCast = (float)Math.Max(gcd, 1.0f) + latency;
-            float instantCastNG = (float)Math.Max(ngGcd, 1.0f) + latency;
 
             float totalCritChance = spellCrit + mainNuke.CriticalChanceModifier;
             float baseCastTime = (float)Math.Max(mainNuke.BaseCastTime / (1 + spellHaste), instantCast);
-            float ngCastTime = (float)Math.Max(mainNuke.BaseCastTime / (1 + spellHaste) / (1 + naturesGraceBonusHaste), instantCastNG);
-            mainNuke.CastTime = (1 - naturesGraceUptime) * baseCastTime + naturesGraceUptime * ngCastTime;
+            mainNuke.CastTime = baseCastTime;
             // Damage calculations
             float damagePerNormalHit = (mainNuke.BaseDamage + mainNuke.SpellDamageModifier * spellPower) * overallDamageModifier;
             float damagePerCrit = damagePerNormalHit * (2 * (1 + calcs.BasicStats.BonusCritDamageMultiplier));
-            mainNuke.DamagePerHit = (totalCritChance * damagePerCrit + (1 - totalCritChance) * damagePerNormalHit) * spellHit;
+            mainNuke.DamagePerHit = (totalCritChance * damagePerCrit + (1 - totalCritChance) * damagePerNormalHit);
+            float damagePerMultistrike = damagePerNormalHit * 0.3f;
+            mainNuke.DamagePerHit += (multistrike + (multistrike * multistrike)) * damagePerMultistrike;
             mainNuke.AverageEnergy = mainNuke.BaseEnergy;
         }
 
-        // Calculate damage and casting time for a damage-over-time effect.
-        // NOTE: Tick calculations have been moved to a different function due to the way the distribution tables work currently.
-        public void DoDotSpell(CharacterCalculationsMoonkin calcs, ref Spell dotSpell, float spellPower, float spellHit, float spellCrit, float spellHaste, float naturesGraceCastUptime, float latency)
-        {
-            float naturesGraceBonusHaste = 0.15f;
-
-            float schoolMultiplier = dotSpell.School == SpellSchool.Arcane ? calcs.BasicStats.BonusArcaneDamageMultiplier : calcs.BasicStats.BonusNatureDamageMultiplier;
-
-            float overallDamageModifier = dotSpell.AllDamageModifier * (1 + calcs.BasicStats.BonusSpellDamageMultiplier) * (1 + calcs.BasicStats.BonusDamageMultiplier) * (1 + schoolMultiplier);
-
-            float gcd = 1.5f / (1.0f + spellHaste);
-            float ngGcd = gcd / (1 + naturesGraceBonusHaste);
-            float instantCast = (float)Math.Max(gcd, 1.0f) + latency;
-            float instantCastNG = (float)Math.Max(ngGcd, 1.0f) + latency;
-            dotSpell.CastTime = naturesGraceCastUptime * instantCastNG + (1 - naturesGraceCastUptime) * instantCast;
-
-            float mfDirectDamage = (dotSpell.BaseDamage + dotSpell.SpellDamageModifier * spellPower) * overallDamageModifier;
-            float mfCritDamage = mfDirectDamage * 2 * (1 + calcs.BasicStats.BonusCritDamageMultiplier);
-            float totalCritChance = spellCrit + dotSpell.CriticalChanceModifier;
-            dotSpell.DamagePerHit = (totalCritChance * mfCritDamage + (1 - totalCritChance) * mfDirectDamage) * spellHit;
-        }
-
-        public void DoTickDistribution(CharacterCalculationsMoonkin calcs, ref Spell dotSpell, float spellPower, float spellHit, float spellCrit, float spellHaste, float eclipseBonus, float rotationLength, float dotCastCount, double[] tickDistributions, int baseIndex, float latency)
+        public void DoTickDistribution(CharacterCalculationsMoonkin calcs, ref Spell dotSpell, float spellPower, float spellCrit, float spellHaste, float versatility, float eclipseBonus, double[] tickDistributions, int baseIndex, float latency)
         {
             float schoolMultiplier = dotSpell.School == SpellSchool.Arcane ? calcs.BasicStats.BonusArcaneDamageMultiplier : calcs.BasicStats.BonusNatureDamageMultiplier;
-            float dotEffectDamageModifier = dotSpell.DotEffect.AllDamageModifier * (1 + calcs.BasicStats.BonusSpellDamageMultiplier) * (1 + calcs.BasicStats.BonusDamageMultiplier) * (1 + schoolMultiplier);
+            float dotEffectDamageModifier = dotSpell.DotEffect.AllDamageModifier * (1 + calcs.BasicStats.BonusSpellDamageMultiplier) * (1 + calcs.BasicStats.BonusDamageMultiplier) * (1 + schoolMultiplier) * (1 + versatility);
 
             // Use the exact tick length rather than the rounded version so that the conversion from time% to tick# is smooth
             float tickRate = dotSpell.DotEffect.BaseTickLength / (1 + spellHaste);
-            float ngTickRate = dotSpell.DotEffect.BaseTickLength / (1 + spellHaste) / 1.15f;
 
             // Break down cast distribution table
-            double baseTicks = tickDistributions[baseIndex] * rotationLength / tickRate / dotCastCount;
-            double ngTicks = tickDistributions[baseIndex + 1] * rotationLength / ngTickRate / dotCastCount;
-            double eclipseTicks = tickDistributions[baseIndex + 2] * rotationLength / tickRate / dotCastCount;
-            double ngEclipseTicks = tickDistributions[baseIndex + 3] * rotationLength / ngTickRate / dotCastCount;
+            double baseTicks = tickDistributions[baseIndex];
 
             // Rounded tick lengths should be used after distribution table is broken down
             float roundedTickRate = (float)Math.Round(tickRate, 3);
-            float roundedNGTickRate = (float)Math.Round(ngTickRate, 3);
 
-            dotSpell.DotEffect.NumberOfTicks = (float)(baseTicks + ngTicks + eclipseTicks + ngEclipseTicks);
-            dotSpell.DotEffect.Duration = (float)((baseTicks + eclipseTicks) * roundedTickRate + (ngTicks + ngEclipseTicks) * roundedNGTickRate);
-            dotSpell.DotEffect.TickLength = (float)((ngTicks + ngEclipseTicks) / dotSpell.DotEffect.NumberOfTicks * roundedNGTickRate +
-                (baseTicks + eclipseTicks) / dotSpell.DotEffect.NumberOfTicks * roundedTickRate);
+            dotSpell.DotEffect.NumberOfTicks = (float)(baseTicks);
+            dotSpell.DotEffect.Duration = dotSpell.DotEffect.BaseDuration;
+            dotSpell.DotEffect.TickLength = (float)((baseTicks) / dotSpell.DotEffect.NumberOfTicks * roundedTickRate);
 
-            float baseTickDamage = (dotSpell.DotEffect.TickDamage + spellPower * dotSpell.DotEffect.SpellDamageModifierPerTick) * dotEffectDamageModifier;
+            float baseTickDamage = (dotSpell.DotEffect.TickDamage + spellPower * dotSpell.DotEffect.SpellDamageModifierPerTick) * dotEffectDamageModifier * eclipseBonus;
             float critTickDamage = baseTickDamage * 2 * (1 + calcs.BasicStats.BonusCritDamageMultiplier);
             float averageTickDamage = (1 - spellCrit) * baseTickDamage + spellCrit * critTickDamage;
 
-            dotSpell.DotEffect.DamagePerHit = (float)((baseTicks + ngTicks) * averageTickDamage + (eclipseTicks + ngEclipseTicks) * averageTickDamage * eclipseBonus);
-        }
-
-        private float DoMushroomCalcs(CharacterCalculationsMoonkin calcs, float effectiveNatureDamage, float spellHit, float spellCrit)
-        {
-            float hitDamageModifier = (1 + calcs.BasicStats.BonusSpellDamageMultiplier) * (1 + calcs.BasicStats.BonusDamageMultiplier) * (1 + calcs.BasicStats.BonusNatureDamageMultiplier);
-            float critDamageModifier = 2 * (1 + calcs.BasicStats.BonusCritDamageMultiplier);
-            // 845-1022 damage
-            float baseDamage = (845 + 1022) / 2f;
-            float damagePerHit = (baseDamage + effectiveNatureDamage * 0.6032f) * hitDamageModifier;
-            float damagePerCrit = damagePerHit * critDamageModifier;
-            return spellHit * (damagePerHit * (1 - spellCrit) + damagePerCrit * spellCrit);
+            dotSpell.DotEffect.DamagePerHit = (float)((baseTicks) * averageTickDamage);
         }
 
         // Now returns damage per cast to allow adjustments for fight length
         private float DoTreeCalcs(CharacterCalculationsMoonkin calcs, int playerLevel, int bossLevel, float effectiveNatureDamage, float treantLifespan)
         {
             float natureDamageMultiplierBonus = (1f + calcs.BasicStats.BonusDamageMultiplier) * (1f + calcs.BasicStats.BonusNatureDamageMultiplier);
-            // Base Wrath cast damage is 2052, 0.375 spell power scaling
-            float damagePerHit = 2052 + 0.375f * effectiveNatureDamage;
+            // 0.375 spell power scaling
+            float damagePerHit = 0.375f * effectiveNatureDamage;
             // 2.5 s cast time, affected by 100% of druid's haste
             float castTime = Math.Max(0.5f, 2.5f / (1 + calcs.SpellHaste));
             // Inherits 100% of the druid's crit rate
             float critRate = calcs.SpellCrit;
-            // Hit and expertise conversion works out to equal the druid's overall spell hit
-            float missRate = Math.Max(0, calcs.SpellHitCap - calcs.SpellHit);
             // Apply the nature damage multiplier
             damagePerHit *= natureDamageMultiplierBonus;
             // Damage per cast, including misses
-            damagePerHit = (critRate * damagePerHit * 2.0f)  + ((1 - critRate) * damagePerHit) * (1 - missRate);
+            damagePerHit = (critRate * damagePerHit * 2.0f)  + ((1 - critRate) * damagePerHit);
             // Total damage done in their estimated lifespan
             float damagePerTree = (treantLifespan * (float)Math.Floor(15f / castTime)) * damagePerHit;
             return 3 * damagePerTree;
         }
 
         // Starfall
-        private float DoStarfallCalcs(CharacterCalculationsMoonkin calcs, float effectiveArcaneDamage, float spellHit, float spellCrit)
+        private float DoStarfallCalcs(CharacterCalculationsMoonkin calcs, float effectiveArcaneDamage, float spellCrit)
         {
             float hitDamageModifier = (1 + calcs.BasicStats.BonusSpellDamageMultiplier) * (1 + calcs.BasicStats.BonusDamageMultiplier) * (1 + calcs.BasicStats.BonusArcaneDamageMultiplier)
                 * (1 + calcs.BasicStats.BonusStarfallDamageModifier);
             // Starfall is affected by Moonfury
             float critDamageModifier = 2 * (1 + calcs.BasicStats.BonusCritDamageMultiplier);
-            float baseDamagePerStar = (588f + 682f) / 2.0f;
-            float mainStarCoefficient = 0.363f;
+            float baseDamagePerStar = 0f;
+            float mainStarCoefficient = 0.253f;
 
             float damagePerBigStarHit = (baseDamagePerStar + effectiveArcaneDamage * mainStarCoefficient) * hitDamageModifier;
 
@@ -193,20 +162,20 @@ namespace Rawr.Moonkin
 
             float numberOfStarHits = 10f;
 
-            float avgNumBigStarsHit = spellHit * numberOfStarHits;
+            float avgNumBigStarsHit = numberOfStarHits;
 
             return avgNumBigStarsHit * averageDamagePerBigStar;
         }
 
         // Celestial Alignment
-        public float DoCelestialAlignmentCalcs(CharacterCalculationsMoonkin calcs, DruidTalents talents, float spellPower, float spellHit, float spellCrit, float spellHaste, float masteryPoints, float latency)
+        public float DoCelestialAlignmentCalcs(CharacterCalculationsMoonkin calcs, DruidTalents talents, float spellPower, float spellCrit, float spellHaste, float masteryPoints, float latency)
         {
             float caDuration = 15f;
             Spell sf = Solver.Starfire;
             Spell ss = Solver.Starsurge;
             Spell w = Solver.Wrath;
             Spell mf = Solver.Moonfire;
-            float eclipseBonus = (1 + MoonkinSolver.ECLIPSE_BASE_PERCENT + masteryPoints * 0.01875f) * (1 + calcs.BasicStats.BonusEclipseDamageMultiplier) * (1 + (talents.NaturesVigil > 0 ? 0.12f : 0f));
+            float eclipseBonus = (1 + MoonkinSolver.ECLIPSE_BASE_PERCENT + masteryPoints * 0.01875f) * (1 + calcs.BasicStats.BonusEclipseDamageMultiplier) * (1 + (talents.NaturesVigil ? 0.12f : 0f));
             float accumulatedDuration = 0f;
 
             float sfCastTime = Math.Max(1f, sf.BaseCastTime / (1 + spellHaste) / 1.15f) + latency;
@@ -217,7 +186,7 @@ namespace Rawr.Moonkin
             accumulatedDuration += mfCastTime;
 
             // Moonfire/Sunfire calculations
-            float mfTickRate = (float)Math.Round(2f / (1 + spellHaste) / 1.15f, 3);
+            float mfTickRate = calcs.PTRMode ? 2f : (float)Math.Round(2f / (1 + spellHaste) / 1.15f, 3);
             float mfTicks = 2 * (15f - mfCastTime) / mfTickRate;
             float mfCasts = 1f;
             accumulatedDuration += mfCasts * mfCastTime;
@@ -236,7 +205,7 @@ namespace Rawr.Moonkin
 
             // Starfall calculations
             float starfallCasts = 1f;
-            float starfallDamage = DoStarfallCalcs(calcs, spellPower, spellHit, spellCrit);
+            float starfallDamage = DoStarfallCalcs(calcs, spellPower, spellCrit);
             accumulatedDuration += starfallCasts * mfCastTime;
 
             // Starfire calculations - Starfire is the main nuke during CA
@@ -260,13 +229,47 @@ namespace Rawr.Moonkin
             return retval;
         }
 
+        private double[] DoubleLagrangeInterpolation(double x, double y, double[, ,] z)
+        {
+            double[] retval = new double[z.GetLength(2)];
+            for (int i = 0; i < retval.Length; ++i)
+            {
+                double currentPoint = 0;
+                for (int j = 0; j < CastDistributions.CritInterpolationPoints.Length; ++j)
+                {
+                    double critNumerator = 1, critDenominator = 1;
+                    for (int ca = 0; ca < CastDistributions.CritInterpolationPoints.Length; ++ca)
+                    {
+                        if (ca == j) continue;
+                        critNumerator *= x - CastDistributions.CritInterpolationPoints[ca];
+                        critDenominator *= CastDistributions.CritInterpolationPoints[j] - CastDistributions.CritInterpolationPoints[ca];
+                    }
+                    double currentHastePoint = 0;
+                    for (int k = 0; k < CastDistributions.HasteInterpolationPoints.Length; ++k)
+                    {
+                        double hasteNumerator = 1, hasteDenominator = 1;
+                        for (int cb = 0; cb < CastDistributions.HasteInterpolationPoints.Length; ++cb)
+                        {
+                            if (cb == k) continue;
+                            hasteNumerator *= y - CastDistributions.HasteInterpolationPoints[cb];
+                            hasteDenominator *= CastDistributions.HasteInterpolationPoints[k] - CastDistributions.HasteInterpolationPoints[cb];
+                        }
+                        currentHastePoint += z[j, k, i] * (hasteNumerator / hasteDenominator);
+                    }
+                    currentPoint += currentHastePoint * (critNumerator / critDenominator);
+                }
+                retval[i] = currentPoint;
+            }
+            return retval;
+        }
+
         /// <summary>
         /// Perform a Lagrangian polynomial interpolation on the specified table at a given value.
         /// </summary>
         /// <param name="x">The value at which to evaluate the polynomial.</param>
         /// <param name="y">The set of Y values that correspond to the nodes in the InterpolationPoints table.</param>
         /// <returns></returns>
-        private double LagrangeInterpolation(double x, double[] y)
+        /*private double LagrangeInterpolation(double x, double[] y)
         {
             double retval = 0;
 
@@ -286,275 +289,30 @@ namespace Rawr.Moonkin
             }
 
             return retval;
+        }*/
+
+        private double GetInterpolatedRotationLength(float actualHaste, float actualCrit, bool useSoulOfTheForestTable, bool useT14Table, bool useT15Table, bool useT16Table, bool usePTRTable, bool useMightOfMalorneTable, bool useInsectSwarmTable)
+        {
+            return 30.0;
         }
 
-        private double GetInterpolatedRotationLength(float actualHaste, float actualCrit, bool useSoulOfTheForestTable, bool useT14Table, bool useT15Table, bool useT16Table, bool usePTRTable)
+        private double[] GetInterpolatedTickDistribution(float actualHaste, float actualCrit, bool useSoulOfTheForestTable, bool useT14Table, bool useT15Table, bool useT16Table, bool usePTRTable, bool useMightOfMalorneTable, bool useInsectSwarmTable)
         {
-            // Get index and remainder for interpolation
-            double r = actualHaste / 0.001;
-            int i = (int)r;
-            r -= i;
-
-            // If we're out of bounds, clip to the edge of the table
-            if (i + 1 >= 1001)
-            {
-                i = 999;
-                r = 1;
-            }
-            if (i < 0)
-            {
-                i = 0;
-                r = 0;
-            }
-
-            // Derive the Chebyshev node table for crit
-            double[] critTable = new double[CastDistributions.InterpolationPoints.Length];
-            // Obtain a reference to the correct source table
-            double[,] sourceTable = null;
-            if (usePTRTable)
-            {
-                if (useT14Table)
-                    if (useSoulOfTheForestTable)
-                        sourceTable = PTRCastDistributions.AlwaysRefreshT14SoulRotationDurations;
-                    else
-                        sourceTable = PTRCastDistributions.AlwaysRefreshT14BaseRotationDurations;
-                else
-                    if (useT15Table)
-                        if (useSoulOfTheForestTable)
-                            sourceTable = PTRCastDistributions.AlwaysRefreshT15SoulRotationDurations;
-                        else
-                            sourceTable = PTRCastDistributions.AlwaysRefreshT15BaseRotationDurations;
-                    else
-                        if (useT16Table)
-                            if (useSoulOfTheForestTable)
-                                sourceTable = PTRCastDistributions.AlwaysRefreshT16SoulRotationDurations;
-                            else
-                                sourceTable = PTRCastDistributions.AlwaysRefreshT16BaseRotationDurations;
-                        else
-                            if (useSoulOfTheForestTable)
-                                sourceTable = PTRCastDistributions.AlwaysRefreshSoulRotationDurations;
-                            else
-                                sourceTable = PTRCastDistributions.AlwaysRefreshBaseRotationDurations;
-            }
-            else
-            {
-                if (useT14Table)
-                    if (useSoulOfTheForestTable)
-                        sourceTable = CastDistributions.AlwaysRefreshT14SoulRotationDurations;
-                    else
-                        sourceTable = CastDistributions.AlwaysRefreshT14BaseRotationDurations;
-                else
-                    if (useT15Table)
-                        if (useSoulOfTheForestTable)
-                            sourceTable = CastDistributions.AlwaysRefreshT15SoulRotationDurations;
-                        else
-                            sourceTable = CastDistributions.AlwaysRefreshT15BaseRotationDurations;
-                    else
-                        if (useT16Table)
-                            if (useSoulOfTheForestTable)
-                                sourceTable = CastDistributions.AlwaysRefreshT16SoulRotationDurations;
-                            else
-                                sourceTable = CastDistributions.AlwaysRefreshT16BaseRotationDurations;
-                        else
-                            if (useSoulOfTheForestTable)
-                                sourceTable = CastDistributions.AlwaysRefreshSoulRotationDurations;
-                            else
-                                sourceTable = CastDistributions.AlwaysRefreshBaseRotationDurations;
-            }
-
-            for (int idx = 0; idx < CastDistributions.InterpolationPoints.Length; ++idx)
-            {
-                critTable[idx] = sourceTable[i, idx] + r * (sourceTable[i + 1, idx] - sourceTable[i, idx]);
-            }
-
-            // Perform a Lagrange polynomial interpolation on the node table
-            double retval = LagrangeInterpolation((double)actualCrit, critTable);
-
-            return retval;
+            return DoubleLagrangeInterpolation(actualCrit, actualHaste, CastDistributions.TickDistribution);
         }
 
-        private double[] GetInterpolatedTickDistribution(float actualHaste, float actualCrit, bool useSoulOfTheForestTable, bool useT14Table, bool useT15Table, bool useT16Table, bool usePTRTable)
+        private double[] GetInterpolatedTimeTable(float actualHaste, float actualCrit, bool useSoulOfTheForestTable, bool useT14Table, bool useT15Table, bool useT16Table, bool usePTRTable, bool useMightOfMalorneTable, bool useInsectSwarmTable)
         {
-            // Get index and remainder for interpolation
-            double r = actualHaste / 0.001;
-            int i = (int)r;
-            r -= i;
-
-            // If we're out of bounds, clip to the edge of the table
-            if (i + 1 >= 1001)
-            {
-                i = 999;
-                r = 1;
-            }
-            if (i < 0)
-            {
-                i = 0;
-                r = 0;
-            }
-
-            double[] retval = new double[CastDistributions.TickDistributionSpells.Length];
-            double[] critTable = new double[CastDistributions.InterpolationPoints.Length];
-            // Obtain a reference to the correct source table
-            double[,,] sourceTable = null;
-            if (usePTRTable)
-            {
-                    if (useT14Table)
-                        if (useSoulOfTheForestTable)
-                            sourceTable = PTRCastDistributions.AlwaysRefreshT14SoulTickDistribution;
-                        else
-                            sourceTable = PTRCastDistributions.AlwaysRefreshT14BaseTickDistribution;
-                    else
-                        if (useT15Table)
-                            if (useSoulOfTheForestTable)
-                                sourceTable = PTRCastDistributions.AlwaysRefreshT15SoulTickDistribution;
-                            else
-                                sourceTable = PTRCastDistributions.AlwaysRefreshT15BaseTickDistribution;
-                        else
-                            if (useT16Table)
-                                if (useSoulOfTheForestTable)
-                                    sourceTable = PTRCastDistributions.AlwaysRefreshT16SoulTickDistribution;
-                                else
-                                    sourceTable = PTRCastDistributions.AlwaysRefreshT16BaseTickDistribution;
-                            else
-                                if (useSoulOfTheForestTable)
-                                    sourceTable = PTRCastDistributions.AlwaysRefreshSoulTickDistribution;
-                                else
-                                    sourceTable = PTRCastDistributions.AlwaysRefreshBaseTickDistribution;
-            }
-            else
-            {
-                if (useT14Table)
-                    if (useSoulOfTheForestTable)
-                        sourceTable = CastDistributions.AlwaysRefreshT14SoulTickDistribution;
-                    else
-                        sourceTable = CastDistributions.AlwaysRefreshT14BaseTickDistribution;
-                else
-                    if (useT15Table)
-                        if (useSoulOfTheForestTable)
-                            sourceTable = CastDistributions.AlwaysRefreshT15SoulTickDistribution;
-                        else
-                            sourceTable = CastDistributions.AlwaysRefreshT15BaseTickDistribution;
-                    else
-                        if (useT16Table)
-                            if (useSoulOfTheForestTable)
-                                sourceTable = CastDistributions.AlwaysRefreshT16SoulTickDistribution;
-                            else
-                                sourceTable = CastDistributions.AlwaysRefreshT16BaseTickDistribution;
-                        else
-                            if (useSoulOfTheForestTable)
-                                sourceTable = CastDistributions.AlwaysRefreshSoulTickDistribution;
-                            else
-                                sourceTable = CastDistributions.AlwaysRefreshBaseTickDistribution;
-            }
-
-            // Index the table and interpolate the remainder
-            for (int index = 0; index < CastDistributions.TickDistributionSpells.Length; ++index)
-            {
-                // Derive the Chebyshev node table for crit
-                for (int idx = 0; idx < CastDistributions.InterpolationPoints.Length; ++idx)
-                {
-                    critTable[idx] = sourceTable[i, index, idx] + r * (sourceTable[i + 1, index, idx] - sourceTable[i, index, idx]);
-                }
-
-                // Perform a Lagrange polynomial interpolation on the node table
-                retval[index] = LagrangeInterpolation((double)actualCrit, critTable);
-            }
-
-            return retval;
+            return DoubleLagrangeInterpolation(actualCrit, actualHaste, CastDistributions.TimeDistribution);
         }
 
-        private double[] GetInterpolatedTimeTable(float actualHaste, float actualCrit, bool useSoulOfTheForestTable, bool useT14Table, bool useT15Table, bool useT16Table, bool usePTRTable)
+        private double[] GetInterpolatedEclipseTable(float actualHaste, float actualCrit)
         {
-            // Get index and remainder for interpolation
-            double r = actualHaste / 0.001;
-            int i = (int)r;
-            r -= i;
-
-            // If we're out of bounds, clip to the edge of the table
-            if (i + 1 >= 1001)
-            {
-                i = 999;
-                r = 1;
-            }
-            if (i < 0)
-            {
-                i = 0;
-                r = 0;
-            }
-
-            double[] retval = new double[CastDistributions.CastDistributionSpells.Length];
-            double[] critTable = new double[CastDistributions.InterpolationPoints.Length];
-            // Obtain a reference to the correct source table
-            double[, ,] sourceTable = null;
-            if (usePTRTable)
-            {
-                if (useT14Table)
-                    if (useSoulOfTheForestTable)
-                        sourceTable = PTRCastDistributions.AlwaysRefreshT14SoulTimeDistribution;
-                    else
-                        sourceTable = PTRCastDistributions.AlwaysRefreshT14BaseTimeDistribution;
-                else
-                    if (useT15Table)
-                        if (useSoulOfTheForestTable)
-                            sourceTable = PTRCastDistributions.AlwaysRefreshT15SoulTimeDistribution;
-                        else
-                            sourceTable = PTRCastDistributions.AlwaysRefreshT15BaseTimeDistribution;
-                    else
-                        if (useT16Table)
-                            if (useSoulOfTheForestTable)
-                                sourceTable = PTRCastDistributions.AlwaysRefreshT16SoulTimeDistribution;
-                            else
-                                sourceTable = PTRCastDistributions.AlwaysRefreshT16BaseTimeDistribution;
-                        else
-                            if (useSoulOfTheForestTable)
-                                sourceTable = PTRCastDistributions.AlwaysRefreshSoulTimeDistribution;
-                            else
-                                sourceTable = PTRCastDistributions.AlwaysRefreshBaseTimeDistribution;
-            }
-            else
-            {
-                if (useT14Table)
-                    if (useSoulOfTheForestTable)
-                        sourceTable = CastDistributions.AlwaysRefreshT14SoulTimeDistribution;
-                    else
-                        sourceTable = CastDistributions.AlwaysRefreshT14BaseTimeDistribution;
-                else
-                    if (useT15Table)
-                        if (useSoulOfTheForestTable)
-                            sourceTable = PTRCastDistributions.AlwaysRefreshT15SoulTimeDistribution;
-                        else
-                            sourceTable = PTRCastDistributions.AlwaysRefreshT15BaseTimeDistribution;
-                    else
-                        if (useT16Table)
-                            if (useSoulOfTheForestTable)
-                                sourceTable = CastDistributions.AlwaysRefreshT16SoulTimeDistribution;
-                            else
-                                sourceTable = CastDistributions.AlwaysRefreshT16BaseTimeDistribution;
-                        else
-                            if (useSoulOfTheForestTable)
-                                sourceTable = CastDistributions.AlwaysRefreshSoulTimeDistribution;
-                            else
-                                sourceTable = CastDistributions.AlwaysRefreshBaseTimeDistribution;
-            }
-
-            // Index the table and interpolate the remainder
-            for (int index = 0; index < CastDistributions.CastDistributionSpells.Length; ++index)
-            {
-                // Derive the Chebyshev node table for crit
-                for (int idx = 0; idx < CastDistributions.InterpolationPoints.Length; ++idx)
-                {
-                    critTable[idx] = sourceTable[i, index, idx] + r * (sourceTable[i + 1, index, idx] - sourceTable[i, index, idx]);
-                }
-
-                // Perform a Lagrange polynomial interpolation on the node table
-                retval[index] = LagrangeInterpolation((double)actualCrit, critTable);
-            }
-
-            return retval;
+            return DoubleLagrangeInterpolation(actualCrit, actualHaste, CastDistributions.EclipseDistribution);
         }
 
         // Perform damage and mana calculations for all spells in the given rotation.  Returns damage done over the total duration.
-        public float DamageDone(Character character, CharacterCalculationsMoonkin calcs, float treantLifespan, float spellPower, float spellHit, float spellCrit, float spellHaste, float masteryPoints, float latency)
+        public float DamageDone(Character character, CharacterCalculationsMoonkin calcs, float treantLifespan, float spellPower, float spellCrit, float spellHaste, float masteryPoints, float multistrike, float versatility, float latency)
         {
             CalculationOptionsMoonkin calcOpts = character.CalculationOptions as CalculationOptionsMoonkin;
             DruidTalents talents = character.DruidTalents;
@@ -562,68 +320,30 @@ namespace Rawr.Moonkin
             Spell ss = Solver.Starsurge;
             Spell w = Solver.Wrath;
             Spell mf = Solver.Moonfire;
+            Spell suf = Solver.Sunfire;
 
-            // 4.1: The bug causing the Eclipse buff to be rounded down to the nearest percent has been fixed
-            float eclipseBonus = 1 + MoonkinSolver.ECLIPSE_BASE_PERCENT + masteryPoints * 0.01875f;
+            float eclipseBonus = 1 + MoonkinSolver.ECLIPSE_BASE_PERCENT + masteryPoints * 0.015f;
 
             // Get the cast distribution first
-            double[] timeDistribution = GetInterpolatedTimeTable(calcs.SpellHaste, calcs.SpellCrit, talents.SoulOfTheForest > 0, calcs.BasicStats.BonusMoonfireDuration > 0, calcs.BasicStats.BonusStarsurgeCritModifier > 0, calcs.BasicStats.BonusShootingStarsChance > 0, calcs.PTRMode);
-            double[] tickDistribution = GetInterpolatedTickDistribution(calcs.SpellHaste, calcs.SpellCrit, talents.SoulOfTheForest > 0, calcs.BasicStats.BonusMoonfireDuration > 0, calcs.BasicStats.BonusStarsurgeCritModifier > 0, calcs.BasicStats.BonusShootingStarsChance > 0, calcs.PTRMode);
+            double[] timeDistribution = GetInterpolatedTimeTable(calcs.SpellHaste, calcs.SpellCrit, talents.SoulOfTheForest, calcs.BasicStats.BonusMoonfireDuration > 0, calcs.BasicStats.BonusStarsurgeCritModifier > 0, calcs.BasicStats.BonusShootingStarsChance > 0, calcs.PTRMode, talents.MightOfMalorne, talents.WillOfMalfurion);
+            double[] tickDistribution = GetInterpolatedTickDistribution(calcs.SpellHaste, calcs.SpellCrit, talents.SoulOfTheForest, calcs.BasicStats.BonusMoonfireDuration > 0, calcs.BasicStats.BonusStarsurgeCritModifier > 0, calcs.BasicStats.BonusShootingStarsChance > 0, calcs.PTRMode, talents.MightOfMalorne, talents.WillOfMalfurion);
+            double[] eclipseDistribution = GetInterpolatedEclipseTable(calcs.SpellHaste, calcs.SpellCrit).Select(ep => 1 + (ep / MoonkinSolver.ECLIPSE_BASE_PERCENT * (eclipseBonus - 1))).ToArray();
 
             // Do Nature's Grace calculations
-            double allWrathPercentage = timeDistribution[0] + timeDistribution[1] + timeDistribution[13] + timeDistribution[14];
-            double allStarfirePercentage = timeDistribution[2] + timeDistribution[3] + timeDistribution[15] + timeDistribution[16];
-            double allStarsurgePercentage = timeDistribution[4] + timeDistribution[5] + timeDistribution[6] +
-                timeDistribution[17] + timeDistribution[18] + timeDistribution[19];
-            double allShootingStarsPercentage = timeDistribution[7] + timeDistribution[8] + timeDistribution[9] +
-                timeDistribution[20] + timeDistribution[21] + timeDistribution[22];
-            double allMoonfirePercentage = timeDistribution[10] + timeDistribution[11] + timeDistribution[12] +
-                timeDistribution[23] + timeDistribution[24] + timeDistribution[25];
+            double allWrathPercentage = timeDistribution[2] + timeDistribution[3];
+            double allStarfirePercentage = timeDistribution[0] + timeDistribution[1];
+            double allStarsurgePercentage = timeDistribution[4];
+            double allMoonfirePercentage = timeDistribution[5];
+            double allSunfirePercentage = timeDistribution[6];
 
-            double ngWrathPercentage = timeDistribution[13] + timeDistribution[14];
-            double ngStarfirePercentage = timeDistribution[15] + timeDistribution[16];
-            double ngStarsurgePercentage = timeDistribution[17] + timeDistribution[18] + timeDistribution[19];
-            double ngShootingStarsPercentage = timeDistribution[20] + timeDistribution[21] + timeDistribution[22];
-            double ngMoonfirePercentage = timeDistribution[23] + timeDistribution[24] + timeDistribution[25];
-
-            float wrNGAverageUptime = (float)Math.Min(1, (ngWrathPercentage / allWrathPercentage));
-            float sfNGAverageUptime = (float)Math.Min(1, (ngStarfirePercentage / allStarfirePercentage));
-            float ssNGAverageUptime = (float)Math.Min(1, (ngStarsurgePercentage / allStarsurgePercentage));
-            float shsNGAverageUptime = (float)Math.Min(1, (ngShootingStarsPercentage / allShootingStarsPercentage));
-            float mfNGAverageUptime = (float)Math.Min(1, (ngMoonfirePercentage / allMoonfirePercentage));
-
-            RotationData.NaturesGraceUptime = (float)Math.Min(1, (ngWrathPercentage + ngStarfirePercentage + ngStarsurgePercentage + ngShootingStarsPercentage + ngMoonfirePercentage));
+            RotationData.NaturesGraceUptime = 0.0f;
 
             // Get the duration
-            RotationData.Duration = (float)GetInterpolatedRotationLength(calcs.SpellHaste, calcs.SpellCrit, talents.SoulOfTheForest > 0, calcs.BasicStats.BonusMoonfireDuration > 0, calcs.BasicStats.BonusStarsurgeCritModifier > 0, calcs.BasicStats.BonusShootingStarsChance > 0, calcs.PTRMode);
+            RotationData.Duration = 40.0f;
 
             double gcd = Math.Max(1, 1.5 / (1 + spellHaste)) + 0;
-            double ngGcd = Math.Max(1, 1.5 / (1 + spellHaste) / (1.15f)) + 0;
 
-            // Do Lunar/Solar Eclipse uptime calculations
-            RotationData.LunarUptime = (float)(timeDistribution[3] + timeDistribution[5] + timeDistribution[8] + timeDistribution[11] + 
-                timeDistribution[16] + timeDistribution[18] + timeDistribution[21] + timeDistribution[24]);
-            RotationData.SolarUptime = (float)(timeDistribution[1] + timeDistribution[6] + timeDistribution[9] + timeDistribution[12] +
-                timeDistribution[14] + timeDistribution[19] + timeDistribution[22] + timeDistribution[25]);
-
-            RotationData.AverageInstantCast = (float)(gcd * (1 - RotationData.NaturesGraceUptime) + ngGcd * RotationData.NaturesGraceUptime) + latency;
-
-            // Calculate the percentage of Incarnation that is wasted
-            // The Celestial Alignment figures already factor in Incarnation
-            // Multiply in Nature's Vigil, if the druid took it
-            float lunarLength = RotationData.Duration * RotationData.LunarUptime;
-            float solarLength = RotationData.Duration * RotationData.SolarUptime;
-            if (talents.Incarnation > 0)
-            {
-                CalculationsMoonkin._SE_INCARNATION.Duration = Math.Min(15f, (solarLength + lunarLength) / 2f);
-                eclipseBonus *= 1 + ((1 + calcs.BasicStats.BonusEclipseDamageMultiplier) * (1 + (talents.NaturesVigil > 0 ? 0.12f : 0f)) - 1) * 
-                    (CalculationsMoonkin._SE_INCARNATION.GetAverageUptime(0, 1) / ((RotationData.LunarUptime + RotationData.SolarUptime) / 2f));
-            }
-            // Dream of Cenarius
-            if (calcs.BasicStats.BonusMoonfireDamageMultiplier > 0)
-            {
-                eclipseBonus += 0.25f;
-            }
+            RotationData.AverageInstantCast = (float)(gcd) + latency;
 
             // 5.4: 2T16 set bonus calculations
             float T16Base = (478f + 615f) / 2f;
@@ -633,157 +353,89 @@ namespace Rawr.Moonkin
             // T16 seems to have a 1.5% crit rate (just guessing)
             float T16DamagePerHit = calcs.BasicStats.T16TwoPieceActive ? 0.985f * T16ScaledDamage + 0.015f * T16ScaledDamage * 2 : 0f;
 
-            DoMainNuke(calcs, ref sf, spellPower, spellHit, spellCrit, spellHaste, sfNGAverageUptime, 0);
-            DoMainNuke(calcs, ref ss, spellPower, spellHit, spellCrit + calcs.BasicStats.BonusStarsurgeCritModifier, spellHaste, ssNGAverageUptime, 0);
-            DoMainNuke(calcs, ref w, spellPower, spellHit, spellCrit, spellHaste, wrNGAverageUptime, 0);
+            DoMainNuke(calcs, ref sf, spellPower, spellCrit, spellHaste, multistrike, versatility, 0);
+            DoMainNuke(calcs, ref ss, spellPower, spellCrit + calcs.BasicStats.BonusStarsurgeCritModifier, spellHaste, multistrike, versatility, 0);
+            DoMainNuke(calcs, ref w, spellPower, spellCrit, spellHaste, multistrike, versatility, 0);
 
-            DoDotSpell(calcs, ref mf, spellPower, spellHit, spellCrit, spellHaste, mfNGAverageUptime, 0);
+            DoMainNuke(calcs, ref mf, spellPower, spellCrit, spellHaste, multistrike, versatility, 0);
+            DoMainNuke(calcs, ref suf, spellPower, spellCrit, spellHaste, multistrike, versatility, 0);
 
             RotationData.MoonfireAvgCast = mf.CastTime + latency;
-
-            // 4T12: Modify displayed average energy of Wrath/SF
-            if (calcs.BasicStats.BonusWrathEnergy > 0)
-            {
-                float nonEclipsePercent = 1 - RotationData.LunarUptime - RotationData.SolarUptime;
-                w.AverageEnergy = w.BaseEnergy * (1 - nonEclipsePercent) + (w.BaseEnergy + calcs.BasicStats.BonusWrathEnergy) * nonEclipsePercent;
-                sf.AverageEnergy = sf.BaseEnergy * (1 - nonEclipsePercent) + (sf.BaseEnergy + calcs.BasicStats.BonusStarfireEnergy) * nonEclipsePercent;
-            }
-            else
-            {
-                w.AverageEnergy = w.BaseEnergy;
-                sf.AverageEnergy = sf.BaseEnergy;
-            }
+            RotationData.SunfireAvgCast = suf.CastTime + latency;
 
             // Break the cast distribution down into its component cast counts
-            double wrathCasts = (timeDistribution[0] + timeDistribution[13]) * RotationData.Duration / w.CastTime;
-            double eclipseWrathCasts = (timeDistribution[1] + timeDistribution[14]) * RotationData.Duration / w.CastTime;
-            double nonEclipsedWrathPercentage = (timeDistribution[0] + timeDistribution[13]) / allWrathPercentage;
-            double eclipsedWrathPercentage = (timeDistribution[1] + timeDistribution[14]) / allWrathPercentage;
-            RotationData.WrathAvgHit = (float)(nonEclipsedWrathPercentage * w.DamagePerHit + eclipsedWrathPercentage * (w.DamagePerHit + T16DamagePerHit) * eclipseBonus);
+            double wrathCasts = timeDistribution[2] * RotationData.Duration / w.CastTime;
+            double empoweredWrathCasts = timeDistribution[3] * RotationData.Duration / w.CastTime;
+            double baseWrathPercentage = wrathCasts / (wrathCasts + empoweredWrathCasts);
+            double empoweredWrathPercentage = empoweredWrathCasts / (wrathCasts + empoweredWrathCasts);
+            RotationData.WrathAvgHit = (float)(baseWrathPercentage * w.DamagePerHit * eclipseDistribution[2] +
+                empoweredWrathPercentage * w.DamagePerHit * eclipseDistribution[3] * 1.3f);
             RotationData.WrathAvgHit *= 1 + calcs.BasicStats.MultistrikeProc;
-            RotationData.WrathAvgEnergy = w.AverageEnergy;
-            RotationData.WrathCount = (float)(wrathCasts + eclipseWrathCasts);
-            double starfireCasts = (timeDistribution[2] + timeDistribution[15]) * RotationData.Duration / sf.CastTime;
-            double eclipseStarfireCasts = (timeDistribution[3] + timeDistribution[16]) * RotationData.Duration / sf.CastTime;
-            double nonEclipsedStarfirePercentage = (timeDistribution[2] + timeDistribution[15]) / allStarfirePercentage;
-            double eclipsedStarfirePercentage = (timeDistribution[3] + timeDistribution[16]) / allStarfirePercentage;
-            RotationData.StarfireAvgHit = (float)(nonEclipsedStarfirePercentage * sf.DamagePerHit + eclipsedStarfirePercentage * (sf.DamagePerHit + T16DamagePerHit) * eclipseBonus);
+            RotationData.WrathAvgEnergy = (float)(baseWrathPercentage * eclipseDistribution[2] + empoweredWrathPercentage * eclipseDistribution[3]);
+            RotationData.WrathCount = (float)(wrathCasts + empoweredWrathCasts);
+            double starfireCasts = timeDistribution[0] * RotationData.Duration / sf.CastTime;
+            double empoweredStarfireCasts = timeDistribution[1] * RotationData.Duration / sf.CastTime;
+            double baseStarfirePercentage = starfireCasts / (starfireCasts + empoweredStarfireCasts);
+            double empoweredStarfirePercentage = empoweredStarfireCasts / (starfireCasts + empoweredStarfireCasts);
+            RotationData.StarfireAvgHit = (float)(baseStarfirePercentage * sf.DamagePerHit * eclipseDistribution[0] +
+                empoweredStarfirePercentage * sf.DamagePerHit * eclipseDistribution[1] * 1.3f);
             RotationData.StarfireAvgHit *= 1 + calcs.BasicStats.MultistrikeProc;
-            RotationData.StarfireAvgEnergy = sf.AverageEnergy;
-            RotationData.StarfireCount = (float)(starfireCasts + eclipseStarfireCasts);
-            double starsurgeCasts = (timeDistribution[4] + timeDistribution[17]) * RotationData.Duration / ss.CastTime;
-            double eclipseStarsurgeCasts = (timeDistribution[5] + timeDistribution[6] + timeDistribution[18] + timeDistribution[19]) * RotationData.Duration / ss.CastTime;
-            double shootingStarsProcs = timeDistribution[7] * RotationData.Duration / gcd + timeDistribution[20] * RotationData.Duration / ngGcd;
-            double eclipseShootingStarsProcs = (timeDistribution[8] + timeDistribution[9]) * RotationData.Duration / gcd + (timeDistribution[21] + timeDistribution[22]) * RotationData.Duration / ngGcd;
-            double nonEclipsedStarsurgePercentage = (timeDistribution[4] + timeDistribution[7] + timeDistribution[17] + timeDistribution[20]) / (allStarsurgePercentage + allShootingStarsPercentage);
-            double lunarEclipsedStarsurgePercentage = (timeDistribution[5] + timeDistribution[8] + timeDistribution[18] + timeDistribution[21]) / (allStarsurgePercentage + allShootingStarsPercentage);
-            double solarEclipsedStarsurgePercentage = (timeDistribution[6] + timeDistribution[9] + timeDistribution[19] + timeDistribution[22]) / (allStarsurgePercentage + allShootingStarsPercentage);
-            double starsurgePercentage = (timeDistribution[4] + timeDistribution[5] + timeDistribution[6] + timeDistribution[17] + timeDistribution[18] + timeDistribution[19]) / (allStarsurgePercentage + allShootingStarsPercentage);
-            double shootingStarsPercentage = (timeDistribution[7] + timeDistribution[8] + timeDistribution[9] + timeDistribution[20] + timeDistribution[21] + timeDistribution[22]) / (allStarsurgePercentage + allShootingStarsPercentage);
-            RotationData.StarSurgeAvgHit = (float)(nonEclipsedStarsurgePercentage * ss.DamagePerHit + (lunarEclipsedStarsurgePercentage + solarEclipsedStarsurgePercentage) * (ss.DamagePerHit + T16DamagePerHit) * eclipseBonus);
+            RotationData.StarfireAvgEnergy = (float)(baseStarfirePercentage * eclipseDistribution[0] + empoweredStarfirePercentage * eclipseDistribution[1]);
+            RotationData.StarfireCount = (float)(starfireCasts + empoweredStarfireCasts);
+            double starsurgeCasts = (timeDistribution[4]) * RotationData.Duration / ss.CastTime;
+            RotationData.StarSurgeAvgHit = (float)(ss.DamagePerHit * eclipseDistribution[4]);
             RotationData.StarSurgeAvgHit *= 1 + calcs.BasicStats.MultistrikeProc;
-            RotationData.StarSurgeAvgEnergy = ss.AverageEnergy;
-            RotationData.StarSurgeCount = (float)(starsurgeCasts + eclipseStarsurgeCasts + shootingStarsProcs + eclipseShootingStarsProcs);
-            double moonfireCasts = (timeDistribution[10] + timeDistribution[23]) * RotationData.Duration / mf.CastTime;
-            double lunarEclipsedMoonfireCasts = (timeDistribution[11] + timeDistribution[24]) * RotationData.Duration / mf.CastTime;
-            double sunfireCasts = (timeDistribution[12] + timeDistribution[25]) * RotationData.Duration / mf.CastTime;
-            double nonEclipsedMoonfirePercentage = (timeDistribution[10] + timeDistribution[23]) / allMoonfirePercentage;
-            double eclipsedMoonfirePercentage = (timeDistribution[11] + timeDistribution[24]) / allMoonfirePercentage;
-            double sunfirePercentage = (timeDistribution[12] + timeDistribution[25]) / allMoonfirePercentage;
-            RotationData.MoonfireCasts = (float)(moonfireCasts + lunarEclipsedMoonfireCasts + sunfireCasts);
+            RotationData.StarSurgeAvgEnergy = (float)eclipseDistribution[4];
+            RotationData.StarSurgeCount = (float)(starsurgeCasts);
+            double moonfireCasts = (timeDistribution[5]) * RotationData.Duration / mf.CastTime;
+            double sunfireCasts = (timeDistribution[6]) * RotationData.Duration / suf.CastTime;
+            RotationData.MoonfireCasts = (float)(moonfireCasts);
+            RotationData.SunfireCasts = (float)(sunfireCasts);
 
-            // Dream of Cenarius (5.4 mode)
-            if (calcs.BasicStats.BonusMoonfireDamageMultiplier > 0)
-            {
-                // Add a Healing Touch cast to the rotation duration
-                // Added a Nature's Swiftness every 4 HT casts; this may be inaccurate
-                float healingTouchBaseCastTime = 2.5f / (1 + spellHaste) + latency;
-                float healingTouchNGCastTime = 2.5f / (1 + spellHaste) / 1.15f + latency;
-                float healingTouchNSCastTime = 1.5f / (1 + spellHaste) / 1.15f + latency;
-                float healingTouchCastTime = (3 * healingTouchNGCastTime + healingTouchNSCastTime) / 4f;
-                float healingTouchCount = 2;
-                float totalHealingTouchTime = healingTouchCount * healingTouchCastTime;
-                RotationData.Duration += totalHealingTouchTime;
-            }
-            // Dream of Cenarius (legacy)
-            float moonfireMultiplier = 1f;
-            /*if (!calcOpts.PTRMode && calcs.BasicStats.BonusMoonfireDamageMultiplier > 0)
-            {
-                // Add a Healing Touch cast to the rotation duration
-                float healingTouchBaseCastTime = 2.5f / (1 + spellHaste) + (talents.GlyphofTheMoonbeast ? 0 : (float)gcd) + latency;
-                float healingTouchNGCastTime = 2.5f / (1 + spellHaste) / 1.15f + (talents.GlyphofTheMoonbeast ? 0 : (float)ngGcd) + latency;
-                float healingTouchCastTime = RotationData.NaturesGraceUptime * healingTouchNGCastTime + (1 - RotationData.NaturesGraceUptime) * healingTouchBaseCastTime;
-                float healingTouchCount = (RotationData.MoonfireRefreshMode == MoonfireRefreshMode.AlwaysRefresh ? (RotationData.MoonfireCasts / 2f) : 1);
-                float totalHealingTouchTime = healingTouchCount * healingTouchCastTime;
-                // Nature's Swiftness makes X% of your Healing Touches instant
-                if (talents.NaturesSwiftness > 0)
-                {
-                    float percentAffected = RotationData.Duration / 60.0f;
-                    totalHealingTouchTime = (1 - percentAffected) * healingTouchCastTime + percentAffected * RotationData.AverageInstantCast;
-                }
-                RotationData.Duration += totalHealingTouchTime;
-                moonfireMultiplier = 1 + calcs.BasicStats.BonusMoonfireDamageMultiplier;
-            }*/
-
-            DoTickDistribution(calcs, ref mf, spellPower, spellHit, spellCrit, spellHaste, eclipseBonus, RotationData.Duration, RotationData.MoonfireCasts, tickDistribution, 0, latency);
+            DoTickDistribution(calcs, ref mf, spellPower, spellCrit, spellHaste, versatility, (float)eclipseDistribution[5], tickDistribution, 0, latency);
+            DoTickDistribution(calcs, ref suf, spellPower, spellCrit, spellHaste, versatility, (float)eclipseDistribution[6], tickDistribution, 1, latency);
 
             // Dot Effect damage numbers already include Eclipsed vs. Non-Eclipsed ticks
             RotationData.MoonfireTicks = RotationData.MoonfireCasts * mf.DotEffect.NumberOfTicks;
             RotationData.MoonfireDuration = mf.DotEffect.Duration;
-            RotationData.MoonfireAvgHit = (float)(nonEclipsedMoonfirePercentage * mf.DamagePerHit +
-                (eclipsedMoonfirePercentage + sunfirePercentage) * (mf.DamagePerHit + T16DamagePerHit) * eclipseBonus) * (1 + calcs.BasicStats.MultistrikeProc) + mf.DotEffect.DamagePerHit;
-
-            RotationData.MoonfireAvgHit *= moonfireMultiplier;
+            RotationData.MoonfireAvgHit = (float)((mf.DamagePerHit + T16DamagePerHit) * eclipseDistribution[5]) * (1 + calcs.BasicStats.MultistrikeProc) + mf.DotEffect.DamagePerHit;
+            RotationData.MoonfireAvgEnergy = (float)eclipseDistribution[5];
+            RotationData.SunfireTicks = RotationData.SunfireCasts * suf.DotEffect.NumberOfTicks;
+            RotationData.SunfireDuration = suf.DotEffect.Duration;
+            RotationData.SunfireAvgHit = (float)((suf.DamagePerHit + T16DamagePerHit) * eclipseDistribution[6]) * (1 + calcs.BasicStats.MultistrikeProc) + suf.DotEffect.DamagePerHit;
+            RotationData.SunfireAvgEnergy = (float)eclipseDistribution[6];
 
             RotationData.StarfireAvgCast = sf.CastTime + latency;
             RotationData.WrathAvgCast = w.CastTime + latency;
 
-            RotationData.StarSurgeAvgCast = (float)(starsurgePercentage * (1 - ngStarsurgePercentage) * (Math.Max(1, ss.BaseCastTime / (1 + spellHaste))) + 
-                starsurgePercentage * ngStarsurgePercentage * (Math.Max(1, ss.BaseCastTime / (1 + spellHaste) / (1.15f))) +
-                shootingStarsPercentage * (1 - ngShootingStarsPercentage) * gcd +
-                shootingStarsPercentage * ngShootingStarsPercentage * ngGcd) + latency;
+            RotationData.StarSurgeAvgCast = ss.CastTime + latency;
 
-            RotationData.Duration += (RotationData.MoonfireCasts + RotationData.StarfireCount + RotationData.StarSurgeCount + RotationData.WrathCount) * latency;
-
-            // Starfall calculations
-            float starfallBaseDamage = DoStarfallCalcs(calcs, spellPower, spellHit, spellCrit);
-            // Dragonwrath
-            starfallBaseDamage *= 1 + (calcs.BasicStats.DragonwrathProc > 0 ? MoonkinSolver.DRAGONWRATH_PROC_RATE : 0f);
-            float starfallEclipseDamage = starfallBaseDamage * eclipseBonus;
-            // Starfall is automatically off cooldown on every Lunar Eclipse
-            RotationData.StarfallCasts = 1;
-            RotationData.StarfallDamage = starfallEclipseDamage;
-            RotationData.StarfallStars = 10;
-            // Starfall casts will always be made under Nature's Grace
-            RotationData.Duration += RotationData.StarfallCasts * (float)(ngGcd + latency);
             // Treant calculations
-            RotationData.TreantDamage = talents.ForceOfNature == 0 ? 0 : DoTreeCalcs(calcs, character.Level, character.BossOptions.Level, spellPower, treantLifespan);
-            RotationData.TreantCasts = talents.ForceOfNature == 0 ? 0 : RotationData.Duration / 60f;
-            RotationData.Duration += RotationData.TreantCasts * RotationData.AverageInstantCast;
+            RotationData.TreantDamage = !talents.ForceOfNature ? 0 : DoTreeCalcs(calcs, character.Level, character.BossOptions.Level, spellPower, treantLifespan);
+            RotationData.TreantCasts = !talents.ForceOfNature ? 0 : RotationData.Duration / 60f;
+            //RotationData.Duration += RotationData.TreantCasts * RotationData.AverageInstantCast;
 
             // Incarnation - 1 full (non-hasted) GCD every 3 minutes
-            RotationData.Duration += talents.Incarnation > 0 ? 1.5f / (180f / RotationData.Duration) : 0f;
+            //RotationData.Duration += talents.Incarnation ? 1.5f / (180f / RotationData.Duration) : 0f;
 
             float moonfireDamage = RotationData.MoonfireAvgHit * RotationData.MoonfireCasts;
+            float sunfireDamage = RotationData.SunfireAvgHit * RotationData.SunfireCasts;
 
             // Calculate total damage done for external cooldowns per rotation
-            float starfallDamage = RotationData.StarfallDamage * RotationData.StarfallCasts;
             float treantDamage = RotationData.TreantDamage * RotationData.TreantCasts;
 
             // Calculate mana cost per cast.
-            // Starfall - 32.6% of base mana
-            float starfallManaCost = (int)(0.326f * MoonkinSolver.BaseMana) - calcs.BasicStats.SpellsManaCostReduction - calcs.BasicStats.NatureSpellsManaCostReduction;
             // Force of Nature - 10.3% of base mana
             float treantManaCost = (int)(0.103f * MoonkinSolver.BaseMana) - calcs.BasicStats.SpellsManaCostReduction - calcs.BasicStats.NatureSpellsManaCostReduction;
 
             RotationData.CastCount = RotationData.WrathCount + RotationData.StarfireCount + RotationData.StarSurgeCount +
                 RotationData.MoonfireCasts + RotationData.StarfallCasts + RotationData.TreantCasts;
-            RotationData.DotTicks = RotationData.MoonfireTicks;
+            RotationData.DotTicks = RotationData.MoonfireTicks + RotationData.SunfireTicks;
             RotationData.ManaUsed = RotationData.WrathCount * w.BaseManaCost +
                 RotationData.StarfireCount * sf.BaseManaCost +
                 RotationData.StarSurgeCount * ss.BaseManaCost +
                 RotationData.MoonfireCasts * mf.BaseManaCost +
-                RotationData.StarfallCasts * starfallManaCost +
+                RotationData.SunfireCasts * suf.BaseManaCost +
                 RotationData.TreantCasts * treantManaCost;
 
             RotationData.ManaGained = 2 * MoonkinSolver.ECLIPSE_MANA_PERCENT * calcs.BasicStats.Mana;
@@ -791,7 +443,7 @@ namespace Rawr.Moonkin
             return (RotationData.WrathAvgHit * RotationData.WrathCount +
                 RotationData.StarfireAvgHit * RotationData.StarfireCount +
                 RotationData.StarSurgeAvgHit * RotationData.StarSurgeCount +
-                moonfireDamage + starfallDamage) + treantDamage;
+                moonfireDamage + sunfireDamage) + treantDamage;
         }
     }
 }

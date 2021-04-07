@@ -590,13 +590,6 @@ namespace Rawr.Mage
             set { _DpsTime = value; OnPropertyChanged("DpsTime"); }
         }
 
-        private bool _AutomaticArmor;
-        public bool AutomaticArmor
-        {
-            get { return _AutomaticArmor; }
-            set { _AutomaticArmor = value; OnPropertyChanged("AutomaticArmor"); }
-        }
-
         private bool _ForceIncrementalOptimizations;
         public bool ForceIncrementalOptimizations
         {
@@ -626,8 +619,6 @@ namespace Rawr.Mage
         public int[] IncrementalSetSegments;
         [XmlIgnore]
         public CycleId[] IncrementalSetSpells;
-        [XmlIgnore]
-        public string IncrementalSetArmor;
         [XmlIgnore]
         public VariableType[] IncrementalSetVariableType;
         [XmlIgnore]
@@ -905,13 +896,6 @@ namespace Rawr.Mage
         {
             get { return _DisableManaRegenCycles; }
             set { _DisableManaRegenCycles = value; OnPropertyChanged("DisableManaRegenCycles"); }
-        }
-
-        private bool _ArmorSwapping;
-        public bool ArmorSwapping
-        {
-            get { return _ArmorSwapping; }
-            set { _ArmorSwapping = value; OnPropertyChanged("ArmorSwapping"); }
         }
 
         private float _Innervate;
@@ -1513,10 +1497,37 @@ namespace Rawr.Mage
             set { _EffectHolyOther = value; OnPropertyChanged("EffectHolyOther"); }
         }
 
+		private bool _EnhancedArcaneBlast;
+		public bool EnhancedArcaneBlast
+		{
+			get { return _EnhancedArcaneBlast; }
+			set { _EnhancedArcaneBlast = value; OnPropertyChanged("EnhancedArcaneBlast"); }
+		}
+
+		private bool _ImprovedArcanePower;
+		public bool ImprovedArcanePower
+		{
+			get { return _ImprovedArcanePower; }
+			set { _ImprovedArcanePower = value; OnPropertyChanged("ImprovedArcanePower"); }
+		}
+
+		private bool _ImprovedBlink;
+		public bool ImprovedBlink
+		{
+			get { return _ImprovedBlink; }
+			set { _ImprovedBlink = value; OnPropertyChanged("ImprovedBlink"); }
+		}
+
+		private bool _ImprovedEvocation;
+		public bool ImprovedEvocation
+		{
+			get { return _ImprovedEvocation; }
+			set { _ImprovedEvocation = value; OnPropertyChanged("ImprovedEvocation"); }
+		}
+
         public CalculationOptionsMage Clone()
         {
             CalculationOptionsMage clone = (CalculationOptionsMage)MemberwiseClone();
-            clone.IncrementalSetArmor = null;
             clone.IncrementalSetStateIndexes = null;
             clone.IncrementalSetSegments = null;
             clone.IncrementalSetSpells = null;
@@ -1527,8 +1538,8 @@ namespace Rawr.Mage
 
         public CalculationOptionsMage()
         {
-            CustomTargetLevel = 93;
-            AoeTargetLevel = 90;
+            CustomTargetLevel = 103;
+            AoeTargetLevel = 100;
             LatencyCast = 0.01f;
             LatencyGCD = 0.01f;
             LatencyChannel = 0.2f;
@@ -1541,7 +1552,6 @@ namespace Rawr.Mage
             InterruptFrequency = 0;
             AoeDuration = 0;
             SmartOptimization = true;
-            AutomaticArmor = true;
             //TpsLimit = 0;
             IncrementalOptimizations = true;
             ReconstructSequence = false;
@@ -1557,7 +1567,7 @@ namespace Rawr.Mage
             BurstImpacts = 5f;
             MirrorImage = 1;
             //ChanceToLiveLimit = 99f;
-            PlayerLevel = 90;
+            PlayerLevel = 100;
             SnaredTime = 1f;
             FixedSegmentDuration = 30;
             EffectSpiritMultiplier = 1.0f;
@@ -1581,6 +1591,10 @@ namespace Rawr.Mage
             AdvancedHasteProcs = true;
             SimpleStacking = true;
             RuneOfPowerInterval = 45;
+			EnhancedArcaneBlast = true;
+			ImprovedArcanePower = true;
+			ImprovedBlink = true;
+			ImprovedEvocation = true;
         }
 
         public CalculationOptionsMage(Character character)

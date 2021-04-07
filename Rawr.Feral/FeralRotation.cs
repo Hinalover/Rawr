@@ -355,7 +355,7 @@ namespace Rawr.Feral
         {
             float SavageRoarTime = 0f;
             float BloodInTheWater = (CombatState.MainHand.Stats.Tier_13_2_piece ? CombatState.Below60Percent : CombatState.Below25Percent);
-            _soulOfTheForest = (CombatState.Talents.SoulOfTheForest > 0 ? 4 : 0);
+            _soulOfTheForest = (CombatState.Talents.SoulOfTheForest ? 4 : 0);
 
             #region Base Uptime Setting
             // adjust the fight length by 4.5 seconds to adjust for the first three attacks of the fight before using Berserk and/or TF
@@ -368,7 +368,7 @@ namespace Rawr.Feral
             CombatState.TigersFuryUptime = (TigersFury.Count * TigersFury.Duration) / (_fightLength - 4.5f);
 
             // Get information about Incarnation
-            if (CombatState.Talents.Incarnation > 0)
+            if (CombatState.Talents.Incarnation)
                 Incarnation.Count = (float)Math.Floor((_fightLength - 4.5f - Incarnation.Duration) / Incarnation.Cooldown);
             else
                 Incarnation.Count = 0;
@@ -382,7 +382,7 @@ namespace Rawr.Feral
             else
                 Melee.Count = _fightLength;
 
-            if (CombatState.Talents.Incarnation > 0)
+            if (CombatState.Talents.Incarnation)
             {
                 withIncarnation(SavageRoarTime, BloodInTheWater);
             }

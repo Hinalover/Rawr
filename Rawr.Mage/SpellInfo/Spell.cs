@@ -18,8 +18,8 @@ namespace Rawr.Mage
 
     public struct SpellData
     {
-        public float MinDamage;
-        public float MaxDamage;
+        public float AverageDamage;
+        public float Delta;
         public float PeriodicDamage;
         public int Cost;
         public float SpellDamageCoefficient;
@@ -152,8 +152,8 @@ namespace Rawr.Mage
         public float BaseCooldown { get { return template.BaseCooldown; } }
         public float GlobalCooldown { get { return template.GlobalCooldown; } }
         public MagicSchool MagicSchool { get { return template.MagicSchool; } }
-        public float BaseMinDamage { get { return template.BaseMinDamage; } }
-        public float BaseMaxDamage { get { return template.BaseMaxDamage; } }
+        public float BaseAverageDamage { get { return template.BaseAverageDamage; } }
+        public float BaseDelta { get { return template.BaseDelta; } }
         public float SpellDamageCoefficient { get { return template.SpellDamageCoefficient; } }
         public float DotDamageCoefficient { get { return template.DotDamageCoefficient; } }
         public float DotDuration { get { return template.DotDuration; } }
@@ -204,7 +204,7 @@ namespace Rawr.Mage
         {
             get
             {
-                return (BaseMinDamage + RawSpellDamage * SpellDamageCoefficient) * SpellModifier * DirectDamageModifier / template.Ticks;
+                return (BaseAverageDamage + RawSpellDamage * SpellDamageCoefficient) * (1.0f - BaseDelta / 2) * SpellModifier * DirectDamageModifier / template.Ticks;
             }
         }
 
@@ -212,7 +212,7 @@ namespace Rawr.Mage
         {
             get
             {
-                return (BaseMaxDamage + RawSpellDamage * SpellDamageCoefficient) * SpellModifier * DirectDamageModifier / template.Ticks;
+				return (BaseAverageDamage + RawSpellDamage * SpellDamageCoefficient) * (1.0f + BaseDelta / 2) * SpellModifier * DirectDamageModifier / template.Ticks;
             }
         }
 
@@ -391,14 +391,14 @@ namespace Rawr.Mage
             if (castingState.PowerInfusion) CostModifier -= 0.2f; // don't have any information on this, going by best guess
             if (castingState.ArcanePower)
             {
-                if (castingState.Solver.Mage4T12)
-                {
-                    CostAmplifier *= 0.9f;
-                }
-                else
-                {
-                    CostModifier += 0.1f;
-                }
+				if (castingState.CalculationOptions.ImprovedArcanePower)
+				{
+					CostAmplifier *= 0.9f;
+				}
+				else
+				{
+					CostModifier += 0.1f;
+				}
             }
             InterruptProtection = template.BaseInterruptProtection;
 
@@ -567,7 +567,7 @@ namespace Rawr.Mage
             }
 
             SpammedDot = spammedDot;
-            if ((BaseMinDamage > 0 || BasePeriodicDamage > 0) && !forceMiss)
+            if ((SpellDamageCoefficient > 0 || DotDamageCoefficient > 0) && !forceMiss)
             {
                 if (dotUptime)
                 {
@@ -672,7 +672,7 @@ namespace Rawr.Mage
 
         public virtual void CalculateAverageDamage(Solver solver, float spellPower, bool spammedDot, bool forceHit)
         {
-            float baseAverage = (BaseMinDamage + BaseMaxDamage) / 2f;
+            float baseAverage = BaseAverageDamage;
             float critBonus = CritBonus;
             float critMultiplier = 1 + (critBonus - 1) * Math.Max(0, CritRate);
             float dotCritMultiplier = 1 + (critBonus - 1) * Math.Max(0, CritRate);
@@ -748,7 +748,7 @@ namespace Rawr.Mage
 
         public virtual void CalculateDirectAverageDamage(Solver solver, float spellPower, bool forceHit)
         {
-            float baseAverage = (BaseMinDamage + BaseMaxDamage) / 2f;
+            float baseAverage = BaseAverageDamage;
             float critBonus = CritBonus;
             float critMultiplier = 1 + (critBonus - 1) * Math.Max(0, CritRate);
             float resistMultiplier = (forceHit ? 1.0f : HitRate) * PartialResistFactor;

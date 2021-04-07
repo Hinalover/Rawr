@@ -14,7 +14,7 @@ namespace Rawr.TalentClassGenerator
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new FormTalentClassGeneratorBattleNet());
+			Application.Run(new FormTalentClassGeneratorWowTal());
 		}
 	}
 }

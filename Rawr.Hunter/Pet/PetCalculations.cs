@@ -23,7 +23,7 @@ namespace Rawr.Hunter
 
         // things we save earlier for later DPS calcs
         private float killCommandCooldown;
-        private float critSpecialsAdjust;
+        
 
         private float PetChanceToMiss = StatConversion.YELLOW_MISS_CHANCE_CAP[88 - 85];
         private float PetChanceToSpellMiss = StatConversion.GetSpellMiss(88 - 85, false);
@@ -125,10 +125,10 @@ namespace Rawr.Hunter
         {
             #region Focus Regen
             float focusRegenBasePer4 = 20f;
-            float focusRegenBestialDiscipline = focusRegenBasePer4 * 0.5f * Talents.BestialDiscipline;
+            float focusRegenBestialDiscipline = focusRegenBasePer4 * 0.5f;
 
             float critHitsPer4 = 0f; /*calculatedStats.shotsPerSecondCritting * */ //calculatedStats.priorityRotation.critsCompositeSum * 4f;
-            float goForTheThroatPerCrit = 25 * Talents.GoForTheThroat;
+            float goForTheThroatPerCrit = 25;
             float focusRegenGoForTheThroat = critHitsPer4 * goForTheThroatPerCrit;
 
             float focusRegenPerSecond = (focusRegenBasePer4 + focusRegenBestialDiscipline + focusRegenGoForTheThroat) / 4f;
@@ -263,8 +263,8 @@ namespace Rawr.Hunter
                 Stamina = HunterStats.Stamina * .70f,
                 CritRating = HunterStats.CritRating,
                 PhysicalHaste = HunterStats.PhysicalHaste,
-                HitRating = HunterStats.HitRating,
-                ExpertiseRating = HunterStats.ExpertiseRating,
+                //HitRating = HunterStats.HitRating,
+                //ExpertiseRating = HunterStats.ExpertiseRating,
 
                 //MOP: Don't know about what's after this, or if it matters (haven't tested)
                 Agility = HunterStats.Agility,
@@ -449,8 +449,8 @@ namespace Rawr.Hunter
 
             #region Hit/Dodge Chances
             // This is tied directly to the Hunter's chance to miss
-            PetChanceToMiss = Math.Max(0f, StatConversion.YELLOW_MISS_CHANCE_CAP[levelDiff] - HunterStats.PhysicalHit);
-            PetChanceToSpellMiss = -1f * Math.Min(0f, StatConversion.GetSpellMiss(levelDiff, false) - HunterStats.SpellHit);
+            PetChanceToMiss = Math.Max(0f, StatConversion.YELLOW_MISS_CHANCE_CAP[levelDiff]);
+            PetChanceToSpellMiss = -1f * Math.Min(0f, StatConversion.GetSpellMiss(levelDiff, false));
 
             //calculatedStats.petHitTotal = HunterStats.PhysicalHit;
             //calculatedStats.petHitSpellTotal = HunterStats.PhysicalHit * 17f / 8f;
@@ -474,35 +474,7 @@ namespace Rawr.Hunter
 
             //calculatedStats.petCritTotalMelee = petStatsTotal.PhysicalCrit;
 
-            // Cobra Strikes
-            //calculatedStats.petCritFromCobraStrikes = 0;
-            float cobraStrikesProc = Talents.CobraStrikes * 0.2f;
-            if (cobraStrikesProc > 0)
-            {
-                #if FALSE
-                float cobraStrikesCritFreqSteady = calculatedStats.steadyShot.Freq * (1f / calculatedStats.steadyShot.CritChance);
-                float cobraStrikesCritFreqArcane = calculatedStats.arcaneShot.Freq * (1f / calculatedStats.arcaneShot.CritChance);
-                float cobraStrikesCritFreqKill = calculatedStats.killShot.Freq * (1f / calculatedStats.killShot.CritChance);
 
-                float cobraStrikesCritFreqSteadyInv = cobraStrikesCritFreqSteady > 0 ? 1f / cobraStrikesCritFreqSteady : 0;
-                float cobraStrikesCritFreqArcaneInv = cobraStrikesCritFreqArcane > 0 ? 1f / cobraStrikesCritFreqArcane : 0;
-                float cobraStrikesCritFreqKillInv = cobraStrikesCritFreqKill > 0 ? 1f / cobraStrikesCritFreqKill : 0;
-                float cobraStrikesCritFreqInv = cobraStrikesCritFreqSteadyInv + cobraStrikesCritFreqArcaneInv + cobraStrikesCritFreqKillInv;
-                float cobraStrikesCritFreq = cobraStrikesCritFreqInv > 0 ? 1f / cobraStrikesCritFreqInv : 0;
-                float cobraStrikesProcAdjust = cobraStrikesCritFreq / cobraStrikesProc;
-
-                float cobraStrikesFreqSteadyInv = calculatedStats.steadyShot.Freq > 0 ? 1f / calculatedStats.steadyShot.Freq : 0;
-                float cobraStrikesFreqArcaneInv = calculatedStats.arcaneShot.Freq > 0 ? 1f / calculatedStats.arcaneShot.Freq : 0;
-                float cobraStrikesFreqKillInv = calculatedStats.killShot.Freq > 0 ? 1f / calculatedStats.killShot.Freq : 0;
-                float cobraStrikesFreqInv = cobraStrikesFreqSteadyInv + cobraStrikesFreqArcaneInv + cobraStrikesFreqKillInv;
-
-                float cobraStrikesTwoSpecials = 2f * priorityRotation.petSpecialFrequency;
-                float cobraStrikesUptime = 1f - (float)Math.Pow(1f - calculatedStats.steadyShot.CritChance * cobraStrikesProc, cobraStrikesFreqInv * cobraStrikesTwoSpecials);
-
-                //calculatedStats.petCritFromCobraStrikes = (cobraStrikesUptime + (1f - cobraStrikesUptime) * calculatedStats.petCritTotalMelee) - calculatedStats.petCritTotalMelee;
-                #endif
-
-            }
 
             //calculatedStats.petCritTotalSpecials = petStatsTotal.PhysicalCrit + calculatedStats.petCritFromCobraStrikes; // PetCritChance
             //critSpecialsAdjust = calculatedStats.petCritTotalSpecials * 1.5f + 1f;
@@ -679,39 +651,42 @@ namespace Rawr.Hunter
 
             #endregion
             #region Hunter Effects
+            //OpOv Note: Commented out during initial update for WoD
             // Ferocious Inspiraion
             // (Same as above)
             //calculatedStats.ferociousInspirationDamageAdjust = 1;
-            if (character.HunterTalents.FerociousInspiration > 0) {
-                if (CalcOpts.PetFamily != PETFAMILY.None)
-                {
-                    float ferociousInspirationSpecialsEffect = priorityRotation.petSpecialFrequency == 0 ? 0 : 10f / priorityRotation.petSpecialFrequency;
-                    //float ferociousInspirationUptime = 1f - (float)Math.Pow(1f - calculatedStats.petCritTotalSpecials, (10f / attackSpeedEffective) + ferociousInspirationSpecialsEffect);
-                    float ferociousInspirationEffect = 0.01f * character.HunterTalents.FerociousInspiration;
+            //if (character.HunterTalents.FerociousInspiration > 0) {
+            //    if (CalcOpts.PetFamily != PETFAMILY.None)
+            //    {
+            //        float ferociousInspirationSpecialsEffect = priorityRotation.petSpecialFrequency == 0 ? 0 : 10f / priorityRotation.petSpecialFrequency;
+            //        //float ferociousInspirationUptime = 1f - (float)Math.Pow(1f - calculatedStats.petCritTotalSpecials, (10f / attackSpeedEffective) + ferociousInspirationSpecialsEffect);
+            //        float ferociousInspirationEffect = 0.01f * character.HunterTalents.FerociousInspiration;
 
-                    //calculatedStats.ferociousInspirationDamageAdjust = 1.0f + ferociousInspirationUptime * ferociousInspirationEffect;                    
-                }
-            }
+            //        //calculatedStats.ferociousInspirationDamageAdjust = 1.0f + ferociousInspirationUptime * ferociousInspirationEffect;                    
+            //    }
+            //}
 
+            //OpOv Note: Commented out during initial update for WoD
             // Roar of Recovery
             //calculatedStats.manaRegenRoarOfRecovery = 0;
-            float roarOfRecoveryFreq = priorityRotation.getSkillFrequency(PetAttacks.RoarOfRecovery);
-            if (roarOfRecoveryFreq > 0) {
-                float roarOfRecoveryUseCount = (float)Math.Ceiling(BossOpts.BerserkTimer / roarOfRecoveryFreq);
-                float roarOfRecoveryManaRestored = HunterStats.Mana * 0.30f * roarOfRecoveryUseCount; // E129
-                //calculatedStats.manaRegenRoarOfRecovery = roarOfRecoveryUseCount > 0 ? roarOfRecoveryManaRestored / BossOpts.BerserkTimer : 0;
-            }
+            //float roarOfRecoveryFreq = priorityRotation.getSkillFrequency(PetAttacks.RoarOfRecovery);
+            //if (roarOfRecoveryFreq > 0) {
+            //    float roarOfRecoveryUseCount = (float)Math.Ceiling(BossOpts.BerserkTimer / roarOfRecoveryFreq);
+            //    float roarOfRecoveryManaRestored = HunterStats.Mana * 0.30f * roarOfRecoveryUseCount; // E129
+            //    //calculatedStats.manaRegenRoarOfRecovery = roarOfRecoveryUseCount > 0 ? roarOfRecoveryManaRestored / BossOpts.BerserkTimer : 0;
+            //}
 
+            //OpOv Note: Commented out during initial update for WoD
             //Invigoration
             //calculatedStats.manaRegenInvigoration = 0;
-            float invigorationProcChance = Talents.Invigoration * 0.50f; // C32
-            if (invigorationProcChance > 0) {
-                float invigorationProcFreq = (priorityRotation.petSpecialFrequency /*/ calculatedStats.petCritTotalSpecials*/) / invigorationProcChance; //C35
-                float invigorationEffect = Talents.Invigoration > 0 ? 0.01f : 0;
-                float invigorationManaGainedPercent = invigorationProcFreq > 0 ? 60f / invigorationProcFreq * invigorationEffect : 0; // C36
-                float invigorationManaPerMinute = invigorationProcFreq > 0 ? 60f / invigorationProcFreq * invigorationEffect * HunterStats.Mana : 0; // C37
-                //calculatedStats.manaRegenInvigoration = invigorationManaPerMinute / 60f;
-            }
+            //float invigorationProcChance = Talents.Invigoration * 0.50f; // C32
+            //if (invigorationProcChance > 0) {
+            //    float invigorationProcFreq = (priorityRotation.petSpecialFrequency /*/ calculatedStats.petCritTotalSpecials*/) / invigorationProcChance; //C35
+            //    float invigorationEffect = Talents.Invigoration > 0 ? 0.01f : 0;
+            //    float invigorationManaGainedPercent = invigorationProcFreq > 0 ? 60f / invigorationProcFreq * invigorationEffect : 0; // C36
+            //    float invigorationManaPerMinute = invigorationProcFreq > 0 ? 60f / invigorationProcFreq * invigorationEffect * HunterStats.Mana : 0; // C37
+            //    //calculatedStats.manaRegenInvigoration = invigorationManaPerMinute / 60f;
+            //}
             #endregion
 
             #region Target Armor Effect
@@ -769,8 +744,13 @@ namespace Rawr.Hunter
             //float damageAdjustFerociousInspiration = calculatedStats.ferociousInspirationDamageAdjust;
             //float damageAdjustTargetDebuffs = calculatedStats.targetDebuffsPetDamage;
             float damageAdjustPetFamily = 1.05f;
-            float damageAdjustMarkedForDeath = 1f + (Talents.MarkedForDeath * 0.02f);
-//            float damageAdjustCobraReflexes = 1f - (PetTalents.CobraReflexes * 0.075f); // this is a negative effect!
+
+            //OpOv Note: Commented out during initial update for WoD
+            //float damageAdjustMarkedForDeath = 1f + (Talents.MarkedForDeath * 0.02f);
+            float damageAdjustMarkedForDeath = 1f;
+
+            
+            //            float damageAdjustCobraReflexes = 1f - (PetTalents.CobraReflexes * 0.075f); // this is a negative effect!
 
             // Feeding Frenzy
             float damageAdjustFeedingFrenzy = 1;
@@ -904,7 +884,7 @@ namespace Rawr.Hunter
                 }
                 if (S.skillData.type == PetSkillType.SpecialSpell) {
                     float spellDamageAverage = S.skillData.average + damageBonusSpellsFromAP;
-                    S.damage = spellDamageAverage * critSpecialsAdjust * fullResistDamageAdjust * partialResistDamageAdjust;
+                    S.damage = spellDamageAverage * fullResistDamageAdjust * partialResistDamageAdjust;
                                 //* damageAdjustMagic * calculatedStats.targetDebuffsNature;
                 }
                 #endregion

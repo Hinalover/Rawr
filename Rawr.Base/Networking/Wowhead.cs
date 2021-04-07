@@ -1614,10 +1614,6 @@ namespace Rawr
                 {
                     item.Stats.ArcaneResistance += Convert.ToSingle(tmp);
                 }
-                if (json.TryGetValue("hitrtng", out tmp) || json.TryGetValue("mlehitrtng", out tmp) || json.TryGetValue("rgdhitrtng", out tmp) || json.TryGetValue("splhitrtng", out tmp) || json.TryGetValue("hitRating", out tmp))
-                {
-                    item.Stats.HitRating += Convert.ToSingle(tmp);
-                }
                 if (json.TryGetValue("atkpwr", out tmp) || json.TryGetValue("mleatkpwr", out tmp) || json.TryGetValue("attackPower", out tmp))
                 {
                     item.Stats.AttackPower += Convert.ToSingle(tmp);
@@ -1628,10 +1624,6 @@ namespace Rawr
                     {
                         item.Stats.RangedAttackPower = Convert.ToSingle(tmp);
                     }
-                }
-                if (json.TryGetValue("exprtng", out tmp) || json.TryGetValue("expertiseRating", out tmp))
-                {
-                    item.Stats.ExpertiseRating += Convert.ToSingle(tmp);
                 }
                 if (json.TryGetValue("dodgertng", out tmp) || json.TryGetValue("dodgeRating", out tmp))
                 {
@@ -3283,13 +3275,6 @@ namespace Rawr
                     item.Stats.ArcaneResistance = float.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
                     break;
 
-                case "hitrtng":
-                case "mlehitrtng":
-                case "rgdhitrtng":
-                case "splhitrtng":
-                    item.Stats.HitRating = float.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
-                    break;
-
                 case "atkpwr":
                 case "mleatkpwr":
                     //case "feratkpwr":
@@ -3299,10 +3284,6 @@ namespace Rawr
                 case "rgdatkpwr":
                     if (item.Stats.AttackPower != float.Parse(value, System.Globalization.CultureInfo.InvariantCulture))
                         item.Stats.RangedAttackPower = float.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
-                    break;
-
-                case "exprtng":
-                    item.Stats.ExpertiseRating += int.Parse(value);
                     break;
 
                 case "dodgertng":
@@ -5478,17 +5459,6 @@ namespace Rawr
                 case "2854": stats.Mp5 += 3; break;
                 case "2371": stats.Mp5 += 4; break;
                 #endregion
-                #region Hit Rating
-                case "2873":
-                case "2908": stats.HitRating += 4; break;
-                case "3351": stats.HitRating += 6; break;
-                case "2767":
-                case "2844": stats.HitRating += 8; break;
-                case "4160": stats.HitRating += 10; break;
-                case "4835": stats.HitRating += 60; break;
-                case "4847": stats.HitRating += 120; break;
-                //case "": stats.HitRating += 180; break;
-                #endregion
                 #region Crit Rating
                 case "2887":
                 case "3204": stats.CritRating += 3; break;
@@ -5600,15 +5570,6 @@ namespace Rawr
                 case "4836": stats.HasteRating += 60; break;
                 case "4846": stats.HasteRating += 120; break;
                 case "4858": stats.HasteRating += 180; break;
-                #endregion
-                #region Expertise Rating
-                case "3094": stats.ExpertiseRating += 4; break;
-                case "3362": stats.ExpertiseRating += 6; break;
-                case "3778": stats.ExpertiseRating += 8; break;
-                case "4163": stats.ExpertiseRating += 10; break;
-                case "4837": stats.ExpertiseRating += 60; break;
-                case "4845": stats.ExpertiseRating += 120; break;
-                //case "": stats.ExpertiseRating += 180; break;
                 #endregion
                 #region Parry Rating
                 case "3359": stats.ParryRating += 4; break;
@@ -6496,10 +6457,8 @@ namespace Rawr
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/bonusIntellect")) { stats.Intellect = int.Parse(node.Value); }
 
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/bonusStrength")) { stats.Strength = int.Parse(node.Value); }
-                foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/bonusHitRating")) { stats.HitRating = int.Parse(node.Value); }
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/bonusHasteRating")) { stats.HasteRating = int.Parse(node.Value); }
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/bonusCritRating")) { stats.CritRating = int.Parse(node.Value); }
-                foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/bonusExpertiseRating")) { stats.ExpertiseRating = int.Parse(node.Value); }
 
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/arcaneResist")) { stats.ArcaneResistance = int.Parse(node.Value); }
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/fireResist")) { stats.FireResistance = int.Parse(node.Value); }
@@ -6508,7 +6467,6 @@ namespace Rawr
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/shadowResist")) { stats.ShadowResistance = int.Parse(node.Value); }
 
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/bonusCritSpellRating")) { stats.CritRating = int.Parse(node.Value); }
-                foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/bonusHitSpellRating")) { stats.HitRating = int.Parse(node.Value); }
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/bonusHasteSpellRating")) { stats.HasteRating = int.Parse(node.Value); }
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/bonusSpellPower")) { stats.SpellPower = int.Parse(node.Value); }
 
@@ -6627,14 +6585,8 @@ namespace Rawr
                                 case "Block Rating":
                                     socketStats.BlockRating = socketBonusValue;
                                     break;
-                                case "Hit Rating":
-                                    socketStats.HitRating = socketBonusValue;
-                                    break;
                                 case "Haste Rating":
                                     socketStats.HasteRating = socketBonusValue;
-                                    break;
-                                case "Expertise Rating":
-                                    socketStats.ExpertiseRating = socketBonusValue;
                                     break;
                                 case "Strength":
                                     socketStats.Strength = socketBonusValue;
@@ -6683,13 +6635,6 @@ namespace Rawr
                                 case "Resilience":
                                 case "Resilience Rating":
                                     socketStats.Resilience = socketBonusValue;
-                                    break;
-                                //case "Spell Damage and Healing":
-                                //    sockets.Stats.SpellDamageRating = socketBonusValue;
-                                //    sockets.Stats.Healing = socketBonusValue;
-                                //    break;
-                                case "Spell Hit Rating":
-                                    socketStats.HitRating = socketBonusValue;
                                     break;
                                 case "Intellect":
                                     socketStats.Intellect = socketBonusValue;
@@ -6824,14 +6769,8 @@ namespace Rawr
                                     case "Block Rating":
                                         stats.BlockRating = gemBonusValue;
                                         break;
-                                    case "Hit Rating":
-                                        stats.HitRating = gemBonusValue;
-                                        break;
                                     case "Haste Rating":
                                         stats.HasteRating = gemBonusValue;
-                                        break;
-                                    case "Expertise Rating":
-                                        stats.ExpertiseRating = gemBonusValue;
                                         break;
                                     case "Strength":
                                         stats.Strength = gemBonusValue;
@@ -6857,9 +6796,6 @@ namespace Rawr
                                     case "Resilience":
                                     case "Resilience Rating":
                                         stats.Resilience = gemBonusValue;
-                                        break;
-                                    case "Spell Hit Rating":
-                                        stats.HitRating = gemBonusValue;
                                         break;
                                     case "Spell Haste Rating":
                                         stats.HasteRating = gemBonusValue;

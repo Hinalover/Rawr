@@ -9,42 +9,17 @@ namespace Rawr.Elemental
 {
     public class CalculationOptionsElemental : ICalculationOptionBase, INotifyPropertyChanged
     {
-        [DefaultValue(75)]
-        public int BSRatio { get { return _BSRatio; } set { _BSRatio = value; OnPropertyChanged("BSRatio"); } }
-        private int _BSRatio = 75; // goes from 0 to 100
+        [DefaultValue(true)]
+        public bool EnableSimpleDisplay { get { return _enableSimpleDisplay; } set { _enableSimpleDisplay = value; OnPropertyChanged("EnableSimpleDisplay"); } }
+        private bool _enableSimpleDisplay = true;
 
-        [DefaultValue(0)]
-        public int RotationType { get { return _rotationType; } set { _rotationType = value; OnPropertyChanged("RotationType"); } }
-        private int _rotationType = 0;
-
-        [DefaultValue(0.150f)]
-        public float LatencyGcd { get { return _Latency; } set { _Latency = value; OnPropertyChanged("Latency"); } }
-        private float _Latency = 0.150f;
-
-        [DefaultValue(0.075f)]
-        public float LatencyCast { get { return _Reaction; } set { _Reaction = value; OnPropertyChanged("Reaction"); } }
-        private float _Reaction = .075f;
-
-        [Obsolete("This should be pulled from the Boss Handler instead")]
-        [DefaultValue(1)]
-        public int NumberOfTargets { get { return _NumberOfTargets; } set { _NumberOfTargets = value; OnPropertyChanged("NumberOfTargets"); } }
-        private int _NumberOfTargets = 1;
+        [DefaultValue(5)]
+        public int EmptyGCDs { get { return _emptyGCDs; } set { _emptyGCDs = value; OnPropertyChanged("EmptyGCDs"); } }
+        private int _emptyGCDs = 5;
 
         [DefaultValue(false)]
-        public bool UseChainLightning { get { return _UseChainLightning; } set { _UseChainLightning = value; OnPropertyChanged("UseChainLightning"); } }
-        private bool _UseChainLightning = false;
-
-        [DefaultValue(true)]
-        public bool UseDpsFireTotem { get { return _UseDpsFireTotem; } set { _UseDpsFireTotem = value; OnPropertyChanged("UseDpsFireTotem"); } }
-        private bool _UseDpsFireTotem = true;
-
-        [DefaultValue(true)]
-        public bool UseFireEle { get { return _UseFireEle; } set { _UseFireEle = value; OnPropertyChanged("UseFireEle"); } }
-        private bool _UseFireEle = true;
-
-        [DefaultValue(true)]
-        public bool UseThunderstorm { get { return _UseThunderstorm; } set { _UseThunderstorm = value; OnPropertyChanged("UseThunderstorm"); } }
-        private bool _UseThunderstorm = true;
+        public bool UseEmpower { get { return _useEmpower; } set { _useEmpower = value; OnPropertyChanged("UseEmpower"); } }
+        private bool _useEmpower = false;
 
         [XmlIgnore]
         public List<string> ReforgePriorityList { get { return _reforgePriorityList; } }
@@ -62,12 +37,15 @@ namespace Rawr.Elemental
         [DefaultValue(new bool[] { false, false, false, true, true, false, true, true, true, true, true, false, })]
         public bool[] StatsList { get { return _statsList; } set { _statsList = value; OnPropertyChanged("StatsList"); } }
         private bool[] _statsList = new bool[] { false, false, false, true, true, false, true, true, true, true, true, false, };
+
         [DefaultValue(100)]
         public int StatsIncrement { get { return _StatsIncrement; } set { _StatsIncrement = value; OnPropertyChanged("StatsIncrement"); } }
         private int _StatsIncrement = 100;
+
         [DefaultValue("Overall Rating")]
         public string CalculationToGraph { get { return _calculationToGraph; } set { _calculationToGraph = value; OnPropertyChanged("CalculationToGraph"); } }
         private string _calculationToGraph = "Overall Rating";
+
         [XmlIgnore]
         public bool SG_Str { get { return StatsList[0]; } set { StatsList[0] = value; OnPropertyChanged("SG_STR"); } }
         [XmlIgnore]

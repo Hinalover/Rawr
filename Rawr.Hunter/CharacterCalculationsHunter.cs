@@ -89,8 +89,7 @@ namespace Rawr.Hunter
 //        public Skills.FrostTrap Frost { get; set; }
         public Skills.Readiness Ready { get; set; }
         public Skills.BestialWrath Bestial { get; set; }
-        public Skills.RapidFire Rapid { get; set; }
-
+       
         public AbilWrapper MurderOfCrows { get; set; }
         //TODO: OpOv - Blink Strike needs to be implemented
         public AbilWrapper LynxRush { get; set; }
@@ -197,7 +196,7 @@ namespace Rawr.Hunter
         #endregion
 
         #region Aspect uptime/penalties/bonuses
-        public float aspectUptimeHawk { get; set; }
+
         public float aspectUptimeViper { get; set; }
         public float aspectUptimeBeast { get; set; }
         public float aspectBeastLostDPS { get; set; }
@@ -273,16 +272,7 @@ namespace Rawr.Hunter
 //                            "\r\n{3:00,000} : Gear / Spec" +
 //                            "\r\nProcs were averaged out and added",
                             HunterUnBuffed.RangedAttackPower, Hunter.RangedAttackPower));//, apFromBase, apFromAGI, apFromGear));
-            dictValues.Add("Hit", string.Format("{0:00.00%} : {1}*" + 
-                                "Ranged Cap: " + Hunter.HitNeededLabel,
-                                HunterUnBuffed.HitRatingPercent,
-                                HunterUnBuffed.HitRating,
-                                HunterUnBuffed.HitRatingNeeded));
-            dictValues.Add("Expertise", string.Format("{0:00.00%} : {1}*" +
-                                "Ranged Cap: " + Hunter.ExpertiseNeededLabel,
-                                HunterUnBuffed.ExpertiseRatingPercent,
-                                HunterUnBuffed.ExpertiseRating,
-                                HunterUnBuffed.ExpertiseRatingNeeded));
+            
  
             dictValues.Add("Crit", string.Format("{0:00.00%} : {1}*Includes:" +
                                 "\r\n{2:00.00%} : Agility" +
@@ -417,7 +407,7 @@ namespace Rawr.Hunter
 //                            "DPS Gain when switched: " + killShotSub20Gain.ToString("F2")+"\n"+
 //                            "Time spent sub-20%: " + killShotSub20TimeSpent.ToString("P2"));
             dictValues.Add("Aspect Loss", aspectBeastLostDPS.ToString("F2") + "*" +
-                            "Hawk Uptime: " + aspectUptimeHawk.ToString("P2") + "\n" + 
+                            
                             "Fox Uptime: " + aspectUptimeBeast.ToString("P2"));
             dictValues.Add("Piercing Shots DPS", PiercingShotsDPS.ToString("F2") + "*" +
                             "Steady Shot: " + PiercingShotsDPSSteadyShot.ToString("F2") + "\n" +
@@ -456,8 +446,7 @@ namespace Rawr.Hunter
                 case "Crit %": return Hunter.PhysicalCrit * 100f;
                 case "Haste %": return Hunter.PhysicalHaste * 100f;
                 case "Attack Power": return Hunter.RangedAttackPower;
-                case "Hit Rating Needed": return Hunter.HitRatingNeeded;
-                case "Expertise Rating Needed": return Hunter.ExpertiseRatingNeeded;
+
             }
             return 0;
         }

@@ -986,47 +986,66 @@ namespace Rawr
         }
 
         public virtual List<ComparisonCalculationBase> GetUpgradeCalculations(CharacterSlot slot, Character character, CharacterCalculationsBase currentCalcs, bool equippedOnly)
-        {
-            ClearCache();
-            List<ComparisonCalculationBase> upgradeCalcs = new List<ComparisonCalculationBase>();
-            CharacterCalculationsBase calcsEquipped = null;
-            CharacterCalculationsBase calcsUnequipped = null;
-            Character charUnequipped = character.Clone();
-            charUnequipped.SetUpgradeBySlot(slot, 0);
-            if (character[slot] == null) return upgradeCalcs;
-            Item upgradeItem = character[slot].Item;
-            if (upgradeItem == null || upgradeItem.UpgradeLevels.Count == 0) return upgradeCalcs;
-            calcsUnequipped = GetCharacterCalculations(charUnequipped, null, false, false, false);
-            int currentIndex = 0;
-            foreach (int upgrade in upgradeItem.UpgradeLevels)
-            {
-                ++currentIndex;
-                bool isEquipped = character.GetUpgradeBySlot(slot) == upgrade;
-                if (equippedOnly && !isEquipped) continue;
-                Character charEquipped = character.Clone();
-                charEquipped.SetUpgradeBySlot(slot, upgrade);
-                calcsEquipped = GetCharacterCalculations(charEquipped, null, false, false, false);
-                ComparisonCalculationBase upgradeCalc = CreateNewComparisonCalculation();
-                Stats diffStats = charEquipped[slot].GetTotalStats() - charUnequipped[slot].GetTotalStats();
-                upgradeCalc.Name = string.Format("{0} ({1}/{2})", slot, currentIndex, upgradeItem.UpgradeLevels.Count);
-                upgradeCalc.Item = new Item(upgradeCalc.Name, ItemQuality.Temp, ItemType.None, -((int)slot + ((int)CharacterSlot.Tabard)) * currentIndex, null, ItemSlot.None, null,
-                    false, diffStats, null, ItemSlot.None, ItemSlot.None, ItemSlot.None, 0, 0, ItemDamageType.Physical, 0, null);
-                upgradeCalc.Item.Name = upgradeCalc.Name;
-                upgradeCalc.Item.Stats = diffStats;
-                upgradeCalc.Equipped = isEquipped;
-                upgradeCalc.OverallPoints = calcsEquipped.OverallPoints - calcsUnequipped.OverallPoints;
-                float[] subPoints = new float[calcsEquipped.SubPoints.Length];
-                for (int i = 0; i < calcsEquipped.SubPoints.Length; i++)
-                {
-                    subPoints[i] = calcsEquipped.SubPoints[i] - calcsUnequipped.SubPoints[i];
-                }
-                upgradeCalc.SubPoints = subPoints;
-                upgradeCalc.ImageSource = null;
-                upgradeCalcs.Add(upgradeCalc);
-                if (equippedOnly && isEquipped) break;
-            }
-            return upgradeCalcs;
-        }
+		{
+			ClearCache();
+			List<ComparisonCalculationBase> upgradeCalcs = new List<ComparisonCalculationBase>();
+			CharacterCalculationsBase calcsEquipped = null;
+			CharacterCalculationsBase calcsUnequipped = null;
+			Character charUnequipped = character.Clone();
+			charUnequipped.SetUpgradeBySlot(slot, 0);
+			calcsUnequipped = GetCharacterCalculations(charUnequipped, null, false, false, false);
+			Item upgradeItem = (character[slot] != null) ? character[slot].Item : null;
+			{
+				ComparisonCalculationBase upgradeCalc = CreateNewComparisonCalculation();
+				Stats diffStats = new Stats();
+				bool isEquipped = character.GetUpgradeBySlot(slot) == 0;
+				upgradeCalc.Name = string.Format("{0} ({1}/{2})", slot, 0, (upgradeItem != null && upgradeItem.UpgradeLevels != null) ? upgradeItem.UpgradeLevels.Count : 0);
+				upgradeCalc.Item = new Item(upgradeCalc.Name, ItemQuality.Temp, ItemType.None, -0, null, ItemSlot.None, null,
+					false, diffStats, null, ItemSlot.None, ItemSlot.None, ItemSlot.None, 0, 0, ItemDamageType.Physical, 0, null);
+				upgradeCalc.Item.Name = upgradeCalc.Name;
+				upgradeCalc.Item.Stats = diffStats;
+				upgradeCalc.Equipped = isEquipped;
+				upgradeCalc.OverallPoints = calcsUnequipped.OverallPoints - calcsUnequipped.OverallPoints;
+				float[] subPoints = new float[calcsUnequipped.SubPoints.Length];
+				for (int i = 0; i < calcsUnequipped.SubPoints.Length; i++)
+				{
+					subPoints[i] = calcsUnequipped.SubPoints[i] - calcsUnequipped.SubPoints[i];
+				}
+				upgradeCalc.SubPoints = subPoints;
+				upgradeCalc.ImageSource = null;
+				upgradeCalcs.Add(upgradeCalc);
+			}
+			if (upgradeItem == null || upgradeItem.UpgradeLevels.Count == 0) return upgradeCalcs;
+			int currentIndex = 0;
+			foreach (int upgrade in upgradeItem.UpgradeLevels)
+			{
+				++currentIndex;
+				bool isEquipped = character.GetUpgradeBySlot(slot) == upgrade;
+				if (equippedOnly && !isEquipped) continue;
+				Character charEquipped = character.Clone();
+				charEquipped.SetUpgradeBySlot(slot, upgrade);
+				calcsEquipped = GetCharacterCalculations(charEquipped, null, false, false, false);
+				ComparisonCalculationBase upgradeCalc = CreateNewComparisonCalculation();
+				Stats diffStats = charEquipped[slot].GetTotalStats() - charUnequipped[slot].GetTotalStats();
+				upgradeCalc.Name = string.Format("{0} ({1}/{2})", slot, currentIndex, upgradeItem.UpgradeLevels.Count);
+				upgradeCalc.Item = new Item(upgradeCalc.Name, ItemQuality.Temp, ItemType.None, -currentIndex, null, ItemSlot.None, null,
+					false, diffStats, null, ItemSlot.None, ItemSlot.None, ItemSlot.None, 0, 0, ItemDamageType.Physical, 0, null);
+				upgradeCalc.Item.Name = upgradeCalc.Name;
+				upgradeCalc.Item.Stats = diffStats;
+				upgradeCalc.Equipped = isEquipped;
+				upgradeCalc.OverallPoints = calcsEquipped.OverallPoints - calcsUnequipped.OverallPoints;
+				float[] subPoints = new float[calcsEquipped.SubPoints.Length];
+				for (int i = 0; i < calcsEquipped.SubPoints.Length; i++)
+				{
+					subPoints[i] = calcsEquipped.SubPoints[i] - calcsUnequipped.SubPoints[i];
+				}
+				upgradeCalc.SubPoints = subPoints;
+				upgradeCalc.ImageSource = null;
+				upgradeCalcs.Add(upgradeCalc);
+				if (equippedOnly && isEquipped) break;
+			}
+			return upgradeCalcs;
+		}
 
         public virtual List<ComparisonCalculationBase> GetEnchantCalculations(ItemSlot slot, Character character, CharacterCalculationsBase currentCalcs, bool equippedOnly, bool forceSlotName = false)
         {

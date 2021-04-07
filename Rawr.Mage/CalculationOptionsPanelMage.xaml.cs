@@ -357,10 +357,9 @@ namespace Rawr.Mage
 
             public CombustionModel(Character character, CombustionModelWindow window)
             {
-                string armor = "Molten Armor";
                 CalculationOptionsMage calculationOptions = character.CalculationOptions as CalculationOptionsMage;
                 CalculationsMage calculations = (CalculationsMage)Calculations.Instance;
-                solver = new Solver(character, calculationOptions, false, false, false, 0, armor, false, false, true, false, true, false, false);
+                solver = new Solver(character, calculationOptions, false, false, false, 0, false, false, true, false, true, false, false);
                 solver.Initialize(null);
                 baseState = new CastingState(solver, 0, false, solver.Mage2T13 ? 500 : 0);
 

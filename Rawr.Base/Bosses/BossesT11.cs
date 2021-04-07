@@ -1466,16 +1466,6 @@ namespace Rawr.Bosses
                 this[i].Attacks[this[i].Attacks.Count - 1].AffectsRole[PLAYER_ROLES.MainTankHealer] = true;
                 this[i].Attacks[this[i].Attacks.Count - 1].AffectsRole[PLAYER_ROLES.OffAndTertTankHealer] = true;
                 this[i].Attacks[this[i].Attacks.Count - 1].AffectsRole[PLAYER_ROLES.RaidHealer] = true;
-                this[i].BuffStates.Add(new BuffState
-                {
-                    Name =  "Caustic Slime in P1",
-                    Stats = new Stats() { PhysicalHit = -0.75f, SpellHit = -0.75f },
-                    Duration = 3f * 1000f,
-                    Frequency = 10f,
-                    Chance = new float[] { 1, 3, 1, 3 }[i] / (this[i].Max_Players - this[i].Min_Tanks),
-                    Breakable = false,
-                    AffectsRole = this[i].Attacks[this[i].Attacks.Count - 1].AffectsRole,
-                });
             }
             #endregion
             #endregion

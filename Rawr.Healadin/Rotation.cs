@@ -98,24 +98,24 @@ namespace Rawr.Healadin
             calc.ManaDivinePlea = Stats.Mana * (Talents.GlyphOfDivinePlea ? 0.18f : 0.12f) * DivinePleas;
             calc.ManaMp5 = FightLength * Stats.Mp5 / 5f;
             // this Stats.ManaRestoreFromMaxManaPerSecond is 0 is is messing up the replenishment calculation!
-            // calc.ManaReplenishment = Stats.ManaRestoreFromMaxManaPerSecond * Stats.Mana * FightLength * CalcOpts.Replenishment;  Deprecated, Replenishment removed in MoP
-            // calc.ManaReplenishment = 0.001f * Stats.Mana * FightLength * CalcOpts.Replenishment;  Deprecated, Replenishment removed in MoP
+            //calc.ManaReplenishment = Stats.ManaRestoreFromMaxManaPerSecond * Stats.Mana * FightLength * CalcOpts.Replenishment;
+            calc.ManaReplenishment = 0.001f * Stats.Mana * FightLength * CalcOpts.Replenishment;
             calc.ManaOther += Stats.ManaRestore;
             // add calc.ManaJudgements
-            calc.ManaJudgements = 0; // removed in 4.3 patch HealadinConstants.basemana * 0.15f * jotp.Casts();  Deprecated, Mana from Judgements removed in MoP
+            calc.ManaJudgements = 0; // removed in 4.3 patch HealadinConstants.basemana * 0.15f * jotp.Casts();
             if (Stats.HighestStat > 0)
             {
                 float greatnessMana = Stats.HighestStat * StatConversion.RATING_PER_MANA;
-                // calc.ManaReplenishment += Stats.ManaRestoreFromMaxManaPerSecond * FightLength * greatnessMana * CalcOpts.Replenishment; // Replenishment
-                calc.ManaDivinePlea += DivinePleas * greatnessMana * (Stats.Spirit * 1.35f); // Divine Plea
+                calc.ManaReplenishment += Stats.ManaRestoreFromMaxManaPerSecond * FightLength * greatnessMana * CalcOpts.Replenishment; // Replenishment
+                calc.ManaDivinePlea += DivinePleas * greatnessMana * .1f; // Divine Plea
             }
 
             // check if this is correct regen per 5 seconds..  
             // combat regen = 50% of spirit regen (from Meditation), plus MP5 from gear, plus 5% base mana per 5 secs.  Base mana = 23422 at 85
-            float effective_spirit = Stats.Spirit; // add in bonus spirit from 4T11 procs
-            float spirit_regen = effective_spirit * 0.564f * 5f;
-            calc.CombatRegenRate = spirit_regen + Stats.Mp5 + HealadinConstants.basemana * 0.05f;
-            calc.ManaRegenRate = spirit_regen * 2f + Stats.Mp5 + HealadinConstants.basemana * 0.05f;
+            float effective_spirit = Stats.Spirit + Stats.BonusCritChanceFrostStrike * 540 * 6 / CalcOpts.HolyShock; // add in bonus spirit from 4T11 procs
+            float spirit_regen = (1f + Talents.JudgementsOfThePure * 0.1f) * StatConversion.GetSpiritRegenSec(effective_spirit, Stats.Intellect) * 5f;
+            calc.CombatRegenRate = spirit_regen * 0.5f + Stats.Mp5 + HealadinConstants.basemana * 0.05f;
+            calc.ManaRegenRate = spirit_regen + Stats.Mp5 + HealadinConstants.basemana * 0.05f;
             calc.CombatRegenTotal = calc.CombatRegenRate * FightLength / 5f;
 
             return calc.ManaBase + calc.ManaDivinePlea + calc.CombatRegenTotal + calc.ManaOther +
@@ -192,8 +192,8 @@ namespace Rawr.Healadin
             #endregion
 
             Stats.BonusCritChanceObliterate = CalcOpts.CritOverheals;  // I really need to put some variables in Stats that are for holy pally
-            calc.HasteJotP = 0f;
-            calc.HasteSoL = 0f;
+            calc.HasteJotP = Talents.JudgementsOfThePure * 3f;
+            calc.HasteSoL = Talents.SpeedOfLight * 1f;
             calc.SpellPowerTotal = Stats.Intellect + Stats.SpellPower;
 
             #region Divine Favor - old code, commented out for now
@@ -228,8 +228,7 @@ namespace Rawr.Healadin
             #endregion
 
             #region HS and holy power
-            calc.HolyPowerTotal = (hs.Casts() + calc.HRCasts);
-            calc.HolyPowerCasts = (hs.Casts() + calc.HRCasts) / 3f;
+            calc.HolyPowerCasts = (hs.Casts() + ((Talents.TowerOfRadiance > 0) ? 1f : 0f) * calc.HRCasts) / 3f;
             if (Talents.LightOfDawn != 0)
             {
               calc.LoDCasts = (float)Math.Floor(calc.HolyPowerCasts * CalcOpts.HolyPoints);
@@ -248,18 +247,22 @@ namespace Rawr.Healadin
             remainingTime -= calc.RotationWoG + calc.RotationLoD;
             #endregion
 
-            /*#region Melee mana regen - To Be Removed
+            #region Melee mana regen
             // Melee hits generate 4% base mana.  From what I read, this proc has a 4 sec CD.  15ppm max.
             float InstantCastRotationTotal = calc.RotationLoD + calc.RotationWoG + calc.RotationHS + calc.RotationHR + calc.RotationJudge + calc.RotationBoL + calc.RotationLoH + calc.RotationCleanse;
-            float MeleeTime = 0f;  // Changed to 0 as mana from melee was removed.
+            float MeleeTime = InstantCastRotationTotal * CalcOpts.Melee;
+            // Ideally the SwingTime would be the weapon speed, then logic would be added to estimate the # of procs.  As the # of swings increases, 
+            // the number of procs would have dimishing returns.  (because more frequent swings means more swings happen during the 4 sec CD, and don't proc)
+            // For now I am going to fudge it and estimate a proc every 5 secs.  Every 4 is unrealistic since 4 is not divisable by weapon speed,
+            // so some time is always wasted.  Also consider when one alternates between swings and casts, then each swing would proc.  Whatever, 5 is good enough for now.
             float SwingTime = 5f; 
-            float MeleeManaPerProc = 0f;
+            float MeleeManaPerProc = HealadinConstants.basemana * 0.04f;
             // calc.MeleeSwings = MeleeTime / SwingTime;
             calc.MeleeProcs = MeleeTime / SwingTime; // find a way to model this better, as swings approaches MaxMeleeProcs, it should have diminishing returns somehow
             calc.ManaMelee = calc.MeleeProcs * MeleeManaPerProc;
             remainingMana += calc.ManaMelee;
-            calc.TotalMana += calc.ManaMelee; 
-            #endregion Melee mana regen */
+            calc.TotalMana += calc.ManaMelee;
+            #endregion Melee mana regen
 
             #region Filler casts
             // now that we did everything from the options panel, fill in the rest of the available cast time
@@ -278,11 +281,14 @@ namespace Rawr.Healadin
             {     // then figure out how many Holy Lights you can cast
                 // calc.HLCasts = /*(float)Math.Floor*/(remainingMana / hl.BaseMana);
                 float timeleft = calc.HLCasts * (hl.CastTime() + + CalcOpts.Userdelay);
-                // float MeleeMPS = calc.MeleeProcs / MeleeManaPerProc;
-                calc.HLCasts = ((remainingMana / (hl.MPS()) / hl.CastTime()));  // use time to spare to melee for more mana, for more HL casts
+                float MeleeMPS = calc.MeleeProcs / MeleeManaPerProc;
+                calc.HLCasts = ((remainingMana / (hl.MPS() - MeleeMPS) / hl.CastTime()));  // use time to spare to melee for more mana, for more HL casts
                 remainingTime -= calc.HLCasts * (hl.CastTime() + + CalcOpts.Userdelay);
+                float moremeleemana = remainingTime / SwingTime * MeleeManaPerProc;
                 calc.RotationMelee = remainingTime;
-                calc.MeleeProcs += remainingTime;
+                calc.MeleeProcs += remainingTime / SwingTime;
+                calc.ManaMelee += moremeleemana;
+                calc.TotalMana += moremeleemana;
             }
             else if (remainingMana < mana_fill_dl)  // else if you would run out of mana just casting Divine Light
             {
@@ -318,8 +324,14 @@ namespace Rawr.Healadin
                 calc.RotationDL -= IoLprocs * 0.75f;
             #endregion Filler Casts
 
-            #region Conviction - Removed in MoP
-            /*
+            #region Conviction
+            // does enlightened judgements crit seperately from judgement?  does it count towards conviction proc?
+            // does Protector of the Innocent crit seperately?  does it count towards conviction proc?
+            // I'm assuming yes for all these questions for now.
+            // Frankly this was my first pass at modeling Conviction.  It's far from perfect, but the results are
+            // in the same ballpark as combatlogs, and should be somewhat accurate in this talent's effect on
+            // the value of crit.
+
             float ConvictionUptime;  // time having 3 stacks up
             float ConvictionCasts = 2f * (calc.HLCasts + calc.DLCasts + calc.FoLCasts +
                                  calc.WoGCasts + calc.JudgeCasts + calc.HSCasts) + calc.LoHCasts +
@@ -354,16 +366,16 @@ namespace Rawr.Healadin
             calc.HealedWoG  *= ConvictionBuff;
             calc.HealedLoD  *= ConvictionBuff;
             calc.HealedLoH *= ConvictionBuff; 
-            */
+
             #endregion Conviction
 
             #region Talent heals: Enlightened Judgement, Protector of the Innocent, Illuminated healing, Beacon
             // Enlightened Judgement talent heals
-            calc.HealedJudge = calc.JudgeCasts * ej.AverageHealed() /** ConvictionBuff*/;
+            calc.HealedJudge = calc.JudgeCasts * ej.AverageHealed() * ConvictionBuff;
 
             // Protector of the Innocent
             calc.PotICasts = fill_casts + calc.WoGCasts + calc.LoDCasts + calc.LoHCasts + calc.HSCasts;
-            calc.HealedPotI = calc.PotICasts * poti.AverageHealed() /** ConvictionBuff*/;
+            calc.HealedPotI = calc.PotICasts * poti.AverageHealed() * ConvictionBuff;
 
             calc.UsageTotal = calc.UsageFoL + calc.UsageDL + calc.UsageHL + calc.UsageLoD + calc.UsageWoG +
                                  calc.UsageHS + calc.UsageHR + calc.UsageJudge + calc.UsageBoL + calc.UsageCleanse;

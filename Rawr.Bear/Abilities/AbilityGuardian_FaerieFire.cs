@@ -52,9 +52,9 @@ namespace Rawr.Bear
         public override void UpdateCombatState(GuardianCombatState CState)
         {
             base.UpdateCombatState(CState);
-            Name = ((CState.Talents.FaerieSwarm > 0) ? "Faerie Swarm" : "Faerie Fire");
-            SpellID = (uint)((CState.Talents.FaerieSwarm > 0) ? 102355 : 770);
-            SpellIcon = ((CState.Talents.FaerieSwarm > 0) ? "spell_druid_swarm" : "spell_nature_faeriefire");
+            Name = ((CState.Talents.FaerieSwarm) ? "Faerie Swarm" : "Faerie Fire");
+            SpellID = (uint)((CState.Talents.FaerieSwarm) ? 102355 : 770);
+            SpellIcon = ((CState.Talents.FaerieSwarm) ? "spell_druid_swarm" : "spell_nature_faeriefire");
             Cooldown = 0f + (CState.Talents.GlyphofFaeSilence ? 15f : 0);
             Range = (uint)35 + (uint)(CState.Talents.GlyphOfFaerieFire ? 10 : 0);
             GCD = (float)Math.Max(MIN_GCD_MS, _gcd / (1 + CState.MainHand.Haste));

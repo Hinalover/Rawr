@@ -487,7 +487,12 @@ namespace Rawr
             AttackPowerScaling = apscaling;
         }
 
-        public SpecialEffect(SpecialEffect copy)
+		/// <summary>
+		/// Only use copyInterpolationCache when you're sure the parameters won't change (you'll only be changing stats)
+		/// </summary>
+		/// <param name="copy"></param>
+		/// <param name="copyInterpolationCache"></param>
+        public SpecialEffect(SpecialEffect copy, bool copyInterpolationCache)
         {
             Trigger = copy.Trigger;
             Stats = copy.Stats.Clone();
@@ -502,6 +507,10 @@ namespace Rawr
             SpellPowerScaling = copy.SpellPowerScaling;
             AttackPowerScaling = copy.AttackPowerScaling;
             RealPPM = copy.RealPPM;
+			if (copyInterpolationCache)
+			{
+				interpolator = copy.interpolator;
+			}
         }
 
         /// <summary>

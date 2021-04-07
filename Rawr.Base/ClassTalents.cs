@@ -11,63 +11,39 @@ namespace Rawr
     [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
     public sealed class TalentDataAttribute : Attribute
     {
-        public TalentDataAttribute(int index, string name, int maxPoints, int tree, int column, int row, int prerequisite, string[] description, string icon)
+        public TalentDataAttribute(int index, string name, int column, int row, string description, string icon)
         {
             _index = index;
             _name = name;
-            _maxPoints = maxPoints;
-            _tree = tree;
             _column = column;
             _row = row;
-            _prerequisite = prerequisite;
             _description = description;
             _icon = icon;
         }
 
         private readonly int _index;
         private readonly string _name;
-        private readonly int _maxPoints;
-        private readonly int _tree;
         private readonly int _column;
         private readonly int _row;
-        private readonly int _prerequisite;
         private readonly string _icon;
-        private readonly string[] _description;
+        private readonly string _description;
 
         public int Index { get { return _index; } }
         public string Name { get { return _name; } }
-        public int MaxPoints { get { return _maxPoints; } }
-        public int Tree { get { return _tree; } }
         public int Column { get { return _column; } }
         public int Row { get { return _row; } }
-        public int Prerequisite { get { return _prerequisite; } }
-        public string[] Description { get { return _description; } }
+        public string Description { get { return _description; } }
         public string Icon { get { return _icon; } }
     }
 
     public abstract class TalentsBase
     {
-        public abstract int[] Data { get; }
+        public abstract bool[] Data { get; }
         public virtual bool[] GlyphData { get { return null; } }
         public int Specialization { get; set; }
         public string SpecializationName { get { return SpecializationNames[Specialization]; } set { Specialization = Array.IndexOf(SpecializationNames, value); } }
         public abstract string[] SpecializationNames { get; }
         //
-        public virtual int TreeStartingIndexes_0 { get { return 0; } }
-        public virtual int TreeStartingIndexes_1 { get { return 0; } }
-        public virtual int TreeStartingIndexes_2 { get { return 0; } }
-        public int[] TreeStartingIndexes { get { return new int[] { TreeStartingIndexes_0, TreeStartingIndexes_1, TreeStartingIndexes_2 }; } }
-        public int[] TreeLengths
-        {
-            get
-            {
-                return new int[] {
-                    TreeStartingIndexes_1,
-                    TreeStartingIndexes_2 - TreeStartingIndexes_1,
-                    Data.Length - TreeStartingIndexes_2,
-                };
-            }
-        }
         public virtual int GlyphTreeStartingIndexes_0 { get { return 0; } }
         public virtual int GlyphTreeStartingIndexes_1 { get { return 0; } }
         public virtual int GlyphTreeStartingIndexes_2 { get { return 0; } }
@@ -83,40 +59,22 @@ namespace Rawr
                 };
             }
         }
-        public int[] treeCounts = { -1, -1, -1 };
+        public int talentCount = -1;
         public int[] glyphtreeCounts = { -1, -1, -1 };
         //
-        public int[] TreeCounts
+        public int TalentCount
         {
             get
             {
-                if (treeCounts[0] == -1)
+                if (talentCount == -1)
                 {
-                    treeCounts[0] = 0;
-                    for (int i = TreeStartingIndexes[0]; i < TreeStartingIndexes[1]; i++)
-                    {
-                        treeCounts[0] += Data[i];
-                    }
+                    talentCount = 0;
+                    for (int i = 0; i < 21; ++i)
+                        if (Data[i]) ++talentCount;
                 }
-                if (treeCounts[1] == -1)
-                {
-                    treeCounts[1] = 0;
-                    for (int i = TreeStartingIndexes[1]; i < TreeStartingIndexes[2]; i++)
-                    {
-                        treeCounts[1] += Data[i];
-                    }
-                }
-                if (treeCounts[2] == -1)
-                {
-                    treeCounts[2] = 0;
-                    for (int i = TreeStartingIndexes[2]; i < Data.Length; i++)
-                    {
-                        treeCounts[2] += Data[i];
-                    }
-                }
-                return treeCounts;
+                return talentCount;
             }
-            protected set { treeCounts = value; }
+            protected set { talentCount = value; }
         }
         public int[] GlyphTreeCounts
         {
@@ -151,35 +109,23 @@ namespace Rawr
             protected set { glyphtreeCounts = value; }
         }
         //
-        public int HighestTree
-        {
-            get
-            {
-                int[] trees = TreeCounts;
-                if (trees[0] >= trees[1] && trees[0] >= trees[2]) { return 0; }
-                if (trees[1] >= trees[0] && trees[1] >= trees[2]) { return 1; }
-                if (trees[2] >= trees[0] && trees[2] >= trees[1]) { return 2; }
-                return 0;
-            }
-        }
-        //
         protected void LoadString(string code, int[][] glyphEncodes = null)
         {
             if (string.IsNullOrEmpty(code)) return;
-            int[] _data = Data;
+            bool[] _data = Data;
             string[] tmp = code.Split('.');
             int offset = 0;
             if (tmp[0].Length == 1)
             {
                 Specialization = int.Parse(tmp[0]);
                 offset = 1;
-            }            
+            }
             string talents = tmp[offset];
             if (talents.Length >= _data.Length)
             {
-                List<int> data = new List<int>();
+                List<bool> data = new List<bool>();
                 foreach (Char digit in talents)
-                    data.Add(int.Parse(digit.ToString()));
+                    data.Add(int.Parse(digit.ToString()) == 1);
                 data.CopyTo(0, _data, 0, _data.Length);
             }
             if (tmp.Length > 1 + offset)
@@ -267,8 +213,8 @@ namespace Rawr
             StringBuilder ret = new StringBuilder();
             ret.Append(Specialization.ToString());
             ret.Append('.');
-            foreach (int digit in Data)
-                ret.Append(digit.ToString());
+            foreach (bool digit in Data)
+                ret.Append(digit ? '1' : '0');
             if (GlyphData != null)
             {
                 ret.Append('.');
@@ -302,190 +248,192 @@ namespace Rawr
         public override TalentsBase Clone()
         {
             WarriorTalents clone = (WarriorTalents)MemberwiseClone();
-            clone._data = (int[])_data.Clone();
+            clone._data = (bool[])_data.Clone();
             clone._glyphData = (bool[])_glyphData.Clone();
-            clone.TreeCounts = new int[] { -1, -1, -1 };
+            clone.TalentCount = -1;
             return clone;
         }
 
-        private int[] _data = new int[18];
-        public override int[] Data { get { return _data; } }
+        private bool[] _data = new bool[21];
+        public override bool[] Data { get { return _data; } }
         public WarriorTalents() { }
         public WarriorTalents(string talents, int[][] glyphEncodes = null)
         {
             LoadString(talents, glyphEncodes);
         }
+
         private static string[] specializationNames = new[] {
 			@"Arms",@"Fury",@"Protection"};
         public override string[] SpecializationNames
         {
             get { return specializationNames; }
         }
-
         #region Warrior
-        public override int TreeStartingIndexes_0 { get { return 0; } }
         /// <summary>
         /// You can Charge every 12 sec instead of every 20 sec.
         /// </summary>
-        [TalentData(index: 0, name: "Juggernaut", maxPoints: 1, icon: "ability_warrior_bullrush",
-         tree: 0, column: 1, row: 1, prerequisite: -1, description: new[] {
-@"You can Charge every 12 sec instead of every 20 sec.",})]
-        public int Juggernaut { get { return _data[0]; } set { _data[0] = value; } }
+        [TalentData(index: 0, name: "Juggernaut", icon: "ability_warrior_bullrush",
+         column: 0, row: 0,
+         description: @"You can Charge every 12 sec instead of every 20 sec.")]
+        public bool Juggernaut { get { return _data[0]; } set { _data[0] = value; } }
         /// <summary>
-        /// You can use Charge twice before incurring its cooldown.
+        /// You can use Charge twice in a row. Each use has a 20 sec recharge time.
+        /// Charge can only grant Rage once every 12 sec.
         /// </summary>
-        [TalentData(index: 1, name: "Double Time ", maxPoints: 1, icon: "inv_misc_horn_04",
-         tree: 0, column: 2, row: 1, prerequisite: -1, description: new[] {
-@"You can use Charge twice before incurring its cooldown.",})]
-        public int DoubleTime { get { return _data[1]; } set { _data[1] = value; } }
+        [TalentData(index: 1, name: "Double Time", icon: "inv_misc_horn_04",
+         column: 1, row: 0,
+         description: @"You can use Charge twice in a row. Each use has a 20 sec recharge time.Charge can only grant Rage once every 12 sec.")]
+        public bool DoubleTime { get { return _data[1]; } set { _data[1] = value; } }
         /// <summary>
-        /// Your Charge also knocks a target to the ground and stuns it for 3 sec.
+        /// Your Charge no longer stuns, instead pinning a target to the ground and rooting it for 4 sec and reducing movement speed by 50% for 15 sec.
         /// </summary>
-        [TalentData(index: 2, name: "Warbringer", maxPoints: 1, icon: "ability_warrior_warbringer",
-         tree: 0, column: 3, row: 1, prerequisite: -1, description: new[] {
-@"Your Charge also knocks a target to the ground and stuns it for 3 sec.",})]
-        public int Warbringer { get { return _data[2]; } set { _data[2] = value; } }
+        [TalentData(index: 2, name: "Warbringer", icon: "ability_warrior_warbringer",
+         column: 2, row: 0,
+         description: @"Your Charge no longer stuns, instead pinning a target to the ground and rooting it for 4 sec and reducing movement speed by 50% for 15 sec.")]
+        public bool Warbringer { get { return _data[2]; } set { _data[2] = value; } }
         /// <summary>
-        /// Instantly heals you for 15% of your total health, and an additional 15% over 15 sec.\n\n\n\nCan only be used while Enraged. Can be used while stunned.
+        /// Instantly heals you for 10% of your total health, and an additional 10% over 5 sec. Can be used while stunned.
+        /// Effects are doubled if used while Enraged.
         /// </summary>
-        [TalentData(index: 3, name: "Enraged Regeneration", maxPoints: 1, icon: "ability_warrior_focusedrage",
-         tree: 0, column: 1, row: 2, prerequisite: -1, description: new[] {
-@"Instantly heals you for 15% of your total health, and an additional 15% over 15 sec.
-
-
-
-Can only be used while Enraged. Can be used while stunned.",})]
-        public int EnragedRegeneration { get { return _data[3]; } set { _data[3] = value; } }
+        [TalentData(index: 3, name: "Enraged Regeneration", icon: "ability_warrior_focusedrage",
+         column: 0, row: 1,
+         description: @"Instantly heals you for 10% of your total health, and an additional 10% over 5 sec. Can be used while stunned.Effects are doubled if used while Enraged.")]
+        public bool EnragedRegeneration { get { return _data[3]; } set { _data[3] = value; } }
         /// <summary>
-        /// Whenever you are struck by a Stun or Immobilize effect, you generate 20 Rage over 10 sec.\n\n\n\nWhenever you take direct damage, you have a 10% chance to regenerate 10% of your total health over 10 sec.
+        /// Whenever you are below 35% health, you regenerate 3% health per second.
         /// </summary>
-        [TalentData(index: 4, name: "Second Wind", maxPoints: 1, icon: "ability_hunter_harass",
-         tree: 0, column: 2, row: 2, prerequisite: -1, description: new[] {
-@"Whenever you are struck by a Stun or Immobilize effect, you generate 20 Rage over 10 sec.
-
-
-
-Whenever you take direct damage, you have a 10% chance to regenerate 10% of your total health over 10 sec.",})]
-        public int SecondWind { get { return _data[4]; } set { _data[4] = value; } }
+        [TalentData(index: 4, name: "Second Wind", icon: "ability_hunter_harass",
+         column: 1, row: 1,
+         description: @"Whenever you are below 35% health, you regenerate 3% health per second.")]
+        public bool SecondWind { get { return _data[4]; } set { _data[4] = value; } }
         /// <summary>
-        /// Instantly attack the target causing 31 damage and healing you for 10% of your maximum health.\n\n\n\nIf used within 20 sec after you kill an enemy that yields experience or honor, heals for 20% of your maximum health.\n\n\n\nReplaces Victory Rush.
+        ///  Arms:<!--Spec:Start: Arms-->Instantly attack the target causing [ 1,558 + 70% of AP ] damage and healing you for 20% of your maximum health.
+        /// Killing an enemy that yields experience or honor resets the cooldown of Impending Victory.
+        /// Replaces Victory Rush.<!--Spec:End--> Fury,  Protection:<!--Spec:Start: Fury,  Protection-->Instantly attack the target causing [ 1,246 + 56% of AP ] damage and healing you for 20% of your maximum health.
+        /// Killing an enemy that yields experience or honor resets the cooldown of Impending Victory.
+        /// Replaces Victory Rush.<!--Spec:End-->
         /// </summary>
-        [TalentData(index: 5, name: "Impending Victory", maxPoints: 1, icon: "ability_warrior_devastate",
-         tree: 0, column: 3, row: 2, prerequisite: -1, description: new[] {
-@"Instantly attack the target causing 31 damage and healing you for 10% of your maximum health.
-
-
-
-If used within 20 sec after you kill an enemy that yields experience or honor, heals for 20% of your maximum health.
-
-
-
-Replaces Victory Rush.",})]
-        public int ImpendingVictory { get { return _data[5]; } set { _data[5] = value; } }
+        [TalentData(index: 5, name: "Impending Victory", icon: "spell_impending_victory",
+         column: 2, row: 1,
+         description: @" Arms:<!--Spec:Start: Arms-->Instantly attack the target causing [&nbsp;1,558 + 70% of AP&nbsp;] damage and healing you for 20% of your maximum health.Killing an enemy that yields experience or honor resets the cooldown of Impending Victory.Replaces Victory Rush.<!--Spec:End--> Fury,  Protection:<!--Spec:Start: Fury,  Protection-->Instantly attack the target causing [&nbsp;1,246 + 56% of AP&nbsp;] damage and healing you for 20% of your maximum health.Killing an enemy that yields experience or honor resets the cooldown of Impending Victory.Replaces Victory Rush.<!--Spec:End-->")]
+        public bool ImpendingVictory { get { return _data[5]; } set { _data[5] = value; } }
         /// <summary>
-        /// Causes all enemies within 20 yards that are snared to become rooted for 5 sec.
+        /// Causes all enemies within 20 yards that are snared to become rooted for 5 sec. Damage caused may interrupt the effect.
         /// </summary>
-        [TalentData(index: 6, name: "Staggering Shout", maxPoints: 1, icon: "ability_bullrush",
-         tree: 0, column: 1, row: 3, prerequisite: -1, description: new[] {
-@"Causes all enemies within 20 yards that are snared to become rooted for 5 sec.",})]
-        public int StaggeringShout { get { return _data[6]; } set { _data[6] = value; } }
+        [TalentData(index: 6, name: "Staggering Shout", icon: "ability_bullrush",
+         column: 0, row: 2,
+         description: @"Causes all enemies within 20 yards that are snared to become rooted for 5 sec. Damage caused may interrupt the effect.")]
+        public bool StaggeringShout { get { return _data[6]; } set { _data[6] = value; } }
         /// <summary>
-        /// Frightens all enemies within 20 yards, reducing their movement speed by 50% for 6 sec.
+        /// Snares all enemies within 15 yards, reducing their movement speed by 50% for 15 sec.
         /// </summary>
-        [TalentData(index: 7, name: "Piercing Howl", maxPoints: 1, icon: "spell_shadow_deathscream",
-         tree: 0, column: 2, row: 3, prerequisite: -1, description: new[] {
-@"Frightens all enemies within 20 yards, reducing their movement speed by 50% for 6 sec.",})]
-        public int PiercingHowl { get { return _data[7]; } set { _data[7] = value; } }
+        [TalentData(index: 7, name: "Piercing Howl", icon: "spell_shadow_deathscream",
+         column: 1, row: 2,
+         description: @"Snares all enemies within 15 yards, reducing their movement speed by 50% for 15 sec.")]
+        public bool PiercingHowl { get { return _data[7]; } set { _data[7] = value; } }
         /// <summary>
         /// Interrupts all spellcasting within 10 yards and prevents any spell in that school from being cast for 4 sec.
         /// </summary>
-        [TalentData(index: 8, name: "Disrupting Shout", maxPoints: 1, icon: "ability_warrior_warcry",
-         tree: 0, column: 3, row: 3, prerequisite: -1, description: new[] {
-@"Interrupts all spellcasting within 10 yards and prevents any spell in that school from being cast for 4 sec.",})]
-        public int DisruptingShout { get { return _data[8]; } set { _data[8] = value; } }
+        [TalentData(index: 8, name: "Disrupting Shout", icon: "warrior_disruptingshout",
+         column: 2, row: 2,
+         description: @"Interrupts all spellcasting within 10 yards and prevents any spell in that school from being cast for 4 sec.")]
+        public bool DisruptingShout { get { return _data[8]; } set { _data[8] = value; } }
         /// <summary>
-        /// You become a whirling storm of destructive force, striking all targets within 8 yards for 75% weapon damage every 1 sec for 6 sec.\n\n\n\nDuring a Bladestorm, you are immune to movement impairing and loss of control effects, but can be Disarmed, and you can only perform shout abilities.
+        ///  Arms:<!--Spec:Start: Arms-->You become a whirling storm of destructive force, striking all targets within 8 yards for 180% weapon damage every 1 sec for 6 sec.
+        /// During a Bladestorm, you can continue to dodge, block, and parry, and are immune to movement impairing and loss of control effects. However, you can only perform shout abilities.<!--Spec:End--> Fury:<!--Spec:Start: Fury-->You become a whirling storm of destructive force, striking all targets within 8 yards with both weapons for 120% weapon damage every 1 sec for 6 sec.
+        /// During a Bladestorm, you can continue to dodge, block, and parry, and are immune to movement impairing and loss of control effects. However, you can only perform shout abilities.<!--Spec:End--> Protection:<!--Spec:Start: Protection-->You become a whirling storm of destructive force, striking all targets within 8 yards for 120% weapon damage every 1 sec for 6 sec.
+        /// During a Bladestorm, you can continue to dodge, block, and parry, and are immune to movement impairing and loss of control effects. However, you can only perform shout abilities.<!--Spec:End-->
         /// </summary>
-        [TalentData(index: 9, name: "Bladestorm", maxPoints: 1, icon: "ability_warrior_bladestorm",
-         tree: 0, column: 1, row: 4, prerequisite: -1, description: new[] {
-@"You become a whirling storm of destructive force, striking all targets within 8 yards for 75% weapon damage every 1 sec for 6 sec.
-
-
-
-During a Bladestorm, you are immune to movement impairing and loss of control effects, but can be Disarmed, and you can only perform shout abilities.",})]
-        public int Bladestorm { get { return _data[9]; } set { _data[9] = value; } }
+        [TalentData(index: 9, name: "Bladestorm", icon: "ability_warrior_bladestorm",
+         column: 0, row: 3,
+         description: @" Arms:<!--Spec:Start: Arms-->You become a whirling storm of destructive force, striking all targets within 8 yards for 180% weapon damage every 1 sec for 6 sec.During a Bladestorm, you can continue to dodge, block, and parry, and are immune to movement impairing and loss of control effects. However, you can only perform shout abilities.<!--Spec:End--> Fury:<!--Spec:Start: Fury-->You become a whirling storm of destructive force, striking all targets within 8 yards with both weapons for 120% weapon damage every 1 sec for 6 sec.During a Bladestorm, you can continue to dodge, block, and parry, and are immune to movement impairing and loss of control effects. However, you can only perform shout abilities.<!--Spec:End--> Protection:<!--Spec:Start: Protection-->You become a whirling storm of destructive force, striking all targets within 8 yards for 120% weapon damage every 1 sec for 6 sec.During a Bladestorm, you can continue to dodge, block, and parry, and are immune to movement impairing and loss of control effects. However, you can only perform shout abilities.<!--Spec:End-->")]
+        public bool Bladestorm { get { return _data[9]; } set { _data[9] = value; } }
         /// <summary>
-        /// Sends a wave of force in front of you, causing 40 damage and stunning all enemy targets within 10 yards in a frontal cone for 4 sec.
+        ///  Arms:<!--Spec:Start: Arms-->Sends a wave of force in a frontal cone before you, causing [ 90% of AP ] damage and stunning all enemy targets within 10 yards for 4 sec.
+        /// Causing damage to 3 or more targets lowers the cooldown of the next Shockwave by 20 sec.<!--Spec:End--> Fury,  Protection:<!--Spec:Start: Fury,  Protection-->Sends a wave of force in a frontal cone before you, causing [ 75% of AP ] damage and stunning all enemy targets within 10 yards for 4 sec.
+        /// Causing damage to 3 or more targets lowers the cooldown of the next Shockwave by 20 sec.<!--Spec:End-->
         /// </summary>
-        [TalentData(index: 10, name: "Shockwave", maxPoints: 1, icon: "ability_warrior_shockwave",
-         tree: 0, column: 2, row: 4, prerequisite: -1, description: new[] {
-@"Sends a wave of force in front of you, causing 40 damage and stunning all enemy targets within 10 yards in a frontal cone for 4 sec.",})]
-        public int Shockwave { get { return _data[10]; } set { _data[10] = value; } }
+        [TalentData(index: 10, name: "Shockwave", icon: "ability_warrior_shockwave",
+         column: 1, row: 3,
+         description: @" Arms:<!--Spec:Start: Arms-->Sends a wave of force in a frontal cone before you, causing [&nbsp;90% of AP&nbsp;] damage and stunning all enemy targets within 10 yards for 4 sec.Causing damage to 3 or more targets lowers the cooldown of the next Shockwave by 20 sec.<!--Spec:End--> Fury,  Protection:<!--Spec:Start: Fury,  Protection-->Sends a wave of force in a frontal cone before you, causing [&nbsp;75% of AP&nbsp;] damage and stunning all enemy targets within 10 yards for 4 sec.Causing damage to 3 or more targets lowers the cooldown of the next Shockwave by 20 sec.<!--Spec:End-->")]
+        public bool Shockwave { get { return _data[10]; } set { _data[10] = value; } }
         /// <summary>
-        /// You transform into an unstoppable colossus for 10 sec, which increases your damage dealt by 20% and causes your attacks to generate extra rage. \n\n\n\nWhile transformed you are immune to movement impairing effects.
+        ///  Arms:<!--Spec:Start: Arms-->Roar ferociously, causing [ 151 + 168% of AP ] damage to all enemies within 8 yards, knocking them back and knocking them down for 0.
+        /// 5 sec. Dragon Roar is always a critical strike and ignores all armor on the target.<!--Spec:End--> Fury,  Protection:<!--Spec:Start: Fury,  Protection-->Roar ferociously, causing [ 126 + 140% of AP ] damage to all enemies within 8 yards, knocking them back and knocking them down for 0.
+        /// 5 sec. Dragon Roar is always a critical strike and ignores all armor on the target.<!--Spec:End-->
         /// </summary>
-        [TalentData(index: 11, name: "Avatar", maxPoints: 1, icon: "ability_racial_avatar",
-         tree: 0, column: 3, row: 4, prerequisite: -1, description: new[] {
-@"You transform into an unstoppable colossus for 10 sec, which increases your damage dealt by 20% and causes your attacks to generate extra rage. 
-
-
-
-While transformed you are immune to movement impairing effects.",})]
-        public int Avatar { get { return _data[11]; } set { _data[11] = value; } }
+        [TalentData(index: 11, name: "Dragon Roar", icon: "ability_warrior_dragonroar",
+         column: 2, row: 3,
+         description: @" Arms:<!--Spec:Start: Arms-->Roar ferociously, causing [&nbsp;151 + 168% of AP&nbsp;] damage to all enemies within 8 yards, knocking them back and knocking them down for 0.5 sec. Dragon Roar is always a critical strike and ignores all armor on the target.<!--Spec:End--> Fury,  Protection:<!--Spec:Start: Fury,  Protection-->Roar ferociously, causing [&nbsp;126 + 140% of AP&nbsp;] damage to all enemies within 8 yards, knocking them back and knocking them down for 0.5 sec. Dragon Roar is always a critical strike and ignores all armor on the target.<!--Spec:End-->")]
+        public bool DragonRoar { get { return _data[11]; } set { _data[11] = value; } }
         /// <summary>
-        /// Your Spell Reflection protects you from an additional spell and protects party and raid members within 20 yards from a single spell for 5 sec.
+        /// Reflects the next spell cast on you and on all party and raid members within 20 yards for 5 sec.
         /// </summary>
-        [TalentData(index: 12, name: "Mass Spell Reflection", maxPoints: 1, icon: "ability_warrior_shieldbreak",
-         tree: 0, column: 1, row: 5, prerequisite: -1, description: new[] {
-@"Your Spell Reflection protects you from an additional spell and protects party and raid members within 20 yards from a single spell for 5 sec.",})]
-        public int MassSpellReflection { get { return _data[12]; } set { _data[12] = value; } }
+        [TalentData(index: 12, name: "Mass Spell Reflection", icon: "ability_warrior_shieldbreak",
+         column: 0, row: 4,
+         description: @"Reflects the next spell cast on you and on all party and raid members within 20 yards for 5 sec.")]
+        public bool MassSpellReflection { get { return _data[12]; } set { _data[12] = value; } }
         /// <summary>
-        /// Run at high speed towards a party or raid member, removing all movement effects upon you, intercepting the next melee or ranged attack made against them and reducing their damage taken by 20% for 6 sec.\n\n\n\nReplaces Intervene.
+        /// Run at high speed towards a party or raid member, removing all movement-impairing effects upon you, intercepting the next melee or ranged attack made against them and reducing their damage taken by 20% for 6 sec.
+        /// Replaces Intervene.
         /// </summary>
-        [TalentData(index: 13, name: "Safeguard", maxPoints: 1, icon: "ability_warrior_safeguard",
-         tree: 0, column: 2, row: 5, prerequisite: -1, description: new[] {
-@"Run at high speed towards a party or raid member, removing all movement effects upon you, intercepting the next melee or ranged attack made against them and reducing their damage taken by 20% for 6 sec.
-
-
-
-Replaces Intervene.",})]
-        public int Safeguard { get { return _data[13]; } set { _data[13] = value; } }
+        [TalentData(index: 13, name: "Safeguard", icon: "ability_warrior_safeguard",
+         column: 1, row: 4,
+         description: @"Run at high speed towards a party or raid member, removing all movement-impairing effects upon you, intercepting the next melee or ranged attack made against them and reducing their damage taken by 20% for 6 sec.Replaces Intervene.")]
+        public bool Safeguard { get { return _data[13]; } set { _data[13] = value; } }
         /// <summary>
-        /// Focus your protective gaze on a party or raid member, transfering 30% of damage taken to you for 12 sec.\n\n\n\nDuring the duration of Vigilance, your Taunt has no cooldown and attacks against the target cause you to become Enraged for 6 sec.
+        /// Focus your protective gaze on a party or raid member, reducing their damage taken by 30% for 12 sec.
+        /// During the duration of Vigilance, your Taunt has no cooldown.
         /// </summary>
-        [TalentData(index: 14, name: "Vigilance", maxPoints: 1, icon: "ability_warrior_stalwartprotector",
-         tree: 0, column: 3, row: 5, prerequisite: -1, description: new[] {
-@"Focus your protective gaze on a party or raid member, transfering 30% of damage taken to you for 12 sec.
-
-
-
-During the duration of Vigilance, your Taunt has no cooldown and attacks against the target cause you to become Enraged for 6 sec.",})]
-        public int Vigilance { get { return _data[14]; } set { _data[14] = value; } }
+        [TalentData(index: 14, name: "Vigilance", icon: "ability_warrior_vigilance",
+         column: 2, row: 4,
+         description: @"Focus your protective gaze on a party or raid member, reducing their damage taken by 30% for 12 sec.During the duration of Vigilance, your Taunt has no cooldown.")]
+        public bool Vigilance { get { return _data[14]; } set { _data[14] = value; } }
         /// <summary>
-        /// You enter a battle trance, causing your next 3 Heroic Strike or Cleave attacks to cost no rage and cause 50% extra damage. Lasts 15 sec.
+        /// You transform into a colossus for 24 sec, breaking all roots and snares and increasing your damage dealt by 20%.
         /// </summary>
-        [TalentData(index: 15, name: "Deadly Calm", maxPoints: 1, icon: "achievement_boss_kingymiron",
-         tree: 0, column: 1, row: 6, prerequisite: -1, description: new[] {
-@"You enter a battle trance, causing your next 3 Heroic Strike or Cleave attacks to cost no rage and cause 50% extra damage. Lasts 15 sec.",})]
-        public int DeadlyCalm { get { return _data[15]; } set { _data[15] = value; } }
+        [TalentData(index: 15, name: "Avatar", icon: "warrior_talent_icon_avatar",
+         column: 0, row: 5,
+         description: @"You transform into a colossus for 24 sec, breaking all roots and snares and increasing your damage dealt by 20%.")]
+        public bool Avatar { get { return _data[15]; } set { _data[15] = value; } }
         /// <summary>
-        /// You carve up your opponent with your weapons.  For the next 12 sec, your special attacks cause the target to bleed for an additional 30% damage over 6 sec.
+        /// For the next 12 sec, causes your melee special attacks to deal an additional 30% damage as a bleed over 6 sec. While bleeding, the target moves at 50% reduced speed.
         /// </summary>
-        [TalentData(index: 16, name: "Bloodbath", maxPoints: 1, icon: "ability_warrior_bloodbath",
-         tree: 0, column: 2, row: 6, prerequisite: -1, description: new[] {
-@"You carve up your opponent with your weapons.  For the next 12 sec, your special attacks cause the target to bleed for an additional 30% damage over 6 sec.",})]
-        public int Bloodbath { get { return _data[16]; } set { _data[16] = value; } }
+        [TalentData(index: 16, name: "Bloodbath", icon: "ability_warrior_bloodbath",
+         column: 1, row: 5,
+         description: @"For the next 12 sec, causes your melee special attacks to deal an additional 30% damage as a bleed over 6 sec. While bleeding, the target moves at 50% reduced speed.")]
+        public bool Bloodbath { get { return _data[16]; } set { _data[16] = value; } }
         /// <summary>
-        /// Hurl your weapon at an enemy causing 50% weapon damage and stunning the target for 3 sec.  Deals an additional 300% weapon damage to targets that are permanently immune to stuns.  \n\n\n\nReplaces Heroic Throw.
+        /// Hurl your weapon at an enemy, causing 125% weapon damage and stunning the target for 4 sec. Deals 500% weapon damage to targets that are permanently immune to stuns.
         /// </summary>
-        [TalentData(index: 17, name: "Storm Bolt", maxPoints: 1, icon: "ability_thunderbolt",
-         tree: 0, column: 3, row: 6, prerequisite: -1, description: new[] {
-@"Hurl your weapon at an enemy causing 50% weapon damage and stunning the target for 3 sec.  Deals an additional 300% weapon damage to targets that are permanently immune to stuns.  
-
-
-
-Replaces Heroic Throw.",})]
-        public int StormBolt { get { return _data[17]; } set { _data[17] = value; } }
+        [TalentData(index: 17, name: "Storm Bolt", icon: "warrior_talent_icon_stormbolt",
+         column: 2, row: 5,
+         description: @"Hurl your weapon at an enemy, causing 125% weapon damage and stunning the target for 4 sec. Deals 500% weapon damage to targets that are permanently immune to stuns.")]
+        public bool StormBolt { get { return _data[17]; } set { _data[17] = value; } }
+        /// <summary>
+        /// When you Whirlwind or Thunder Clap, whirling blades continue to spin around you for 30 sec. These blades do 1000 damage every 1.
+        /// 00 second to all enemies within 8 yards.
+        /// </summary>
+        [TalentData(index: 18, name: "Blade Barrier", icon: "ability_rogue_restlessblades",
+         column: 0, row: 6,
+         description: @"When you Whirlwind or Thunder Clap, whirling blades continue to spin around you for 30 sec. These blades do 1000 damage every 1.00 second to all enemies within 8 yards.")]
+        public bool BladeBarrier { get { return _data[18]; } set { _data[18] = value; } }
+        /// <summary>
+        /// Throw a whirling axe at the target location that inflicts 3000 damage to enemies within 8 yards every 1 sec. Lasts 15 sec.
+        /// </summary>
+        [TalentData(index: 19, name: "Ravager", icon: "inv_throwingaxepvp330_08",
+         column: 1, row: 6,
+         description: @"Throw a whirling axe at the target location that inflicts 3000 damage to enemies within 8 yards every 1 sec. Lasts 15 sec.")]
+        public bool Ravager { get { return _data[19]; } set { _data[19] = value; } }
+        /// <summary>
+        /// 
+        /// Arms & Fury
+        /// </summary>
+        [TalentData(index: 20, name: "Extreme Measures", icon: "ability_rogue_hungerforblood",
+         column: 2, row: 6,
+         description: @"
+Arms & Fury")]
+        public bool ExtremeMeasures { get { return _data[20]; } set { _data[20] = value; } }
         #endregion
     }
 
@@ -494,197 +442,213 @@ Replaces Heroic Throw.",})]
         public override TalentsBase Clone()
         {
             PaladinTalents clone = (PaladinTalents)MemberwiseClone();
-            clone._data = (int[])_data.Clone();
+            clone._data = (bool[])_data.Clone();
             clone._glyphData = (bool[])_glyphData.Clone();
-            clone.TreeCounts = new int[] { -1, -1, -1 };
+            clone.TalentCount = -1;
             return clone;
         }
 
-        private int[] _data = new int[18];
-        public override int[] Data { get { return _data; } }
+        private bool[] _data = new bool[21];
+        public override bool[] Data { get { return _data; } }
         public PaladinTalents() { }
         public PaladinTalents(string talents, int[][] glyphEncodes = null)
         {
             LoadString(talents, glyphEncodes);
         }
+
         private static string[] specializationNames = new[] {
 			@"Holy",@"Protection",@"Retribution"};
         public override string[] SpecializationNames
         {
             get { return specializationNames; }
         }
-
         #region Paladin
-        public override int TreeStartingIndexes_0 { get { return 0; } }
         /// <summary>
         /// Increases your movement speed by 70% for 8 sec.
         /// </summary>
-        [TalentData(index: 0, name: "Speed of Light", maxPoints: 1, icon: "ability_paladin_speedoflight",
-         tree: 0, column: 1, row: 1, prerequisite: -1, description: new[] {
-@"Increases your movement speed by 70% for 8 sec.",})]
-        public int SpeedOfLight { get { return _data[0]; } set { _data[0] = value; } }
+        [TalentData(index: 0, name: "Speed of Light", icon: "ability_paladin_speedoflight",
+         column: 0, row: 0,
+         description: @"Increases your movement speed by 70% for 8 sec.")]
+        public bool SpeedOfLight { get { return _data[0]; } set { _data[0] = value; } }
         /// <summary>
         /// A successful Judgment increases your movement speed by 45% for 3 sec.
         /// </summary>
-        [TalentData(index: 1, name: "Long Arm of the Law", maxPoints: 1, icon: "ability_paladin_longarmofthelaw",
-         tree: 0, column: 2, row: 1, prerequisite: -1, description: new[] {
-@"A successful Judgment increases your movement speed by 45% for 3 sec.",})]
-        public int LongArmOfTheLaw { get { return _data[1]; } set { _data[1] = value; } }
+        [TalentData(index: 1, name: "Long Arm of the Law", icon: "ability_paladin_longarmofthelaw",
+         column: 1, row: 0,
+         description: @"A successful Judgment increases your movement speed by 45% for 3 sec.")]
+        public bool LongArmOfTheLaw { get { return _data[1]; } set { _data[1] = value; } }
         /// <summary>
         /// You gain 15% movement speed at all times, plus an additional 5% movement speed for each current charge of Holy Power up to 3.
         /// </summary>
-        [TalentData(index: 2, name: "Pursuit of Justice", maxPoints: 1, icon: "spell_holy_persuitofjustice",
-         tree: 0, column: 3, row: 1, prerequisite: -1, description: new[] {
-@"You gain 15% movement speed at all times, plus an additional 5% movement speed for each current charge of Holy Power up to 3.",})]
-        public int PursuitOfJustice { get { return _data[2]; } set { _data[2] = value; } }
+        [TalentData(index: 2, name: "Pursuit of Justice", icon: "ability_paladin_veneration",
+         column: 2, row: 0,
+         description: @"You gain 15% movement speed at all times, plus an additional 5% movement speed for each current charge of Holy Power up to 3.")]
+        public bool PursuitOfJustice { get { return _data[2]; } set { _data[2] = value; } }
         /// <summary>
-        /// Stuns the target for 6 sec.\n\n\n\nReplaces Hammer of Justice.
+        /// Stuns the target for 6 sec.
+        /// Replaces Hammer of Justice.
         /// </summary>
-        [TalentData(index: 3, name: "Fist of Justice", maxPoints: 1, icon: "spell_holy_fistofjustice",
-         tree: 0, column: 1, row: 2, prerequisite: -1, description: new[] {
-@"Stuns the target for 6 sec.
-
-
-
-Replaces Hammer of Justice.",})]
-        public int FistOfJustice { get { return _data[3]; } set { _data[3] = value; } }
+        [TalentData(index: 3, name: "Fist of Justice", icon: "spell_holy_fistofjustice",
+         column: 0, row: 1,
+         description: @"Stuns the target for 6 sec.Replaces Hammer of Justice.")]
+        public bool FistOfJustice { get { return _data[3]; } set { _data[3] = value; } }
         /// <summary>
-        /// Puts the enemy target in a state of meditation, incapacitating them for up to 60 sec.  Any damage from sources other than Censure will awaken the target.  Usable against Demons, Dragonkin, Giants, Humanoids and Undead.
+        /// Puts the enemy target in a state of meditation, incapacitating them for up to 60 sec. Any damage from sources other than Censure will awaken the target. Usable against Demons, Dragonkin, Giants, Humanoids and Undead.
         /// </summary>
-        [TalentData(index: 4, name: "Repentance", maxPoints: 1, icon: "spell_holy_prayerofhealing",
-         tree: 0, column: 2, row: 2, prerequisite: -1, description: new[] {
-@"Puts the enemy target in a state of meditation, incapacitating them for up to 60 sec.  Any damage from sources other than Censure will awaken the target.  Usable against Demons, Dragonkin, Giants, Humanoids and Undead.",})]
-        public int Repentance { get { return _data[4]; } set { _data[4] = value; } }
+        [TalentData(index: 4, name: "Repentance", icon: "spell_holy_prayerofhealing",
+         column: 1, row: 1,
+         description: @"Puts the enemy target in a state of meditation, incapacitating them for up to 60 sec. Any damage from sources other than Censure will awaken the target. Usable against Demons, Dragonkin, Giants, Humanoids and Undead.")]
+        public bool Repentance { get { return _data[4]; } set { _data[4] = value; } }
         /// <summary>
-        /// Your Judgment hits fill your target with doubt and remorse, reducing movement speed by 50% for 12 sec.
+        /// Your Turn Evil now also affects Humanoids and Beasts.
         /// </summary>
-        [TalentData(index: 5, name: "Burden of Guilt", maxPoints: 1, icon: "achievement_bg_topdps",
-         tree: 0, column: 3, row: 2, prerequisite: -1, description: new[] {
-@"Your Judgment hits fill your target with doubt and remorse, reducing movement speed by 50% for 12 sec.",})]
-        public int BurdenOfGuilt { get { return _data[5]; } set { _data[5] = value; } }
+        [TalentData(index: 5, name: "Evil is a Point of View", icon: "ability_paladin_turnevil",
+         column: 2, row: 1,
+         description: @"Your Turn Evil now also affects Humanoids and Beasts.")]
+        public bool EvilIsAPointOfView { get { return _data[5]; } set { _data[5] = value; } }
         /// <summary>
-        /// Your successful Judgments reduce the cast time of your next Flash of Light by 35% per stack and improves its effectiveness by 35% per stack when used to heal others. Stacks up to 3 times.
+        ///  Holy:<!--Spec:Start: Holy-->Your successful Judgments generate a charge of Holy Power and reduce the cast time and mana cost of your next Flash of Light, Divine Light, or Holy Radiance by 35% per stack and improves its effectiveness by 20% per stack when used to heal others. Stacks up to 3 times.<!--Spec:End--> Protection,  Retribution:<!--Spec:Start: Protection,  Retribution-->Your successful Judgments reduce the cast time and mana cost of your next Flash of Light by 35% per stack and improves its effectiveness by 20% per stack when used to heal others. Stacks up to 3 times.<!--Spec:End-->
         /// </summary>
-        [TalentData(index: 6, name: "Selfless Healer", maxPoints: 1, icon: "ability_paladin_gaurdedbythelight",
-         tree: 0, column: 1, row: 3, prerequisite: -1, description: new[] {
-@"Your successful Judgments reduce the cast time of your next Flash of Light by 35% per stack and improves its effectiveness by 35% per stack when used to heal others. Stacks up to 3 times.",})]
-        public int SelflessHealer { get { return _data[6]; } set { _data[6] = value; } }
+        [TalentData(index: 6, name: "Selfless Healer", icon: "ability_paladin_gaurdedbythelight",
+         column: 0, row: 2,
+         description: @" Holy:<!--Spec:Start: Holy-->Your successful Judgments generate a charge of Holy Power and reduce the cast time and mana cost of your next Flash of Light, Divine Light, or Holy Radiance by 35% per stack and improves its effectiveness by 20% per stack when used to heal others. Stacks up to 3 times.<!--Spec:End--> Protection,  Retribution:<!--Spec:Start: Protection,  Retribution-->Your successful Judgments reduce the cast time and mana cost of your next Flash of Light by 35% per stack and improves its effectiveness by 20% per stack when used to heal others. Stacks up to 3 times.<!--Spec:End-->")]
+        public bool SelflessHealer { get { return _data[6]; } set { _data[6] = value; } }
         /// <summary>
-        /// Consumes up to 3 Holy Power to place a protective Holy flame on a friendly target, which heals them for (5538+49.0% of SP) and an additional (508+5.9% of SP) every 3 sec for 30 sec.  Healing increased per charge of Holy Power.\n\n\n\nReplaces Word of Glory.
+        ///  Holy:<!--Spec:Start: Holy-->Consumes up to 3 Holy Power to place a protective Holy flame on a friendly target, which heals them for [ 5,538 + 49% of Spell Power ] and an additional [ 711 + 8.
+        /// 19% of Spell Power ] every 3 sec for 30 sec. Healing increased per charge of Holy Power. The heal over time is increased by 50% if used on the Paladin.
+        /// Replaces Word of Glory.
+        /// Periodic healing from this spell does not cause Illuminated Healing.<!--Spec:End--> Protection,  Retribution:<!--Spec:Start: Protection,  Retribution-->Consumes up to 3 Holy Power to place a protective Holy flame on a friendly target, which heals them for [ 5,538 + 49% of Spell Power ] and an additional [ 711 + 8.
+        /// 19% of Spell Power ] every 3 sec for 30 sec. Healing increased per charge of Holy Power. The heal over time is increased by 50% if used on the Paladin.
+        /// Replaces Word of Glory.<!--Spec:End-->
         /// </summary>
-        [TalentData(index: 7, name: "Eternal Flame", maxPoints: 1, icon: "inv_torch_thrown",
-         tree: 0, column: 2, row: 3, prerequisite: -1, description: new[] {
-@"Consumes up to 3 Holy Power to place a protective Holy flame on a friendly target, which heals them for (5538+49.0% of SP) and an additional (508+5.9% of SP) every 3 sec for 30 sec.  Healing increased per charge of Holy Power.
-
-
-
-Replaces Word of Glory.",})]
-        public int EternalFlame { get { return _data[7]; } set { _data[7] = value; } }
+        [TalentData(index: 7, name: "Eternal Flame", icon: "inv_torch_thrown",
+         column: 1, row: 2,
+         description: @" Holy:<!--Spec:Start: Holy-->Consumes up to 3 Holy Power to place a protective Holy flame on a friendly target, which heals them for [&nbsp;5,538 + 49% of Spell Power&nbsp;] and an additional [&nbsp;711 + 8.19% of Spell Power&nbsp;] every 3 sec for 30 sec. Healing increased per charge of Holy Power. The heal over time is increased by 50% if used on the Paladin.Replaces Word of Glory.Periodic healing from this spell does not cause Illuminated Healing.<!--Spec:End--> Protection,  Retribution:<!--Spec:Start: Protection,  Retribution-->Consumes up to 3 Holy Power to place a protective Holy flame on a friendly target, which heals them for [&nbsp;5,538 + 49% of Spell Power&nbsp;] and an additional [&nbsp;711 + 8.19% of Spell Power&nbsp;] every 3 sec for 30 sec. Healing increased per charge of Holy Power. The heal over time is increased by 50% if used on the Paladin.Replaces Word of Glory.<!--Spec:End-->")]
+        public bool EternalFlame { get { return _data[7]; } set { _data[7] = value; } }
         /// <summary>
-        /// Protects the target with a shield of Holy Light for 30 sec.  The shield absorbs up to (30+117% of SP) damage every 6 sec.\n\n\n\nCan be active only on one target at a time.
+        /// Protects the target with a shield of Holy Light for 30 sec. The shield absorbs up to [ 240 + 81.
+        /// 9% of Holy Spell Power ] damage every 6 sec.
+        /// Can be active only on one target at a time.
         /// </summary>
-        [TalentData(index: 8, name: "Sacred Shield", maxPoints: 1, icon: "ability_paladin_blessedmending",
-         tree: 0, column: 3, row: 3, prerequisite: -1, description: new[] {
-@"Protects the target with a shield of Holy Light for 30 sec.  The shield absorbs up to (30+117% of SP) damage every 6 sec.
-
-
-
-Can be active only on one target at a time.",})]
-        public int SacredShield { get { return _data[8]; } set { _data[8] = value; } }
+        [TalentData(index: 8, name: "Sacred Shield", icon: "ability_paladin_blessedmending",
+         column: 2, row: 2,
+         description: @"Protects the target with a shield of Holy Light for 30 sec. The shield absorbs up to [&nbsp;240 + 81.9% of Holy Spell Power&nbsp;] damage every 6 sec.Can be active only on one target at a time.")]
+        public bool SacredShield { get { return _data[8]; } set { _data[8] = value; } }
         /// <summary>
-        /// Places a Hand on the friendly target, reducing the damage of harmful periodic effects by 70% for 6 sec. Players may only have one Hand on them per Paladin at any one time.
+        /// Places a Hand on the friendly target, reducing damage taken by 10% and damage from harmful periodic effects by an additional 80% (less for some creature attacks) for 6 sec. Players may only have one Hand on them per Paladin at any one time.
         /// </summary>
-        [TalentData(index: 9, name: "Hand of Purity", maxPoints: 1, icon: "spell_holy_sealofwisdom",
-         tree: 0, column: 1, row: 4, prerequisite: -1, description: new[] {
-@"Places a Hand on the friendly target, reducing the damage of harmful periodic effects by 70% for 6 sec. Players may only have one Hand on them per Paladin at any one time.",})]
-        public int HandOfPurity { get { return _data[9]; } set { _data[9] = value; } }
+        [TalentData(index: 9, name: "Hand of Purity", icon: "spell_holy_sealofwisdom",
+         column: 0, row: 3,
+         description: @"Places a Hand on the friendly target, reducing damage taken by 10% and damage from harmful periodic effects by an additional 80% (less for some creature attacks) for 6 sec. Players may only have one Hand on them per Paladin at any one time.")]
+        public bool HandOfPurity { get { return _data[9]; } set { _data[9] = value; } }
         /// <summary>
-        /// When your Divine Shield, Divine Protection or Lay on Hands are on cooldown, spending Holy Power will reduce the remaining cooldown by 1% per Holy Power spent, up to a maximum of 50% reduction.
+        /// Reduces the cooldown of your Divine Shield, Divine Protection and Lay on Hands by 50%.
         /// </summary>
-        [TalentData(index: 10, name: "Unbreakable Spirit", maxPoints: 1, icon: "spell_holy_unyieldingfaith",
-         tree: 0, column: 2, row: 4, prerequisite: -1, description: new[] {
-@"When your Divine Shield, Divine Protection or Lay on Hands are on cooldown, spending Holy Power will reduce the remaining cooldown by 1% per Holy Power spent, up to a maximum of 50% reduction.",})]
-        public int UnbreakableSpirit { get { return _data[10]; } set { _data[10] = value; } }
+        [TalentData(index: 10, name: "Unbreakable Spirit", icon: "spell_holy_unyieldingfaith",
+         column: 1, row: 3,
+         description: @"Reduces the cooldown of your Divine Shield, Divine Protection and Lay on Hands by 50%.")]
+        public bool UnbreakableSpirit { get { return _data[10]; } set { _data[10] = value; } }
         /// <summary>
         /// You can use Hand of Freedom, Hand of Protection, Hand of Sacrifice and Hand of Salvation twice each before incurring their cooldowns.
         /// </summary>
-        [TalentData(index: 11, name: "Clemency", maxPoints: 1, icon: "ability_paladin_clemency",
-         tree: 0, column: 3, row: 4, prerequisite: -1, description: new[] {
-@"You can use Hand of Freedom, Hand of Protection, Hand of Sacrifice and Hand of Salvation twice each before incurring their cooldowns.",})]
-        public int Clemency { get { return _data[11]; } set { _data[11] = value; } }
+        [TalentData(index: 11, name: "Clemency", icon: "ability_paladin_clemency",
+         column: 2, row: 3,
+         description: @"You can use Hand of Freedom, Hand of Protection, Hand of Sacrifice and Hand of Salvation twice each before incurring their cooldowns.")]
+        public bool Clemency { get { return _data[11]; } set { _data[11] = value; } }
         /// <summary>
         /// Abilities that generate Holy Power will deal 30% additional damage and healing, and generate 3 charges of Holy Power for the next 18 sec.
         /// </summary>
-        [TalentData(index: 12, name: "Holy Avenger", maxPoints: 1, icon: "ability_paladin_holyavenger",
-         tree: 0, column: 1, row: 5, prerequisite: -1, description: new[] {
-@"Abilities that generate Holy Power will deal 30% additional damage and healing, and generate 3 charges of Holy Power for the next 18 sec.",})]
-        public int HolyAvenger { get { return _data[12]; } set { _data[12] = value; } }
+        [TalentData(index: 12, name: "Holy Avenger", icon: "ability_paladin_holyavenger",
+         column: 0, row: 4,
+         description: @"Abilities that generate Holy Power will deal 30% additional damage and healing, and generate 3 charges of Holy Power for the next 18 sec.")]
+        public bool HolyAvenger { get { return _data[12]; } set { _data[12] = value; } }
         /// <summary>
-        /// Avenging Wrath lasts 50% longer and grants more frequent access to one of your abilities while it lasts.\n\nHoly\nReduces the cooldown of Holy Shock by 50%.\n\nProtection\nReduces the cooldown of Judgment by 50%. Avenging Wrath also increases healing received by 20%.\n\nRetribution\nReduces the cooldown of Hammer of Wrath by 50%.
+        /// Avenging Wrath lasts 50% longer and grants more frequent access to one of your abilities while it lasts.
+        /// HolyReduces the cooldown of Holy Shock by 50% and increases the critical strike chance of Holy Shock by 20%.
+        /// ProtectionReduces the cooldown of Judgment by 50%, and causes Judgment to generate one additional Holy Power. Avenging Wrath also increases healing received by 20%.
+        /// RetributionReduces the cooldown of Hammer of Wrath by 50%.
         /// </summary>
-        [TalentData(index: 13, name: "Sanctified Wrath", maxPoints: 1, icon: "ability_paladin_sanctifiedwrath",
-         tree: 0, column: 2, row: 5, prerequisite: -1, description: new[] {
-@"Avenging Wrath lasts 50% longer and grants more frequent access to one of your abilities while it lasts.
+        [TalentData(index: 13, name: "Sanctified Wrath", icon: "ability_paladin_sanctifiedwrath",
+         column: 1, row: 4,
+         description: @"Avenging Wrath lasts 50% longer and grants more frequent access to one of your abilities while it lasts.HolyReduces the cooldown of Holy Shock by 50% and increases the critical strike chance of Holy Shock by 20%.ProtectionReduces the cooldown of Judgment by 50%, and causes Judgment to generate one additional Holy Power. Avenging Wrath also increases healing received by 20%.RetributionReduces the cooldown of Hammer of Wrath by 50%.")]
+        public bool SanctifiedWrath { get { return _data[13]; } set { _data[13] = value; } }
+        /// <summary>
+        /// Abilities that cost Holy Power have a 25% chance to cause the Divine Purpose effect. Divine PurposeYour next Holy Power ability will consume no Holy Power and will cast as if 3 Holy Power were consumed. Lasts 8 sec.
+        /// </summary>
+        [TalentData(index: 14, name: "Divine Purpose", icon: "spell_holy_divinepurpose",
+         column: 2, row: 4,
+         description: @"Abilities that cost Holy Power have a 25% chance to cause the Divine Purpose effect. Divine PurposeYour next Holy Power ability will consume no Holy Power and will cast as if 3 Holy Power were consumed. Lasts 8 sec.")]
+        public bool DivinePurpose { get { return _data[14]; } set { _data[14] = value; } }
+        /// <summary>
+        /// Sends a beam of light toward a target, turning them into a prism for Holy energy.
+        /// If an enemy is the prism, they take [ 16,136 + 142.
+        /// 8% of Spell Power ] Holy damage and radiate [ 10,882 + 96.
+        /// 2% of Spell Power ] healing to 5 nearby allies within 15 yards.
+        /// If an ally is the prism, they are healed for [ 16,136 + 142.
+        /// 8% of Spell Power ] and radiate [ 10,882 + 96.
+        /// 2% of Spell Power ] Holy damage to 5 nearby enemies within 15 yards.
+        /// </summary>
+        [TalentData(index: 15, name: "Holy Prism", icon: "spell_paladin_holyprism",
+         column: 0, row: 5,
+         description: @"Sends a beam of light toward a target, turning them into a prism for Holy energy.If an enemy is the prism, they take [&nbsp;16,136 + 142.8% of Spell Power&nbsp;] Holy damage and radiate [&nbsp;10,882 + 96.2% of Spell Power&nbsp;] healing to 5 nearby allies within 15 yards.If an ally is the prism, they are healed for [&nbsp;16,136 + 142.8% of Spell Power&nbsp;] and radiate [&nbsp;10,882 + 96.2% of Spell Power&nbsp;] Holy damage to 5 nearby enemies within 15 yards.")]
+        public bool HolyPrism { get { return _data[15]; } set { _data[15] = value; } }
+        /// <summary>
+        /// Hurl a Light-infused hammer into the ground, where it will blast a 10 yard area with Arcing Light for 14 sec.
+        /// Arcing LightDeals [ 3,630 + 32.
+        /// 1% of Spell Power ] Holy damage to enemies and reduces their movement speed by 50% for 2 sec. Heals allies for [ 3,630 + 32.
+        /// 1% of Spell Power ] every 2 sec.
+        /// </summary>
+        [TalentData(index: 16, name: "Light's Hammer", icon: "spell_paladin_lightshammer",
+         column: 1, row: 5,
+         description: @"Hurl a Light-infused hammer into the ground, where it will blast a 10 yard area with Arcing Light for 14 sec.Arcing LightDeals [&nbsp;3,630 + 32.1% of Spell Power&nbsp;] Holy damage to enemies and reduces their movement speed by 50% for 2 sec. Heals allies for [&nbsp;3,630 + 32.1% of Spell Power&nbsp;] every 2 sec.")]
+        public bool LightsHammer { get { return _data[16]; } set { _data[16] = value; } }
+        /// <summary>
+        /// A hammer slowly falls from the sky, causing [ 593.
+        /// 6% of Holy Spell Power + 12,989 ] Holy damage over 10 sec. This damage is dealt slowly at first and increases over time, culminating in a final burst of damage. Dispelling the effect triggers the final burst.
+        /// Stay of ExecutionIf used on friendly targets, the falling hammer heals the target for [ 593.
+        /// 6% of Holy Spell Power + 12,989 ] healing over 10 sec. This healing is dealt slowly at first and increases over time, culminating in a final burst of healing. Dispelling the effect triggers the final burst.
+        /// </summary>
+        [TalentData(index: 17, name: "Execution Sentence", icon: "spell_paladin_executionsentence",
+         column: 2, row: 5,
+         description: @"A hammer slowly falls from the sky, causing [&nbsp;593.6% of Holy Spell Power + 12,989&nbsp;] Holy damage over 10 sec. This damage is dealt slowly at first and increases over time, culminating in a final burst of damage. Dispelling the effect triggers the final burst.Stay of ExecutionIf used on friendly targets, the falling hammer heals the target for [&nbsp;593.6% of Holy Spell Power + 12,989&nbsp;] healing over 10 sec. This healing is dealt slowly at first and increases over time, culminating in a final burst of healing. Dispelling the effect triggers the final burst.")]
+        public bool ExecutionSentence { get { return _data[17]; } set { _data[17] = value; } }
+        /// <summary>
+        /// 
+        /// Holy
+        /// </summary>
+        [TalentData(index: 18, name: "The Light Within", icon: "ability_paladin_blindinglight2",
+         column: 0, row: 6,
+         description: @"
+Holy")]
+        public bool TheLightWithin { get { return _data[18]; } set { _data[18] = value; } }
+        /// <summary>
+        /// Fills you with holy Light, causing you to gain Faith equal to all damage dealt. Faith acts as spell power toward the next healing spell you cast.
+        /// 
+        /// Holy
+        /// While Seal of Faith is active, all damage dealt is increased by 30%.
+        /// 
+        /// Protection & Retribution
+        /// While Seal of Faith is active, all damage dealt is reduced by 30%.
+        /// </summary>
+        [TalentData(index: 19, name: "Seal of Faith", icon: "spell_holy_blessedresillience",
+         column: 1, row: 6,
+         description: @"Fills you with holy Light, causing you to gain Faith equal to all damage dealt. Faith acts as spell power toward the next healing spell you cast.
 
 Holy
-Reduces the cooldown of Holy Shock by 50%.
+While Seal of Faith is active, all damage dealt is increased by 30%.
 
-Protection
-Reduces the cooldown of Judgment by 50%. Avenging Wrath also increases healing received by 20%.
-
-Retribution
-Reduces the cooldown of Hammer of Wrath by 50%.",})]
-        public int SanctifiedWrath { get { return _data[13]; } set { _data[13] = value; } }
+Protection & Retribution
+While Seal of Faith is active, all damage dealt is reduced by 30%.")]
+        public bool SealOfFaith { get { return _data[19]; } set { _data[19] = value; } }
         /// <summary>
-        /// Abilities that cost Holy Power have a 25% chance to cause the Divine Purpose effect. \n\n\n\nDivine Purpose - Your next Holy Power ability will consume no Holy Power and cast as if 3 Holy Power were consumed.
+        /// 
+        /// Holy
         /// </summary>
-        [TalentData(index: 14, name: "Divine Purpose", maxPoints: 1, icon: "spell_holy_divinepurpose",
-         tree: 0, column: 3, row: 5, prerequisite: -1, description: new[] {
-@"Abilities that cost Holy Power have a 25% chance to cause the Divine Purpose effect. 
-
-
-
-Divine Purpose - Your next Holy Power ability will consume no Holy Power and cast as if 3 Holy Power were consumed.",})]
-        public int DivinePurpose { get { return _data[14]; } set { _data[14] = value; } }
-        /// <summary>
-        /// Sends a beam of light toward a target, turning them into a prism for Holy energy.\n\n\n\nIf an enemy is the prism, they take (16136+142.8% of SP) Holy damage and radiate (10882+96.2% of SP) healing to 5 nearby allies within 10 yards.\n\n\n\nIf an ally is the prism, they are healed for (16136+142.8% of SP) and radiate (10882+96.2% of SP) Holy damage to 5 nearby enemies within 10 yards.
-        /// </summary>
-        [TalentData(index: 15, name: "Holy Prism", maxPoints: 1, icon: "paladin_icon_speedoflight",
-         tree: 0, column: 1, row: 6, prerequisite: -1, description: new[] {
-@"Sends a beam of light toward a target, turning them into a prism for Holy energy.
-
-
-
-If an enemy is the prism, they take (16136+142.8% of SP) Holy damage and radiate (10882+96.2% of SP) healing to 5 nearby allies within 10 yards.
-
-
-
-If an ally is the prism, they are healed for (16136+142.8% of SP) and radiate (10882+96.2% of SP) Holy damage to 5 nearby enemies within 10 yards.",})]
-        public int HolyPrism { get { return _data[15]; } set { _data[15] = value; } }
-        /// <summary>
-        /// Hurl a Light-infused hammer into the ground, where it will blast a 10 yard area with Arcing Light for 16 sec.\n\n\nArcing Light\nDeals (3630+32.1% of SP) Holy damage to enemies within the area and 0 healing to allies within the area every 2 sec.
-        /// </summary>
-        [TalentData(index: 16, name: "Light's Hammer", maxPoints: 1, icon: "inv_mace_47",
-         tree: 0, column: 2, row: 6, prerequisite: -1, description: new[] {
-@"Hurl a Light-infused hammer into the ground, where it will blast a 10 yard area with Arcing Light for 16 sec.
-
-
-Arcing Light
-Deals (3630+32.1% of SP) Holy damage to enemies within the area and 0 healing to allies within the area every 2 sec.",})]
-        public int LightsHammer { get { return _data[16]; } set { _data[16] = value; } }
-        /// <summary>
-        /// A hammer slowly falls from the sky, causing increasing Holy damage to the designated target for the next 10 seconds and culminating in a final burst of damage.\n\n\n\nStay of Execution\n\nIf used on friendly targets, the falling hammer heals the target for the next 10 seconds and culminating in a final burst of healing.
-        /// </summary>
-        [TalentData(index: 17, name: "Execution Sentence", maxPoints: 1, icon: "inv_helmet_plate_pvppaladin_d_01",
-         tree: 0, column: 3, row: 6, prerequisite: -1, description: new[] {
-@"A hammer slowly falls from the sky, causing increasing Holy damage to the designated target for the next 10 seconds and culminating in a final burst of damage.
-
-
-
-Stay of Execution
-
-If used on friendly targets, the falling hammer heals the target for the next 10 seconds and culminating in a final burst of healing.",})]
-        public int ExecutionSentence { get { return _data[17]; } set { _data[17] = value; } }
+        [TalentData(index: 20, name: "Divine Conviction", icon: "ability_paladin_swiftretribution",
+         column: 2, row: 6,
+         description: @"
+Holy")]
+        public bool DivineConviction { get { return _data[20]; } set { _data[20] = value; } }
         #endregion
     }
 
@@ -693,174 +657,206 @@ If used on friendly targets, the falling hammer heals the target for the next 10
         public override TalentsBase Clone()
         {
             HunterTalents clone = (HunterTalents)MemberwiseClone();
-            clone._data = (int[])_data.Clone();
+            clone._data = (bool[])_data.Clone();
             clone._glyphData = (bool[])_glyphData.Clone();
-            clone.TreeCounts = new int[] { -1, -1, -1 };
+            clone.TalentCount = -1;
             return clone;
         }
 
-        private int[] _data = new int[18];
-        public override int[] Data { get { return _data; } }
+        private bool[] _data = new bool[21];
+        public override bool[] Data { get { return _data; } }
         public HunterTalents() { }
         public HunterTalents(string talents, int[][] glyphEncodes = null)
         {
             LoadString(talents, glyphEncodes);
         }
+
         private static string[] specializationNames = new[] {
 			@"Beast Mastery",@"Marksmanship",@"Survival"};
         public override string[] SpecializationNames
         {
             get { return specializationNames; }
         }
-
         #region Hunter
-        public override int TreeStartingIndexes_0 { get { return 0; } }
         /// <summary>
-        /// Your movement speed is increased by 60% for 4 sec after you use Disengage.
+        /// Your Disengage frees you from all movement impairing effects and increases your movement speed by 60% for 8 sec.
         /// </summary>
-        [TalentData(index: 0, name: "Posthaste", maxPoints: 1, icon: "ability_hunter_posthaste",
-         tree: 0, column: 1, row: 1, prerequisite: -1, description: new[] {
-@"Your movement speed is increased by 60% for 4 sec after you use Disengage.",})]
-        public int Posthaste { get { return _data[0]; } set { _data[0] = value; } }
+        [TalentData(index: 0, name: "Posthaste", icon: "ability_hunter_posthaste",
+         column: 0, row: 0,
+         description: @"Your Disengage frees you from all movement impairing effects and increases your movement speed by 60% for 8 sec.")]
+        public bool Posthaste { get { return _data[0]; } set { _data[0] = value; } }
         /// <summary>
-        /// Increases your chance to dodge attacks and resist spells by 100% for 3 sec when you use Disengage.
+        /// When you Disengage, you also activate a web trap which encases all targets within 8 yards in sticky webs, preventing movement for 8 sec.
         /// </summary>
-        [TalentData(index: 1, name: "Narrow Escape", maxPoints: 1, icon: "inv_misc_volatileair",
-         tree: 0, column: 2, row: 1, prerequisite: -1, description: new[] {
-@"When you Disengage, you also activate a web trap which encases all targets within 8 yards in sticky webs, preventing movement for 8 sec.",})]
-        public int NarrowEscape { get { return _data[1]; } set { _data[1] = value; } }
+        [TalentData(index: 1, name: "Narrow Escape", icon: "inv_misc_web_01",
+         column: 1, row: 0,
+         description: @"When you Disengage, you also activate a web trap which encases all targets within 8 yards in sticky webs, preventing movement for 8 sec.")]
+        public bool NarrowEscape { get { return _data[1]; } set { _data[1] = value; } }
         /// <summary>
-        /// When you Disengage, you are instantly healed for 15% of your total health.
+        /// Reduces the cooldown of Disengage by 10 sec, and the cooldown of Deterrence by 60 sec.
         /// </summary>
-        [TalentData(index: 2, name: "Crouching Tiger, Hidden Chimera", maxPoints: 1, icon: "ability_hunter_pet_chimerae",
-         tree: 0, column: 3, row: 1, prerequisite: -1, description: new[] {
-@"Reduces the cooldown of Disengage by 10 sec, and the cooldown of Deterrence by 60 sec.",})]
-        public int CrouchingTigerHiddenChimera { get { return _data[2]; } set { _data[2] = value; } }
+        [TalentData(index: 2, name: "Crouching Tiger, Hidden Chimera", icon: "ability_hunter_pet_chimera",
+         column: 2, row: 0,
+         description: @"Reduces the cooldown of Disengage by 10 sec, and the cooldown of Deterrence by 60 sec.")]
+        public bool CrouchingTigerHiddenChimera { get { return _data[2]; } set { _data[2] = value; } }
         /// <summary>
-        /// A shot that silences the target and interrupts spellcasting for 3 sec.
+        /// You fire a magical projectile, tethering the enemy and any other enemies within 5 yards of the landing arrow for 10 sec.
+        /// If targets move 5 yards from the arrow they are stunned for 5 sec (3 sec PvP) and will be immune to the effects of Binding Shot for 10 sec.
         /// </summary>
-        [TalentData(index: 3, name: "Silencing Shot", maxPoints: 1, icon: "ability_theblackarrow",
-         tree: 0, column: 1, row: 2, prerequisite: -1, description: new[] {
-@"A shot that silences the target and interrupts spellcasting for 3 sec.",})]
-        public int SilencingShot { get { return _data[3]; } set { _data[3] = value; } }
+        [TalentData(index: 3, name: "Binding Shot", icon: "spell_shaman_bindelemental",
+         column: 0, row: 1,
+         description: @"You fire a magical projectile, tethering the enemy and any other enemies within 5 yards of the landing arrow for 10 sec.If targets move 5 yards from the arrow they are stunned for 5 sec (3 sec PvP) and will be immune to the effects of Binding Shot for 10 sec.")]
+        public bool BindingShot { get { return _data[3]; } set { _data[3] = value; } }
         /// <summary>
-        /// A stinging shot that puts the target to sleep for 30 sec.  Any damage will cancel the effect.  When the target wakes up, the Sting causes 2,829 Nature damage over 6 sec.  Only one Sting per Hunter can be active on the target at a time.
+        /// A stinging shot that puts the target to sleep for 30 sec. Any damage will cancel the effect. Only one Sting per Hunter can be active on the target at a time.
         /// </summary>
-        [TalentData(index: 4, name: "Wyvern Sting", maxPoints: 1, icon: "inv_spear_02",
-         tree: 0, column: 2, row: 2, prerequisite: -1, description: new[] {
-@"A stinging shot that puts the target to sleep for 30 sec.  Any damage will cancel the effect.  When the target wakes up, the Sting causes 2,829 Nature damage over 6 sec.  Only one Sting per Hunter can be active on the target at a time.",})]
-        public int WyvernSting { get { return _data[4]; } set { _data[4] = value; } }
+        [TalentData(index: 4, name: "Wyvern Sting", icon: "inv_spear_02",
+         column: 1, row: 1,
+         description: @"A stinging shot that puts the target to sleep for 30 sec. Any damage will cancel the effect. Only one Sting per Hunter can be active on the target at a time.")]
+        public bool WyvernSting { get { return _data[4]; } set { _data[4] = value; } }
         /// <summary>
-        /// Command your pet to intimidate the target, causing a high amount of threat and stunning the target for 3 sec. Lasts 15 sec.
+        /// Command your pet to intimidate the target, stunning it for 3 sec.
         /// </summary>
-        [TalentData(index: 5, name: "Binding Shot", maxPoints: 1, icon: "spell_shaman_bindelemental",
-         tree: 0, column: 3, row: 2, prerequisite: -1, description: new[] {
-@"You fire a magical projectile, tethering the enemy and any other enemies within 5 yards of the landing arrow for (11 sec) sec.  If targets move 5 yards from the arrow they are stunned for 5 sec (3 sec PvP) and will be immune to the effects of Binding Shot for 10 sec.",})]
-        public int BindingShot { get { return _data[5]; } set { _data[5] = value; } }
+        [TalentData(index: 5, name: "Intimidation", icon: "ability_devour",
+         column: 2, row: 1,
+         description: @"Command your pet to intimidate the target, stunning it for 3 sec.")]
+        public bool Intimidation { get { return _data[5]; } set { _data[5] = value; } }
         /// <summary>
-        /// Whenever you are hit by a melee attack, the cooldown of your Disengage is instantly reduced by 4 sec.\n\n\n\nWhenever you are hit by a ranged attack or spell, the cooldown of your Deterrence is instantly reduced by 8 sec.\n\n\n\nThese effects have a 2 sec cooldown.
+        /// Instantly heals you for 30% and your pet for 100% of total health.
         /// </summary>
-        [TalentData(index: 6, name: "Exhilaration", maxPoints: 1, icon: "ability_hunter_pet_chimera",
-         tree: 0, column: 1, row: 3, prerequisite: -1, description: new[] {
-@"Instantly heals you for 30% and your pet for 100% of total health.",})]
-        public int Exhilaration { get { return _data[6]; } set { _data[6] = value; } }
+        [TalentData(index: 6, name: "Exhilaration", icon: "ability_hunter_onewithnature",
+         column: 0, row: 2,
+         description: @"Instantly heals you for 30% and your pet for 100% of total health.")]
+        public bool Exhilaration { get { return _data[6]; } set { _data[6] = value; } }
         /// <summary>
-        /// Your Aspect of the Hawk now also reduces all direct damage taken by 15%.
+        /// The Hunter takes on the aspects of an iron hawk, increasing ranged attack power by 25%, and reducing all damage taken by 10%. Only one Aspect can be active at a time.
+        /// Replaces Aspect of the Hawk.
         /// </summary>
-        [TalentData(index: 7, name: "Aspect of the Iron Hawk", maxPoints: 1, icon: "ability_hunter_aspectoftheironhawk",
-         tree: 0, column: 2, row: 3, prerequisite: -1, description: new[] {
-@"Your Aspect of the Hawk now also reduces all direct damage taken by 15%.",})]
-        public int AspectOfTheIronHawk { get { return _data[7]; } set { _data[7] = value; } }
+        [TalentData(index: 7, name: "Aspect of the Iron Hawk", icon: "spell_hunter_aspectoftheironhawk",
+         column: 1, row: 2,
+         description: @"The Hunter takes on the aspects of an iron hawk, increasing ranged attack power by 25%, and reducing all damage taken by 10%. Only one Aspect can be active at a time.Replaces Aspect of the Hawk.")]
+        public bool AspectOfTheIronHawk { get { return _data[7]; } set { _data[7] = value; } }
         /// <summary>
-        /// While your pet is active, you and your pet will regenerate 2% of total health every 5 sec.
+        /// While your pet is active, you and your pet will regenerate 3% of total health every 2 sec.
         /// </summary>
-        [TalentData(index: 8, name: "Spirit Bond", maxPoints: 1, icon: "ability_druid_demoralizingroar",
-         tree: 0, column: 3, row: 3, prerequisite: -1, description: new[] {
-@"While your pet is active, you and your pet will regenerate 2% of total health every 5 sec.",})]
-        public int SpiritBond { get { return _data[8]; } set { _data[8] = value; } }
+        [TalentData(index: 8, name: "Spirit Bond", icon: "ability_druid_demoralizingroar",
+         column: 2, row: 2,
+         description: @"While your pet is active, you and your pet will regenerate 3% of total health every 2 sec.")]
+        public bool SpiritBond { get { return _data[8]; } set { _data[8] = value; } }
         /// <summary>
-        /// Instantly restores 50 Focus to you and your pet.
+        /// Instantly restores 50 Focus to you and your pet and an additional 50 Focus over 10 sec.
         /// </summary>
-        [TalentData(index: 9, name: "Fervor", maxPoints: 1, icon: "ability_hunter_aspectoftheviper",
-         tree: 0, column: 1, row: 4, prerequisite: -1, description: new[] {
-@"Instantly restores 50 Focus to you and your pet.",})]
-        public int Fervor { get { return _data[9]; } set { _data[9] = value; } }
+        [TalentData(index: 9, name: "Fervor", icon: "ability_hunter_aspectoftheviper",
+         column: 0, row: 3,
+         description: @"Instantly restores 50 Focus to you and your pet and an additional 50 Focus over 10 sec.")]
+        public bool Fervor { get { return _data[9]; } set { _data[9] = value; } }
         /// <summary>
-        /// When activated, this ability immediately finishes the cooldown on all Hunter abilities.
+        /// Summons a powerful wild beast to attack your target for 15 sec. Each time the beast deals damage, you will gain 5 Focus.
         /// </summary>
-        [TalentData(index: 10, name: "Dire Beast", maxPoints: 1, icon: "ability_hunter_readiness",
-         tree: 0, column: 2, row: 4, prerequisite: -1, description: new[] {
-@"Summons a powerful wild beast to attack your target for 15 sec.  Each time the beast deals damage, you will gain 5 focus.",})]
-        public int DireBeast { get { return _data[10]; } set { _data[10] = value; } }
+        [TalentData(index: 10, name: "Dire Beast", icon: "ability_hunter_sickem",
+         column: 1, row: 3,
+         description: @"Summons a powerful wild beast to attack your target for 15 sec. Each time the beast deals damage, you will gain 5 Focus.")]
+        public bool DireBeast { get { return _data[10]; } set { _data[10] = value; } }
         /// <summary>
-        /// You have a 15% chance when you fire a shot that costs Focus to instantly regain 100% of the Focus cost of the shot.
+        /// You have a 30% chance when you fire a ranged attack that costs Focus or Kill Command to reduce the Focus cost of your next 3 Arcane Shots or Multi-Shots by 20.
         /// </summary>
-        [TalentData(index: 11, name: "Thrill of the Hunt", maxPoints: 1, icon: "ability_hunter_thrillofthehunt",
-         tree: 0, column: 3, row: 4, prerequisite: -1, description: new[] {
-@"You have a 30% chance when you fire a shot that costs Focus or Kill Command to instantly regain 100% of the Focus cost of the shot.",})]
-        public int ThrillOfTheHunt { get { return _data[11]; } set { _data[11] = value; } }
+        [TalentData(index: 11, name: "Thrill of the Hunt", icon: "ability_hunter_thrillofthehunt",
+         column: 2, row: 3,
+         description: @"You have a 30% chance when you fire a ranged attack that costs Focus or Kill Command to reduce the Focus cost of your next 3 Arcane Shots or Multi-Shots by 20.")]
+        public bool ThrillOfTheHunt { get { return _data[11]; } set { _data[11] = value; } }
         /// <summary>
-        /// Crow murder..
+        /// Summons a flock of crows to attack your target over the next 30 sec. If used on a target below 20% health, the cooldown is reduced to 60 seconds.
         /// </summary>
-        [TalentData(index: 12, name: "A Murder of Crows", maxPoints: 1, icon: "ability_hunter_glacialtrap",
-         tree: 0, column: 1, row: 5, prerequisite: -1, description: new[] {
-@"Summons a flock of crows to attack your target over the next 30 sec.  If used on a target below 20% health, the cooldown is reduced to 60 seconds.",})]
-        public int MurderOfCrows { get { return _data[12]; } set { _data[12] = value; } }
+        [TalentData(index: 12, name: "A Murder of Crows", icon: "ability_hunter_murderofcrows",
+         column: 0, row: 4,
+         description: @"Summons a flock of crows to attack your target over the next 30 sec. If used on a target below 20% health, the cooldown is reduced to 60 seconds.")]
+        public bool AMurderOfCrows { get { return _data[12]; } set { _data[12] = value; } }
         /// <summary>
-        /// Blink strike
+        /// Your pet's Basic Attacks deal 50% increased damage, can now be used from 30 yards away, and will instantly teleport them behind their target.
         /// </summary>
-        [TalentData(index: 13, name: "Blink Strike", maxPoints: 1, icon: "ability_hunter_blackicetrap",
-         tree: 0, column: 2, row: 5, prerequisite: -1, description: new[] {
-@"Causes your pet to instantly teleport behind an enemy target up to 40 yards away from your pet and inflict 600% normal damage.",})]
-        public int BlinkStrike { get { return _data[13]; } set { _data[13] = value; } }
+        [TalentData(index: 13, name: "Blink Strikes", icon: "spell_arcane_arcane04",
+         column: 1, row: 4,
+         description: @"Your pet's Basic Attacks deal 50% increased damage, can now be used from 30 yards away, and will instantly teleport them behind their target.")]
+        public bool BlinkStrikes { get { return _data[13]; } set { _data[13] = value; } }
         /// <summary>
-        /// Lynx Rush
+        /// Your pet rapidly charges from target to target, attacking 9 times over 4 sec. Each attack causes the target to bleed for [ 430 + 19% of AP ] damage over 15 sec, stacking up to 9 times.
+        /// The pet must be within 10 yards of the target to Lynx Rush.
         /// </summary>
-        [TalentData(index: 14, name: "Lynx Rush", maxPoints: 1, icon: "trade_brewpoison",
-         tree: 0, column: 3, row: 5, prerequisite: -1, description: new[] {
-@"Your pet rapidly charges from target to target, attacking 9 times over 4 sec, dealing 200% of its normal attack damage to each target.  
+        [TalentData(index: 14, name: "Lynx Rush", icon: "ability_hunter_catlikereflexes",
+         column: 2, row: 4,
+         description: @"Your pet rapidly charges from target to target, attacking 9 times over 4 sec. Each attack causes the target to bleed for [&nbsp;430 + 19% of AP&nbsp;] damage over 15 sec, stacking up to 9 times.The pet must be within 10 yards of the target to Lynx Rush.")]
+        public bool LynxRush { get { return _data[14]; } set { _data[14] = value; } }
+        /// <summary>
+        /// You hurl two glaives toward a target, each dealing [ 872 + 20% of AP ] damage to each enemy struck and reducing movement speed by 30% for 3 sec. The primary target will take 4 times as much damage from each strike.
+        /// The Glaives will return back to you, damaging and snaring targets again as they return.
+        /// </summary>
+        [TalentData(index: 15, name: "Glaive Toss", icon: "ability_glaivetoss",
+         column: 0, row: 5,
+         description: @"You hurl two glaives toward a target, each dealing [&nbsp;872 + 20% of AP&nbsp;] damage to each enemy struck and reducing movement speed by 30% for 3 sec. The primary target will take 4 times as much damage from each strike.The Glaives will return back to you, damaging and snaring targets again as they return.")]
+        public bool GlaiveToss { get { return _data[15]; } set { _data[15] = value; } }
+        /// <summary>
+        /// You wind up a powerful shot, which deals 600% weapon damage to the target and 300% weapon damage to all enemies in between you and the target.
+        /// Enemies hit by Powershot are also knocked back.
+        /// </summary>
+        [TalentData(index: 16, name: "Powershot", icon: "ability_hunter_resistanceisfutile",
+         column: 1, row: 5,
+         description: @"You wind up a powerful shot, which deals 600% weapon damage to the target and 300% weapon damage to all enemies in between you and the target.Enemies hit by Powershot are also knocked back.")]
+        public bool Powershot { get { return _data[16]; } set { _data[16] = value; } }
+        /// <summary>
+        /// Rapidly fire a spray of shots forward for 3 sec, dealing a total of 640% weapon damage to the enemy target and an average of 320% weapon damage to each other enemy target in front of you.
+        /// Useable while moving.
+        /// </summary>
+        [TalentData(index: 17, name: "Barrage", icon: "ability_hunter_rapidregeneration",
+         column: 2, row: 5,
+         description: @"Rapidly fire a spray of shots forward for 3 sec, dealing a total of 640% weapon damage to the enemy target and an average of 320% weapon damage to each other enemy target in front of you.Useable while moving.")]
+        public bool Barrage { get { return _data[17]; } set { _data[17] = value; } }
+        /// <summary>
+        /// Fires a bola at the target, which wraps around them. After 1 sec, it explodes, dealing 3000 Fire damage to them, and an additional 2000 Fire damage to all enemies within 5 yards.
+        /// 
+        /// Replaces Arcane Shot.
+        /// </summary>
+        [TalentData(index: 18, name: "Bola Shot", icon: "ability_hunter_improvedsteadyshot",
+         column: 0, row: 6,
+         description: @"Fires a bola at the target, which wraps around them. After 1 sec, it explodes, dealing 3000 Fire damage to them, and an additional 2000 Fire damage to all enemies within 5 yards.
 
-The pet must be within 10 yards of the target to Lynx Rush.",})]
-        public int LynxRush { get { return _data[14]; } set { _data[14] = value; } }
+Replaces Arcane Shot.")]
+        public bool BolaShot { get { return _data[18]; } set { _data[18] = value; } }
         /// <summary>
-        /// You hurl two glaives in front of you 30 yards, dealing 1,X damage to all enemies and reducing their movement speed by 50%. \n\n\n\nThe Glaives will return back to you, also dealing damage and snaring targets they hit.\n\n\n\nIf Glaive Toss hits at least 2 enemies in both directions, the cooldown is reset.
+        /// Carefully line up the perfect shot, dealing 150% weapon damage. Generates 60 Focus.
+        /// 
+        /// Cannot be cast while moving.
+        /// 
+        /// Replaces Steady Shot and Cobra Shot.
+        /// 
+        /// Beast Mastery & Survival
+        /// Also refreshes Serpent Sting.
+        /// 
+        /// Marksmanship
+        /// Also triggers Steady Focus.
         /// </summary>
-        [TalentData(index: 15, name: "Glaive Toss", maxPoints: 1, icon: "ability_upgrademoonglaive",
-         tree: 0, column: 1, row: 6, prerequisite: -1, description: new[] {
-@"You hurl two glaives in front of you 30 yards, dealing 1,X damage to all enemies and reducing their movement speed by 50%. 
+        [TalentData(index: 19, name: "Snipe", icon: "ability_hunter_snipertraining",
+         column: 1, row: 6,
+         description: @"Carefully line up the perfect shot, dealing 150% weapon damage. Generates 60 Focus.
 
+Cannot be cast while moving.
 
+Replaces Steady Shot and Cobra Shot.
 
-The Glaives will return back to you, also dealing damage and snaring targets they hit.
+Beast Mastery & Survival
+Also refreshes Serpent Sting.
 
-
-
-If Glaive Toss hits at least 2 enemies in both directions, the cooldown is reset.",})]
-        public int GlaiveToss { get { return _data[15]; } set { _data[15] = value; } }
+Marksmanship
+Also triggers Steady Focus.")]
+        public bool Snipe { get { return _data[19]; } set { _data[19] = value; } }
         /// <summary>
-        /// You wind up a powerful shot, dealing 1,X damage to all targets in front of you within 20 yards (width).\n\n\n\nThe damage done is increased on targets further away:\n\n\n\n15-30 yards: Double damage, Stunned 1 sec\n\n30-50 yards: Tripple damage, Stunned 2 sec
+        /// 
+        /// Beast Mastery
         /// </summary>
-        [TalentData(index: 16, name: "Powershot", maxPoints: 1, icon: "ability_hunter_focusfire",
-         tree: 0, column: 2, row: 6, prerequisite: -1, description: new[] {
-@"You wind up a powerful shot, dealing 1,X damage to all targets in front of you within 20 yards (width).
-
-
-
-The damage done is increased on targets further away:
-
-
-
-15-30 yards: Double damage, Stunned 1 sec
-
-30-50 yards: Tripple damage, Stunned 2 sec",})]
-        public int Powershot { get { return _data[16]; } set { _data[16] = value; } }
-        /// <summary>
-        /// You fire a magical projectile, tethering the enemy and any other enemies within 10 yards to the landing arrow. Increases all damage they recieve from you by 15%. \n\n\n\nIf they move 15 yards from the arrow they are stunned for 10 sec (5 sec PvP).
-        /// </summary>
-        [TalentData(index: 17, name: "Barrage", maxPoints: 1, icon: "spell_shaman_bindelemental",
-         tree: 0, column: 3, row: 6, prerequisite: -1, description: new[] {
-@"Rapidly fire a spray of shots forward for 3 sec, dealing a total of 640% weapon damage to the enemy target and an average of 320% weapon damage to each other enemy target in front of you.",})]
-        public int Barrage { get { return _data[17]; } set { _data[17] = value; } }
+        [TalentData(index: 20, name: "With or Without You", icon: "ability_shaman_freedomwolf",
+         column: 2, row: 6,
+         description: @"
+Beast Mastery")]
+        public bool WithOrWithoutYou { get { return _data[20]; } set { _data[20] = value; } }
         #endregion
     }
 
@@ -869,168 +865,204 @@ The damage done is increased on targets further away:
         public override TalentsBase Clone()
         {
             RogueTalents clone = (RogueTalents)MemberwiseClone();
-            clone._data = (int[])_data.Clone();
+            clone._data = (bool[])_data.Clone();
             clone._glyphData = (bool[])_glyphData.Clone();
-            clone.TreeCounts = new int[] { -1, -1, -1 };
+            clone.TalentCount = -1;
             return clone;
         }
 
-        private int[] _data = new int[18];
-        public override int[] Data { get { return _data; } }
+        private bool[] _data = new bool[21];
+        public override bool[] Data { get { return _data; } }
         public RogueTalents() { }
         public RogueTalents(string talents, int[][] glyphEncodes = null)
         {
             LoadString(talents, glyphEncodes);
         }
+
         private static string[] specializationNames = new[] {
-			@"Assasination",@"Combat",@"Subtlety"};
+			@"Assassination",@"Combat",@"Subtlety"};
         public override string[] SpecializationNames
         {
             get { return specializationNames; }
         }
-
         #region Rogue
-        public override int TreeStartingIndexes_0 { get { return 0; } }
         /// <summary>
-        /// Increases your speed while stealthed by 20%.
+        /// Increases your movement speed while stealthed by 20%, and the damage your abilities deal while stealthed by 50%.
         /// </summary>
-        [TalentData(index: 0, name: "Nightstalker", maxPoints: 1, icon: "ability_stealth",
-         tree: 0, column: 1, row: 1, prerequisite: -1, description: new[] {
-@"Increases your speed while stealthed by 20%.",})]
-        public int Nightstalker { get { return _data[0]; } set { _data[0] = value; } }
+        [TalentData(index: 0, name: "Nightstalker", icon: "ability_stealth",
+         column: 0, row: 0,
+         description: @"Increases your movement speed while stealthed by 20%, and the damage your abilities deal while stealthed by 50%.")]
+        public bool Nightstalker { get { return _data[0]; } set { _data[0] = value; } }
         /// <summary>
         /// Your Stealth breaks 3 sec after dealing or receiving hostile actions, rather than doing so immediately.
         /// </summary>
-        [TalentData(index: 1, name: "Subterfuge", maxPoints: 1, icon: "rogue_subterfuge",
-         tree: 0, column: 2, row: 1, prerequisite: -1, description: new[] {
-@"Your Stealth breaks 3 sec after dealing or receiving hostile actions, rather than doing so immediately.",})]
-        public int Subterfuge { get { return _data[1]; } set { _data[1] = value; } }
+        [TalentData(index: 1, name: "Subterfuge", icon: "rogue_subterfuge",
+         column: 1, row: 0,
+         description: @"Your Stealth breaks 3 sec after dealing or receiving hostile actions, rather than doing so immediately.")]
+        public bool Subterfuge { get { return _data[1]; } set { _data[1] = value; } }
         /// <summary>
-        /// Abilities no longer cost Energy while you are stealthed.
+        /// Abilities cost 75% less Energy while you are stealthed.
         /// </summary>
-        [TalentData(index: 2, name: "Shadow Focus", maxPoints: 1, icon: "rogue_shadowfocus",
-         tree: 0, column: 3, row: 1, prerequisite: -1, description: new[] {
-@"Abilities no longer cost Energy while you are stealthed.",})]
-        public int ShadowFocus { get { return _data[2]; } set { _data[2] = value; } }
+        [TalentData(index: 2, name: "Shadow Focus", icon: "rogue_shadowfocus",
+         column: 2, row: 0,
+         description: @"Abilities cost 75% less Energy while you are stealthed.")]
+        public bool ShadowFocus { get { return _data[2]; } set { _data[2] = value; } }
         /// <summary>
-        /// Finishing move that interrupts spellcasting and reduces the movement speed of the target by 50% for 6 sec.  Damage dealt:\n\n   1 point  : 396 - 439 damage\n\n   2 points: 646 - 689 damage\n\n   3 points: 896 - 939 damage\n\n   4 points: 1146 - 1189 damage\n\n   5 points: 1396 - 1439 damage
+        ///  Assassination,  Combat:<!--Spec:Start: Assassination,  Combat-->Finishing move that reduces the movement speed of the target by 50% for 6 sec. If performed with 3 combo points, also interrupts spellcasting and prevents any spell in that school from being cast for a period of time.
+        /// Damage dealt: 1 point : [ 267 + 12% of AP ] to [ 802 + 12% of AP ] damage 2 points: [ 267 + 24% of AP ] to [ 802 + 24% of AP ] damage 3 points: [ 267 + 36% of AP ] to [ 802 + 36% of AP ] damage 4 points: [ 267 + 48% of AP ] to [ 802 + 48% of AP ] damage 5 points: [ 267 + 60% of AP ] to [ 802 + 60% of AP ] damage<!--Spec:End--> Subtlety:<!--Spec:Start: Subtlety-->Finishing move that reduces the movement speed of the target by 50% for 6 sec. If performed with 3 combo points, also interrupts spellcasting and prevents any spell in that school from being cast for a period of time.
+        /// Damage dealt: 1 point : [ 267 + 14.
+        /// 9% of AP ] to [ 802 + 14.
+        /// 9% of AP ] damage 2 points: [ 267 + 29.
+        /// 8% of AP ] to [ 802 + 29.
+        /// 8% of AP ] damage 3 points: [ 267 + 44.
+        /// 6% of AP ] to [ 802 + 44.
+        /// 6% of AP ] damage 4 points: [ 267 + 59.
+        /// 5% of AP ] to [ 802 + 59.
+        /// 5% of AP ] damage 5 points: [ 267 + 74.
+        /// 4% of AP ] to [ 802 + 74.
+        /// 4% of AP ] damage<!--Spec:End-->
         /// </summary>
-        [TalentData(index: 3, name: "Deadly Throw", maxPoints: 1, icon: "inv_throwingknife_06",
-         tree: 0, column: 1, row: 2, prerequisite: -1, description: new[] {
-@"Finishing move that interrupts spellcasting and reduces the movement speed of the target by 50% for 6 sec.  Damage dealt:
-
-   1 point  : 396 - 439 damage
-
-   2 points: 646 - 689 damage
-
-   3 points: 896 - 939 damage
-
-   4 points: 1146 - 1189 damage
-
-   5 points: 1396 - 1439 damage",})]
-        public int DeadlyThrow { get { return _data[3]; } set { _data[3] = value; } }
+        [TalentData(index: 3, name: "Deadly Throw", icon: "inv_throwingknife_06",
+         column: 0, row: 1,
+         description: @" Assassination,  Combat:<!--Spec:Start: Assassination,  Combat-->Finishing move that reduces the movement speed of the target by 50% for 6 sec. If performed with 3 combo points, also interrupts spellcasting and prevents any spell in that school from being cast for a period of time.Damage dealt: 1 point : [&nbsp;267 + 12% of AP&nbsp;] to [&nbsp;802 + 12% of AP&nbsp;] damage 2 points: [&nbsp;267 + 24% of AP&nbsp;] to [&nbsp;802 + 24% of AP&nbsp;] damage 3 points: [&nbsp;267 + 36% of AP&nbsp;] to [&nbsp;802 + 36% of AP&nbsp;] damage 4 points: [&nbsp;267 + 48% of AP&nbsp;] to [&nbsp;802 + 48% of AP&nbsp;] damage 5 points: [&nbsp;267 + 60% of AP&nbsp;] to [&nbsp;802 + 60% of AP&nbsp;] damage<!--Spec:End--> Subtlety:<!--Spec:Start: Subtlety-->Finishing move that reduces the movement speed of the target by 50% for 6 sec. If performed with 3 combo points, also interrupts spellcasting and prevents any spell in that school from being cast for a period of time.Damage dealt: 1 point : [&nbsp;267 + 14.9% of AP&nbsp;] to [&nbsp;802 + 14.9% of AP&nbsp;] damage 2 points: [&nbsp;267 + 29.8% of AP&nbsp;] to [&nbsp;802 + 29.8% of AP&nbsp;] damage 3 points: [&nbsp;267 + 44.6% of AP&nbsp;] to [&nbsp;802 + 44.6% of AP&nbsp;] damage 4 points: [&nbsp;267 + 59.5% of AP&nbsp;] to [&nbsp;802 + 59.5% of AP&nbsp;] damage 5 points: [&nbsp;267 + 74.4% of AP&nbsp;] to [&nbsp;802 + 74.4% of AP&nbsp;] damage<!--Spec:End-->")]
+        public bool DeadlyThrow { get { return _data[3]; } set { _data[3] = value; } }
         /// <summary>
-        /// A successful Kidney Shot or Cheap Shot also reduces the damage dealt by the target by 50% for 6 seconds after the effect fades.
+        /// A successful Kidney Shot or Cheap Shot also reduces the damage dealt by the target by 50% and healing done by the target by 10% for 6 sec after the effect fades.
         /// </summary>
-        [TalentData(index: 4, name: "Nerve Strike", maxPoints: 1, icon: "rogue_nerve_strike",
-         tree: 0, column: 2, row: 2, prerequisite: -1, description: new[] {
-@"A successful Kidney Shot or Cheap Shot also reduces the damage dealt by the target by 50% for 6 seconds after the effect fades.",})]
-        public int NerveStrike { get { return _data[4]; } set { _data[4] = value; } }
+        [TalentData(index: 4, name: "Nerve Strike", icon: "rogue_nerve__strike",
+         column: 1, row: 1,
+         description: @"A successful Kidney Shot or Cheap Shot also reduces the damage dealt by the target by 50% and healing done by the target by 10% for 6 sec after the effect fades.")]
+        public bool NerveStrike { get { return _data[4]; } set { _data[4] = value; } }
         /// <summary>
-        /// Enter into a state of heightened awareness, deflecting enemy weapon strikes with increasing effectiveness.  Successive attacks will deal 10% less damage per application, stacking 5 times.\n\n\n\nLasts for 20 sec, but if 10 sec elapse without any incoming weapon strikes, this state will end.
+        /// Enter into a state of heightened awareness, deflecting enemy weapon strikes with increasing effectiveness. Successive attacks will deal 10% less damage per application, stacking 5 times.
+        /// Lasts for 20 sec, but if 10 sec elapse without any incoming weapon strikes, this state will end.
         /// </summary>
-        [TalentData(index: 5, name: "Combat Readiness", maxPoints: 1, icon: "ability_rogue_combatreadiness",
-         tree: 0, column: 3, row: 2, prerequisite: -1, description: new[] {
-@"Enter into a state of heightened awareness, deflecting enemy weapon strikes with increasing effectiveness.  Successive attacks will deal 10% less damage per application, stacking 5 times.
-
-
-
-Lasts for 20 sec, but if 10 sec elapse without any incoming weapon strikes, this state will end.",})]
-        public int CombatReadiness { get { return _data[5]; } set { _data[5] = value; } }
+        [TalentData(index: 5, name: "Combat Readiness", icon: "ability_rogue_combatreadiness",
+         column: 2, row: 1,
+         description: @"Enter into a state of heightened awareness, deflecting enemy weapon strikes with increasing effectiveness. Successive attacks will deal 10% less damage per application, stacking 5 times.Lasts for 20 sec, but if 10 sec elapse without any incoming weapon strikes, this state will end.")]
+        public bool CombatReadiness { get { return _data[5]; } set { _data[5] = value; } }
         /// <summary>
-        /// An attack that would otherwise be fatal will instead reduce you no lower than 10% of your maximum health, and damage taken will be reduced by 80% for 3 sec.  This effect cannot occur more than once per 90 seconds.
+        /// An attack that would otherwise be fatal will instead reduce you to no less than 10% of your maximum health, and damage taken will be reduced by 85% for 3 sec. This effect cannot occur more than once per 90 seconds.
         /// </summary>
-        [TalentData(index: 6, name: "Cheat Death", maxPoints: 1, icon: "ability_rogue_cheatdeath",
-         tree: 0, column: 1, row: 3, prerequisite: -1, description: new[] {
-@"An attack that would otherwise be fatal will instead reduce you no lower than 10% of your maximum health, and damage taken will be reduced by 80% for 3 sec.  This effect cannot occur more than once per 90 seconds.",})]
-        public int CheatDeath { get { return _data[6]; } set { _data[6] = value; } }
+        [TalentData(index: 6, name: "Cheat Death", icon: "ability_rogue_cheatdeath",
+         column: 0, row: 2,
+         description: @"An attack that would otherwise be fatal will instead reduce you to no less than 10% of your maximum health, and damage taken will be reduced by 85% for 3 sec. This effect cannot occur more than once per 90 seconds.")]
+        public bool CheatDeath { get { return _data[6]; } set { _data[6] = value; } }
         /// <summary>
-        /// Coats your weapons with a Non-Lethal Poison that lasts for 1 hour.  Your melee attacks have a 50% chance to poison the target, and all your subsequent weapon strikes against the poisoned target will heal you for 10% of damage dealt.
+        /// Coats your weapons with a Non-Lethal Poison that lasts for 60 min. Your melee attacks have a 50% chance to poison the target for 10 sec. Your subsequent weapon strikes against the poisoned target will heal you for 10% of damage dealt.
         /// </summary>
-        [TalentData(index: 7, name: "Leeching Poison", maxPoints: 1, icon: "rogue_leeching_poison",
-         tree: 0, column: 2, row: 3, prerequisite: -1, description: new[] {
-@"Coats your weapons with a Non-Lethal Poison that lasts for 1 hour.  Your melee attacks have a 50% chance to poison the target, and all your subsequent weapon strikes against the poisoned target will heal you for 10% of damage dealt.",})]
-        public int LeechingPoison { get { return _data[7]; } set { _data[7] = value; } }
+        [TalentData(index: 7, name: "Leeching Poison", icon: "rogue_leeching_poison",
+         column: 1, row: 2,
+         description: @"Coats your weapons with a Non-Lethal Poison that lasts for 60 min. Your melee attacks have a 50% chance to poison the target for 10 sec. Your subsequent weapon strikes against the poisoned target will heal you for 10% of damage dealt.")]
+        public bool LeechingPoison { get { return _data[7]; } set { _data[7] = value; } }
         /// <summary>
         /// Your Feint ability also reduces all damage taken by 30% for 5 sec.
         /// </summary>
-        [TalentData(index: 8, name: "Elusiveness", maxPoints: 1, icon: "ability_rogue_unfairadvantage",
-         tree: 0, column: 3, row: 3, prerequisite: -1, description: new[] {
-@"Your Feint ability also reduces all damage taken by 30% for 5 sec.",})]
-        public int Elusiveness { get { return _data[8]; } set { _data[8] = value; } }
+        [TalentData(index: 8, name: "Elusiveness", icon: "ability_rogue_turnthetables",
+         column: 2, row: 2,
+         description: @"Your Feint ability also reduces all damage taken by 30% for 5 sec.")]
+        public bool Elusiveness { get { return _data[8]; } set { _data[8] = value; } }
         /// <summary>
-        /// When activated, this ability immediately finishes the cooldown on your Sprint, Vanish, Cloak of Shadows, Evasion, Dismantle, and Smoke Bomb abilities.
+        /// Your Ambush, Garrote, and Cheap Shot abilities can now be used from 40 yards away, and will cause you to appear behind your target.
         /// </summary>
-        [TalentData(index: 9, name: "Preparation", maxPoints: 1, icon: "ability_rogue_preparation",
-         tree: 0, column: 1, row: 4, prerequisite: -1, description: new[] {
-@"When activated, this ability immediately finishes the cooldown on your Sprint, Vanish, Cloak of Shadows, Evasion, Dismantle, and Smoke Bomb abilities.",})]
-        public int Preparation { get { return _data[9]; } set { _data[9] = value; } }
+        [TalentData(index: 9, name: "Cloak and Dagger", icon: "ability_rogue_unfairadvantage",
+         column: 0, row: 3,
+         description: @"Your Ambush, Garrote, and Cheap Shot abilities can now be used from 40 yards away, and will cause you to appear behind your target.")]
+        public bool CloakAndDagger { get { return _data[9]; } set { _data[9] = value; } }
         /// <summary>
-        /// Step through the shadows and appear behind an enemy target.
+        /// Step through the shadows and appear behind a target. Movement speed is increased by 70% for 2 sec afterwards.
         /// </summary>
-        [TalentData(index: 10, name: "Shadowstep", maxPoints: 1, icon: "ability_rogue_shadowstep",
-         tree: 0, column: 2, row: 4, prerequisite: -1, description: new[] {
-@"Step through the shadows and appear behind an enemy target.",})]
-        public int Shadowstep { get { return _data[10]; } set { _data[10] = value; } }
+        [TalentData(index: 10, name: "Shadowstep", icon: "ability_rogue_shadowstep",
+         column: 1, row: 3,
+         description: @"Step through the shadows and appear behind a target. Movement speed is increased by 70% for 2 sec afterwards.")]
+        public bool Shadowstep { get { return _data[10]; } set { _data[10] = value; } }
         /// <summary>
-        /// Increases movement speed by 70% for 4 sec.  If you are afflicted by any movement-impairing effects, activating this ability will instead remove any such effects and grant immunity to their re-application for 4 sec.
+        /// Increases movement speed by 70% for 4 sec and removes any movement-slowing effects. Does not break stealth.
         /// </summary>
-        [TalentData(index: 11, name: "Burst of Speed", maxPoints: 1, icon: "rogue_burstofspeed",
-         tree: 0, column: 3, row: 4, prerequisite: -1, description: new[] {
-@"Increases movement speed by 70% for 4 sec.  If you are afflicted by any movement-impairing effects, activating this ability will instead remove any such effects and grant immunity to their re-application for 4 sec.",})]
-        public int BurstOfSpeed { get { return _data[11]; } set { _data[11] = value; } }
+        [TalentData(index: 11, name: "Burst of Speed", icon: "rogue_burstofspeed",
+         column: 2, row: 3,
+         description: @"Increases movement speed by 70% for 4 sec and removes any movement-slowing effects. Does not break stealth.")]
+        public bool BurstOfSpeed { get { return _data[11]; } set { _data[11] = value; } }
         /// <summary>
-        /// Whenever you apply one of your Non-Lethal poisons to a target, you also apply Crippling Poison.
+        /// When you disable an enemy with Kidney Shot, Cheap Shot, Gouge, Sap, or Blind, they suffer 10% increased damage from all sources for the duration of the effect.
         /// </summary>
-        [TalentData(index: 12, name: "Deadly Brew", maxPoints: 1, icon: "ability_rogue_deadlybrew",
-         tree: 0, column: 1, row: 5, prerequisite: -1, description: new[] {
-@"Whenever you apply one of your Non-Lethal poisons to a target, you also apply Crippling Poison.",})]
-        public int DeadlyBrew { get { return _data[12]; } set { _data[12] = value; } }
+        [TalentData(index: 12, name: "Prey on the Weak", icon: "ability_rogue_preyontheweak",
+         column: 0, row: 4,
+         description: @"When you disable an enemy with Kidney Shot, Cheap Shot, Gouge, Sap, or Blind, they suffer 10% increased damage from all sources for the duration of the effect.")]
+        public bool PreyOnTheWeak { get { return _data[12]; } set { _data[12] = value; } }
         /// <summary>
-        /// Coats your weapons with a Non-Lethal Poison that lasts for 1 hour.  Each strike has a 20% chance of poisoning the enemy for 15 sec.  Stacks up to 5 times on a single target, and upon a fifth application, the enemy will be stunned for 4 seconds.
+        /// Coats your weapons with a Non-Lethal Poison that lasts for 60 min. Each strike has a 20% chance of poisoning the enemy for 15 sec. Stacks up to 4 times on a single target, and upon a fourth application, the enemy will be stunned for 4 seconds.
         /// </summary>
-        [TalentData(index: 13, name: "Paralytic Poison", maxPoints: 1, icon: "rogue_paralytic_poison",
-         tree: 0, column: 2, row: 5, prerequisite: -1, description: new[] {
-@"Coats your weapons with a Non-Lethal Poison that lasts for 1 hour.  Each strike has a 20% chance of poisoning the enemy for 15 sec.  Stacks up to 5 times on a single target, and upon a fifth application, the enemy will be stunned for 4 seconds.",})]
-        public int ParalyticPoison { get { return _data[13]; } set { _data[13] = value; } }
+        [TalentData(index: 13, name: "Paralytic Poison", icon: "rogue_paralytic_poison",
+         column: 1, row: 4,
+         description: @"Coats your weapons with a Non-Lethal Poison that lasts for 60 min. Each strike has a 20% chance of poisoning the enemy for 15 sec. Stacks up to 4 times on a single target, and upon a fourth application, the enemy will be stunned for 4 seconds.")]
+        public bool ParalyticPoison { get { return _data[13]; } set { _data[13] = value; } }
         /// <summary>
         /// Your Gouge and Blind no longer have an Energy cost, and no longer break from damage dealt by your Poison and Bleed effects.
         /// </summary>
-        [TalentData(index: 14, name: "Dirty Tricks", maxPoints: 1, icon: "ability_rogue_dirtydeeds",
-         tree: 0, column: 3, row: 5, prerequisite: -1, description: new[] {
-@"Your Gouge and Blind no longer have an Energy cost, and no longer break from damage dealt by your Poison and Bleed effects.",})]
-        public int DirtyTricks { get { return _data[14]; } set { _data[14] = value; } }
+        [TalentData(index: 14, name: "Dirty Tricks", icon: "ability_rogue_dirtydeeds",
+         column: 2, row: 4,
+         description: @"Your Gouge and Blind no longer have an Energy cost, and no longer break from damage dealt by your Poison and Bleed effects.")]
+        public bool DirtyTricks { get { return _data[14]; } set { _data[14] = value; } }
         /// <summary>
-        /// A ranged attack that deals 1,179 Physical damage to an enemy target. Generates 1 combo point.
+        /// A ranged attack that deals [ 2,493 + 60% of AP ] Physical damage to an enemy target. If the enemy is farther than 10 yards away, your autoattacks will be replaced with ranged shuriken for up to 10 sec, granting them a 30 yd range. Shurikens are coated in your Lethal Poison. Awards 1 combo points. Replaces Throw.
         /// </summary>
-        [TalentData(index: 15, name: "Shuriken Toss", maxPoints: 1, icon: "inv_throwingknife_07",
-         tree: 0, column: 1, row: 6, prerequisite: -1, description: new[] {
-@"A ranged attack that deals 1,179 Physical damage to an enemy target. Generates 1 combo point.",})]
-        public int ShurikenToss { get { return _data[15]; } set { _data[15] = value; } }
+        [TalentData(index: 15, name: "Shuriken Toss", icon: "inv_throwingknife_07",
+         column: 0, row: 5,
+         description: @"A ranged attack that deals [&nbsp;2,493 + 60% of AP&nbsp;] Physical damage to an enemy target. If the enemy is farther than 10 yards away, your autoattacks will be replaced with ranged shuriken for up to 10 sec, granting them a 30 yd range. Shurikens are coated in your Lethal Poison. Awards 1 combo points. Replaces Throw.")]
+        public bool ShurikenToss { get { return _data[15]; } set { _data[15] = value; } }
         /// <summary>
-        /// Your Redirect ability now has no cooldown.
+        /// Mark the target, instantly generating 5 combo points on them. If the target dies within 60 sec Marked for Death's cooldown is reset.
         /// </summary>
-        [TalentData(index: 16, name: "Versatility", maxPoints: 1, icon: "ability_rogue_unfairadvantage",
-         tree: 0, column: 2, row: 6, prerequisite: -1, description: new[] {
-@"Your Redirect ability now has no cooldown.",})]
-        public int Versatility { get { return _data[16]; } set { _data[16] = value; } }
+        [TalentData(index: 16, name: "Marked for Death", icon: "achievement_bg_killingblow_berserker",
+         column: 1, row: 5,
+         description: @"Mark the target, instantly generating 5 combo points on them. If the target dies within 60 sec Marked for Death's cooldown is reset.")]
+        public bool MarkedForDeath { get { return _data[16]; } set { _data[16] = value; } }
         /// <summary>
-        /// When one of your attacks generates a combo point on a target that already has five combo points, you gain an Anticipation charge, up to a maximum of 5.  When you perform an offensive finishing move on an enemy, any Anticipation charges are consumed to grant you an equal number of combo points on that target.
+        /// When one of your attacks generates a combo point on a target that already has 5 combo points, you gain an Anticipation charge, up to a maximum of 5.
+        /// When you perform an offensive finishing move on an enemy, any Anticipation charges are consumed to grant you an equal number of combo points on that target.
         /// </summary>
-        [TalentData(index: 17, name: "Anticipation", maxPoints: 1, icon: "ability_rogue_slaughterfromtheshadows",
-         tree: 0, column: 3, row: 6, prerequisite: -1, description: new[] {
-@"When one of your attacks generates a combo point on a target that already has five combo points, you gain an Anticipation charge, up to a maximum of 5.  When you perform an offensive finishing move on an enemy, any Anticipation charges are consumed to grant you an equal number of combo points on that target.",})]
-        public int Anticipation { get { return _data[17]; } set { _data[17] = value; } }
+        [TalentData(index: 17, name: "Anticipation", icon: "ability_rogue_slaughterfromtheshadows",
+         column: 2, row: 5,
+         description: @"When one of your attacks generates a combo point on a target that already has 5 combo points, you gain an Anticipation charge, up to a maximum of 5.When you perform an offensive finishing move on an enemy, any Anticipation charges are consumed to grant you an equal number of combo points on that target.")]
+        public bool Anticipation { get { return _data[17]; } set { _data[17] = value; } }
+        /// <summary>
+        /// When you critically strike with an autoattack, you gain an additional combo point on your target.
+        /// </summary>
+        [TalentData(index: 18, name: "Master the Basics", icon: "inv_knife_1h_cataclysm_c_03",
+         column: 0, row: 6,
+         description: @"When you critically strike with an autoattack, you gain an additional combo point on your target.")]
+        public bool MasterTheBasics { get { return _data[18]; } set { _data[18] = value; } }
+        /// <summary>
+        /// Summon a shadow of yourself on the target that will watch you and memorize your ability usage for the next 8 sec. After this time, it will mimic the memorized abilities on tis target over the next 8 sec.
+        /// </summary>
+        [TalentData(index: 19, name: "Shadow Reflection", icon: "spell_shadow_twistedfaith",
+         column: 1, row: 6,
+         description: @"Summon a shadow of yourself on the target that will watch you and memorize your ability usage for the next 8 sec. After this time, it will mimic the memorized abilities on tis target over the next 8 sec.")]
+        public bool ShadowReflection { get { return _data[19]; } set { _data[19] = value; } }
+        /// <summary>
+        /// Finishing move that consumes combo points on the target to empower your weapons with shadow energy and perform a devastating two-part attack.
+        /// 
+        /// You whirl around, dealing Shadow damage to all enemies within 8 yards, then leap into the air and slice into your target on the way back down, dealing additional Shadow damage.
+        /// 
+        ///    1 point: 400 area damage, 1000 target damage
+        ///    2 points: 800 area damage, 2000 target damage
+        ///    3 points: 1200 area damage, 3000 target damage
+        ///    4 points: 1600 area damage, 4000 target damage
+        ///    5 points: 2000 area damage, 5000 target damage
+        /// </summary>
+        [TalentData(index: 20, name: "Death from Above", icon: "ability_rogue_focusedattacks",
+         column: 2, row: 6,
+         description: @"Finishing move that consumes combo points on the target to empower your weapons with shadow energy and perform a devastating two-part attack.
+
+You whirl around, dealing Shadow damage to all enemies within 8 yards, then leap into the air and slice into your target on the way back down, dealing additional Shadow damage.
+
+&nbsp;&nbsp;&nbsp;1 point: 400 area damage, 1000 target damage
+&nbsp;&nbsp;&nbsp;2 points: 800 area damage, 2000 target damage
+&nbsp;&nbsp;&nbsp;3 points: 1200 area damage, 3000 target damage
+&nbsp;&nbsp;&nbsp;4 points: 1600 area damage, 4000 target damage
+&nbsp;&nbsp;&nbsp;5 points: 2000 area damage, 5000 target damage")]
+        public bool DeathFromAbove { get { return _data[20]; } set { _data[20] = value; } }
         #endregion
     }
 
@@ -1039,198 +1071,198 @@ Lasts for 20 sec, but if 10 sec elapse without any incoming weapon strikes, this
         public override TalentsBase Clone()
         {
             PriestTalents clone = (PriestTalents)MemberwiseClone();
-            clone._data = (int[])_data.Clone();
+            clone._data = (bool[])_data.Clone();
             clone._glyphData = (bool[])_glyphData.Clone();
-            clone.TreeCounts = new int[] { -1, -1, -1 };
+            clone.TalentCount = -1;
             return clone;
         }
 
-        private int[] _data = new int[18];
-        public override int[] Data { get { return _data; } }
+        private bool[] _data = new bool[21];
+        public override bool[] Data { get { return _data; } }
         public PriestTalents() { }
         public PriestTalents(string talents, int[][] glyphEncodes = null)
         {
             LoadString(talents, glyphEncodes);
         }
+
         private static string[] specializationNames = new[] {
 			@"Discipline",@"Holy",@"Shadow"};
         public override string[] SpecializationNames
         {
             get { return specializationNames; }
         }
-
         #region Priest
-        public override int TreeStartingIndexes_0 { get { return 0; } }
         /// <summary>
-        /// Summons Shadowy tendrils out of the ground, rooting all targets within 8 yards for 20 sec. Killing the tendril will cancel the effect.
+        /// Summons Shadowy tendrils out of the ground, rooting up to 5 enemy targets within 8 yards of the caster for 20 sec. Killing the tendril will cancel the effect.
         /// </summary>
-        [TalentData(index: 0, name: "Void Tendrils", maxPoints: 1, icon: "spell_priest_voidtendrils",
-         tree: 0, column: 1, row: 1, prerequisite: -1, description: new[] {
-@"Summons Shadowy tendrils out of the ground, rooting all targets within 8 yards for 20 sec. Killing the tendril will cancel the effect.",})]
-        public int VoidTendrils { get { return _data[0]; } set { _data[0] = value; } }
+        [TalentData(index: 0, name: "Void Tendrils", icon: "spell_priest_voidtendrils",
+         column: 0, row: 0,
+         description: @"Summons Shadowy tendrils out of the ground, rooting up to 5 enemy targets within 8 yards of the caster for 20 sec. Killing the tendril will cancel the effect.")]
+        public bool VoidTendrils { get { return _data[0]; } set { _data[0] = value; } }
         /// <summary>
-        /// Summons a Psyfiend that stands in place. The Psyfiend casts a Psychic Scream on a nearby enemy within 30 yards every 1.5 sec., preferring anything attacking the Priest.\n\n\n\nPsychic Scream causes enemies to flee for 1 min. Damage caused may interrupt the effect.
+        /// Summons a Psyfiend that stands in place for 10 sec. The Psyfiend casts a Psychic Terror on a nearby enemy within 20 yards every 2 sec, preferring anything attacking the Priest.
+        /// Psychic Terror causes enemies to flee for 30 sec. Damage caused may interrupt the effect.
         /// </summary>
-        [TalentData(index: 1, name: "Psyfiend", maxPoints: 1, icon: "spell_priest_psyfiend",
-         tree: 0, column: 2, row: 1, prerequisite: -1, description: new[] {
-@"Summons a Psyfiend that stands in place. The Psyfiend casts a Psychic Scream on a nearby enemy within 30 yards every 1.5 sec., preferring anything attacking the Priest.
-
-
-
-Psychic Scream causes enemies to flee for 1 min. Damage caused may interrupt the effect.",})]
-        public int Psyfiend { get { return _data[1]; } set { _data[1] = value; } }
+        [TalentData(index: 1, name: "Psyfiend", icon: "spell_priest_psyfiend",
+         column: 1, row: 0,
+         description: @"Summons a Psyfiend that stands in place for 10 sec. The Psyfiend casts a Psychic Terror on a nearby enemy within 20 yards every 2 sec, preferring anything attacking the Priest.Psychic Terror causes enemies to flee for 30 sec. Damage caused may interrupt the effect.")]
+        public bool Psyfiend { get { return _data[1]; } set { _data[1] = value; } }
         /// <summary>
-        /// The caster lets out a psychic scream, causing 5 enemies within 8 yards to flee for 8 sec.  Damage caused may interrupt the effect.
+        /// Controls a mind up to level 4 for 30 sec. Does not work versus Mechanical beings.
         /// </summary>
-        [TalentData(index: 2, name: "Psychic Scream", maxPoints: 1, icon: "spell_shadow_psychicscream",
-         tree: 0, column: 3, row: 1, prerequisite: -1, description: new[] {
-@"The caster lets out a psychic scream, causing 5 enemies within 8 yards to flee for 8 sec.  Damage caused may interrupt the effect.",})]
-        public int PsychicScream { get { return _data[2]; } set { _data[2] = value; } }
+        [TalentData(index: 2, name: "Dominate Mind", icon: "spell_shadow_shadowworddominate",
+         column: 2, row: 0,
+         description: @"Controls a mind up to level 4 for 30 sec. Does not work versus Mechanical beings.")]
+        public bool DominateMind { get { return _data[2]; } set { _data[2] = value; } }
         /// <summary>
         /// When you cast Power Word: Shield or Leap of Faith, you increase the target's movement speed by 60% for 4 sec.
         /// </summary>
-        [TalentData(index: 3, name: "Body and Soul", maxPoints: 1, icon: "spell_holy_symbolofhope",
-         tree: 0, column: 1, row: 2, prerequisite: -1, description: new[] {
-@"When you cast Power Word: Shield or Leap of Faith, you increase the target's movement speed by 60% for 4 sec.",})]
-        public int BodyAndSoul { get { return _data[3]; } set { _data[3] = value; } }
+        [TalentData(index: 3, name: "Body and Soul", icon: "spell_holy_symbolofhope",
+         column: 0, row: 1,
+         description: @"When you cast Power Word: Shield or Leap of Faith, you increase the target's movement speed by 60% for 4 sec.")]
+        public bool BodyAndSoul { get { return _data[3]; } set { _data[3] = value; } }
         /// <summary>
-        /// Increases your movement speed while Levitating by 25%.
+        /// Place a feather at the target location. If allies walk through it, they gain 80% increased movement speed for 6 sec. Only 3 feathers can be placed at one time. Accumulates an additional charge once every 10 sec. Maximum 3 charges.
         /// </summary>
-        [TalentData(index: 4, name: "Path of the Devout", maxPoints: 1, icon: "spell_priest_pathofdevout",
-         tree: 0, column: 2, row: 2, prerequisite: -1, description: new[] {
-@"Increases your movement speed while Levitating by 25%.",})]
-        public int PathOfTheDevout { get { return _data[4]; } set { _data[4] = value; } }
+        [TalentData(index: 4, name: "Angelic Feather", icon: "ability_priest_angelicfeather",
+         column: 1, row: 1,
+         description: @"Place a feather at the target location. If allies walk through it, they gain 80% increased movement speed for 6 sec. Only 3 feathers can be placed at one time. Accumulates an additional charge once every 10 sec. Maximum 3 charges.")]
+        public bool AngelicFeather { get { return _data[4]; } set { _data[4] = value; } }
         /// <summary>
-        /// Anytime you Fade, you remove all movement impairing effects from yourself and your movement speed will be unhindered for 3 sec.
+        /// When you Fade, you remove all movement impairing effects from yourself, and your movement speed is unhindered for 5 sec.
         /// </summary>
-        [TalentData(index: 5, name: "Phantasm", maxPoints: 1, icon: "spell_shadow_twistedfaith",
-         tree: 0, column: 3, row: 2, prerequisite: -1, description: new[] {
-@"Anytime you Fade, you remove all movement impairing effects from yourself and your movement speed will be unhindered for 3 sec.",})]
-        public int Phantasm { get { return _data[5]; } set { _data[5] = value; } }
+        [TalentData(index: 5, name: "Phantasm", icon: "ability_priest_phantasm",
+         column: 2, row: 1,
+         description: @"When you Fade, you remove all movement impairing effects from yourself, and your movement speed is unhindered for 5 sec.")]
+        public bool Phantasm { get { return _data[5]; } set { _data[5] = value; } }
         /// <summary>
-        /// Surge of Light (Caster form)\n\nYou have a 15% chance when you Smite, Heal, Flash Heal, Binding Heal or Greater Heal to cause your next Flash Heal to be instant cast and have no mana cost.\n\n\n\nSurge of Darkness (Shadowform)\n\nYou have a 15% chance when you deal damage with Mind Flay to cause your next Mind Blast to be instant cast and have no Shadow Orb cost.
+        /// Discipline, Holy:Surge of LightYou have a 15% chance when you Smite or cast a healing spell to cause your next Flash Heal to be instant cast and have no mana cost. Limit 2 charges.
+        /// Shadow:Surge of DarknessPeriodic damage from your Vampiric Touch has a 20% chance to cause your next Mind Spike to not consume your damage-over-time effects, become instant cast, cost no mana, and deal 50% additional damage. Limit 2 charges.
         /// </summary>
-        [TalentData(index: 6, name: "From Darkness, Comes Light", maxPoints: 1, icon: "spell_holy_surgeoflight",
-         tree: 0, column: 1, row: 3, prerequisite: -1, description: new[] {
-@"Surge of Light (Caster form)
-
-You have a 15% chance when you Smite, Heal, Flash Heal, Binding Heal or Greater Heal to cause your next Flash Heal to be instant cast and have no mana cost.
-
-
-
-Surge of Darkness (Shadowform)
-
-You have a 15% chance when you deal damage with Mind Flay to cause your next Mind Blast to be instant cast and have no Shadow Orb cost.",})]
-        public int FromDarknessComesLight { get { return _data[6]; } set { _data[6] = value; } }
+        [TalentData(index: 6, name: "From Darkness, Comes Light", icon: "spell_holy_surgeoflight",
+         column: 0, row: 2,
+         description: @"Discipline, Holy:Surge of LightYou have a 15% chance when you Smite or cast a healing spell to cause your next Flash Heal to be instant cast and have no mana cost. Limit 2 charges.Shadow:Surge of DarknessPeriodic damage from your Vampiric Touch has a 20% chance to cause your next Mind Spike to not consume your damage-over-time effects, become instant cast, cost no mana, and deal 50% additional damage. Limit 2 charges.")]
+        public bool FromDarknessComesLight { get { return _data[6]; } set { _data[6] = value; } }
         /// <summary>
-        /// Fires a Divine Star in front of you, traveling 20 yards doing damage to all enemies and healing all friendly targets in its path.\n\n\n\nAfter reaching its destination, it will return to you also dealing damage and healing all targets in its path.
+        /// Creates a Mindbender to attack the target. Caster receives 1.
+        /// 75% mana when the Mindbender attacks. Lasts 15 sec.
+        /// Replaces Shadowfiend.
         /// </summary>
-        [TalentData(index: 7, name: "Divine Star ", maxPoints: 1, icon: "spell_priest_divinestar",
-         tree: 0, column: 2, row: 3, prerequisite: -1, description: new[] {
-@"Fires a Divine Star in front of you, traveling 20 yards doing damage to all enemies and healing all friendly targets in its path.
-
-
-
-After reaching its destination, it will return to you also dealing damage and healing all targets in its path.",})]
-        public int DivineStar { get { return _data[7]; } set { _data[7] = value; } }
+        [TalentData(index: 7, name: "Mindbender", icon: "spell_shadow_soulleech_3",
+         column: 1, row: 2,
+         description: @"Creates a Mindbender to attack the target. Caster receives 1.75% mana when the Mindbender attacks. Lasts 15 sec.Replaces Shadowfiend.")]
+        public bool Mindbender { get { return _data[7]; } set { _data[7] = value; } }
         /// <summary>
-        /// Archangel (Caster form)\n\nConsumes your Evangelism, increasing your healing done by 5% for each Evangelism consumed. 30 sec cooldown.\n\n\n\nDark Archangel (Shadowform)\n\nConsumes your Dark Evangelism, increasing the damage done by your Mind Flay, Mind Spike, Mind Blast and Shadow Word: Death by 5% for each Dark Evangelism consumed. 90 sec cooldown.
+        /// Discipline, Holy:You gain the Power Word: Solace ability.
+        /// Shadow:Casting Mind Flay while your target is affected by your Devouring Plague causes your Mind Flay to deal 33% additional damage per orb consumed by Devouring Plague.
+        /// Power Word: SolaceTalent30 yd rangeInstant10 sec cooldown   Strike an enemy with the power of the heavens, dealing [ 1,136 + 111% of Spell Power ] Holy damage and an additional [ 399 + 3.
+        /// 12% of Spell Power ] Holy damage over 7 sec and restoring 1% of maximum mana.
+        /// Damage dealt by Power Word: Solace will instantly heal a nearby low health friendly target within 40 yards from the enemy target for 100% of the damage dealt (50% when healing the Priest).
+        /// Replaces Holy Fire. 
         /// </summary>
-        [TalentData(index: 8, name: "Archangel", maxPoints: 1, icon: "ability_priest_archangel",
-         tree: 0, column: 3, row: 3, prerequisite: -1, description: new[] {
-@"Archangel (Caster form)
-
-Consumes your Evangelism, increasing your healing done by 5% for each Evangelism consumed. 30 sec cooldown.
-
-
-
-Dark Archangel (Shadowform)
-
-Consumes your Dark Evangelism, increasing the damage done by your Mind Flay, Mind Spike, Mind Blast and Shadow Word: Death by 5% for each Dark Evangelism consumed. 90 sec cooldown.",})]
-        public int Archangel { get { return _data[8]; } set { _data[8] = value; } }
+        [TalentData(index: 8, name: "Solace and Insanity", icon: "ability_priest_flashoflight",
+         column: 2, row: 2,
+         description: @"Discipline, Holy:You gain the Power Word: Solace ability.Shadow:Casting Mind Flay while your target is affected by your Devouring Plague causes your Mind Flay to deal 33% additional damage per orb consumed by Devouring Plague.Power Word: SolaceTalent30 yd rangeInstant10 sec cooldown   Strike an enemy with the power of the heavens, dealing [&nbsp;1,136 + 111% of Spell Power&nbsp;] Holy damage and an additional [&nbsp;399 + 3.12% of Spell Power&nbsp;] Holy damage over 7 sec and restoring 1% of maximum mana.Damage dealt by Power Word: Solace will instantly heal a nearby low health friendly target within 40 yards from the enemy target for 100% of the damage dealt (50% when healing the Priest).Replaces Holy Fire. ")]
+        public bool SolaceAndInsanity { get { return _data[8]; } set { _data[8] = value; } }
         /// <summary>
         /// Instantly heals the caster for 30% of their total health.
         /// </summary>
-        [TalentData(index: 9, name: "Desperate Prayer", maxPoints: 1, icon: "spell_holy_testoffaith",
-         tree: 0, column: 1, row: 4, prerequisite: -1, description: new[] {
-@"Instantly heals the caster for 30% of their total health.",})]
-        public int DesperatePrayer { get { return _data[9]; } set { _data[9] = value; } }
+        [TalentData(index: 9, name: "Desperate Prayer", icon: "spell_holy_testoffaith",
+         column: 0, row: 3,
+         description: @"Instantly heals the caster for 30% of their total health.")]
+        public bool DesperatePrayer { get { return _data[9]; } set { _data[9] = value; } }
         /// <summary>
-        /// Increases the effectiveness of your own Power Word: Shield, Divine Aegis and Spirit Shell on yourself by 30%.
+        /// Your shadow blurs into the darkness, leaving your true form behind. As a shadow you are stealthed, but remain in combat. Lasts 6 sec or until your true form is hit by 3 direct attacks.
         /// </summary>
-        [TalentData(index: 10, name: "Angelic Bulwark", maxPoints: 1, icon: "spell_priest_angelicbulwark",
-         tree: 0, column: 2, row: 4, prerequisite: -1, description: new[] {
-@"Increases the effectiveness of your own Power Word: Shield, Divine Aegis and Spirit Shell on yourself by 30%.",})]
-        public int AngelicBulwark { get { return _data[10]; } set { _data[10] = value; } }
+        [TalentData(index: 10, name: "Spectral Guise", icon: "spell_priest_spectralguise",
+         column: 1, row: 3,
+         description: @"Your shadow blurs into the darkness, leaving your true form behind. As a shadow you are stealthed, but remain in combat. Lasts 6 sec or until your true form is hit by 3 direct attacks.")]
+        public bool SpectralGuise { get { return _data[10]; } set { _data[10] = value; } }
         /// <summary>
-        /// Anytime a damaging attack brings you below 30% health, you gain an absorption shield equal to 20% of your total health lasting for until cancelled.\n\n\n\nThis effect cannot occur more than once every 90 sec.
+        /// Anytime a damaging attack brings you below 30% health, you gain an absorption shield equal to 20% of your total health lasting for 20 sec.
+        /// This effect cannot occur more than once every 90 sec.
         /// </summary>
-        [TalentData(index: 11, name: "Final Prayer", maxPoints: 1, icon: "spell_priest_finalprayer",
-         tree: 0, column: 3, row: 4, prerequisite: -1, description: new[] {
-@"Anytime a damaging attack brings you below 30% health, you gain an absorption shield equal to 20% of your total health lasting for until cancelled.
-
-
-
-This effect cannot occur more than once every 90 sec.",})]
-        public int FinalPrayer { get { return _data[11]; } set { _data[11] = value; } }
+        [TalentData(index: 11, name: "Angelic Bulwark", icon: "ability_priest_angelicbulwark",
+         column: 2, row: 3,
+         description: @"Anytime a damaging attack brings you below 30% health, you gain an absorption shield equal to 20% of your total health lasting for 20 sec.This effect cannot occur more than once every 90 sec.")]
+        public bool AngelicBulwark { get { return _data[11]; } set { _data[11] = value; } }
         /// <summary>
-        /// Increases damage and healing done to targets at or below 20% health.
+        /// After damaging or healing a target below 35% health, you deal 15% increased damage and healing for 10 sec.
         /// </summary>
-        [TalentData(index: 12, name: "Twist of Fate", maxPoints: 1, icon: "spell_shadow_mindtwisting",
-         tree: 0, column: 1, row: 5, prerequisite: -1, description: new[] {
-@"Increases damage and healing done to targets at or below 20% health.",})]
-        public int TwistOfFate { get { return _data[12]; } set { _data[12] = value; } }
+        [TalentData(index: 12, name: "Twist of Fate", icon: "spell_shadow_mindtwisting",
+         column: 0, row: 4,
+         description: @"After damaging or healing a target below 35% health, you deal 15% increased damage and healing for 10 sec.")]
+        public bool TwistOfFate { get { return _data[12]; } set { _data[12] = value; } }
         /// <summary>
-        /// Infuses the target with power, increasing spell casting speed by 20% and reducing the mana cost of all spells by 20%.  Lasts 15 sec.
+        /// Infuses the Priest with power, increasing spell haste by 20%, all damage by 5%, and reducing the mana cost of all spells by 20%. Lasts 20 sec.
         /// </summary>
-        [TalentData(index: 13, name: "Power Infusion", maxPoints: 1, icon: "spell_holy_powerinfusion",
-         tree: 0, column: 2, row: 5, prerequisite: -1, description: new[] {
-@"Infuses the target with power, increasing spell casting speed by 20% and reducing the mana cost of all spells by 20%.  Lasts 15 sec.",})]
-        public int PowerInfusion { get { return _data[13]; } set { _data[13] = value; } }
+        [TalentData(index: 13, name: "Power Infusion", icon: "spell_holy_powerinfusion",
+         column: 1, row: 4,
+         description: @"Infuses the Priest with power, increasing spell haste by 20%, all damage by 5%, and reducing the mana cost of all spells by 20%. Lasts 20 sec.")]
+        public bool PowerInfusion { get { return _data[13]; } set { _data[13] = value; } }
         /// <summary>
-        /// Serendipity (Caster form)\n\nWhen you heal with Binding Heal or Flash Heal, the cast time of your next Greater Heal or Prayer of Healing spell is reduced by 20% and mana cost reduced by 10%. Stacks up to 2 times. Lasts 20 sec.\n\n\n\nMind Melt (Shadowform)\n\nWhen you deal damage with Mind Spike, the cast time of your next Mind Blast is reduced by 50% lasting 6 sec. Mind Melt can stack up to 2 times.
+        /// Discipline:When you cast Penance, there is a 100% chance your next Power Word: Shield will both ignore and not cause the Weakened Soul effect.
+        /// Holy:When you cast Greater Heal or Prayer of Healing, there is a 40% chance your next Prayer of Mending will not trigger its cooldown, and will jump to each target instantly.
+        /// Shadow:Periodic damage from your Shadow Word: Pain has a 5% chance to reset the cooldown on Mind Blast and cause your next Mind Blast within 12 sec to be instant cast and cost no mana.
         /// </summary>
-        [TalentData(index: 14, name: "Divine Insight", maxPoints: 1, icon: "spell_priest_burningwill",
-         tree: 0, column: 3, row: 5, prerequisite: -1, description: new[] {
-@"Serendipity (Caster form)
-
-When you heal with Binding Heal or Flash Heal, the cast time of your next Greater Heal or Prayer of Healing spell is reduced by 20% and mana cost reduced by 10%. Stacks up to 2 times. Lasts 20 sec.
-
-
-
-Mind Melt (Shadowform)
-
-When you deal damage with Mind Spike, the cast time of your next Mind Blast is reduced by 50% lasting 6 sec. Mind Melt can stack up to 2 times.",})]
-        public int DivineInsight { get { return _data[14]; } set { _data[14] = value; } }
+        [TalentData(index: 14, name: "Divine Insight", icon: "spell_priest_burningwill",
+         column: 2, row: 4,
+         description: @"Discipline:When you cast Penance, there is a 100% chance your next Power Word: Shield will both ignore and not cause the Weakened Soul effect.Holy:When you cast Greater Heal or Prayer of Healing, there is a 40% chance your next Prayer of Mending will not trigger its cooldown, and will jump to each target instantly.Shadow:Periodic damage from your Shadow Word: Pain has a 5% chance to reset the cooldown on Mind Blast and cause your next Mind Blast within 12 sec to be instant cast and cost no mana.")]
+        public bool DivineInsight { get { return _data[14]; } set { _data[14] = value; } }
         /// <summary>
-        /// You create a Vow of Unity with the the friendly target. Whenever you heal the target through spells and effects, you are also healed equal to 20% of the amount.\n\n\n\nIn addition, when the target is attacked, 50% of the damage is redirected to you over 6 sec.\n\n\n\nIf your target is victim to an attack greater than 30% of their total health, the Vow of Unity effect ends. Only one target can be linked with you using Vow of Unity at a time.
+        /// Launches a Holy bolt at the target that grows in power as it travels, which causes up to [ 12,592 + 122.
+        /// 5% of Spell Power ] damage to an enemy, or up to [ 12,592 + 122.
+        /// 5% of Spell Power ] healing to an ally.
+        /// This effect can bounce from allies to other allies, or from enemies to other enemies. Each time it bounces it will split into 2 bolts, preferring farther away targets, and never hitting the same target twice. Cascade can bounce up to 4 times.
         /// </summary>
-        [TalentData(index: 15, name: "Vow of Unity", maxPoints: 1, icon: "inv_helm_robe_raidpriest_k_01",
-         tree: 0, column: 1, row: 6, prerequisite: -1, description: new[] {
-@"You create a Vow of Unity with the the friendly target. Whenever you heal the target through spells and effects, you are also healed equal to 20% of the amount.
-
-
-
-In addition, when the target is attacked, 50% of the damage is redirected to you over 6 sec.
-
-
-
-If your target is victim to an attack greater than 30% of their total health, the Vow of Unity effect ends. Only one target can be linked with you using Vow of Unity at a time.",})]
-        public int VowOfUnity { get { return _data[15]; } set { _data[15] = value; } }
+        [TalentData(index: 15, name: "Cascade", icon: "ability_priest_cascade",
+         column: 0, row: 5,
+         description: @"Launches a Holy bolt at the target that grows in power as it travels, which causes up to [&nbsp;12,592 + 122.5% of Spell Power&nbsp;] damage to an enemy, or up to [&nbsp;12,592 + 122.5% of Spell Power&nbsp;] healing to an ally.This effect can bounce from allies to other allies, or from enemies to other enemies. Each time it bounces it will split into 2 bolts, preferring farther away targets, and never hitting the same target twice. Cascade can bounce up to 4 times.")]
+        public bool Cascade { get { return _data[15]; } set { _data[15] = value; } }
         /// <summary>
-        /// You swap health percentage with the current friendly target. After this effect ends, you are instantly healed for 25% of your total health.
+        /// Fires a Divine Star in front of you, traveling 24 yds, causing [ 4,717 + 45.
+        /// 5% of Spell Power ] Divine damage to all enemies and [ 7,862 + 75.
+        /// 8% of Spell Power ] healing to all allies within 4 yds of its path.
+        /// After reaching its destination it will return to you, also dealing damage and healing to all targets in its path.
         /// </summary>
-        [TalentData(index: 16, name: "Void Shift", maxPoints: 1, icon: "spell_priest_voidshift",
-         tree: 0, column: 2, row: 6, prerequisite: -1, description: new[] {
-@"You swap health percentage with the current friendly target. After this effect ends, you are instantly healed for 25% of your total health.",})]
-        public int VoidShift { get { return _data[16]; } set { _data[16] = value; } }
+        [TalentData(index: 16, name: "Divine Star", icon: "spell_priest_divinestar",
+         column: 1, row: 5,
+         description: @"Fires a Divine Star in front of you, traveling 24 yds, causing [&nbsp;4,717 + 45.5% of Spell Power&nbsp;] Divine damage to all enemies and [&nbsp;7,862 + 75.8% of Spell Power&nbsp;] healing to all allies within 4 yds of its path.After reaching its destination it will return to you, also dealing damage and healing to all targets in its path.")]
+        public bool DivineStar { get { return _data[16]; } set { _data[16] = value; } }
         /// <summary>
-        /// When you deal damage or healing, 15% of the amount is healed to up to 3 low-health nearby allies.
+        /// Creates a ring of Holy energy around you that quickly expands and grows in power, up to 30 yds away. Deals up to [ 20,216 + 195% of Spell Power ] Holy damage to enemies, and up to [ 33,694 + 325% of Spell Power ] healing to allies, with the greatest effect at 25 yds.
         /// </summary>
-        [TalentData(index: 17, name: "Vampiric Dominance", maxPoints: 1, icon: "spell_shadow_improvedvampiricembrace",
-         tree: 0, column: 3, row: 6, prerequisite: -1, description: new[] {
-@"When you deal damage or healing, 15% of the amount is healed to up to 3 low-health nearby allies.",})]
-        public int VampiricDominance { get { return _data[17]; } set { _data[17] = value; } }
+        [TalentData(index: 17, name: "Halo", icon: "ability_priest_halo",
+         column: 2, row: 5,
+         description: @"Creates a ring of Holy energy around you that quickly expands and grows in power, up to 30 yds away. Deals up to [&nbsp;20,216 + 195% of Spell Power&nbsp;] Holy damage to enemies, and up to [&nbsp;33,694 + 325% of Spell Power&nbsp;] healing to allies, with the greatest effect at 25 yds.")]
+        public bool Halo { get { return _data[17]; } set { _data[17] = value; } }
+        /// <summary>
+        /// 
+        /// Discipline
+        /// </summary>
+        [TalentData(index: 18, name: "Divine Clarity", icon: "spell_priest_divinestar_holy",
+         column: 0, row: 6,
+         description: @"
+Discipline")]
+        public bool DivineClarity { get { return _data[18]; } set { _data[18] = value; } }
+        /// <summary>
+        /// 
+        /// Discipline & Holy
+        /// </summary>
+        [TalentData(index: 19, name: "Power of the Void", icon: "inv_enchant_voidcrystal",
+         column: 1, row: 6,
+         description: @"
+Discipline & Holy")]
+        public bool PowerOfTheVoid { get { return _data[19]; } set { _data[19] = value; } }
+        /// <summary>
+        /// 
+        /// Discipline & Holy
+        /// </summary>
+        [TalentData(index: 20, name: "Spiritual Guidance", icon: "spell_holy_spiritualguidence",
+         column: 2, row: 6,
+         description: @"
+Discipline & Holy")]
+        public bool SpiritualGuidance { get { return _data[20]; } set { _data[20] = value; } }
         #endregion
     }
 
@@ -1239,154 +1271,186 @@ If your target is victim to an attack greater than 30% of their total health, th
         public override TalentsBase Clone()
         {
             DeathKnightTalents clone = (DeathKnightTalents)MemberwiseClone();
-            clone._data = (int[])_data.Clone();
+            clone._data = (bool[])_data.Clone();
             clone._glyphData = (bool[])_glyphData.Clone();
-            clone.TreeCounts = new int[] { -1, -1, -1 };
+            clone.TalentCount = -1;
             return clone;
         }
 
-        private int[] _data = new int[18];
-        public override int[] Data { get { return _data; } }
+        private bool[] _data = new bool[21];
+        public override bool[] Data { get { return _data; } }
         public DeathKnightTalents() { }
         public DeathKnightTalents(string talents, int[][] glyphEncodes = null)
         {
             LoadString(talents, glyphEncodes);
         }
+
         private static string[] specializationNames = new[] {
 			@"Blood",@"Frost",@"Unholy"};
         public override string[] SpecializationNames
         {
             get { return specializationNames; }
         }
-
-        #region Death Knight
-        public override int TreeStartingIndexes_0 { get { return 0; } }
+        #region DeathKnight
         /// <summary>
         /// Your Blood Boil ability now also triggers Pestilence if it strikes a diseased target.
         /// </summary>
-        [TalentData(index: 0, name: "Roiling Blood", maxPoints: 1, icon: "ability_deathknight_roilingblood",
-         tree: 0, column: 1, row: 1, prerequisite: -1, description: new[] {
-@"Your Blood Boil ability now also triggers Pestilence if it strikes a diseased target.",})]
-        public int RoilingBlood { get { return _data[0]; } set { _data[0] = value; } }
+        [TalentData(index: 0, name: "Roiling Blood", icon: "ability_deathknight_roilingblood",
+         column: 0, row: 0,
+         description: @"Your Blood Boil ability now also triggers Pestilence if it strikes a diseased target.")]
+        public bool RoilingBlood { get { return _data[0]; } set { _data[0] = value; } }
         /// <summary>
-        /// Causes an undead minion to erupt in a shower of bile, dealing 249 Shadow damage to all enemies within 40 yards of the minion, and infecting them with Blood Plague and Frost Fever.
+        /// Draw forth the infection from an enemy, consuming your Blood Plague and Frost Fever diseases on the target to activate two random fully-depleted runes as Death Runes.
         /// </summary>
-        [TalentData(index: 1, name: "Vile Spew", maxPoints: 1, icon: "spell_shadow_plaguecloud",
-         tree: 0, column: 2, row: 1, prerequisite: -1, description: new[] {
-@"Causes an undead minion to erupt in a shower of bile, dealing 249 Shadow damage to all enemies within 40 yards of the minion, and infecting them with Blood Plague and Frost Fever.",})]
-        public int VileSpew { get { return _data[1]; } set { _data[1] = value; } }
+        [TalentData(index: 1, name: "Plague Leech", icon: "ability_creature_disease_02",
+         column: 1, row: 0,
+         description: @"Draw forth the infection from an enemy, consuming your Blood Plague and Frost Fever diseases on the target to activate two random fully-depleted runes as Death Runes.")]
+        public bool PlagueLeech { get { return _data[1]; } set { _data[1] = value; } }
         /// <summary>
         /// Surrounds the Death Knight with a vile swarm of unholy insects for 10 sec, stinging all enemies within 10 yards every 1 sec, infecting them with Blood Plague and Frost Fever.
         /// </summary>
-        [TalentData(index: 2, name: "Unholy Blight", maxPoints: 1, icon: "spell_shadow_contagion",
-         tree: 0, column: 3, row: 1, prerequisite: -1, description: new[] {
-@"Surrounds the Death Knight with a vile swarm of unholy insects for 10 sec, stinging all enemies within 10 yards every 1 sec, infecting them with Blood Plague and Frost Fever.",})]
-        public int UnholyBlight { get { return _data[2]; } set { _data[2] = value; } }
+        [TalentData(index: 2, name: "Unholy Blight", icon: "spell_shadow_contagion",
+         column: 2, row: 0,
+         description: @"Surrounds the Death Knight with a vile swarm of unholy insects for 10 sec, stinging all enemies within 10 yards every 1 sec, infecting them with Blood Plague and Frost Fever.")]
+        public bool UnholyBlight { get { return _data[2]; } set { _data[2] = value; } }
         /// <summary>
-        /// Draw upon unholy energy to become undead for 10 sec.  While undead, you are immune to Charm, Fear, and Sleep effects.
+        /// Draw upon unholy energy to become undead for 10 sec. While undead, you are immune to Charm, Fear, and Sleep effects, and Death Coil will heal you.
         /// </summary>
-        [TalentData(index: 3, name: "Lichborne", maxPoints: 1, icon: "spell_shadow_raisedead",
-         tree: 0, column: 1, row: 2, prerequisite: -1, description: new[] {
-@"Draw upon unholy energy to become undead for 10 sec.  While undead, you are immune to Charm, Fear, and Sleep effects.",})]
-        public int Lichborne { get { return _data[3]; } set { _data[3] = value; } }
+        [TalentData(index: 3, name: "Lichborne", icon: "spell_shadow_raisedead",
+         column: 0, row: 1,
+         description: @"Draw upon unholy energy to become undead for 10 sec. While undead, you are immune to Charm, Fear, and Sleep effects, and Death Coil will heal you.")]
+        public bool Lichborne { get { return _data[3]; } set { _data[3] = value; } }
         /// <summary>
-        /// Places a large, stationary Anti-Magic Zone that reduces spell damage done to party or raid members inside it by 75%.  The Anti-Magic Zone lasts for 10 sec or until it absorbs 10106 spell damage.
+        /// Places a large, stationary Anti-Magic Zone that reduces spell damage done to party or raid members inside it by 40%. The Anti-Magic Zone lasts for 3 sec.
         /// </summary>
-        [TalentData(index: 4, name: "Anti-Magic Zone", maxPoints: 1, icon: "spell_deathknight_antimagiczone",
-         tree: 0, column: 2, row: 2, prerequisite: -1, description: new[] {
-@"Places a large, stationary Anti-Magic Zone that reduces spell damage done to party or raid members inside it by 75%.  The Anti-Magic Zone lasts for 10 sec or until it absorbs 10106 spell damage.",})]
-        public int AntiMagicZone { get { return _data[4]; } set { _data[4] = value; } }
+        [TalentData(index: 4, name: "Anti-Magic Zone", icon: "spell_deathknight_antimagiczone",
+         column: 1, row: 1,
+         description: @"Places a large, stationary Anti-Magic Zone that reduces spell damage done to party or raid members inside it by 40%. The Anti-Magic Zone lasts for 3 sec.")]
+        public bool AntiMagicZone { get { return _data[4]; } set { _data[4] = value; } }
         /// <summary>
-        /// Reduces the cooldown of your Death Grip spell by 15 sec and causes your Death Grip to reduce the movement speed of the target by 50% for 6 sec.
+        /// An unholy pact grants you the ability to fight on through damage that would kill mere mortals. When you would sustain fatal damage, you instead are wrapped in a Shroud of Purgatory, absorbing incoming healing equal to the amount of damage prevented, lasting 3 sec.
+        /// If any healing absorption remains when Shroud of Purgatory expires, you die. Otherwise, you survive. This effect may only occur every 3 min.
         /// </summary>
-        [TalentData(index: 5, name: "Icy Grip", maxPoints: 1, icon: "ability_deathknight_desolation",
-         tree: 0, column: 3, row: 2, prerequisite: -1, description: new[] {
-@"Reduces the cooldown of your Death Grip spell by 15 sec and causes your Death Grip to reduce the movement speed of the target by 50% for 6 sec.",})]
-        public int IcyGrip { get { return _data[5]; } set { _data[5] = value; } }
+        [TalentData(index: 5, name: "Purgatory", icon: "inv_misc_shadowegg",
+         column: 2, row: 1,
+         description: @"An unholy pact grants you the ability to fight on through damage that would kill mere mortals. When you would sustain fatal damage, you instead are wrapped in a Shroud of Purgatory, absorbing incoming healing equal to the amount of damage prevented, lasting 3 sec.If any healing absorption remains when Shroud of Purgatory expires, you die. Otherwise, you survive. This effect may only occur every 3 min.")]
+        public bool Purgatory { get { return _data[5]; } set { _data[5] = value; } }
         /// <summary>
-        /// Movement-impairing effects may not reduce you below 75% of normal movement speed.
+        /// You passively move 10% faster, and movement-impairing effects may not reduce you below 70% of normal movement speed.
+        /// When activated, you gain 30% movement speed and may not be slowed below 100% of normal movement speed for 6 seconds.
         /// </summary>
-        [TalentData(index: 6, name: "Death's Advance", maxPoints: 1, icon: "spell_shadow_demonicempathy",
-         tree: 0, column: 1, row: 3, prerequisite: -1, description: new[] {
-@"Movement-impairing effects may not reduce you below 75% of normal movement speed.",})]
-        public int DeathsAdvance { get { return _data[6]; } set { _data[6] = value; } }
+        [TalentData(index: 6, name: "Death's Advance", icon: "spell_shadow_demonicempathy",
+         column: 0, row: 2,
+         description: @"You passively move 10% faster, and movement-impairing effects may not reduce you below 70% of normal movement speed.When activated, you gain 30% movement speed and may not be slowed below 100% of normal movement speed for 6 seconds.")]
+        public bool DeathsAdvance { get { return _data[6]; } set { _data[6] = value; } }
         /// <summary>
         /// Victims of your Frost Fever disease are Chilled, reducing movement speed by 50% for 10 sec, and your Chains of Ice immobilizes targets for 3 sec.
         /// </summary>
-        [TalentData(index: 7, name: "Chilblains", maxPoints: 1, icon: "spell_frost_wisp",
-         tree: 0, column: 2, row: 3, prerequisite: -1, description: new[] {
-@"Victims of your Frost Fever disease are Chilled, reducing movement speed by 50% for 10 sec, and your Chains of Ice immobilizes targets for 3 sec.",})]
-        public int Chilblains { get { return _data[7]; } set { _data[7] = value; } }
+        [TalentData(index: 7, name: "Chilblains", icon: "spell_frost_wisp",
+         column: 1, row: 2,
+         description: @"Victims of your Frost Fever disease are Chilled, reducing movement speed by 50% for 10 sec, and your Chains of Ice immobilizes targets for 3 sec.")]
+        public bool Chilblains { get { return _data[7]; } set { _data[7] = value; } }
         /// <summary>
-        /// Lifts an enemy target off the ground and crushes their throat with dark energy, stunning them for 5 sec.  Functions as a silence if the target is immune to stuns.\n\n\n\nReplaces Strangulate.
+        /// Lifts an enemy target off the ground and crushes their throat with dark energy, stunning them for 5 sec. Functions as a silence if the target is immune to stuns.
+        /// Replaces Strangulate.
         /// </summary>
-        [TalentData(index: 8, name: "Asphyxiate", maxPoints: 1, icon: "ability_deathknight_asphixiate",
-         tree: 0, column: 3, row: 3, prerequisite: -1, description: new[] {
-@"Lifts an enemy target off the ground and crushes their throat with dark energy, stunning them for 5 sec.  Functions as a silence if the target is immune to stuns.  Replaces Strangulate.",})]
-        public int Asphyxiate { get { return _data[8]; } set { _data[8] = value; } }
+        [TalentData(index: 8, name: "Asphyxiate", icon: "ability_deathknight_asphixiate",
+         column: 2, row: 2,
+         description: @"Lifts an enemy target off the ground and crushes their throat with dark energy, stunning them for 5 sec. Functions as a silence if the target is immune to stuns.Replaces Strangulate.")]
+        public bool Asphyxiate { get { return _data[8]; } set { _data[8] = value; } }
         /// <summary>
         /// Drain vitality from an undead minion, healing the Death Knight for 50% of his maximum health and causing the minion to suffer damage equal to 50% of its maximum health.
         /// </summary>
-        [TalentData(index: 9, name: "Death Pact", maxPoints: 1, icon: "spell_shadow_deathpact",
-         tree: 0, column: 1, row: 4, prerequisite: -1, description: new[] {
-@"Drain vitality from an undead minion, healing the Death Knight for 50% of his maximum health and causing the minion to suffer damage equal to 50% of its maximum health.",})]
-        public int DeathPact { get { return _data[9]; } set { _data[9] = value; } }
+        [TalentData(index: 9, name: "Death Pact", icon: "spell_shadow_deathpact",
+         column: 0, row: 3,
+         description: @"Drain vitality from an undead minion, healing the Death Knight for 50% of his maximum health and causing the minion to suffer damage equal to 50% of its maximum health.")]
+        public bool DeathPact { get { return _data[9]; } set { _data[9] = value; } }
         /// <summary>
-        /// Deal 2,920 Shadow damage to an enemy, healing the Death Knight for 75% of damage dealt.
+        /// Deal [ 8,226 + 37.
+        /// 4% of AP ] Shadowfrost damage to an enemy, healing the Death Knight for 150% of damage dealt.
         /// </summary>
-        [TalentData(index: 10, name: "Death Siphon", maxPoints: 1, icon: "ability_deathknight_deathsiphon",
-         tree: 0, column: 2, row: 4, prerequisite: -1, description: new[] {
-@"Deal 2,920 Shadow damage to an enemy, healing the Death Knight for 75% of damage dealt.",})]
-        public int DeathSiphon { get { return _data[10]; } set { _data[10] = value; } }
+        [TalentData(index: 10, name: "Death Siphon", icon: "ability_deathknight_deathsiphon",
+         column: 1, row: 3,
+         description: @"Deal [&nbsp;8,226 + 37.4% of AP&nbsp;] Shadowfrost damage to an enemy, healing the Death Knight for 150% of damage dealt.")]
+        public bool DeathSiphon { get { return _data[10]; } set { _data[10] = value; } }
         /// <summary>
-        /// Temporarily grants the Death Knight 15% of maximum health and increases the amount of health received from healing spells and effects by 25% for 10 sec.  After the effect expires, the health is lost.
+        /// Continuously converts Runic Power to health, restoring 3% of maximum health every 1 sec. Only base Runic Power generation from spending runes may occur while Conversion is active. This effect lasts until canceled, or Runic Power is exhausted.
         /// </summary>
-        [TalentData(index: 11, name: "Vampiric Blood", maxPoints: 1, icon: "spell_shadow_lifedrain",
-         tree: 0, column: 3, row: 4, prerequisite: -1, description: new[] {
-@"Temporarily grants the Death Knight 15% of maximum health and increases the amount of health received from healing spells and effects by 25% for 10 sec.  After the effect expires, the health is lost.",})]
-        public int VampiricBlood { get { return _data[11]; } set { _data[11] = value; } }
+        [TalentData(index: 11, name: "Conversion", icon: "ability_deathknight_deathsiphon2",
+         column: 2, row: 3,
+         description: @"Continuously converts Runic Power to health, restoring 3% of maximum health every 1 sec. Only base Runic Power generation from spending runes may occur while Conversion is active. This effect lasts until canceled, or Runic Power is exhausted.")]
+        public bool Conversion { get { return _data[11]; } set { _data[11] = value; } }
         /// <summary>
-        /// Each damaging Death Coil, Frost Strike, or Rune Strike generates a Blood Charge, up to a maximum of 6 charges.  Blood Tap consumes 3 Blood Charges to activate a random fully-depleted rune as a Death Rune.
+        /// Each Death Coil, Frost Strike, or Rune Strike generates 2 Blood Charges, up to a maximum of 12 charges. Blood Tap consumes 5 Blood Charges to activate a random fully-depleted rune as a Death Rune.
         /// </summary>
-        [TalentData(index: 12, name: "Blood Tap", maxPoints: 1, icon: "spell_deathknight_bloodtap",
-         tree: 0, column: 1, row: 5, prerequisite: -1, description: new[] {
-@"Each damaging Death Coil, Frost Strike, or Rune Strike generates a Blood Charge, up to a maximum of 6 charges.  Blood Tap consumes 3 Blood Charges to activate a random fully-depleted rune as a Death Rune.",})]
-        public int BloodTap { get { return _data[12]; } set { _data[12] = value; } }
+        [TalentData(index: 12, name: "Blood Tap", icon: "spell_deathknight_bloodtap",
+         column: 0, row: 4,
+         description: @"Each Death Coil, Frost Strike, or Rune Strike generates 2 Blood Charges, up to a maximum of 12 charges. Blood Tap consumes 5 Blood Charges to activate a random fully-depleted rune as a Death Rune.")]
+        public bool BloodTap { get { return _data[12]; } set { _data[12] = value; } }
         /// <summary>
-        /// When you land a damaging Death Coil, Frost Strike, or Rune Strike, you have a 45% chance to activate a random fully depleted rune.
+        /// When you land a damaging Death Coil, Frost Strike, or Rune Strike, you have a 45% chance to activate a random fully-depleted rune.
         /// </summary>
-        [TalentData(index: 13, name: "Runic Empowerment", maxPoints: 1, icon: "inv_misc_rune_10",
-         tree: 0, column: 2, row: 5, prerequisite: -1, description: new[] {
-@"When you land a damaging Death Coil, Frost Strike, or Rune Strike, you have a 45% chance to activate a random fully depleted rune.",})]
-        public int RunicEmpowerment { get { return _data[13]; } set { _data[13] = value; } }
+        [TalentData(index: 13, name: "Runic Empowerment", icon: "inv_misc_rune_10",
+         column: 1, row: 4,
+         description: @"When you land a damaging Death Coil, Frost Strike, or Rune Strike, you have a 45% chance to activate a random fully-depleted rune.")]
+        public bool RunicEmpowerment { get { return _data[13]; } set { _data[13] = value; } }
         /// <summary>
         /// When you land a damaging Death Coil, Frost Strike, or Rune Strike, you have a 45% chance to activate Runic Corruption, increasing your rune regeneration rate by 100% for 3 sec.
         /// </summary>
-        [TalentData(index: 14, name: "Runic Corruption", maxPoints: 1, icon: "spell_shadow_rune",
-         tree: 0, column: 3, row: 5, prerequisite: -1, description: new[] {
-@"When you land a damaging Death Coil, Frost Strike, or Rune Strike, you have a 45% chance to activate Runic Corruption, increasing your rune regeneration rate by 100% for 3 sec.",})]
-        public int RunicCorruption { get { return _data[14]; } set { _data[14] = value; } }
+        [TalentData(index: 14, name: "Runic Corruption", icon: "spell_shadow_rune",
+         column: 2, row: 4,
+         description: @"When you land a damaging Death Coil, Frost Strike, or Rune Strike, you have a 45% chance to activate Runic Corruption, increasing your rune regeneration rate by 100% for 3 sec.")]
+        public bool RunicCorruption { get { return _data[14]; } set { _data[14] = value; } }
         /// <summary>
-        /// Shadowy tendrils coil around all enemies within 20 yards of a target (hostile or friendly), dealing 2,324 Shadow damage and pulling them to the target's location.
+        /// Shadowy tendrils coil around all enemies within 20 yards of a target (hostile or friendly), pulling them to the target's location.
         /// </summary>
-        [TalentData(index: 15, name: "Gorefiend's Grasp", maxPoints: 1, icon: "ability_deathknight_aoedeathgrip",
-         tree: 0, column: 1, row: 6, prerequisite: -1, description: new[] {
-@"Shadowy tendrils coil around all enemies within 20 yards of a target (hostile or friendly), dealing 2,324 Shadow damage and pulling them to the target's location.",})]
-        public int GorefiendsGrasp { get { return _data[15]; } set { _data[15] = value; } }
+        [TalentData(index: 15, name: "Gorefiend's Grasp", icon: "ability_deathknight_aoedeathgrip",
+         column: 0, row: 5,
+         description: @"Shadowy tendrils coil around all enemies within 20 yards of a target (hostile or friendly), pulling them to the target's location.")]
+        public bool GorefiendsGrasp { get { return _data[15]; } set { _data[15] = value; } }
         /// <summary>
-        /// Surrounds the Death Knight with a swirling tempest of frigid air, dealing 374 Frost damage to enemies within 8 yards, every 1 sec for 8 sec.  Each time Remorseless Winter deals damage, it reduces enemy movement speed by 15%, stacking up to 5 times.  Upon receiving a fifth application, an enemy will be stunned for 6 sec.
+        /// Surrounds the Death Knight with a swirling tempest of frigid air for 8 sec, chilling enemies within 8 yards every 1 sec. Each pulse reduces targets' movement speed by 15% for 3 sec, stacking up to 5 times. Upon receiving a fifth application, an enemy will be stunned for 6 sec.
         /// </summary>
-        [TalentData(index: 16, name: "Remorseless Winter", maxPoints: 1, icon: "ability_deathknight_remorselesswinters2",
-         tree: 0, column: 2, row: 6, prerequisite: -1, description: new[] {
-@"Surrounds the Death Knight with a swirling tempest of frigid air, dealing 374 Frost damage to enemies within 8 yards, every 1 sec for 8 sec.  Each time Remorseless Winter deals damage, it reduces enemy movement speed by 15%, stacking up to 5 times.  Upon receiving a fifth application, an enemy will be stunned for 6 sec.",})]
-        public int RemorselessWinter { get { return _data[16]; } set { _data[16] = value; } }
+        [TalentData(index: 16, name: "Remorseless Winter", icon: "ability_deathknight_remorselesswinters2",
+         column: 1, row: 5,
+         description: @"Surrounds the Death Knight with a swirling tempest of frigid air for 8 sec, chilling enemies within 8 yards every 1 sec. Each pulse reduces targets' movement speed by 15% for 3 sec, stacking up to 5 times. Upon receiving a fifth application, an enemy will be stunned for 6 sec.")]
+        public bool RemorselessWinter { get { return _data[16]; } set { _data[16] = value; } }
         /// <summary>
-        /// Corrupts the ground in a 8 yard radius beneath the Death Knight, dealing 1,125 Shadow damage every second for 10 sec.  While standing in this corruption, the Death Knight is immune to crowd control effects.
+        /// Corrupts the ground in a 8 yard radius beneath the Death Knight for 10 sec. While standing in this corruption, the Death Knight is immune to effects that cause loss of control. This ability instantly removes such effects when activated.
         /// </summary>
-        [TalentData(index: 17, name: "Desecrated Ground", maxPoints: 1, icon: "ability_deathknight_desecratedground",
-         tree: 0, column: 3, row: 6, prerequisite: -1, description: new[] {
-@"Corrupts the ground in a 8 yard radius beneath the Death Knight, dealing 1,125 Shadow damage every second for 10 sec.  While standing in this corruption, the Death Knight is immune to crowd control effects.",})]
-        public int DesecratedGround { get { return _data[17]; } set { _data[17] = value; } }
+        [TalentData(index: 17, name: "Desecrated Ground", icon: "ability_deathknight_desecratedground",
+         column: 2, row: 5,
+         description: @"Corrupts the ground in a 8 yard radius beneath the Death Knight for 10 sec. While standing in this corruption, the Death Knight is immune to effects that cause loss of control. This ability instantly removes such effects when activated.")]
+        public bool DesecratedGround { get { return _data[17]; } set { _data[17] = value; } }
+        /// <summary>
+        /// A powerful disease that deals 100 damage per stack every 3 sec for 30 sec. Each time it deals damage, it gains 1 stack, and jumps to another nearby enemy if possible. Cannot be spread by Pestilence.
+        /// 
+        /// Replaces Blood Plague.
+        /// </summary>
+        [TalentData(index: 18, name: "Necrotic Plague", icon: "spell_shadow_creepingplague",
+         column: 0, row: 6,
+         description: @"A powerful disease that deals 100 damage per stack every 3 sec for 30 sec. Each time it deals damage, it gains 1 stack, and jumps to another nearby enemy if possible. Cannot be spread by Pestilence.
+
+Replaces Blood Plague.")]
+        public bool NecroticPlague { get { return _data[18]; } set { _data[18] = value; } }
+        /// <summary>
+        /// Defiles the ground targeted by the Death Knight, causing 100 Shadow damage every 1 sec for 10 sec. Each time Defile deals damage, it increases in area and damage by 5%. This growth can occur a maximum of 3 times per second.
+        /// 
+        /// Replaces Death and Decay.
+        /// </summary>
+        [TalentData(index: 19, name: "Defile", icon: "ability_rogue_envelopingshadows",
+         column: 1, row: 6,
+         description: @"Defiles the ground targeted by the Death Knight, causing 100 Shadow damage every 1 sec for 10 sec. Each time Defile deals damage, it increases in area and damage by 5%. This growth can occur a maximum of 3 times per second.
+
+Replaces Death and Decay.")]
+        public bool Defile { get { return _data[19]; } set { _data[19] = value; } }
+        /// <summary>
+        /// Continuously deals 2000 Shadowfrost damage every 1 sec to enemies in a cone in front of you. This effect lasts until canceled or Runic Power is exhausted.
+        /// </summary>
+        [TalentData(index: 20, name: "Breath of Sindragosa", icon: "achievement_boss_sindragosa",
+         column: 2, row: 6,
+         description: @"Continuously deals 2000 Shadowfrost damage every 1 sec to enemies in a cone in front of you. This effect lasts until canceled or Runic Power is exhausted.")]
+        public bool BreathOfSindragosa { get { return _data[20]; } set { _data[20] = value; } }
         #endregion
     }
 
@@ -1395,162 +1459,191 @@ If your target is victim to an attack greater than 30% of their total health, th
         public override TalentsBase Clone()
         {
             ShamanTalents clone = (ShamanTalents)MemberwiseClone();
-            clone._data = (int[])_data.Clone();
+            clone._data = (bool[])_data.Clone();
             clone._glyphData = (bool[])_glyphData.Clone();
-            clone.TreeCounts = new int[] { -1, -1, -1 };
+            clone.TalentCount = -1;
             return clone;
         }
 
-        private int[] _data = new int[18];
-        public override int[] Data { get { return _data; } }
+        private bool[] _data = new bool[21];
+        public override bool[] Data { get { return _data; } }
         public ShamanTalents() { }
         public ShamanTalents(string talents, int[][] glyphEncodes = null)
         {
             LoadString(talents, glyphEncodes);
         }
+
         private static string[] specializationNames = new[] {
 			@"Elemental",@"Enhancement",@"Restoration"};
         public override string[] SpecializationNames
         {
             get { return specializationNames; }
         }
-
         #region Shaman
-        public override int TreeStartingIndexes_0 { get { return 0; } }
         /// <summary>
-        /// Whenever a damaging attack brings you below 30% health, your maximum health is increased by 25% for 10 sec and your threat level towards the attacker is reduced.  30 second cooldown.
+        /// Whenever a damaging attack brings you below 30% health, your maximum health is increased by 25% for 10 sec, and your threat level towards the attacker is reduced. This effect cannot occur more often than once every 30 sec.
         /// </summary>
-        [TalentData(index: 0, name: "Nature's Guardian", maxPoints: 1, icon: "spell_nature_natureguardian",
-         tree: 0, column: 1, row: 1, prerequisite: -1, description: new[] {
-@"Whenever a damaging attack brings you below 30% health, your maximum health is increased by 25% for 10 sec and your threat level towards the attacker is reduced.  30 second cooldown.",})]
-        public int NaturesGuardian { get { return _data[0]; } set { _data[0] = value; } }
+        [TalentData(index: 0, name: "Nature's Guardian", icon: "spell_nature_natureguardian",
+         column: 0, row: 0,
+         description: @"Whenever a damaging attack brings you below 30% health, your maximum health is increased by 25% for 10 sec, and your threat level towards the attacker is reduced. This effect cannot occur more often than once every 30 sec.")]
+        public bool NaturesGuardian { get { return _data[0]; } set { _data[0] = value; } }
         /// <summary>
-        /// Summons a Stone Bulwark Totem with 5 health at the feet of the caster for 30 sec that grants the caster a shield absorbing 359 damage, and up to an additional 120 every 5 sec thereafter.
+        /// Couldn't parse description.
         /// </summary>
-        [TalentData(index: 1, name: "Stone Bulwark Totem", maxPoints: 1, icon: "ability_shaman_stonebulwark",
-         tree: 0, column: 2, row: 1, prerequisite: -1, description: new[] {
-@"Summons a Stone Bulwark Totem with 5 health at the feet of the caster for 30 sec that grants the caster a shield absorbing 359 damage, and up to an additional 120 every 5 sec thereafter.",})]
-        public int StoneBulwarkTotem { get { return _data[1]; } set { _data[1] = value; } }
+        [TalentData(index: 1, name: "Stone Bulwark Totem", icon: "ability_shaman_stonebulwark",
+         column: 1, row: 0,
+         description: @"Couldn't parse description.")]
+        public bool StoneBulwarkTotem { get { return _data[1]; } set { _data[1] = value; } }
         /// <summary>
-        /// Seek haven by shifting partially into the elemental planes, reducing damage taken by 50% but also all damage and healing done by 30%, for 6 sec.
+        /// Seek haven by shifting partially into the elemental planes, reducing damage taken by 40% for 6 sec.
         /// </summary>
-        [TalentData(index: 2, name: "Astral Shift", maxPoints: 1, icon: "ability_shaman_astralshift",
-         tree: 0, column: 3, row: 1, prerequisite: -1, description: new[] {
-@"Seek haven by shifting partially into the elemental planes, reducing damage taken by 50% but also all damage and healing done by 30%, for 6 sec.",})]
-        public int AstralShift { get { return _data[2]; } set { _data[2] = value; } }
+        [TalentData(index: 2, name: "Astral Shift", icon: "ability_shaman_astralshift",
+         column: 2, row: 0,
+         description: @"Seek haven by shifting partially into the elemental planes, reducing damage taken by 40% for 6 sec.")]
+        public bool AstralShift { get { return _data[2]; } set { _data[2] = value; } }
         /// <summary>
         /// Your Frost Shock now also roots the target in ice for 5 sec.
         /// </summary>
-        [TalentData(index: 3, name: "Frozen Power", maxPoints: 1, icon: "spell_fire_bluecano",
-         tree: 0, column: 1, row: 2, prerequisite: -1, description: new[] {
-@"Your Frost Shock now also roots the target in ice for 5 sec.",})]
-        public int FrozenPower { get { return _data[3]; } set { _data[3] = value; } }
+        [TalentData(index: 3, name: "Frozen Power", icon: "spell_fire_bluecano",
+         column: 0, row: 1,
+         description: @"Your Frost Shock now also roots the target in ice for 5 sec.")]
+        public bool FrozenPower { get { return _data[3]; } set { _data[3] = value; } }
         /// <summary>
-        /// Summons an Earthgrab Totem with 100 health at the feet of the caster for 45 sec. The totem pulses every 2 sec, causing roots to ensnare the legs of all enemies within 8 yards for 5 sec, preventing movement.  Enemies that have already been rooted once by the totem will instead have their movement speed reduced by 50%.\n\n\n\nReplaces Earthbind Totem.
+        /// Summons an Earth Totem with 5 health at the feet of the caster for 20 sec. The totem pulses every 2 sec, causing roots to ensnare the legs of all enemies within 10 yards for 5 sec, preventing movement. Enemies that have already been rooted once by the totem will instead have their movement speed reduced by 50%.
+        /// Replaces Earthbind Totem.
         /// </summary>
-        [TalentData(index: 4, name: "Earthgrab Totem", maxPoints: 1, icon: "spell_nature_stranglevines",
-         tree: 0, column: 2, row: 2, prerequisite: -1, description: new[] {
-@"Summons an Earthgrab Totem with 100 health at the feet of the caster for 45 sec. The totem pulses every 2 sec, causing roots to ensnare the legs of all enemies within 8 yards for 5 sec, preventing movement.  Enemies that have already been rooted once by the totem will instead have their movement speed reduced by 50%.
-
-
-
-Replaces Earthbind Totem.",})]
-        public int EarthgrabTotem { get { return _data[4]; } set { _data[4] = value; } }
+        [TalentData(index: 4, name: "Earthgrab Totem", icon: "spell_nature_stranglevines",
+         column: 1, row: 1,
+         description: @"Summons an Earth Totem with 5 health at the feet of the caster for 20 sec. The totem pulses every 2 sec, causing roots to ensnare the legs of all enemies within 10 yards for 5 sec, preventing movement. Enemies that have already been rooted once by the totem will instead have their movement speed reduced by 50%.Replaces Earthbind Totem.")]
+        public bool EarthgrabTotem { get { return _data[4]; } set { _data[4] = value; } }
         /// <summary>
-        /// Summons an Air Totem with 5 health at the feet of the caster for 6 sec, granting raid members within 30 yards immunity to movement-impairing effects.
+        /// Summons an Air Totem with 5 health at the feet of the caster for 6 sec, granting raid members within 40 yards immunity to movement-impairing effects.
         /// </summary>
-        [TalentData(index: 5, name: "Windwalk Totem", maxPoints: 1, icon: "ability_shaman_windwalktotem",
-         tree: 0, column: 3, row: 2, prerequisite: -1, description: new[] {
-@"Summons an Air Totem with 5 health at the feet of the caster for 6 sec, granting raid members within 30 yards immunity to movement-impairing effects.",})]
-        public int WindwalkTotem { get { return _data[5]; } set { _data[5] = value; } }
+        [TalentData(index: 5, name: "Windwalk Totem", icon: "ability_shaman_windwalktotem",
+         column: 2, row: 1,
+         description: @"Summons an Air Totem with 5 health at the feet of the caster for 6 sec, granting raid members within 40 yards immunity to movement-impairing effects.")]
+        public bool WindwalkTotem { get { return _data[5]; } set { _data[5] = value; } }
         /// <summary>
-        /// When activated, immediately finishes the cooldown on all totems.
+        /// When activated, immediately finishes the cooldown on all totems with a base cooldown shorter than 3 minutes.
         /// </summary>
-        [TalentData(index: 6, name: "Call of the Elements", maxPoints: 1, icon: "ability_shaman_multitotemactivation",
-         tree: 0, column: 1, row: 3, prerequisite: -1, description: new[] {
-@"When activated, immediately finishes the cooldown on all totems.",})]
-        public int CallOfTheElements { get { return _data[6]; } set { _data[6] = value; } }
+        [TalentData(index: 6, name: "Call of the Elements", icon: "ability_shaman_multitotemactivation",
+         column: 0, row: 2,
+         description: @"When activated, immediately finishes the cooldown on all totems with a base cooldown shorter than 3 minutes.")]
+        public bool CallOfTheElements { get { return _data[6]; } set { _data[6] = value; } }
         /// <summary>
-        /// When a totem is replaced or destroyed before its duration expires naturally, its cooldown is reduced in proportion to the lost duration, up to a maximum of 50% of the full cooldown.
+        /// Summoning a second totem of the same element no longer causes the first totem to be destroyed.
+        /// Only one totem may benefit from this effect at a time. Does not affect Fire totems.
         /// </summary>
-        [TalentData(index: 7, name: "Totemic Restoration ", maxPoints: 1, icon: "ability_shaman_totemcooldownrefund",
-         tree: 0, column: 2, row: 3, prerequisite: -1, description: new[] {
-@"When a totem is replaced or destroyed before its duration expires naturally, its cooldown is reduced in proportion to the lost duration, up to a maximum of 50% of the full cooldown.",})]
-        public int TotemicRestoration { get { return _data[7]; } set { _data[7] = value; } }
+        [TalentData(index: 7, name: "Totemic Persistence", icon: "ability_shaman_totemcooldownrefund",
+         column: 1, row: 2,
+         description: @"Summoning a second totem of the same element no longer causes the first totem to be destroyed.Only one totem may benefit from this effect at a time. Does not affect Fire totems.")]
+        public bool TotemicPersistence { get { return _data[7]; } set { _data[7] = value; } }
         /// <summary>
         /// Relocates your active totems to the specified location.
         /// </summary>
-        [TalentData(index: 8, name: "Totemic Projection ", maxPoints: 1, icon: "ability_shaman_totemrelocation",
-         tree: 0, column: 3, row: 3, prerequisite: -1, description: new[] {
-@"Relocates your active totems to the specified location.",})]
-        public int TotemicProjection { get { return _data[8]; } set { _data[8] = value; } }
+        [TalentData(index: 8, name: "Totemic Projection", icon: "ability_shaman_totemrelocation",
+         column: 2, row: 2,
+         description: @"Relocates your active totems to the specified location.")]
+        public bool TotemicProjection { get { return _data[8]; } set { _data[8] = value; } }
         /// <summary>
         /// Call upon elemental forces, empowering you with 30% haste for 20 sec.
         /// </summary>
-        [TalentData(index: 9, name: "Elemental Mastery", maxPoints: 1, icon: "spell_nature_wispheal",
-         tree: 0, column: 1, row: 4, prerequisite: -1, description: new[] {
-@"Call upon elemental forces, empowering you with 30% haste for 20 sec.",})]
-        public int ElementalMastery { get { return _data[9]; } set { _data[9] = value; } }
+        [TalentData(index: 9, name: "Elemental Mastery", icon: "spell_nature_wispheal",
+         column: 0, row: 3,
+         description: @"Call upon elemental forces, empowering you with 30% haste for 20 sec.")]
+        public bool ElementalMastery { get { return _data[9]; } set { _data[9] = value; } }
         /// <summary>
-        /// Passively increases spell and melee haste by 5%.\n\n\n\nWhen activated, your next Nature spell with a base casting time less than 10 sec. becomes an instant cast spell.
+        /// Your next Nature spell with a base casting time less than 10 sec. becomes an instant cast spell.
+        /// Passive:Increases spell haste by 5% and melee haste by 10%.
         /// </summary>
-        [TalentData(index: 10, name: "Ancestral Swiftness", maxPoints: 1, icon: "spell_shaman_improvedreincarnation",
-         tree: 0, column: 2, row: 4, prerequisite: -1, description: new[] {
-@"Passively increases spell and melee haste by 5%.
-
-
-
-When activated, your next Nature spell with a base casting time less than 10 sec. becomes an instant cast spell.",})]
-        public int AncestralSwiftness { get { return _data[10]; } set { _data[10] = value; } }
+        [TalentData(index: 10, name: "Ancestral Swiftness", icon: "spell_shaman_elementaloath",
+         column: 1, row: 3,
+         description: @"Your next Nature spell with a base casting time less than 10 sec. becomes an instant cast spell.Passive:Increases spell haste by 5% and melee haste by 10%.")]
+        public bool AncestralSwiftness { get { return _data[10]; } set { _data[10] = value; } }
         /// <summary>
         /// When one of your spells causes direct damage or healing, you have a chance to gain Echo of the Elements, duplicating that spell's effect.
         /// </summary>
-        [TalentData(index: 11, name: "Echo of the Elements", maxPoints: 1, icon: "ability_shaman_echooftheelements",
-         tree: 0, column: 3, row: 4, prerequisite: -1, description: new[] {
-@"When one of your spells causes direct damage or healing, you have a chance to gain Echo of the Elements, duplicating that spell's effect.",})]
-        public int EchoOfTheElements { get { return _data[11]; } set { _data[11] = value; } }
+        [TalentData(index: 11, name: "Echo of the Elements", icon: "ability_shaman_echooftheelements",
+         column: 2, row: 3,
+         description: @"When one of your spells causes direct damage or healing, you have a chance to gain Echo of the Elements, duplicating that spell's effect.")]
+        public bool EchoOfTheElements { get { return _data[11]; } set { _data[11] = value; } }
         /// <summary>
-        /// Summons a Water Totem with 10% of the caster's health at the feet of the caster for 10 sec. The Healing Tide Totem pulses every 2 sec, healing the 5 most injured raid members within 40 for 3179.
+        /// Your Healing Stream Totem now heals two targets at once for 15% additional healing.
         /// </summary>
-        [TalentData(index: 12, name: "Healing Tide Totem", maxPoints: 1, icon: "ability_shaman_healingtide",
-         tree: 0, column: 1, row: 5, prerequisite: -1, description: new[] {
-@"Summons a Water Totem with 10% of the caster's health at the feet of the caster for 10 sec. The Healing Tide Totem pulses every 2 sec, healing the 5 most injured raid members within 40 for 3179.",})]
-        public int HealingTideTotem { get { return _data[12]; } set { _data[12] = value; } }
+        [TalentData(index: 12, name: "Rushing Streams", icon: "inv_spear_04",
+         column: 0, row: 4,
+         description: @"Your Healing Stream Totem now heals two targets at once for 15% additional healing.")]
+        public bool RushingStreams { get { return _data[12]; } set { _data[12] = value; } }
         /// <summary>
-        /// When you deal direct damage or healing for the next 10 sec seconds, 40% of that amount is copied as healing to a nearby injured ally.
+        /// When you deal direct damage or healing for the next 10 sec, 40% of damage or 60% of healing is copied as healing to up to 3 nearby injured party or raid members.
         /// </summary>
-        [TalentData(index: 13, name: "Ancestral Guidance", maxPoints: 1, icon: "ability_shaman_ancestralguidance",
-         tree: 0, column: 2, row: 5, prerequisite: -1, description: new[] {
-@"When you deal direct damage or healing for the next 10 sec seconds, 40% of that amount is copied as healing to a nearby injured ally.",})]
-        public int AncestralGuidance { get { return _data[13]; } set { _data[13] = value; } }
+        [TalentData(index: 13, name: "Ancestral Guidance", icon: "ability_shaman_ancestralguidance",
+         column: 1, row: 4,
+         description: @"When you deal direct damage or healing for the next 10 sec, 40% of damage or 60% of healing is copied as healing to up to 3 nearby injured party or raid members.")]
+        public bool AncestralGuidance { get { return _data[13]; } set { _data[13] = value; } }
         /// <summary>
-        /// Allies standing within your Healing Rain receive a 10% reduction to incoming magic damage.
+        /// When you cast Healing Wave, Greater Healing Wave, Healing Surge, or Chain Heal, your Healing Rain's duration is increased by 4.
+        /// 00 sec.
+        /// When you cast Lightning Bolt, Chain Lightning, Earth Shock, or use Stormstrike, your Healing Rain's duration is increased by 4.
+        /// 00 sec.
+        /// This cannot cause Healing Rain to last longer than 40 sec.
         /// </summary>
-        [TalentData(index: 14, name: "Fortifying Waters", maxPoints: 1, icon: "ability_shaman_fortifyingwaters",
-         tree: 0, column: 3, row: 5, prerequisite: -1, description: new[] {
-@"Allies standing within your Healing Rain receive a 10% reduction to incoming magic damage.",})]
-        public int FortifyingWaters { get { return _data[14]; } set { _data[14] = value; } }
+        [TalentData(index: 14, name: "Conductivity", icon: "ability_shaman_fortifyingwaters",
+         column: 2, row: 4,
+         description: @"When you cast Healing Wave, Greater Healing Wave, Healing Surge, or Chain Heal, your Healing Rain's duration is increased by 4.00 sec.When you cast Lightning Bolt, Chain Lightning, Earth Shock, or use Stormstrike, your Healing Rain's duration is increased by 4.00 sec.This cannot cause Healing Rain to last longer than 40 sec.")]
+        public bool Conductivity { get { return _data[14]; } set { _data[14] = value; } }
+        /// <summary>
+        /// Your elemental weapon imbues are empowered, granting additional effects when triggered with Unleash Elements:Flametongue Weapon Increases the enemy target's damage taken from your Lightning Bolt by 30%, and from your Lava Burst by 10% for 10 sec.
+        /// Windfury Weapon For 8 sec, your melee autoattacks can trigger Static Shock.
+        /// Earthliving WeaponFurther increases the effectiveness of your next single-target heal on the targeted ally by 50%.
+        /// Frostbrand WeaponYou leech heat from the enemy target, gaining 50% movement speed for 4 sec.
+        /// Rockbiter WeaponYou take 40% reduced damage from the enemy target for 5 sec.
+        /// </summary>
+        [TalentData(index: 15, name: "Unleashed Fury", icon: "shaman_talent_unleashedfury",
+         column: 0, row: 5,
+         description: @"Your elemental weapon imbues are empowered, granting additional effects when triggered with Unleash Elements:Flametongue Weapon Increases the enemy target's damage taken from your Lightning Bolt by 30%, and from your Lava Burst by 10% for 10 sec.Windfury Weapon For 8 sec, your melee autoattacks can trigger Static Shock.Earthliving WeaponFurther increases the effectiveness of your next single-target heal on the targeted ally by 50%.Frostbrand WeaponYou leech heat from the enemy target, gaining 50% movement speed for 4 sec.Rockbiter WeaponYou take 40% reduced damage from the enemy target for 5 sec.")]
+        public bool UnleashedFury { get { return _data[15]; } set { _data[15] = value; } }
+        /// <summary>
+        /// Your Earth and Fire Elemental Totems draw forth powerful primal elementals directly from the elemental planes. These servitors are 80% more powerful than regular elementals, act as pets directly under your control, and gain additional abilities.
+        /// </summary>
+        [TalentData(index: 16, name: "Primal Elementalist", icon: "shaman_talent_primalelementalist",
+         column: 1, row: 5,
+         description: @"Your Earth and Fire Elemental Totems draw forth powerful primal elementals directly from the elemental planes. These servitors are 80% more powerful than regular elementals, act as pets directly under your control, and gain additional abilities.")]
+        public bool PrimalElementalist { get { return _data[16]; } set { _data[16] = value; } }
+        /// <summary>
+        ///  Elemental,  Restoration:<!--Spec:Start: Elemental,  Restoration-->Harness and direct the raw power of the elements towards an enemy target, dealing [ 4,726 + 211.
+        /// 2% of Spell Power ] Elemental damage and increasing the caster's Critical Strike, Haste, or Mastery by 3,500 for 8 sec.<!--Spec:End--> Enhancement:<!--Spec:Start: Enhancement-->Harness and direct the raw power of the elements towards an enemy target, dealing [ 4,726 + 211.
+        /// 2% of Spell Power ] Elemental damage and increasing the caster's Agility, Critical Strike, Haste, or Mastery by 3,500 for 8 sec.<!--Spec:End-->
+        /// </summary>
+        [TalentData(index: 17, name: "Elemental Blast", icon: "shaman_talent_elementalblast",
+         column: 2, row: 5,
+         description: @" Elemental,  Restoration:<!--Spec:Start: Elemental,  Restoration-->Harness and direct the raw power of the elements towards an enemy target, dealing [&nbsp;4,726 + 211.2% of Spell Power&nbsp;] Elemental damage and increasing the caster's Critical Strike, Haste, or Mastery by 3,500 for 8 sec.<!--Spec:End--> Enhancement:<!--Spec:Start: Enhancement-->Harness and direct the raw power of the elements towards an enemy target, dealing [&nbsp;4,726 + 211.2% of Spell Power&nbsp;] Elemental damage and increasing the caster's Agility, Critical Strike, Haste, or Mastery by 3,500 for 8 sec.<!--Spec:End-->")]
+        public bool ElementalBlast { get { return _data[17]; } set { _data[17] = value; } }
         /// <summary>
         /// 
+        /// Elemental & Enhancement
         /// </summary>
-        [TalentData(index: 15, name: "Coming Soon!", maxPoints: 1, icon: "inv_misc_questionmark",
-         tree: 0, column: 1, row: 6, prerequisite: -1, description: new[] {
-@"",})]
-        public int ComingSoon { get { return _data[15]; } set { _data[15] = value; } }
+        [TalentData(index: 18, name: "Rainstorm", icon: "spell_lightning_lightningbolt01",
+         column: 0, row: 6,
+         description: @"
+Elemental & Enhancement")]
+        public bool Rainstorm { get { return _data[18]; } set { _data[18] = value; } }
+        /// <summary>
+        /// Summons an Air Totem with 6000 health at the feet of the caster, calling forth a Greater Storm Elemental to hurl gusts of winds on the caster's enemies. Each gust of wind does damage to the enemy, and then heals all allies within 15% yards for 100% of the damage dealt, split evenly. Lasts until cancelled.
+        /// </summary>
+        [TalentData(index: 19, name: "Storm Elemental Totem", icon: "spell_sandstorm",
+         column: 1, row: 6,
+         description: @"Summons an Air Totem with 6000 health at the feet of the caster, calling forth a Greater Storm Elemental to hurl gusts of winds on the caster's enemies. Each gust of wind does damage to the enemy, and then heals all allies within 15% yards for 100% of the damage dealt, split evenly. Lasts until cancelled.")]
+        public bool StormElementalTotem { get { return _data[19]; } set { _data[19] = value; } }
         /// <summary>
         /// 
+        /// Elemental & Enhancement
         /// </summary>
-        [TalentData(index: 16, name: "Coming Soon!", maxPoints: 1, icon: "inv_misc_questionmark",
-         tree: 0, column: 2, row: 6, prerequisite: -1, description: new[] {
-@"",})]
-        public int ComingSoon1 { get { return _data[16]; } set { _data[16] = value; } }
-        /// <summary>
-        /// 
-        /// </summary>
-        [TalentData(index: 17, name: "Coming Soon!", maxPoints: 1, icon: "inv_misc_questionmark",
-         tree: 0, column: 3, row: 6, prerequisite: -1, description: new[] {
-@"",})]
-        public int ComingSoon2 { get { return _data[17]; } set { _data[17] = value; } }
+        [TalentData(index: 20, name: "Reach of the Elements", icon: "spell_nature_elementalprecision_2",
+         column: 2, row: 6,
+         description: @"
+Elemental & Enhancement")]
+        public bool ReachOfTheElements { get { return _data[20]; } set { _data[20] = value; } }
         #endregion
     }
 
@@ -1559,205 +1652,194 @@ When activated, your next Nature spell with a base casting time less than 10 sec
         public override TalentsBase Clone()
         {
             MageTalents clone = (MageTalents)MemberwiseClone();
-            clone._data = (int[])_data.Clone();
+            clone._data = (bool[])_data.Clone();
             clone._glyphData = (bool[])_glyphData.Clone();
-            clone.TreeCounts = new int[] { -1, -1, -1 };
+            clone.TalentCount = -1;
             return clone;
         }
 
-        private int[] _data = new int[18];
-        public override int[] Data { get { return _data; } }
+        private bool[] _data = new bool[21];
+        public override bool[] Data { get { return _data; } }
         public MageTalents() { }
         public MageTalents(string talents, int[][] glyphEncodes = null)
         {
             LoadString(talents, glyphEncodes);
         }
+
         private static string[] specializationNames = new[] {
 			@"Arcane",@"Fire",@"Frost"};
         public override string[] SpecializationNames
         {
             get { return specializationNames; }
         }
-
         #region Mage
-        public override int TreeStartingIndexes_0 { get { return 0; } }
         /// <summary>
-        /// When activated, your next Mage spell with a casting time less than 10 sec becomes an instant cast spell.\n\n\n\nTesting note: This spell is not on the global cooldown.
+        /// When activated, your next Mage spell with a casting time less than 10 sec becomes an instant cast spell.
+        /// This spell is not on the global cooldown.
         /// </summary>
-        [TalentData(index: 0, name: "Presence of Mind", maxPoints: 1, icon: "spell_nature_enchantarmor",
-         tree: 0, column: 1, row: 1, prerequisite: -1, description: new[] {
-@"When activated, your next Mage spell with a casting time less than 10 sec becomes an instant cast spell.
-
-
-
-Testing note: This spell is not on the global cooldown.",})]
-        public int PresenceOfMind { get { return _data[0]; } set { _data[0] = value; } }
+        [TalentData(index: 0, name: "Presence of Mind", icon: "spell_nature_enchantarmor",
+         column: 0, row: 0,
+         description: @"When activated, your next Mage spell with a casting time less than 10 sec becomes an instant cast spell.This spell is not on the global cooldown.")]
+        public bool PresenceOfMind { get { return _data[0]; } set { _data[0] = value; } }
         /// <summary>
-        /// Scorch the enemy for 1,058 Fire damage.  Can be cast while moving.
+        /// Suppresses movement slowing effects and increases your movement speed by 150% for 1.
+        /// 5 sec. This spell may be cast while a cast time spell is in progress and is not on the global cooldown.
         /// </summary>
-        [TalentData(index: 1, name: "Scorch", maxPoints: 1, icon: "spell_fire_soulburn",
-         tree: 0, column: 2, row: 1, prerequisite: -1, description: new[] {
-@"Scorch the enemy for 1,058 Fire damage.  Can be cast while moving.",})]
-        public int Scorch { get { return _data[1]; } set { _data[1] = value; } }
+        [TalentData(index: 1, name: "Blazing Speed", icon: "spell_fire_burningspeed",
+         column: 1, row: 0,
+         description: @"Suppresses movement slowing effects and increases your movement speed by 150% for 1.5 sec. This spell may be cast while a cast time spell is in progress and is not on the global cooldown.")]
+        public bool BlazingSpeed { get { return _data[1]; } set { _data[1] = value; } }
         /// <summary>
-        /// Allows the next two non-instant Mage spells cast within 8 sec to be cast while moving.  This spell may be cast while a cast time spell is in progress.\n\n\n\nTesting note: This spell is not on the global cooldown.
+        /// Allows you to move while casting and channeling the next Mage spell that has a base cast or channel time less than 4 sec. This spell may be cast while a cast time spell is in progress and is not on the global cooldown, and accumulates up to 3 charges. Lasts 15 sec.
         /// </summary>
-        [TalentData(index: 2, name: "Ice Flows", maxPoints: 1, icon: "spell_frost_arcticwinds",
-         tree: 0, column: 3, row: 1, prerequisite: -1, description: new[] {
-@"Allows the next two non-instant Mage spells cast within 8 sec to be cast while moving.  This spell may be cast while a cast time spell is in progress.
-
-
-
-Testing note: This spell is not on the global cooldown.",})]
-        public int IceFlows { get { return _data[2]; } set { _data[2] = value; } }
+        [TalentData(index: 2, name: "Ice Floes", icon: "spell_mage_iceflows",
+         column: 2, row: 0,
+         description: @"Allows you to move while casting and channeling the next Mage spell that has a base cast or channel time less than 4 sec. This spell may be cast while a cast time spell is in progress and is not on the global cooldown, and accumulates up to 3 charges. Lasts 15 sec.")]
+        public bool IceFloes { get { return _data[2]; } set { _data[2] = value; } }
         /// <summary>
-        /// Envelops you in a temporal shield for 4 sec. Damage taken while shielded will be undone over 6 sec.\n\n\n\nTesting note: This spell is not on the global cooldown.
+        /// Envelops you in a temporal shield for 4 sec, reducing all damage taken by 15%. 100% of the damage taken while shielded will be healed back over 6 sec. This spell is usable while stunned, frozen, incapacitated, feared or asleep, and is not on the global cooldown.
         /// </summary>
-        [TalentData(index: 3, name: "Temporal Shield", maxPoints: 1, icon: "spell_arcane_rune",
-         tree: 0, column: 1, row: 2, prerequisite: -1, description: new[] {
-@"Envelops you in a temporal shield for 4 sec. Damage taken while shielded will be undone over 6 sec.
-
-
-
-Testing note: This spell is not on the global cooldown.",})]
-        public int TemporalShield { get { return _data[3]; } set { _data[3] = value; } }
+        [TalentData(index: 3, name: "Temporal Shield", icon: "spell_mage_temporalshield",
+         column: 0, row: 1,
+         description: @"Envelops you in a temporal shield for 4 sec, reducing all damage taken by 15%. 100% of the damage taken while shielded will be healed back over 6 sec. This spell is usable while stunned, frozen, incapacitated, feared or asleep, and is not on the global cooldown.")]
+        public bool TemporalShield { get { return _data[3]; } set { _data[3] = value; } }
         /// <summary>
-        /// Suppresses movement slowing effects and increases your movement speed by 150% for 1.50 sec.  May only be activated after taking a melee or spell hit greater than 2% of your total health.  This spell may be cast while a cast time spell is in progress.\n\n\n\nTesting note: This spell is not on the global cooldown.
+        /// Protects you with fiery energy, absorbing [ 15% of Fire Spell Power ] damage from each attack against you (up to a maximum of 30% of the attack).
         /// </summary>
-        [TalentData(index: 4, name: "Blazing Speed", maxPoints: 1, icon: "spell_fire_burningspeed",
-         tree: 0, column: 2, row: 2, prerequisite: -1, description: new[] {
-@"Suppresses movement slowing effects and increases your movement speed by 150% for 1.50 sec.  May only be activated after taking a melee or spell hit greater than 2% of your total health.  This spell may be cast while a cast time spell is in progress.
-
-
-
-Testing note: This spell is not on the global cooldown.",})]
-        public int BlazingSpeed { get { return _data[4]; } set { _data[4] = value; } }
+        [TalentData(index: 4, name: "Flameglow", icon: "inv_elemental_primal_fire",
+         column: 1, row: 1,
+         description: @"Protects you with fiery energy, absorbing [&nbsp;15% of Fire Spell Power&nbsp;] damage from each attack against you (up to a maximum of 30% of the attack).")]
+        public bool Flameglow { get { return _data[4]; } set { _data[4] = value; } }
         /// <summary>
-        /// Instantly shields you, absorbing 8218 damage.  Lasts 1 min.  While the shield holds, spellcasting will not be delayed by damage.
+        /// Instantly shields you, absorbing [ 4,580 + 330% of Frost Spell Power ] damage. Lasts 60 sec. While the shield holds, spellcasting will not be delayed by damage.
         /// </summary>
-        [TalentData(index: 5, name: "Ice Barrier", maxPoints: 1, icon: "spell_ice_lament",
-         tree: 0, column: 3, row: 2, prerequisite: -1, description: new[] {
-@"Instantly shields you, absorbing 8218 damage.  Lasts 1 min.  While the shield holds, spellcasting will not be delayed by damage.",})]
-        public int IceBarrier { get { return _data[5]; } set { _data[5] = value; } }
+        [TalentData(index: 5, name: "Ice Barrier", icon: "spell_ice_lament",
+         column: 2, row: 1,
+         description: @"Instantly shields you, absorbing [&nbsp;4,580 + 330% of Frost Spell Power&nbsp;] damage. Lasts 60 sec. While the shield holds, spellcasting will not be delayed by damage.")]
+        public bool IceBarrier { get { return _data[5]; } set { _data[5] = value; } }
         /// <summary>
-        /// Summons a Ring of Frost at the target location.  Enemies entering the ring will become frozen for 10 sec.  Lasts 10 sec.  10 yd radius.
+        /// Summons a Ring of Frost at the target location. Enemies entering the ring will become frozen for 10 sec. Lasts 10 sec. 10 yd radius. Limit 10 targets.
         /// </summary>
-        [TalentData(index: 6, name: "Ring of Frost", maxPoints: 1, icon: "spell_frost_ringoffrost",
-         tree: 0, column: 1, row: 3, prerequisite: -1, description: new[] {
-@"Summons a Ring of Frost at the target location.  Enemies entering the ring will become frozen for 10 sec.  Lasts 10 sec.  10 yd radius.",})]
-        public int RingOfFrost { get { return _data[6]; } set { _data[6] = value; } }
+        [TalentData(index: 6, name: "Ring of Frost", icon: "spell_frost_ring_of_frost",
+         column: 0, row: 2,
+         description: @"Summons a Ring of Frost at the target location. Enemies entering the ring will become frozen for 10 sec. Lasts 10 sec. 10 yd radius. Limit 10 targets.")]
+        public bool RingOfFrost { get { return _data[6]; } set { _data[6] = value; } }
         /// <summary>
-        /// Places an Ice Ward on a friendly target. When an enemy strikes the target, all enemies within 10 yds will become frozen in place for 5 sec. 1 charge.  Lasts 30 sec.\n\n\n\nTesting note: This spell is not on the global cooldown.
+        /// Places an Ice Ward on a friendly target. When an enemy strikes the target, all enemies within 10 yds will become frozen in place for 5 sec. 1 charge. Lasts 30 sec.
         /// </summary>
-        [TalentData(index: 7, name: "Ice Ward", maxPoints: 1, icon: "spell_frost_frostward",
-         tree: 0, column: 2, row: 3, prerequisite: -1, description: new[] {
-@"Places an Ice Ward on a friendly target. When an enemy strikes the target, all enemies within 10 yds will become frozen in place for 5 sec. 1 charge.  Lasts 30 sec.
-
-
-
-Testing note: This spell is not on the global cooldown.",})]
-        public int IceWard { get { return _data[7]; } set { _data[7] = value; } }
+        [TalentData(index: 7, name: "Ice Ward", icon: "spell_frost_frostward",
+         column: 1, row: 2,
+         description: @"Places an Ice Ward on a friendly target. When an enemy strikes the target, all enemies within 10 yds will become frozen in place for 5 sec. 1 charge. Lasts 30 sec.")]
+        public bool IceWard { get { return _data[7]; } set { _data[7] = value; } }
         /// <summary>
-        /// Silences and freezes the target in place for 8 sec.  Lasts half as long versus Player targets.
+        /// Silences and freezes the target in place for 8 sec. Lasts half as long versus Player targets. Damage caused may interrupt the effect.
         /// </summary>
-        [TalentData(index: 8, name: "Frostjaw", maxPoints: 1, icon: "ability_mage_frostjaw",
-         tree: 0, column: 3, row: 3, prerequisite: -1, description: new[] {
-@"Silences and freezes the target in place for 8 sec.  Lasts half as long versus Player targets.",})]
-        public int Frostjaw { get { return _data[8]; } set { _data[8] = value; } }
+        [TalentData(index: 8, name: "Frostjaw", icon: "ability_mage_frostjaw",
+         column: 2, row: 2,
+         description: @"Silences and freezes the target in place for 8 sec. Lasts half as long versus Player targets. Damage caused may interrupt the effect.")]
+        public bool Frostjaw { get { return _data[8]; } set { _data[8] = value; } }
         /// <summary>
-        /// Instantly makes the caster invisible, reducing all threat, and removing two damage over time effects. While invisible, you are untargettable by enemies.  Lasts 20 sec.\n\n\n\nDamage taken is reduced by 90% while invisible and for 3 sec after coming out of invisibility.\n\n\n\nInvisibility is cancelled if you perform any actions.\n\n\n\nReplaces Invisibility.
+        /// Instantly makes the caster invisible, reducing all threat, and removing two damage over time effects. While invisible, you are untargetable by enemies. Lasts 20 sec. Invisibility is cancelled if you perform any actions.
+        /// Damage taken is reduced by 90% while invisible and for 3 sec after coming out of invisibility.
+        /// Replaces Invisibility.
         /// </summary>
-        [TalentData(index: 9, name: "Greater Invisibility", maxPoints: 1, icon: "ability_mage_greaterinvisibility",
-         tree: 0, column: 1, row: 4, prerequisite: -1, description: new[] {
-@"Instantly makes the caster invisible, reducing all threat, and removing two damage over time effects. While invisible, you are untargettable by enemies.  Lasts 20 sec.
-
-
-
-Damage taken is reduced by 90% while invisible and for 3 sec after coming out of invisibility.
-
-
-
-Invisibility is cancelled if you perform any actions.
-
-
-
-Replaces Invisibility.",})]
-        public int GreaterInvisibility { get { return _data[9]; } set { _data[9] = value; } }
+        [TalentData(index: 9, name: "Greater Invisibility", icon: "ability_mage_greaterinvisibility",
+         column: 0, row: 3,
+         description: @"Instantly makes the caster invisible, reducing all threat, and removing two damage over time effects. While invisible, you are untargetable by enemies. Lasts 20 sec. Invisibility is cancelled if you perform any actions.Damage taken is reduced by 90% while invisible and for 3 sec after coming out of invisibility.Replaces Invisibility.")]
+        public bool GreaterInvisibility { get { return _data[9]; } set { _data[9] = value; } }
         /// <summary>
-        /// An attack which would otherwise kill you will instead bring you to 50% of your maximum health, and you will burn for 40% of your maximum health over the next 6 sec.\n\n\n\nCauterize cannot occur more than once every 2 minutes.
+        /// An attack which would otherwise kill you will instead bring you to 50% of your maximum health, and you will burn for 40% of your maximum health over the next 6 sec.
+        /// Cauterize cannot occur more than once every 2 min.
         /// </summary>
-        [TalentData(index: 10, name: "Cauterize", maxPoints: 1, icon: "spell_fire_rune",
-         tree: 0, column: 2, row: 4, prerequisite: -1, description: new[] {
-@"An attack which would otherwise kill you will instead bring you to 50% of your maximum health, and you will burn for 40% of your maximum health over the next 6 sec.
-
-
-
-Cauterize cannot occur more than once every 2 minutes.",})]
-        public int Cauterize { get { return _data[10]; } set { _data[10] = value; } }
+        [TalentData(index: 10, name: "Cauterize", icon: "spell_fire_rune",
+         column: 1, row: 3,
+         description: @"An attack which would otherwise kill you will instead bring you to 50% of your maximum health, and you will burn for 40% of your maximum health over the next 6 sec.Cauterize cannot occur more than once every 2 min.")]
+        public bool Cauterize { get { return _data[10]; } set { _data[10] = value; } }
         /// <summary>
-        /// When activated, this spell finishes the cooldown of your Ice Block, Frost Nova, and Cone of Cold spell.  Instantly restores 20% of your health.\n\n\n\nTesting note: This spell is not on the global cooldown.
+        /// When activated, this spell finishes the cooldown of your Ice Block, Frost Nova, and Cone of Cold spells, and heals you for 30% of your maximum health.
+        /// This spell is usable while stunned, frozen, incapacitated, feared or asleep, and is not on the global cooldown.
         /// </summary>
-        [TalentData(index: 11, name: "Cold Snap", maxPoints: 1, icon: "spell_frost_wizardmark",
-         tree: 0, column: 3, row: 4, prerequisite: -1, description: new[] {
-@"When activated, this spell finishes the cooldown of your Ice Block, Frost Nova, and Cone of Cold spell.  Instantly restores 20% of your health.
-
-
-
-Testing note: This spell is not on the global cooldown.",})]
-        public int ColdSnap { get { return _data[11]; } set { _data[11] = value; } }
+        [TalentData(index: 11, name: "Cold Snap", icon: "spell_frost_wizardmark",
+         column: 2, row: 3,
+         description: @"When activated, this spell finishes the cooldown of your Ice Block, Frost Nova, and Cone of Cold spells, and heals you for 30% of your maximum health.This spell is usable while stunned, frozen, incapacitated, feared or asleep, and is not on the global cooldown.")]
+        public bool ColdSnap { get { return _data[11]; } set { _data[11] = value; } }
         /// <summary>
-        /// Places a Nether Tempest on the target which deals 2784 (+ 17.4% of SpellPower) (+ 17.4% of SpellPower) Arcane damage over 12 sec. Each time Nether Tempest deals damage, an additional 50% of that damage is also dealt to a random target within 10 yards.
+        /// Places a Nether Tempest on the target which deals [ 3,900 + 24.
+        /// 36% of Spell Power ] Arcane damage over 12 sec. Each time Nether Tempest deals damage, an additional 50% of that damage is also dealt to a random target within 10 yards. This spell is strongest when applied to 3 or 4 targets.
         /// </summary>
-        [TalentData(index: 12, name: "Nether Tempest", maxPoints: 1, icon: "spell_arcane_arcane04",
-         tree: 0, column: 1, row: 5, prerequisite: -1, description: new[] {
-@"Places a Nether Tempest on the target which deals 2784 (+ 17.4% of SpellPower) (+ 17.4% of SpellPower) Arcane damage over 12 sec. Each time Nether Tempest deals damage, an additional 50% of that damage is also dealt to a random target within 10 yards.",})]
-        public int NetherTempest { get { return _data[12]; } set { _data[12] = value; } }
+        [TalentData(index: 12, name: "Nether Tempest", icon: "spell_mage_nethertempest",
+         column: 0, row: 4,
+         description: @"Places a Nether Tempest on the target which deals [&nbsp;3,900 + 24.36% of Spell Power&nbsp;] Arcane damage over 12 sec. Each time Nether Tempest deals damage, an additional 50% of that damage is also dealt to a random target within 10 yards. This spell is strongest when applied to 3 or 4 targets.")]
+        public bool NetherTempest { get { return _data[12]; } set { _data[12] = value; } }
         /// <summary>
-        /// The target becomes a Living Bomb, taking 1388 (+ 26% of SpellPower) (+ 26% of SpellPower) Fire damage over 12 sec. When this effect ends, or the target dies, it explodes to deal an additional 1395 (+ 104.5% of SpellPower) (+ 104.5% of SpellPower) Fire damage to up to 3 enemies within 10 yards.  Limit 3 targets. This spell has a 1.0 sec global cooldown.
+        /// The target becomes a Living Bomb, taking [ 4,288 + 80.
+        /// 36% of Spell Power ] Fire damage over 12 sec. When this effect ends, or the target dies, it explodes to deal an additional [ 429 + 8% of Spell Power ] Fire damage to the target and all other enemies within 10 yards. Limit 3 targets. This spell is strongest when applied to 1 or 2 targets.
+        /// This spell has a 1.
+        /// 0 sec global cooldown.
         /// </summary>
-        [TalentData(index: 13, name: "Living Bomb", maxPoints: 1, icon: "ability_mage_livingbomb",
-         tree: 0, column: 2, row: 5, prerequisite: -1, description: new[] {
-@"The target becomes a Living Bomb, taking 1388 (+ 26% of SpellPower) (+ 26% of SpellPower) Fire damage over 12 sec. When this effect ends, or the target dies, it explodes to deal an additional 1395 (+ 104.5% of SpellPower) (+ 104.5% of SpellPower) Fire damage to up to 3 enemies within 10 yards.  Limit 3 targets.
-
-This spell has a 1.0 sec global cooldown.",})]
-        public int LivingBomb { get { return _data[13]; } set { _data[13] = value; } }
+        [TalentData(index: 13, name: "Living Bomb", icon: "ability_mage_livingbomb",
+         column: 1, row: 4,
+         description: @"The target becomes a Living Bomb, taking [&nbsp;4,288 + 80.36% of Spell Power&nbsp;] Fire damage over 12 sec. When this effect ends, or the target dies, it explodes to deal an additional [&nbsp;429 + 8% of Spell Power&nbsp;] Fire damage to the target and all other enemies within 10 yards. Limit 3 targets. This spell is strongest when applied to 1 or 2 targets.This spell has a 1.0 sec global cooldown.")]
+        public bool LivingBomb { get { return _data[13]; } set { _data[13] = value; } }
         /// <summary>
-        /// Places a Frost Bomb on the target.  After 5 sec, the bomb explodes, dealing 3286 (+ 246.2% of SpellPower) (+ 246.2% of SpellPower) Frost damage to the primary target, and 1643 (+ 123.1% of SpellPower) (+ 123.1% of SpellPower) Frost damage to all other targets within 10 yds.  All affected targets are slowed by 70% for 2 sec. Frost Bomb's countdown and cooldown are reduced by haste.
+        /// Places a Frost Bomb on the target. After 4 sec, the bomb explodes, dealing [ 4,600 + 344.
+        /// 68% of Spell Power ] Frost damage to the primary target, and [ 2,301 + 172.
+        /// 5% of Spell Power ] Frost damage to all other targets within 10 yds. All affected targets are slowed by 70% for 2 sec. Frost Bomb's countdown and cooldown are reduced by haste. This spell is strongest when it can hit 5 or more targets with the explosion.
         /// </summary>
-        [TalentData(index: 14, name: "Frost Bomb", maxPoints: 1, icon: "spell_frost_frozencore",
-         tree: 0, column: 3, row: 5, prerequisite: -1, description: new[] {
-@"Places a Frost Bomb on the target.  After 5 sec, the bomb explodes, dealing 3286 (+ 246.2% of SpellPower) (+ 246.2% of SpellPower) Frost damage to the primary target, and 1643 (+ 123.1% of SpellPower) (+ 123.1% of SpellPower) Frost damage to all other targets within 10 yds.  All affected targets are slowed by 70% for 2 sec. Frost Bomb's countdown and cooldown are reduced by haste.",})]
-        public int FrostBomb { get { return _data[14]; } set { _data[14] = value; } }
+        [TalentData(index: 14, name: "Frost Bomb", icon: "spell_mage_frostbomb",
+         column: 2, row: 4,
+         description: @"Places a Frost Bomb on the target. After 4 sec, the bomb explodes, dealing [&nbsp;4,600 + 344.68% of Spell Power&nbsp;] Frost damage to the primary target, and [&nbsp;2,301 + 172.5% of Spell Power&nbsp;] Frost damage to all other targets within 10 yds. All affected targets are slowed by 70% for 2 sec. Frost Bomb's countdown and cooldown are reduced by haste. This spell is strongest when it can hit 5 or more targets with the explosion.")]
+        public bool FrostBomb { get { return _data[14]; } set { _data[14] = value; } }
         /// <summary>
-        /// Reduces the cooldown of Evocation to 10 sec, but you passively regenerate 50% less mana. Completing an Evocation causes you to deal 25% increased spell damage for 40 sec.
+        /// Removes Evocation's cooldown and reduces its channel period and duration by 50%.
+        /// Completing an Evocation causes you to deal 15% increased spell damage, but passively regenerate 50% less mana, for 60 sec.
         /// </summary>
-        [TalentData(index: 15, name: "Invocation", maxPoints: 1, icon: "spell_arcane_arcane03",
-         tree: 0, column: 1, row: 6, prerequisite: -1, description: new[] {
-@"Reduces the cooldown of Evocation to 10 sec, but you passively regenerate 50% less mana.
-
-Completing an Evocation causes you to deal 25% increased spell damage for 40 sec.",})]
-        public int Invocation { get { return _data[15]; } set { _data[15] = value; } }
+        [TalentData(index: 15, name: "Invocation", icon: "spell_arcane_arcane03",
+         column: 0, row: 5,
+         description: @"Removes Evocation's cooldown and reduces its channel period and duration by 50%.Completing an Evocation causes you to deal 15% increased spell damage, but passively regenerate 50% less mana, for 60 sec.")]
+        public bool Invocation { get { return _data[15]; } set { _data[15] = value; } }
         /// <summary>
-        /// Places a Rune of Power on the ground, which lasts for 1 min. While standing in your own Rune of Power, your mana regeneration is increased by 100% and your spell damage is increased by 15%. Only 2 Runes of Power can be placed at one time. Replaces Evocation.
+        /// Places a Rune of Power on the ground, which lasts for 60 sec. While standing within 5 yds of your own Rune of Power, your mana regeneration is increased by 75% and your spell damage is increased by 15%. Only 2 Runes of Power can be placed at one time.
+        /// Replaces Evocation.
         /// </summary>
-        [TalentData(index: 16, name: "Rune of Power", maxPoints: 1, icon: "spell_arcane_invocation",
-         tree: 0, column: 2, row: 6, prerequisite: -1, description: new[] {
-@"Places a Rune of Power on the ground, which lasts for 1 min. While standing in your own Rune of Power, your mana regeneration is increased by 100% and your spell damage is increased by 15%. Only 2 Runes of Power can be placed at one time.
-
-Replaces Evocation.",})]
-        public int RuneOfPower { get { return _data[16]; } set { _data[16] = value; } }
+        [TalentData(index: 16, name: "Rune of Power", icon: "spell_mage_runeofpower",
+         column: 1, row: 5,
+         description: @"Places a Rune of Power on the ground, which lasts for 60 sec. While standing within 5 yds of your own Rune of Power, your mana regeneration is increased by 75% and your spell damage is increased by 15%. Only 2 Runes of Power can be placed at one time.Replaces Evocation.")]
+        public bool RuneOfPower { get { return _data[16]; } set { _data[16] = value; } }
         /// <summary>
-        /// Places a magical ward on you, absorbing up to (1041 + $SPA * 1.0) damage for 8 sec. Absorbed damage will restore up to 18% of your maximum mana. When this effect ends, you gain up to 30% increased spell damage for 15 sec, based on the absorption used. Passive: Increases spell damage by 6% and increases mana regeneration by 65%. This effect is deactivated while Incanter's Ward is on cooldown.
+        /// Places a magical ward on you, absorbing up to [ 1,041 + Arcane Spell Power ] damage for 8 sec. Absorbed damage will restore up to 18% of your maximum mana.
+        /// When this effect ends, you gain up to 15% increased spell damage for 25 sec, based on the absorption used.
+        /// Passive:Increases spell damage by 6% and increases mana regeneration by 65%. This effect is deactivated while Incanter's Ward is on cooldown.
         /// </summary>
-        [TalentData(index: 17, name: "Incanter's Shield", maxPoints: 1, icon: "spell_shadow_detectlesserinvisibility",
-         tree: 0, column: 3, row: 6, prerequisite: -1, description: new[] {
-@"Places a magical ward on you, absorbing up to (1041 + $SPA * 1.0) damage for 8 sec. Absorbed damage will restore up to 18% of your maximum mana.
-
-When this effect ends, you gain up to 30% increased spell damage for 15 sec, based on the absorption used.
-
-Passive:
-Increases spell damage by 6% and increases mana regeneration by 65%. This effect is deactivated while Incanter's Ward is on cooldown.",})]
-        public int IncantersWard { get { return _data[17]; } set { _data[17] = value; } }
+        [TalentData(index: 17, name: "Incanter's Ward", icon: "spell_shadow_detectlesserinvisibility",
+         column: 2, row: 5,
+         description: @"Places a magical ward on you, absorbing up to [&nbsp;1,041 + Arcane Spell Power&nbsp;] damage for 8 sec. Absorbed damage will restore up to 18% of your maximum mana.When this effect ends, you gain up to 15% increased spell damage for 25 sec, based on the absorption used.Passive:Increases spell damage by 6% and increases mana regeneration by 65%. This effect is deactivated while Incanter's Ward is on cooldown.")]
+        public bool IncantersWard { get { return _data[17]; } set { _data[17] = value; } }
+        /// <summary>
+        /// 
+        /// Arcane
+        /// </summary>
+        [TalentData(index: 18, name: "Prolonged Exposure", icon: "spell_arcane_arcanetorrent",
+         column: 0, row: 6,
+         description: @"
+Arcane")]
+        public bool ProlongedExposure { get { return _data[18]; } set { _data[18] = value; } }
+        /// <summary>
+        /// Conjures a focusing crystal at the target location, which is attackable by only the Mage. The crystal will absorb the power of all damage deal to it. After 10 sec, it will release bursts of energy, dealing damage equal to 130% of the damage it took, split between all enemies within 8 yards, over 6 sec.
+        /// </summary>
+        [TalentData(index: 19, name: "Focusing Crystal", icon: "inv_datacrystal02",
+         column: 1, row: 6,
+         description: @"Conjures a focusing crystal at the target location, which is attackable by only the Mage. The crystal will absorb the power of all damage deal to it. After 10 sec, it will release bursts of energy, dealing damage equal to 130% of the damage it took, split between all enemies within 8 yards, over 6 sec.")]
+        public bool FocusingCrystal { get { return _data[19]; } set { _data[19] = value; } }
+        /// <summary>
+        /// 
+        /// Arcane
+        /// </summary>
+        [TalentData(index: 20, name: "Falling Stars", icon: "spell_arcane_starfire",
+         column: 2, row: 6,
+         description: @"
+Arcane")]
+        public bool FallingStars { get { return _data[20]; } set { _data[20] = value; } }
         #endregion
     }
 
@@ -1766,499 +1848,191 @@ Increases spell damage by 6% and increases mana regeneration by 65%. This effect
         public override TalentsBase Clone()
         {
             WarlockTalents clone = (WarlockTalents)MemberwiseClone();
-            clone._data = (int[])_data.Clone();
+            clone._data = (bool[])_data.Clone();
             clone._glyphData = (bool[])_glyphData.Clone();
-            clone.TreeCounts = new int[] { -1, -1, -1 };
+            clone.TalentCount = -1;
             return clone;
         }
 
-        private int[] _data = new int[18];
-        public override int[] Data { get { return _data; } }
+        private bool[] _data = new bool[21];
+        public override bool[] Data { get { return _data; } }
         public WarlockTalents() { }
         public WarlockTalents(string talents, int[][] glyphEncodes = null)
         {
             LoadString(talents, glyphEncodes);
         }
+
         private static string[] specializationNames = new[] {
 			@"Affliction",@"Demonology",@"Destruction"};
         public override string[] SpecializationNames
         {
             get { return specializationNames; }
         }
-
         #region Warlock
-        public override int TreeStartingIndexes_0 { get { return 0; } }
         /// <summary>
-        /// Restores 50% of your maximum health and increases all healing received by 25% over 20 sec.
+        /// Restores 30% of you and your pet's maximum health and increases all healing received by 25% over 12 sec.
         /// </summary>
-        [TalentData(index: 0, name: "Dark Regeneration", maxPoints: 1, icon: "spell_warlock_darkregeneration",
-         tree: 0, column: 1, row: 1, prerequisite: -1, description: new[] {
-@"Restores 50% of your maximum health and increases all healing received by 25% over 20 sec.",})]
-        public int DarkRegeneration { get { return _data[0]; } set { _data[0] = value; } }
+        [TalentData(index: 0, name: "Dark Regeneration", icon: "spell_warlock_darkregeneration",
+         column: 0, row: 0,
+         description: @"Restores 30% of you and your pet's maximum health and increases all healing received by 25% over 12 sec.")]
+        public bool DarkRegeneration { get { return _data[0]; } set { _data[0] = value; } }
         /// <summary>
-        /// Your Shadow Bolt, Incinerate and Malefic Grasp heal you for 15% of the damage dealt.
+        ///  Affliction:<!--Spec:Start: Affliction-->Your Malefic Grasp, Drain Soul, Fel Flame or Haunt spell grant you and your pet a shadowy shield that absorbs 20% of the damage dealt for 15 sec.<!--Spec:End--> Demonology:<!--Spec:Start: Demonology-->Your Shadow Bolt, Soul Fire, Fel Flame and Touch of Chaos spells grant you and your pet a shadowy shield that absorbs 10% of the damage dealt for 15 sec.<!--Spec:End--> Destruction:<!--Spec:Start: Destruction-->Your Incinerate, Fel Flame, Shadowburn, and Chaos Bolt spells grant you and your pet a shadowy shield that absorbs 10% of the damage dealt for 15 sec.<!--Spec:End-->
         /// </summary>
-        [TalentData(index: 1, name: "Soul Leech", maxPoints: 1, icon: "warlock_siphonlife",
-         tree: 0, column: 2, row: 1, prerequisite: -1, description: new[] {
-@"Your Shadow Bolt, Incinerate and Malefic Grasp heal you for 15% of the damage dealt.",})]
-        public int SoulLeech { get { return _data[1]; } set { _data[1] = value; } }
+        [TalentData(index: 1, name: "Soul Leech", icon: "warlock_siphonlife",
+         column: 1, row: 0,
+         description: @" Affliction:<!--Spec:Start: Affliction-->Your Malefic Grasp, Drain Soul, Fel Flame or Haunt spell grant you and your pet a shadowy shield that absorbs 20% of the damage dealt for 15 sec.<!--Spec:End--> Demonology:<!--Spec:Start: Demonology-->Your Shadow Bolt, Soul Fire, Fel Flame and Touch of Chaos spells grant you and your pet a shadowy shield that absorbs 10% of the damage dealt for 15 sec.<!--Spec:End--> Destruction:<!--Spec:Start: Destruction-->Your Incinerate, Fel Flame, Shadowburn, and Chaos Bolt spells grant you and your pet a shadowy shield that absorbs 10% of the damage dealt for 15 sec.<!--Spec:End-->")]
+        public bool SoulLeech { get { return _data[1]; } set { _data[1] = value; } }
         /// <summary>
-        /// Drains the life from all enemies within 15 yards of the target, causing 107 Shadow damage and restoring 4% of the caster's total health every 1 sec. Lasts 6 sec.\n\n\n\nReplaces Drain Life.
+        /// Increases the damage of your Drain Life spell by 50% and the healing of your Drain Life spell by 150%.
         /// </summary>
-        [TalentData(index: 2, name: "Harvest Life", maxPoints: 1, icon: "spell_warlock_harvestoflife",
-         tree: 0, column: 3, row: 1, prerequisite: -1, description: new[] {
-@"Drains the life from all enemies within 15 yards of the target, causing 107 Shadow damage and restoring 4% of the caster's total health every 1 sec. Lasts 6 sec.
-
-
-
-Replaces Drain Life.",})]
-        public int HarvestLife { get { return _data[2]; } set { _data[2] = value; } }
+        [TalentData(index: 2, name: "Harvest Life", icon: "spell_warlock_harvestoflife",
+         column: 2, row: 0,
+         description: @"Increases the damage of your Drain Life spell by 50% and the healing of your Drain Life spell by 150%.")]
+        public bool HarvestLife { get { return _data[2]; } set { _data[2] = value; } }
         /// <summary>
-        /// Howl, causing 5 enemies within 10 yds to flee in terror for 8 sec.  Damage caused may interrupt the effect.\n\n\n\nWhen hit by a damaging attack, the cooldown on Howl of Terror is reduced by 1 sec.
+        /// Sends a cone of dark energy before you, reducing the movement speed by 50% of all enemy targets within 10 yards for 6 sec.
         /// </summary>
-        [TalentData(index: 3, name: "Howl of Terror", maxPoints: 1, icon: "spell_shadow_deathscream",
-         tree: 0, column: 1, row: 2, prerequisite: -1, description: new[] {
-@"Howl, causing 5 enemies within 10 yds to flee in terror for 8 sec.  Damage caused may interrupt the effect.
-
-
-
-When hit by a damaging attack, the cooldown on Howl of Terror is reduced by 1 sec.",})]
-        public int HowlOfTerror { get { return _data[3]; } set { _data[3] = value; } }
+        [TalentData(index: 3, name: "Demonic Breath", icon: "ability_warlock_shadowflame",
+         column: 0, row: 1,
+         description: @"Sends a cone of dark energy before you, reducing the movement speed by 50% of all enemy targets within 10 yards for 6 sec.")]
+        public bool DemonicBreath { get { return _data[3]; } set { _data[3] = value; } }
         /// <summary>
-        /// Causes the enemy target to run in horror for 3 sec. The caster restores 25% of their maximum health if the target is horrified.
+        /// Causes the enemy target to run in horror for 3 sec. The caster restores 15% of their maximum health.
         /// </summary>
-        [TalentData(index: 4, name: "Mortal Coil", maxPoints: 1, icon: "spell_shadow_deathsembrace",
-         tree: 0, column: 2, row: 2, prerequisite: -1, description: new[] {
-@"Causes the enemy target to run in horror for 3 sec. The caster restores 25% of their maximum health if the target is horrified.",})]
-        public int MortalCoil { get { return _data[4]; } set { _data[4] = value; } }
+        [TalentData(index: 4, name: "Mortal Coil", icon: "ability_warlock_mortalcoil",
+         column: 1, row: 1,
+         description: @"Causes the enemy target to run in horror for 3 sec. The caster restores 15% of their maximum health.")]
+        public bool MortalCoil { get { return _data[4]; } set { _data[4] = value; } }
         /// <summary>
         /// Shadowfury is unleashed, stunning all enemies within 8 yds for 3 sec.
         /// </summary>
-        [TalentData(index: 5, name: "Shadowfury", maxPoints: 1, icon: "spell_shadow_shadowfury",
-         tree: 0, column: 3, row: 2, prerequisite: -1, description: new[] {
-@"Shadowfury is unleashed, stunning all enemies within 8 yds for 3 sec.",})]
-        public int Shadowfury { get { return _data[5]; } set { _data[5] = value; } }
+        [TalentData(index: 5, name: "Shadowfury", icon: "ability_warlock_shadowfurytga",
+         column: 2, row: 1,
+         description: @"Shadowfury is unleashed, stunning all enemies within 8 yds for 3 sec.")]
+        public bool Shadowfury { get { return _data[5]; } set { _data[5] = value; } }
         /// <summary>
-        /// When active, all damage and healing the Warlock takes is shared with his active demon.  That damage cannot be prevented. \n\n\n\nLasts as long as the demon is active and controlled.
+        /// 20% of all damage taken is split with your summoned demon. Additionally, 3% of all damage you deal is converted to healing on you and your summoned demon.
         /// </summary>
-        [TalentData(index: 6, name: "Soul Link", maxPoints: 1, icon: "spell_shadow_gathershadows",
-         tree: 0, column: 1, row: 3, prerequisite: -1, description: new[] {
-@"When active, all damage and healing the Warlock takes is shared with his active demon.  That damage cannot be prevented. 
-
-
-
-Lasts as long as the demon is active and controlled.",})]
-        public int SoulLink { get { return _data[6]; } set { _data[6] = value; } }
+        [TalentData(index: 6, name: "Soul Link", icon: "ability_warlock_soullink",
+         column: 0, row: 2,
+         description: @"20% of all damage taken is split with your summoned demon. Additionally, 3% of all damage you deal is converted to healing on you and your summoned demon.")]
+        public bool SoulLink { get { return _data[6]; } set { _data[6] = value; } }
         /// <summary>
-        /// Your demon sacrifices half its current health to shield its master for 300% of the sacrificed health.\n\n\n\nLasts 20 sec.
+        /// Your demon sacrifices 25% of its current health to shield its master for 400% of the sacrificed health. Lasts 20 sec.
+        /// If you have no demon, your health is sacrificed instead. Can be cast while suffering from control impairing effects.
         /// </summary>
-        [TalentData(index: 7, name: "Sacrificial Pact", maxPoints: 1, icon: "warlock_sacrificial_pact",
-         tree: 0, column: 2, row: 3, prerequisite: -1, description: new[] {
-@"Your demon sacrifices half its current health to shield its master for 300% of the sacrificed health.
-
-
-
-Lasts 20 sec.",})]
-        public int SacrificialPact { get { return _data[7]; } set { _data[7] = value; } }
+        [TalentData(index: 7, name: "Sacrificial Pact", icon: "warlock_sacrificial_pact",
+         column: 1, row: 2,
+         description: @"Your demon sacrifices 25% of its current health to shield its master for 400% of the sacrificed health. Lasts 20 sec.If you have no demon, your health is sacrificed instead. Can be cast while suffering from control impairing effects.")]
+        public bool SacrificialPact { get { return _data[7]; } set { _data[7] = value; } }
         /// <summary>
-        /// Prevents all damage for 10 sec.\n\n\n\nWhen the shield fades, 50% of the damage prevented is dealt over 20 sec.
+        /// Prevents all damage for 8 sec.
+        /// When the shield fades, 50% of the damage prevented is dealt over 8 sec. Can be cast while suffering from control impairing effects.
         /// </summary>
-        [TalentData(index: 8, name: "Dark Bargain", maxPoints: 1, icon: "ability_deathwing_bloodcorruption_death",
-         tree: 0, column: 3, row: 3, prerequisite: -1, description: new[] {
-@"Prevents all damage for 10 sec.
-
-
-
-When the shield fades, 50% of the damage prevented is dealt over 20 sec.",})]
-        public int DarkBargain { get { return _data[8]; } set { _data[8] = value; } }
+        [TalentData(index: 8, name: "Dark Bargain", icon: "ability_deathwing_bloodcorruption_death",
+         column: 2, row: 2,
+         description: @"Prevents all damage for 8 sec.When the shield fades, 50% of the damage prevented is dealt over 8 sec. Can be cast while suffering from control impairing effects.")]
+        public bool DarkBargain { get { return _data[8]; } set { _data[8] = value; } }
         /// <summary>
-        /// Costs 10% of Maximum Health.\n\n\n\nInstantly strikes fear in the enemy, causing it to run in fear for up to 20 sec.  Damage caused may interrupt the effect.\n\n\n\nFear: \n\nA warlock can only inflict fear upon one target at a time.
+        /// While active, any time an enemy melee attack deals damage to the Warlock, the enemy will run in horror for up to 4 sec. 1 charge. Blood Horror lasts 60 sec.
         /// </summary>
-        [TalentData(index: 9, name: "Blood Fear", maxPoints: 1, icon: "ability_deathwing_assualtaspects",
-         tree: 0, column: 1, row: 4, prerequisite: -1, description: new[] {
-@"Costs 10% of Maximum Health.
-
-
-
-Instantly strikes fear in the enemy, causing it to run in fear for up to 20 sec.  Damage caused may interrupt the effect.
-
-
-
-Fear: 
-
-A warlock can only inflict fear upon one target at a time.",})]
-        public int BloodFear { get { return _data[9]; } set { _data[9] = value; } }
+        [TalentData(index: 9, name: "Blood Horror", icon: "ability_deathwing_bloodcorruption_earth",
+         column: 0, row: 3,
+         description: @"While active, any time an enemy melee attack deals damage to the Warlock, the enemy will run in horror for up to 4 sec. 1 charge. Blood Horror lasts 60 sec.")]
+        public bool BloodHorror { get { return _data[9]; } set { _data[9] = value; } }
         /// <summary>
-        /// Drains 5% of your maximum health per second to increase your movement speed by 50%. \n\n\n\nLasts until cancelled.
+        /// Drains 4% of your maximum health per second to increase your movement speed by 50%. During Burning Rush, movement-impairing effects may not reduce you below 100% of normal movement speed.
+        /// Lasts until cancelled.
         /// </summary>
-        [TalentData(index: 10, name: "Burning Rush", maxPoints: 1, icon: "ability_deathwing_sealarmorbreachtga",
-         tree: 0, column: 2, row: 4, prerequisite: -1, description: new[] {
-@"Drains 5% of your maximum health per second to increase your movement speed by 50%. 
-
-
-
-Lasts until cancelled.",})]
-        public int BurningRush { get { return _data[10]; } set { _data[10] = value; } }
+        [TalentData(index: 10, name: "Burning Rush", icon: "ability_deathwing_sealarmorbreachtga",
+         column: 1, row: 3,
+         description: @"Drains 4% of your maximum health per second to increase your movement speed by 50%. During Burning Rush, movement-impairing effects may not reduce you below 100% of normal movement speed.Lasts until cancelled.")]
+        public bool BurningRush { get { return _data[10]; } set { _data[10] = value; } }
         /// <summary>
-        /// Purges all stuns, disorients, roots and Magic effects from the Warlock. \n\n\n\nCosts 25% of the Warlock's maximum health.
+        /// Purge all Magic effects, movement impairing effects and all effects which cause loss of control of your character or demon. 
         /// </summary>
-        [TalentData(index: 11, name: "Unbound Will", maxPoints: 1, icon: "warlock_spelldrain",
-         tree: 0, column: 3, row: 4, prerequisite: -1, description: new[] {
-@"Purges all stuns, disorients, roots and Magic effects from the Warlock. 
-
-
-
-Costs 25% of the Warlock's maximum health.",})]
-        public int UnboundWill { get { return _data[11]; } set { _data[11] = value; } }
+        [TalentData(index: 11, name: "Unbound Will", icon: "warlock_spelldrain",
+         column: 2, row: 3,
+         description: @"Purge all Magic effects, movement impairing effects and all effects which cause loss of control of your character or demon. ")]
+        public bool UnboundWill { get { return _data[11]; } set { _data[11] = value; } }
         /// <summary>
-        /// You command stronger demons, replacing your normal minions. These demons deal 10% additional damage and have more powerful abilities. \n\n\n\nSpells Learned:\n\nSummon Fel Imp\n\nSummon Voidlord\n\nSummon Shivan\n\nSummon Observer\n\nSummon Abyssal\n\nSummon Terrorguard
+        ///  Affliction,  Destruction:<!--Spec:Start: Affliction,  Destruction-->You command stronger demons, replacing your normal minions. These demons deal 20% additional damage and have more powerful abilities. Spells Learned: Summon Fel Imp Summon Voidlord Summon Shivarra Summon Observer  Summon Abyssal Summon Terrorguard<!--Spec:End--> Demonology:<!--Spec:Start: Demonology-->You command stronger demons, replacing your normal minions. These demons deal 20% additional damage and have more powerful abilities. Spells Learned: Summon Fel Imp Summon Voidlord Summon Shivarra Summon Observer  Summon Wrathguard Summon Abyssal Summon Terrorguard<!--Spec:End-->
         /// </summary>
-        [TalentData(index: 12, name: "Grimoire of Supremacy", maxPoints: 1, icon: "warlock_grimoireofcommand",
-         tree: 0, column: 1, row: 5, prerequisite: -1, description: new[] {
-@"You command stronger demons, replacing your normal minions. These demons deal 10% additional damage and have more powerful abilities. 
-
-
-
-Spells Learned:
-
-Summon Fel Imp
-
-Summon Voidlord
-
-Summon Shivan
-
-Summon Observer
-
-Summon Abyssal
-
-Summon Terrorguard",})]
-        public int GrimoireOfSupremacy { get { return _data[12]; } set { _data[12] = value; } }
+        [TalentData(index: 12, name: "Grimoire of Supremacy", icon: "warlock_grimoireofcommand",
+         column: 0, row: 4,
+         description: @" Affliction,  Destruction:<!--Spec:Start: Affliction,  Destruction-->You command stronger demons, replacing your normal minions. These demons deal 20% additional damage and have more powerful abilities. Spells Learned: Summon Fel Imp Summon Voidlord Summon Shivarra Summon Observer  Summon Abyssal Summon Terrorguard<!--Spec:End--> Demonology:<!--Spec:Start: Demonology-->You command stronger demons, replacing your normal minions. These demons deal 20% additional damage and have more powerful abilities. Spells Learned: Summon Fel Imp Summon Voidlord Summon Shivarra Summon Observer  Summon Wrathguard Summon Abyssal Summon Terrorguard<!--Spec:End-->")]
+        public bool GrimoireOfSupremacy { get { return _data[12]; } set { _data[12] = value; } }
         /// <summary>
-        /// Instantly summon a second demon, who fights for 30 sec.\n\n\n\n2 min. cooldown.
+        ///  Affliction,  Destruction:<!--Spec:Start: Affliction,  Destruction-->Instantly summon a second demon, who fights for 20 sec. The demon will instantly use one of their special abilities when summoned: Grimoire: Imp: Immediately cleanses a hostile magic effect from their master. Grimoire: Voidwalker Immediately taunts their target when summoned. Grimoire: Succubus Immediately seduces their target if it is Humanoid. Grimoire: Felhunter Immediately interrupts their target when summoned.<!--Spec:End--> Demonology:<!--Spec:Start: Demonology-->Instantly summon a second demon, who fights for 20 sec. The demon will instantly use one of their special abilities when summoned: Grimoire: Imp: Immediately cleanses a hostile magic effect from their master. Grimoire: Voidwalker Immediately taunts their target when summoned. Grimoire: Succubus Immediately seduces their target if it is Humanoid. Grimoire: Felhunter Immediately interrupts their target when summoned. Grimoire: Felguard Immediately stuns their target when summoned.<!--Spec:End-->
         /// </summary>
-        [TalentData(index: 13, name: "Grimoire of Service", maxPoints: 1, icon: "warlock_grimoireofservice",
-         tree: 0, column: 2, row: 5, prerequisite: -1, description: new[] {
-@"Instantly summon a second demon, who fights for 30 sec.
-
-
-
-2 min. cooldown.",})]
-        public int GrimoireOfService { get { return _data[13]; } set { _data[13] = value; } }
+        [TalentData(index: 13, name: "Grimoire of Service", icon: "warlock_grimoireofservice",
+         column: 1, row: 4,
+         description: @" Affliction,  Destruction:<!--Spec:Start: Affliction,  Destruction-->Instantly summon a second demon, who fights for 20 sec. The demon will instantly use one of their special abilities when summoned: Grimoire: Imp: Immediately cleanses a hostile magic effect from their master. Grimoire: Voidwalker Immediately taunts their target when summoned. Grimoire: Succubus Immediately seduces their target if it is Humanoid. Grimoire: Felhunter Immediately interrupts their target when summoned.<!--Spec:End--> Demonology:<!--Spec:Start: Demonology-->Instantly summon a second demon, who fights for 20 sec. The demon will instantly use one of their special abilities when summoned: Grimoire: Imp: Immediately cleanses a hostile magic effect from their master. Grimoire: Voidwalker Immediately taunts their target when summoned. Grimoire: Succubus Immediately seduces their target if it is Humanoid. Grimoire: Felhunter Immediately interrupts their target when summoned. Grimoire: Felguard Immediately stuns their target when summoned.<!--Spec:End-->")]
+        public bool GrimoireOfService { get { return _data[13]; } set { _data[13] = value; } }
         /// <summary>
-        /// You sacrifice your demon to gain increased damage and health. Lasts for 15 min.\n\n\n\nSummoning another demon cancels the effect.
+        ///  Affliction:<!--Spec:Start: Affliction-->You sacrifice your demon to gain one of its abilities, increase the power of many of your single target spells by 20% and regenerate 2% of maximum health every 5 sec. Lasts for 60 min. Summoning another demon cancels the effect.<!--Spec:End--> Demonology:<!--Spec:Start: Demonology-->You sacrifice your demon to gain one of its abilities, increase the power of many of your single target spells by 25% and regenerate 2% of maximum health every 5 sec. Lasts for 60 min. Summoning another demon cancels the effect.<!--Spec:End--> Destruction:<!--Spec:Start: Destruction-->You sacrifice your demon to gain one of its abilities, increase the power of many of your single target spells by 15% and regenerate 2% of maximum health every 5 sec. Lasts for 60 min. Summoning another demon cancels the effect.<!--Spec:End-->
         /// </summary>
-        [TalentData(index: 14, name: "Grimoire of Sacrifice", maxPoints: 1, icon: "warlock_grimoireofsacrifice",
-         tree: 0, column: 3, row: 5, prerequisite: -1, description: new[] {
-@"You sacrifice your demon to gain increased damage and health. Lasts for 15 min.
-
-
-
-Summoning another demon cancels the effect.",})]
-        public int GrimoireOfSacrifice { get { return _data[14]; } set { _data[14] = value; } }
+        [TalentData(index: 14, name: "Grimoire of Sacrifice", icon: "warlock_grimoireofsacrifice",
+         column: 2, row: 4,
+         description: @" Affliction:<!--Spec:Start: Affliction-->You sacrifice your demon to gain one of its abilities, increase the power of many of your single target spells by 20% and regenerate 2% of maximum health every 5 sec. Lasts for 60 min. Summoning another demon cancels the effect.<!--Spec:End--> Demonology:<!--Spec:Start: Demonology-->You sacrifice your demon to gain one of its abilities, increase the power of many of your single target spells by 25% and regenerate 2% of maximum health every 5 sec. Lasts for 60 min. Summoning another demon cancels the effect.<!--Spec:End--> Destruction:<!--Spec:Start: Destruction-->You sacrifice your demon to gain one of its abilities, increase the power of many of your single target spells by 15% and regenerate 2% of maximum health every 5 sec. Lasts for 60 min. Summoning another demon cancels the effect.<!--Spec:End-->")]
+        public bool GrimoireOfSacrifice { get { return _data[14]; } set { _data[14] = value; } }
         /// <summary>
-        /// Curse an enemy, causing them to suffer 30% of all damage you take. Lasts 10 sec.\n\n\n\nPassive:\n\nEnemies who attack you suffer 5% of all damage they deal to you. This effect is disabled while on cooldown.
+        /// Your Dark Soul spells have two charges.
         /// </summary>
-        [TalentData(index: 15, name: "Archimonde's Vengeance", maxPoints: 1, icon: "achievement_boss_archimonde",
-         tree: 0, column: 1, row: 6, prerequisite: -1, description: new[] {
-@"Curse an enemy, causing them to suffer 30% of all damage you take. Lasts 10 sec.
-
-
-
-Passive:
-
-Enemies who attack you suffer 5% of all damage they deal to you. This effect is disabled while on cooldown.",})]
-        public int ArchimondesVengeance { get { return _data[15]; } set { _data[15] = value; } }
+        [TalentData(index: 15, name: "Archimonde's Darkness", icon: "achievement_boss_archimonde",
+         column: 0, row: 5,
+         description: @"Your Dark Soul spells have two charges.")]
+        public bool ArchimondesDarkness { get { return _data[15]; } set { _data[15] = value; } }
         /// <summary>
-        /// You can cast and channel while moving, but doing so doubles the cast time or period of the spell.
+        /// You can cast Malefic Grasp, Incinerate and Shadow Bolt while moving.
         /// </summary>
-        [TalentData(index: 16, name: "Kil'jaeden's Cunning", maxPoints: 1, icon: "achievement_boss_kiljaedan",
-         tree: 0, column: 2, row: 6, prerequisite: -1, description: new[] {
-@"You can cast and channel while moving, but doing so doubles the cast time or period of the spell.",})]
-        public int KiljaedensCunning { get { return _data[16]; } set { _data[16] = value; } }
+        [TalentData(index: 16, name: "Kil'jaeden's Cunning", icon: "achievement_boss_kiljaedan",
+         column: 1, row: 5,
+         description: @"You can cast Malefic Grasp, Incinerate and Shadow Bolt while moving.")]
+        public bool KiljaedensCunning { get { return _data[16]; } set { _data[16] = value; } }
         /// <summary>
-        /// Increases the radius of your non-talent Area of Effect spells by 200%.
+        /// Increases the area of your area of effect by 500% and damage by 100% of your Seed of Corruption, Hellfire, Immolation Aura and Rain of Fire for 10 sec.
         /// </summary>
-        [TalentData(index: 17, name: "Mannoroth's Fury", maxPoints: 1, icon: "achievement_boss_magtheridon",
-         tree: 0, column: 3, row: 6, prerequisite: -1, description: new[] {
-@"Increases the radius of your non-talent Area of Effect spells by 200%.",})]
-        public int MannorothsFury { get { return _data[17]; } set { _data[17] = value; } }
-        #endregion
-    }
-
-    public partial class DruidTalents : TalentsBase
-    {
-        public override TalentsBase Clone()
-        {
-            DruidTalents clone = (DruidTalents)MemberwiseClone();
-            clone._data = (int[])_data.Clone();
-            clone._glyphData = (bool[])_glyphData.Clone();
-            clone.TreeCounts = new int[] { -1, -1, -1 };
-            return clone;
-        }
-
-        private int[] _data = new int[18];
-        public override int[] Data { get { return _data; } }
-        public DruidTalents() { }
-        public DruidTalents(string talents, int[][] glyphEncodes = null)
-        {
-            LoadString(talents, glyphEncodes);
-        }
-        private static string[] specializationNames = new[] {
-			@"Balance",@"Feral",@"Guardian",@"Restoration"};
-        public override string[] SpecializationNames
-        {
-            get { return specializationNames; }
-        }
-
-        #region Druid
-        public override int TreeStartingIndexes_0 { get { return 0; } }
+        [TalentData(index: 17, name: "Mannoroth's Fury", icon: "achievement_boss_magtheridon",
+         column: 2, row: 5,
+         description: @"Increases the area of your area of effect by 500% and damage by 100% of your Seed of Corruption, Hellfire, Immolation Aura and Rain of Fire for 10 sec.")]
+        public bool MannorothsFury { get { return _data[17]; } set { _data[17] = value; } }
         /// <summary>
-        /// Increases your movement speed by 15%.
+        /// 
+        /// Affliction
         /// </summary>
-        [TalentData(index: 0, name: "Feline Swiftness", maxPoints: 1, icon: "spell_druid_tirelesspursuit",
-         tree: 0, column: 1, row: 1, prerequisite: -1, description: new[] {
-@"Increases your movement speed by 15%.",})]
-        public int FelineSwiftness { get { return _data[0]; } set { _data[0] = value; } }
+        [TalentData(index: 18, name: "Chaotic Resources", icon: "ability_hunter_resourcefulness",
+         column: 0, row: 6,
+         description: @"
+Affliction")]
+        public bool ChaoticResources { get { return _data[18]; } set { _data[18] = value; } }
         /// <summary>
-        /// Teleports the Druid up to 20 yards forward and activates Cat Form and Prowl.
+        /// Conjures a cataclysm at the target location, dealing 10000 Shadowflame damage to all enemies within 8 yards.
+        /// 
+        /// Affliction & Demonology
+        /// Also applies Corruption.
+        /// 
+        /// Destruction
+        /// Also applies Immolate.
         /// </summary>
-        [TalentData(index: 1, name: "Displacer Beast", maxPoints: 1, icon: "spell_druid_displacement",
-         tree: 0, column: 2, row: 1, prerequisite: -1, description: new[] {
-@"Teleports the Druid up to 20 yards forward and activates Cat Form and Prowl.",})]
-        public int DisplacerBeast { get { return _data[1]; } set { _data[1] = value; } }
+        [TalentData(index: 19, name: "Cataclysm", icon: "achievement_zone_cataclysm",
+         column: 1, row: 6,
+         description: @"Conjures a cataclysm at the target location, dealing 10000 Shadowflame damage to all enemies within 8 yards.
+
+Affliction & Demonology
+Also applies Corruption.
+
+Destruction
+Also applies Immolate.")]
+        public bool Cataclysm { get { return _data[19]; } set { _data[19] = value; } }
         /// <summary>
-        /// Fly to a nearby ally's position.
+        /// You are now able to maintain your control over even greater demons indefinitely, allowing you to summon Doomguards and Infernals as permanent pets.
         /// </summary>
-        [TalentData(index: 2, name: "Wild Charge", maxPoints: 1, icon: "spell_druid_wildcharge",
-         tree: 0, column: 3, row: 1, prerequisite: -1, description: new[] {
-@"Fly to a nearby ally's position.",})]
-        public int WildCharge { get { return _data[2]; } set { _data[2] = value; } }
-        /// <summary>
-        /// When activated, your next Cyclone, Entangling Roots, Healing Touch, Hibernate, Nourish, Rebirth, or Regrowth becomes instant, free, and castable in all forms.  The healing and duration of the spell is increased by 50%.
-        /// </summary>
-        [TalentData(index: 3, name: "Nature's Swiftness", maxPoints: 1, icon: "spell_nature_ravenform",
-         tree: 0, column: 1, row: 2, prerequisite: -1, description: new[] {
-@"When activated, your next Cyclone, Entangling Roots, Healing Touch, Hibernate, Nourish, Rebirth, or Regrowth becomes instant, free, and castable in all forms.  The healing and duration of the spell is increased by 50%.",})]
-        public int NaturesSwiftness { get { return _data[3]; } set { _data[3] = value; } }
-        /// <summary>
-        /// Instantly heals the Druid for 30% of maximum health.  Useable in all shapeshift forms.
-        /// </summary>
-        [TalentData(index: 4, name: "Renewal", maxPoints: 1, icon: "spell_nature_natureblessing",
-         tree: 0, column: 2, row: 2, prerequisite: -1, description: new[] {
-@"Instantly heals the Druid for 30% of maximum health.  Useable in all shapeshift forms.",})]
-        public int Renewal { get { return _data[4]; } set { _data[4] = value; } }
-        /// <summary>
-        /// Protects a friendly target, causing any damage taken to heal the target for 6174 (+ 57% of SpellPower) every 2 sec for 6 sec.  Gaining the healing effect consumes the Cenarion Ward.  Useable in all shapeshift forms.  Lasts 30 sec.
-        /// </summary>
-        [TalentData(index: 5, name: "Cenarion Ward", maxPoints: 1, icon: "ability_druid_naturalperfection",
-         tree: 0, column: 3, row: 2, prerequisite: -1, description: new[] {
-@"Protects a friendly target, causing any damage taken to heal the target for 6174 (+ 57% of SpellPower) every 2 sec for 6 sec.  Gaining the healing effect consumes the Cenarion Ward.  Useable in all shapeshift forms.  Lasts 30 sec.",})]
-        public int CenarionWard { get { return _data[5]; } set { _data[5] = value; } }
-        /// <summary>
-        /// Grants an improved version of Faerie Fire that also reduces the target's movement speed by 50% for 15 sec.\n\n\n\n
-        /// This talent replaces Faerie Fire.
-        /// </summary>
-        [TalentData(index: 6, name: "Faerie Swarm", maxPoints: 1, icon: "spell_druid_swarm",
-         tree: 0, column: 1, row: 3, prerequisite: -1, description: new[] {
-@"Grants an improved version of Faerie Fire that also reduces the target's movement speed by 50% for 15 sec.
-
-
-
-This talent replaces Faerie Fire.",})]
-        public int FaerieSwarm { get { return _data[6]; } set { _data[6] = value; } }
-        /// <summary>
-        /// Roots your target in place for 20 sec and spreads to additional nearby enemies.  Affects 5 total targets.  Damage caused may interrupt the effect.  Useable in all shapeshift forms.
-        /// </summary>
-        [TalentData(index: 7, name: "Mass Entanglement", maxPoints: 1, icon: "spell_druid_massentanglement",
-         tree: 0, column: 2, row: 3, prerequisite: -1, description: new[] {
-@"Roots your target in place for 20 sec and spreads to additional nearby enemies.  Affects 5 total targets.  Damage caused may interrupt the effect.  Useable in all shapeshift forms.",})]
-        public int MassEntanglement { get { return _data[7]; } set { _data[7] = value; } }
-        /// <summary>
-        /// Summons a violent Typhoon that strikes targets in front of the caster within 30 yards, knocking them back and dazing them for 6 sec.  Useable in all shapeshift forms.
-        /// </summary>
-        [TalentData(index: 8, name: "Typhoon", maxPoints: 1, icon: "ability_druid_typhoon",
-         tree: 0, column: 3, row: 3, prerequisite: -1, description: new[] {
-@"Summons a violent Typhoon that strikes targets in front of the caster within 30 yards, knocking them back and dazing them for 6 sec.  Useable in all shapeshift forms.",})]
-        public int Typhoon { get { return _data[8]; } set { _data[8] = value; } }
-        /// <summary>
-        /// Aessina's blessing grants a benefit which varies by your combat specialization.\n\n\n\n
-        /// Balance\n\n
-        /// When a Lunar Eclipse ends you gain 20 Solar Energy and when a Solar Eclipse ends you gain 20 Lunar Energy.\n\n\n\n
-        /// Feral\n\n
-        /// Your finishing moves grant 2 Energy per combo point.\n\n\n\n
-        /// Guardian\n\n
-        /// Mangle now generates an additional 2 Rage.\n\n\n\n
-        /// Restoration\n\n
-        /// You gain 50% haste for your next spell when you cast Swiftmend.
-        /// </summary>
-        [TalentData(index: 9, name: "Soul of the Forest", maxPoints: 1, icon: "ability_druid_manatree",
-         tree: 0, column: 1, row: 4, prerequisite: -1, description: new[] {
-@"Aessina's blessing grants a benefit which varies by your combat specialization.
-
-
-
-Balance
-
-When a Lunar Eclipse ends you gain 20 Solar Energy and when a Solar Eclipse ends you gain 20 Lunar Energy.
-
-
-
-Feral
-
-Your finishing moves grant 2 Energy per combo point.
-
-
-
-Guardian
-
-Mangle now generates an additional 2 Rage.
-
-
-
-Restoration
-
-You gain 50% haste for your next spell when you cast Swiftmend.",})]
-        public int SoulOfTheForest { get { return _data[9]; } set { _data[9] = value; } }
-        /// <summary>
-        /// Grants a superior shapeshifting form appropriate to your specialization for 30 sec.  You may freely shapeshift in and out of this form for the duration of Incarnation.\n\n\n\n
-        /// Balance: Chosen of Elune\n\n
-        /// Improved Moonkin Form that gains 25% increased Arcane and Nature damage while Eclipse is active.\n\n\n\n
-        /// Feral: King of the Jungle\n\n
-        /// Improved Cat Form that allows the use of all abilities which normally require stealth, allows the use of Prowl while in combat, and removes the positional requirement of Ravage.\n\n\n\n
-        /// Guardian: Son of Ursoc\n\n
-        /// Improved Bear Form that reduces the cooldown on melee damage abilities and Growl to 1.5 sec.\n\n\n\n
-        /// Restoration: Tree of Life\n\n
-        /// Tree of Life Form that increases healing done by 15%, increases armor by 120%, and enhances Lifebloom, Wild Growth, Regrowth, and Entangling Roots spellcasts.
-        /// </summary>
-        [TalentData(index: 10, name: "Incarnation", maxPoints: 1, icon: "spell_druid_incarnation",
-         tree: 0, column: 2, row: 4, prerequisite: -1, description: new[] {
-@"Grants a superior shapeshifting form appropriate to your specialization for 30 sec.  You may freely shapeshift in and out of this form for the duration of Incarnation.
-
-
-
-Balance: Chosen of Elune
-
-Improved Moonkin Form that gains 25% increased Arcane and Nature damage while Eclipse is active.
-
-
-
-Feral: King of the Jungle
-
-Improved Cat Form that allows the use of all abilities which normally require stealth, allows the use of Prowl while in combat, and removes the positional requirement of Ravage.
-
-
-
-Guardian: Son of Ursoc
-
-Improved Bear Form that reduces the cooldown on melee damage abilities and Growl to 1.5 sec.
-
-
-
-Restoration: Tree of Life
-
-Tree of Life Form that increases healing done by 15%, increases armor by 120%, and enhances Lifebloom, Wild Growth, Regrowth, and Entangling Roots spellcasts.",})]
-        public int Incarnation { get { return _data[10]; } set { _data[10] = value; } }
-        /// <summary>
-        /// Summons 3 treants to assist in the Druid's current combat role for 15 sec.  Treant capabilities vary by specialization.  Useable in all shapeshift forms.
-        /// </summary>
-        [TalentData(index: 11, name: "Force of Nature", maxPoints: 1, icon: "ability_druid_forceofnature",
-         tree: 0, column: 3, row: 4, prerequisite: -1, description: new[] {
-@"Summons 3 treants to assist in the Druid's current combat role for 15 sec.  Treant capabilities vary by specialization.  Useable in all shapeshift forms.",})]
-        public int ForceOfNature { get { return _data[11]; } set { _data[11] = value; } }
-        /// <summary>
-        /// Invokes the spirit of Ursol to roar, disorienting all enemies within 10 yards for 3 sec.  Any damage caused will remove the effect.  Useable in all shapeshift forms.
-        /// </summary>
-        [TalentData(index: 12, name: "Disorienting Roar", maxPoints: 1, icon: "ability_druid_demoralizingroar",
-         tree: 0, column: 1, row: 5, prerequisite: -1, description: new[] {
-@"Invokes the spirit of Ursol to roar, disorienting all enemies within 10 yards for 3 sec.  Any damage caused will remove the effect.  Useable in all shapeshift forms.",})]
-        public int DisorientingRoar { get { return _data[12]; } set { _data[12] = value; } }
-        /// <summary>
-        /// Conjures a vortex of wind at the destination location that reduces the movement speed of all enemies within 8 yards by 50%. \n\n\n\n
-        /// The first time an enemy attempts to leave the vortex, winds will pull that enemy back to its center. \n\n\n\n
-        /// Lasts 10 sec.  Useable in all shapeshift forms.
-        /// </summary>
-        [TalentData(index: 13, name: "Ursol's Vortex", maxPoints: 1, icon: "spell_druid_ursolsvortex",
-         tree: 0, column: 2, row: 5, prerequisite: -1, description: new[] {
-@"Conjures a vortex of wind at the destination location that reduces the movement speed of all enemies within 8 yards by 50%.
-
-
-
-The first time an enemy attempts to leave the vortex, winds will pull that enemy back to its center.
-
-
-
-Lasts 10 sec.  Useable in all shapeshift forms.",})]
-        public int UrsolsVortex { get { return _data[13]; } set { _data[13] = value; } }
-        /// <summary>
-        /// Invokes the spirit of Ursoc to stun the target for 5 sec.  Useable in all shapeshift forms.
-        /// </summary>
-        [TalentData(index: 14, name: "Mighty Bash", maxPoints: 1, icon: "ability_druid_bash",
-         tree: 0, column: 3, row: 5, prerequisite: -1, description: new[] {
-@"Invokes the spirit of Ursoc to stun the target for 5 sec.  Useable in all shapeshift forms.",})]
-        public int MightyBash { get { return _data[14]; } set { _data[14] = value; } }
-        /// <summary>
-        /// Increases Stamina, Agility, and Intellect by 6% at all times. When activated, dramatically improves the Druid's ability to perform roles outside of their normal specialization for 45 sec. Grants the following benefits based on current specialization: \n\n\n\n
-        /// Non-Guardian \n\n
-        /// While in Bear Form, Agility, Expertise, Hit Chance, and armor bonuses increased, and chance to be hit by melee critical strikes reduced.\n\n\n\n
-        /// Non-Feral \n\n
-        /// While in Cat Form, Agility, Hit Chance, and Expertise increased. \n\n\n\n
-        /// Non-Restoration \n\n
-        /// Healing increased and mana cost of all healing spells reduced by 100%. Guardian Druids may also cast Rejuvenation while shapeshifted. \n\n\n\n
-        /// Non-Balance \n\n
-        /// Spell Damage and Hit Chance increased. Mana cost of all damage spells reduced by 100%.
-        /// </summary>
-        [TalentData(index: 15, name: "Heart of the Wild", maxPoints: 1, icon: "spell_holy_blessingofagility",
-         tree: 0, column: 1, row: 6, prerequisite: -1, description: new[] {
-@"Increases Stamina, Agility, and Intellect by 6% at all times. When activated, dramatically improves the Druid's ability to perform roles outside of their normal specialization for 45 sec. Grants the following benefits based on current specialization:
-
-
-
-Non-Guardian
-
-While in Bear Form, Agility, Expertise, Hit Chance, and armor bonuses increased, and chance to be hit by melee critical strikes reduced.
-
-
-
-Non-Feral
-
-While in Cat Form, Agility, Hit Chance, and Expertise increased.
-
-
-
-Non-Restoration
-
-Healing increased and mana cost of all healing spells reduced by 100%. Guardian Druids may also cast Rejuvenation while shapeshifted.
-
-
-
-Non-Balance
-
-Spell Damage and Hit Chance increased. Mana cost of all damage spells reduced by 100%.",})]
-        public int HeartOfTheWild { get { return _data[15]; } set { _data[15] = value; } }
-        /// <summary>
-        /// Wrath, Starfire, Starsurge, and melee abilities increase healing done by your next healing spell by 70%. Tranquility is not affected. \n\n\n\n
-        /// Non-instant casts of Nourish, Healing Touch, and Regrowth increase the damage done by your next damaging spell by 70% or by your next melee ability by 30%. \n\n\n\n
-        /// Each of these bonuses lasts 30 sec.
-        /// </summary>
-        [TalentData(index: 16, name: "Dream of Cenarius", maxPoints: 1, icon: "ability_druid_dreamstate",
-         tree: 0, column: 2, row: 6, prerequisite: -1, description: new[] {
-@"Wrath, Starfire, Starsurge, and melee abilities increase healing done by your next healing spell by 70%. Tranquility is not affected.
-
-
-
-Non-instant casts of Nourish, Healing Touch, and Regrowth increase the damage done by your next damaging spell by 70% or by your next melee ability by 30%.
-
-
-
-Each of these bonuses lasts 30 sec.",})]
-        public int DreamOfCenarius { get { return _data[16]; } set { _data[16] = value; } }
-        /// <summary>
-        /// Increases all damage and healing done by 20% for 30 sec.  While active, all single-target healing spells also damage a nearby enemy target for 25% of the healing done, and all single-target damage spells and abilities also heal a nearby friendly target for 25% of the damage done.
-        /// </summary>
-        [TalentData(index: 17, name: "Nature's Vigil", maxPoints: 1, icon: "achievement_zone_feralas",
-         tree: 0, column: 3, row: 6, prerequisite: -1, description: new[] {
-@"Increases all damage and healing done by 20% for 30 sec.  While active, all single-target healing spells also damage a nearby enemy target for 25% of the healing done, and all single-target damage spells and abilities also heal a nearby friendly target for 25% of the damage done.",})]
-        public int NaturesVigil { get { return _data[17]; } set { _data[17] = value; } }
+        [TalentData(index: 20, name: "Demonic Servitude", icon: "ability_warlock_improveddemonictactics",
+         column: 2, row: 6,
+         description: @"You are now able to maintain your control over even greater demons indefinitely, allowing you to summon Doomguards and Infernals as permanent pets.")]
+        public bool DemonicServitude { get { return _data[20]; } set { _data[20] = value; } }
         #endregion
     }
 
@@ -2267,184 +2041,455 @@ Each of these bonuses lasts 30 sec.",})]
         public override TalentsBase Clone()
         {
             MonkTalents clone = (MonkTalents)MemberwiseClone();
-            clone._data = (int[])_data.Clone();
+            clone._data = (bool[])_data.Clone();
             clone._glyphData = (bool[])_glyphData.Clone();
-            clone.TreeCounts = new int[] { -1, -1, -1 };
+            clone.TalentCount = -1;
             return clone;
         }
 
-        private int[] _data = new int[18];
-        public override int[] Data { get { return _data; } }
+        private bool[] _data = new bool[21];
+        public override bool[] Data { get { return _data; } }
         public MonkTalents() { }
         public MonkTalents(string talents, int[][] glyphEncodes = null)
         {
             LoadString(talents, glyphEncodes);
         }
+
         private static string[] specializationNames = new[] {
 			@"Brewmaster",@"Mistweaver",@"Windwalker"};
         public override string[] SpecializationNames
         {
             get { return specializationNames; }
         }
-
         #region Monk
-        public override int TreeStartingIndexes_0 { get { return 0; } }
         /// <summary>
         /// Allows you to Roll and Chi Torpedo more often, increases their maximum number of charges by 1, and reduces their cooldown by 5 sec.
         /// </summary>
-        [TalentData(index: 0, name: "Celerity", maxPoints: 1, icon: "ability_monk_quipunch",
-         tree: 0, column: 1, row: 1, prerequisite: -1, description: new[] {
-@"Allows you to Roll and Chi Torpedo more often, increases their maximum number of charges by 1, and reduces their cooldown by 5 sec.",})]
-        public int Celerity { get { return _data[0]; } set { _data[0] = value; } }
+        [TalentData(index: 0, name: "Celerity", icon: "ability_monk_quipunch",
+         column: 0, row: 0,
+         description: @"Allows you to Roll and Chi Torpedo more often, increases their maximum number of charges by 1, and reduces their cooldown by 5 sec.")]
+        public bool Celerity { get { return _data[0]; } set { _data[0] = value; } }
         /// <summary>
         /// Instantly clears the target of all immobilizing and movement impairing effects, and increases their movement speed by 70% for 6 sec.
         /// </summary>
-        [TalentData(index: 1, name: "Tiger's Lust", maxPoints: 1, icon: "ability_monk_tigerslust",
-         tree: 0, column: 2, row: 1, prerequisite: -1, description: new[] {
-@"Instantly clears the target of all immobilizing and movement impairing effects, and increases their movement speed by 70% for 6 sec.",})]
-        public int TigersLust { get { return _data[1]; } set { _data[1] = value; } }
+        [TalentData(index: 1, name: "Tiger's Lust", icon: "ability_monk_tigerslust",
+         column: 1, row: 0,
+         description: @"Instantly clears the target of all immobilizing and movement impairing effects, and increases their movement speed by 70% for 6 sec.")]
+        public bool TigersLust { get { return _data[1]; } set { _data[1] = value; } }
         /// <summary>
         /// Every time you Roll or Chi Torpedo, your movement speed is increased by 25% for 10 sec. Stacks up to 2 times.
         /// </summary>
-        [TalentData(index: 2, name: "Momentum", maxPoints: 1, icon: "ability_monk_standingkick",
-         tree: 0, column: 3, row: 1, prerequisite: -1, description: new[] {
-@"Every time you Roll or Chi Torpedo, your movement speed is increased by 25% for 10 sec. Stacks up to 2 times.",})]
-        public int Momentum { get { return _data[2]; } set { _data[2] = value; } }
+        [TalentData(index: 2, name: "Momentum", icon: "ability_monk_standingkick",
+         column: 2, row: 0,
+         description: @"Every time you Roll or Chi Torpedo, your movement speed is increased by 25% for 10 sec. Stacks up to 2 times.")]
+        public bool Momentum { get { return _data[2]; } set { _data[2] = value; } }
         /// <summary>
-        /// You cause a wave of Chi energy to flow through friend and foe, dealing 124 damage or 384 healing. Bounces up to 7 times to the nearest targets within 20 yards.
-        /// When bouncing to allies, Chi Wave will prefer those injured over full health.
+        ///  Brewmaster,  Windwalker:<!--Spec:Start: Brewmaster,  Windwalker-->You cause a wave of Chi energy to flow through friend and foe, dealing [ 493 + 45% of AP ] Nature damage or [ 493 + 45% of AP ] healing. Bounces up to 7 times to the nearest targets within 25 yards.
+        /// When bouncing to allies, Chi Wave will prefer those injured over full health.<!--Spec:End--> Mistweaver:<!--Spec:Start: Mistweaver-->You cause a wave of Chi energy to flow through friend and foe, dealing [ 493 + 45% of AP ] Nature damage or [ 493 + 54% of AP ] healing. Bounces up to 7 times to the nearest targets within 25 yards.
+        /// When bouncing to allies, Chi Wave will prefer those injured over full health.<!--Spec:End-->
         /// </summary>
-        [TalentData(index: 3, name: "Chi Wave", maxPoints: 1, icon: "ability_monk_chiwave",
-         tree: 0, column: 1, row: 2, prerequisite: -1, description: new[] {
-@"You cause a wave of Chi energy to flow through friend and foe, dealing 124 damage or 384 healing. Bounces up to 7 times to the nearest targets within 20 yards.
-
-When bouncing to allies, Chi Wave will prefer those injured over full health.",})]
-        public int ChiWave { get { return _data[3]; } set { _data[3] = value; } }
+        [TalentData(index: 3, name: "Chi Wave", icon: "ability_monk_chiwave",
+         column: 0, row: 1,
+         description: @" Brewmaster,  Windwalker:<!--Spec:Start: Brewmaster,  Windwalker-->You cause a wave of Chi energy to flow through friend and foe, dealing [&nbsp;493 + 45% of AP&nbsp;] Nature damage or [&nbsp;493 + 45% of AP&nbsp;] healing. Bounces up to 7 times to the nearest targets within 25 yards.When bouncing to allies, Chi Wave will prefer those injured over full health.<!--Spec:End--> Mistweaver:<!--Spec:Start: Mistweaver-->You cause a wave of Chi energy to flow through friend and foe, dealing [&nbsp;493 + 45% of AP&nbsp;] Nature damage or [&nbsp;493 + 54% of AP&nbsp;] healing. Bounces up to 7 times to the nearest targets within 25 yards.When bouncing to allies, Chi Wave will prefer those injured over full health.<!--Spec:End-->")]
+        public bool ChiWave { get { return _data[3]; } set { _data[3] = value; } }
         /// <summary>
-        /// Forms a Zen Sphere above the target, healing the target for 126 and dealing 41 damage to the nearest enemy within 10 yards of the target every 2 sec for 16 sec. Only one Zen Sphere can be summoned at any one time.
-        /// If Zen Sphere is cast again while active, the Zen Sphere will detonate, dealing 144 damage and 450 healing to all targets within 10 yards.
+        ///  Brewmaster,  Windwalker:<!--Spec:Start: Brewmaster,  Windwalker-->Forms a Zen Sphere above the target, healing the target for [ 114 + 9% of AP ] and dealing [ 114 + 9% of AP ] Nature damage to the nearest enemy within 10 yards of the target every 2 sec for 16 sec. Only two Zen Spheres can be summoned at any one time.
+        /// If the target of the Zen Sphere reaches 35% or lower health or if the Zen Sphere is dispelled or expires it will detonate, dealing [ 463 + 36.
+        /// 8% of AP ] Nature damage and [ 294 + 23.
+        /// 4% of AP ] healing to all targets within 10 yards.<!--Spec:End--> Mistweaver:<!--Spec:Start: Mistweaver-->Forms a Zen Sphere above the target, healing the target for [ 114 + 10.
+        /// 8% of AP ] and dealing [ 114 + 9% of AP ] Nature damage to the nearest enemy within 10 yards of the target every 2 sec for 16 sec. Only two Zen Spheres can be summoned at any one time.
+        /// If the target of the Zen Sphere reaches 35% or lower health or if the Zen Sphere is dispelled or expires it will detonate, dealing [ 463 + 36.
+        /// 8% of AP ] Nature damage and [ 294 + 28.
+        /// 1% of AP ] healing to all targets within 10 yards.<!--Spec:End-->
         /// </summary>
-        [TalentData(index: 4, name: "Zen Sphere", maxPoints: 1, icon: "ability_monk_forcesphere",
-         tree: 0, column: 2, row: 2, prerequisite: -1, description: new[] {
-@"Forms a Zen Sphere above the target, healing the target for 126 and dealing 41 damage to the nearest enemy within 10 yards of the target every 2 sec for 16 sec. Only one Zen Sphere can be summoned at any one time.
-
-If Zen Sphere is cast again while active, the Zen Sphere will detonate, dealing 144 damage and 450 healing to all targets within 10 yards.",})]
-        public int ZenSphere { get { return _data[4]; } set { _data[4] = value; } }
+        [TalentData(index: 4, name: "Zen Sphere", icon: "ability_monk_forcesphere",
+         column: 1, row: 1,
+         description: @" Brewmaster,  Windwalker:<!--Spec:Start: Brewmaster,  Windwalker-->Forms a Zen Sphere above the target, healing the target for [&nbsp;114 + 9% of AP&nbsp;] and dealing [&nbsp;114 + 9% of AP&nbsp;] Nature damage to the nearest enemy within 10 yards of the target every 2 sec for 16 sec. Only two Zen Spheres can be summoned at any one time.If the target of the Zen Sphere reaches 35% or lower health or if the Zen Sphere is dispelled or expires it will detonate, dealing [&nbsp;463 + 36.8% of AP&nbsp;] Nature damage and [&nbsp;294 + 23.4% of AP&nbsp;] healing to all targets within 10 yards.<!--Spec:End--> Mistweaver:<!--Spec:Start: Mistweaver-->Forms a Zen Sphere above the target, healing the target for [&nbsp;114 + 10.8% of AP&nbsp;] and dealing [&nbsp;114 + 9% of AP&nbsp;] Nature damage to the nearest enemy within 10 yards of the target every 2 sec for 16 sec. Only two Zen Spheres can be summoned at any one time.If the target of the Zen Sphere reaches 35% or lower health or if the Zen Sphere is dispelled or expires it will detonate, dealing [&nbsp;463 + 36.8% of AP&nbsp;] Nature damage and [&nbsp;294 + 28.1% of AP&nbsp;] healing to all targets within 10 yards.<!--Spec:End-->")]
+        public bool ZenSphere { get { return _data[4]; } set { _data[4] = value; } }
         /// <summary>
-        /// You summon a torrent of Chi energy and hurl it at the target, dealing 138 to 413 damage to all enemies, and 432 to 1295 healing to all allies in its path. Chi Burst will always heal the Monk.
-        /// While casting Chi Burst, you continue to dodge, parry, and auto-attack.
+        ///  Brewmaster,  Windwalker:<!--Spec:Start: Brewmaster,  Windwalker-->You summon a torrent of Chi energy and hurl it forward, up to 40 yds, dealing [ 1,325 + 121% of AP ] Nature damage to all enemies, and [ 1,095 + AP ] healing to all allies in its path. Chi Burst will always heal the Monk.
+        /// While casting Chi Burst, you continue to dodge, parry, and auto-attack.<!--Spec:End--> Mistweaver:<!--Spec:Start: Mistweaver-->You summon a torrent of Chi energy and hurl it forward, up to 40 yds, dealing [ 1,325 + 121% of AP ] Nature damage to all enemies, and [ 1,095 + 120% of AP ] healing to all allies in its path. Chi Burst will always heal the Monk.
+        /// While casting Chi Burst, you continue to dodge, parry, and auto-attack.<!--Spec:End-->
         /// </summary>
-        [TalentData(index: 5, name: "Chi Burst", maxPoints: 1, icon: "spell_arcane_arcanetorrent",
-         tree: 0, column: 3, row: 2, prerequisite: -1, description: new[] {
-@"You summon a torrent of Chi energy and hurl it at the target, dealing 138 to 413 damage to all enemies, and 432 to 1295 healing to all allies in its path. Chi Burst will always heal the Monk.
-
-While casting Chi Burst, you continue to dodge, parry, and auto-attack.",})]
-        public int ChiBurst { get { return _data[5]; } set { _data[5] = value; } }
+        [TalentData(index: 5, name: "Chi Burst", icon: "spell_arcane_arcanetorrent",
+         column: 2, row: 1,
+         description: @" Brewmaster,  Windwalker:<!--Spec:Start: Brewmaster,  Windwalker-->You summon a torrent of Chi energy and hurl it forward, up to 40 yds, dealing [&nbsp;1,325 + 121% of AP&nbsp;] Nature damage to all enemies, and [&nbsp;1,095 + AP&nbsp;] healing to all allies in its path. Chi Burst will always heal the Monk.While casting Chi Burst, you continue to dodge, parry, and auto-attack.<!--Spec:End--> Mistweaver:<!--Spec:Start: Mistweaver-->You summon a torrent of Chi energy and hurl it forward, up to 40 yds, dealing [&nbsp;1,325 + 121% of AP&nbsp;] Nature damage to all enemies, and [&nbsp;1,095 + 120% of AP&nbsp;] healing to all allies in its path. Chi Burst will always heal the Monk.While casting Chi Burst, you continue to dodge, parry, and auto-attack.<!--Spec:End-->")]
+        public bool ChiBurst { get { return _data[5]; } set { _data[5] = value; } }
         /// <summary>
-        /// Your Jab generates an additional Chi when used. This effect has a 20 sec cooldown. 
+        /// Every 20 sec, you gain Power Strikes, causing your next Jab, Soothing Mist, Spinning Crane Kick, Expel Harm, or Crackling Jade Lightning to generate 1 additional Chi.
         /// If you are already at maximum Chi, a Chi Sphere will be summoned near you.
         /// </summary>
-        [TalentData(index: 6, name: "Power Strikes", maxPoints: 1, icon: "ability_monk_powerstrikes",
-         tree: 0, column: 1, row: 3, prerequisite: -1, description: new[] {
-@"Your Jab generates an additional Chi when used. This effect has a 20 sec cooldown.
-
-If you are already at maximum Chi, a Chi Sphere will be summoned near you.",})]
-        public int PowerStrikes { get { return _data[6]; } set { _data[6] = value; } }
+        [TalentData(index: 6, name: "Power Strikes", icon: "ability_monk_powerstrikes",
+         column: 0, row: 2,
+         description: @"Every 20 sec, you gain Power Strikes, causing your next Jab, Soothing Mist, Spinning Crane Kick, Expel Harm, or Crackling Jade Lightning to generate 1 additional Chi.If you are already at maximum Chi, a Chi Sphere will be summoned near you.")]
+        public bool PowerStrikes { get { return _data[6]; } set { _data[6] = value; } }
         /// <summary>
-        /// Increases the amount of maximum Chi by 1.
+        /// Increases your maximum Chi by 1, your maximum mana by 15%, and your energy regen by 15%.
         /// </summary>
-        [TalentData(index: 7, name: "Ascension", maxPoints: 1, icon: "ability_monk_ascension",
-         tree: 0, column: 2, row: 3, prerequisite: -1, description: new[] {
-@"Increases the amount of maximum Chi by 1.",})]
-        public int Ascension { get { return _data[7]; } set { _data[7] = value; } }
+        [TalentData(index: 7, name: "Ascension", icon: "ability_monk_ascension",
+         column: 1, row: 2,
+         description: @"Increases your maximum Chi by 1, your maximum mana by 15%, and your energy regen by 15%.")]
+        public bool Ascension { get { return _data[7]; } set { _data[7] = value; } }
         /// <summary>
-        /// Instantly restores all of your Chi.
+        ///  Brewmaster:<!--Spec:Start: Brewmaster-->Instantly restores 2 Chi, and generates 5 stacks of Elusive Brew. Maximum 2 charges.<!--Spec:End--> Windwalker:<!--Spec:Start: Windwalker-->Instantly restores 2 Chi, and generates 2 stacks of Tigereye Brew. Maximum 2 charges.<!--Spec:End--> Mistweaver:<!--Spec:Start: Mistweaver-->Instantly restores 2 Chi, and generates 2 stacks of Mana Tea. Maximum 2 charges.<!--Spec:End-->
         /// </summary>
-        [TalentData(index: 8, name: "Chi Brew", maxPoints: 1, icon: "ability_monk_chibrew",
-         tree: 0, column: 3, row: 3, prerequisite: -1, description: new[] {
-@"Instantly restores all of your Chi.",})]
-        public int ChiBrew { get { return _data[8]; } set { _data[8] = value; } }
+        [TalentData(index: 8, name: "Chi Brew", icon: "ability_monk_chibrew",
+         column: 2, row: 2,
+         description: @" Brewmaster:<!--Spec:Start: Brewmaster-->Instantly restores 2 Chi, and generates 5 stacks of Elusive Brew. Maximum 2 charges.<!--Spec:End--> Windwalker:<!--Spec:Start: Windwalker-->Instantly restores 2 Chi, and generates 2 stacks of Tigereye Brew. Maximum 2 charges.<!--Spec:End--> Mistweaver:<!--Spec:Start: Mistweaver-->Instantly restores 2 Chi, and generates 2 stacks of Mana Tea. Maximum 2 charges.<!--Spec:End-->")]
+        public bool ChiBrew { get { return _data[8]; } set { _data[8] = value; } }
         /// <summary>
-        /// Your Paralysis ability is now usable from 20 yards away.
+        /// Forms a sanctuary around the friendly target, instantly silencing and disarming all enemies for 4 sec. In addition, enemies within the Ring of Peace who attack or cast harmful spells will be disarmed and silenced for an additional 4 sec. Ring of Peace lasts for 8 sec.
         /// </summary>
-        [TalentData(index: 9, name: "Deadly Reach", maxPoints: 1, icon: "ability_monk_deadlyreach",
-         tree: 0, column: 1, row: 4, prerequisite: -1, description: new[] {
-@"Your Paralysis ability is now usable from 20 yards away.",})]
-        public int DeadlyReach { get { return _data[9]; } set { _data[9] = value; } }
+        [TalentData(index: 9, name: "Ring of Peace", icon: "spell_monk_ringofpeace",
+         column: 0, row: 3,
+         description: @"Forms a sanctuary around the friendly target, instantly silencing and disarming all enemies for 4 sec. In addition, enemies within the Ring of Peace who attack or cast harmful spells will be disarmed and silenced for an additional 4 sec. Ring of Peace lasts for 8 sec.")]
+        public bool RingOfPeace { get { return _data[9]; } set { _data[9] = value; } }
         /// <summary>
         /// A mighty Ox effigy rushes forward 30 yards in front of you, stunning all enemies within its path for 3 sec.
         /// </summary>
-        [TalentData(index: 10, name: "Charging Ox Wave", maxPoints: 1, icon: "ability_monk_chargingoxwave",
-         tree: 0, column: 2, row: 4, prerequisite: -1, description: new[] {
-@"A mighty Ox effigy rushes forward 30 yards in front of you, stunning all enemies within its path for 3 sec.",})]
-        public int ChargingOxWave { get { return _data[10]; } set { _data[10] = value; } }
+        [TalentData(index: 10, name: "Charging Ox Wave", icon: "ability_monk_chargingoxwave",
+         column: 1, row: 3,
+         description: @"A mighty Ox effigy rushes forward 30 yards in front of you, stunning all enemies within its path for 3 sec.")]
+        public bool ChargingOxWave { get { return _data[10]; } set { _data[10] = value; } }
         /// <summary>
         /// You knock down all enemies within 5 yards, effectively stunning them for 5 sec.
         /// </summary>
-        [TalentData(index: 11, name: "Leg Sweep", maxPoints: 1, icon: "ability_monk_legsweep",
-         tree: 0, column: 3, row: 4, prerequisite: -1, description: new[] {
-@"You knock down all enemies within 5 yards, effectively stunning them for 5 sec.",})]
-        public int LegSweep { get { return _data[11]; } set { _data[11] = value; } }
+        [TalentData(index: 11, name: "Leg Sweep", icon: "ability_monk_legsweep",
+         column: 2, row: 3,
+         description: @"You knock down all enemies within 5 yards, effectively stunning them for 5 sec.")]
+        public bool LegSweep { get { return _data[11]; } set { _data[11] = value; } }
         /// <summary>
-        /// Anytime you drink from a Brew or Tea, you gain 10% of your total health. This effect cannot occur more than once every 15 sec.
+        /// Every 18 sec, you gain Healing Elixirs.
+        /// Healing Elixirs heals you for 15% of your total health the next time a damaging attack brings you below 35% of your maximum health, or you drink a Brew or Tea while injured.
         /// </summary>
-        [TalentData(index: 12, name: "Healing Elixirs", maxPoints: 1, icon: "ability_monk_jasmineforcetea",
-         tree: 0, column: 1, row: 5, prerequisite: -1, description: new[] {
-@"Anytime you drink from a Brew or Tea, you gain 10% of your total health. This effect cannot occur more than once every 15 sec.",})]
-        public int HealingElixirs { get { return _data[12]; } set { _data[12] = value; } }
+        [TalentData(index: 12, name: "Healing Elixirs", icon: "ability_monk_jasmineforcetea",
+         column: 0, row: 4,
+         description: @"Every 18 sec, you gain Healing Elixirs.Healing Elixirs heals you for 15% of your total health the next time a damaging attack brings you below 35% of your maximum health, or you drink a Brew or Tea while injured.")]
+        public bool HealingElixirs { get { return _data[12]; } set { _data[12] = value; } }
         /// <summary>
-        /// You dampen the damage from the most harmful attacks done to you. The next 3 attacks within 45 sec that deal damage equal to 10% or more of your total health are reduced in half.
+        /// You dampen the damage from the most harmful attacks done to you. The next 3 attacks within 45 sec that deal damage equal to 20% or more of your total health are reduced by half.
+        /// Dampen Harm can be cast while stunned.
         /// </summary>
-        [TalentData(index: 13, name: "Dampen Harm", maxPoints: 1, icon: "ability_monk_dampenharm",
-         tree: 0, column: 2, row: 5, prerequisite: -1, description: new[] {
-@"You dampen the damage from the most harmful attacks done to you. The next 3 attacks within 45 sec that deal damage equal to 10% or more of your total health are reduced in half.",})]
-        public int DampenHarm { get { return _data[13]; } set { _data[13] = value; } }
+        [TalentData(index: 13, name: "Dampen Harm", icon: "ability_monk_dampenharm",
+         column: 1, row: 4,
+         description: @"You dampen the damage from the most harmful attacks done to you. The next 3 attacks within 45 sec that deal damage equal to 20% or more of your total health are reduced by half.Dampen Harm can be cast while stunned.")]
+        public bool DampenHarm { get { return _data[13]; } set { _data[13] = value; } }
         /// <summary>
         /// Reduces all spell damage taken by 90% and clears all magical effects on you, reversing them back to their original caster if within 40 yards if possible. Lasts for 6 sec.
         /// </summary>
-        [TalentData(index: 14, name: "Diffuse Magic", maxPoints: 1, icon: "spell_arcane_massdispel",
-         tree: 0, column: 3, row: 5, prerequisite: -1, description: new[] {
-@"Reduces all spell damage taken by 90% and clears all magical effects on you, reversing them back to their original caster if within 40 yards if possible. Lasts for 6 sec.",})]
-        public int DiffuseMagic { get { return _data[14]; } set { _data[14] = value; } }
+        [TalentData(index: 14, name: "Diffuse Magic", icon: "spell_monk_diffusemagic",
+         column: 2, row: 4,
+         description: @"Reduces all spell damage taken by 90% and clears all magical effects on you, reversing them back to their original caster if within 40 yards if possible. Lasts for 6 sec.")]
+        public bool DiffuseMagic { get { return _data[14]; } set { _data[14] = value; } }
         /// <summary>
-        /// You summon a whirling tornado that travels 0 yards in front of you, dealing 5069 to 6010 Nature damage to all targets in its path and increasing damage taken by your Spinning Crane Kick by 30% for 8 sec.\n\n
-        /// Brewmaster\n
-        /// Causes Shuffle when cast.\n\n
-        /// Mistweaver\n
-        /// Increases the healing done by your Spinning Crane Kick by 50% for 12 sec.
+        ///  Brewmaster:<!--Spec:Start: Brewmaster-->You summon a whirling tornado around you which deals [ 50.
+        /// 3% of Mainhand Min DPS + 25.
+        /// 2% of Offhand Min DPS + 12.
+        /// 7% of AP - 1 ] to [ 50.
+        /// 3% of Mainhand Max DPS + 25.
+        /// 2% of Offhand Max DPS + 12.
+        /// 7% of AP + 1 ] damage to all nearby enemies every 0.
+        /// 75 sec, within 8 yards. Generates 1 Chi, if it hits at least 3 targets. Lasts 6 sec.
+        /// Replaces Spinning Crane Kick.<!--Spec:End--> Windwalker:<!--Spec:Start: Windwalker-->You summon a whirling tornado around you which deals [ 125.
+        /// 8% of Mainhand Min DPS + 62.
+        /// 9% of Offhand Min DPS + 10% of AP - 1 ] to [ 125.
+        /// 8% of Mainhand Max DPS + 62.
+        /// 9% of Offhand Max DPS + 10% of AP + 1 ] damage to all nearby enemies every 0.
+        /// 75 sec, within 8 yards. Generates 1 Chi, if it hits at least 3 targets. Lasts 6 sec.
+        /// Replaces Spinning Crane Kick.<!--Spec:End--> Mistweaver:<!--Spec:Start: Mistweaver-->You summon a whirling tornado around you which deals [ 188.
+        /// 8% of Mainhand Min DPS + 10% of AP - 1 ] to [ 188.
+        /// 8% of Mainhand Max DPS + 10% of AP + 1 ] damage to all nearby enemies and 2,809 healing to nearby allies every 0.
+        /// 75 sec, within 8 yards. Generates 1 Chi, if it hits at least 3 targets. Lasts 6 sec.
+        /// Replaces Spinning Crane Kick.<!--Spec:End-->
         /// </summary>
-        [TalentData(index: 15, name: "Rushing Jade Wind", maxPoints: 1, icon: "ability_monk_rushingjadewind",
-         tree: 0, column: 1, row: 6, prerequisite: -1, description: new[] {
-@"You summon a whirling tornado that travels 0 yards in front of you, dealing 5069 to 6010 Nature damage to all targets in its path and increasing damage taken by your Spinning Crane Kick by 30% for 8 sec.
+        [TalentData(index: 15, name: "Rushing Jade Wind", icon: "ability_monk_rushingjadewind",
+         column: 0, row: 5,
+         description: @" Brewmaster:<!--Spec:Start: Brewmaster-->You summon a whirling tornado around you which deals [&nbsp;50.3% of Mainhand Min DPS + 25.2% of Offhand Min DPS + 12.7% of AP - 1&nbsp;] to [&nbsp;50.3% of Mainhand Max DPS + 25.2% of Offhand Max DPS + 12.7% of AP + 1&nbsp;] damage to all nearby enemies every 0.75 sec, within 8 yards. Generates 1 Chi, if it hits at least 3 targets. Lasts 6 sec.Replaces Spinning Crane Kick.<!--Spec:End--> Windwalker:<!--Spec:Start: Windwalker-->You summon a whirling tornado around you which deals [&nbsp;125.8% of Mainhand Min DPS + 62.9% of Offhand Min DPS + 10% of AP - 1&nbsp;] to [&nbsp;125.8% of Mainhand Max DPS + 62.9% of Offhand Max DPS + 10% of AP + 1&nbsp;] damage to all nearby enemies every 0.75 sec, within 8 yards. Generates 1 Chi, if it hits at least 3 targets. Lasts 6 sec.Replaces Spinning Crane Kick.<!--Spec:End--> Mistweaver:<!--Spec:Start: Mistweaver-->You summon a whirling tornado around you which deals [&nbsp;188.8% of Mainhand Min DPS + 10% of AP - 1&nbsp;] to [&nbsp;188.8% of Mainhand Max DPS + 10% of AP + 1&nbsp;] damage to all nearby enemies and 2,809 healing to nearby allies every 0.75 sec, within 8 yards. Generates 1 Chi, if it hits at least 3 targets. Lasts 6 sec.Replaces Spinning Crane Kick.<!--Spec:End-->")]
+        public bool RushingJadeWind { get { return _data[15]; } set { _data[15] = value; } }
+        /// <summary>
+        /// Invokes the White Tiger Celestial, summoning an effigy at the command of the caster. The effigy will assist you, attacking your primary target and also inflicting tiger lightning every 1 sec to 3 nearby enemies within 10 yards dealing [ 321 + 50.
+        /// 5% of AP ] damage. Lasts for 45 sec.
+        /// Brewmaster Xuen will also taunt the target, forcing it to attack him.
+        /// </summary>
+        [TalentData(index: 16, name: "Invoke Xuen, the White Tiger", icon: "ability_monk_summontigerstatue",
+         column: 1, row: 5,
+         description: @"Invokes the White Tiger Celestial, summoning an effigy at the command of the caster. The effigy will assist you, attacking your primary target and also inflicting tiger lightning every 1 sec to 3 nearby enemies within 10 yards dealing [&nbsp;321 + 50.5% of AP&nbsp;] damage. Lasts for 45 sec.Brewmaster Xuen will also taunt the target, forcing it to attack him.")]
+        public bool InvokeXuenTheWhiteTiger { get { return _data[16]; } set { _data[16] = value; } }
+        /// <summary>
+        /// Torpedo a distance in front of you, dealing [ 2,069 + 55.
+        /// 6% of AP ] Nature damage to all enemies and 8,408 healing to all allies in your path.
+        /// Chi Torpedo replaces Roll, and travels farther than Roll.
+        /// </summary>
+        [TalentData(index: 17, name: "Chi Torpedo", icon: "ability_monk_quitornado",
+         column: 2, row: 5,
+         description: @"Torpedo a distance in front of you, dealing [&nbsp;2,069 + 55.6% of AP&nbsp;] Nature damage to all enemies and 8,408 healing to all allies in your path.Chi Torpedo replaces Roll, and travels farther than Roll.")]
+        public bool ChiTorpedo { get { return _data[17]; } set { _data[17] = value; } }
+        /// <summary>
+        /// 
+        /// Brewmaster
+        /// </summary>
+        [TalentData(index: 18, name: "Vital Conviction", icon: "ability_monk_dragonkick",
+         column: 0, row: 6,
+         description: @"
+Brewmaster")]
+        public bool VitalConviction { get { return _data[18]; } set { _data[18] = value; } }
+        /// <summary>
+        /// Consumes up to 4 Chi to cause the target to explode with Chi energy, causing additional effects based on Chi consumed:
+        /// 
+        /// Brewmaster
+        /// 1+ Chi: Deals 2500 Nature damage to an enemy.
+        /// 2+ Chi: You also gain Shuffle for 6 sec.
+        /// 3+ Chi: Also purifies all of your staggered damage.
+        /// 4+ Chi: The damage also hits all enemies within 8 yds of the target.
+        /// 
+        /// Mistweaver
+        /// 1+ Chi: Heals an ally for 2500.
+        /// 2+ Chi: This healing also heals all allies within 8 yds of the target.
+        /// 3+ Chi: Also summons 8 Healing Spheres in an 8 yd radius ring around the target.
+        /// 4+ Chi: Healed allies are also healed for an additional 800 over 6 sec.
+        /// 
+        /// Windwalker
+        /// 1+ Chi: Deals 2500 Nature damage to an enemy
+        /// 2+ Chi: Damaged enemies also take an additional 1500 Nature damage over 6 sec.
+        /// 3+ Chi: Also generates a charge of Tigereye Brew.
+        /// 4+ Chi: The damage also hits all enemies within 8 yds of the target.
+        /// </summary>
+        [TalentData(index: 19, name: "Chi Explosion", icon: "spell_fire_felflamering",
+         column: 1, row: 6,
+         description: @"Consumes up to 4 Chi to cause the target to explode with Chi energy, causing additional effects based on Chi consumed:
 
-Brewmaster 
-Causes Shuffle when cast.
+Brewmaster
+1+ Chi: Deals 2500 Nature damage to an enemy.
+2+ Chi: You also gain Shuffle for 6 sec.
+3+ Chi: Also purifies all of your staggered damage.
+4+ Chi: The damage also hits all enemies within 8 yds of the target.
 
 Mistweaver
-Increases the healing done by your Spinning Crane Kick by 50% for 12 sec.",})]
-        public int RushingJadeWind { get { return _data[15]; } set { _data[15] = value; } }
-        /// <summary>
-        /// Invokes the White Tiger Celestial, summoning an effigy at the command of the caster. The effigy will assist you, attacking your primary target and also inflicting tiger lightning every 6 sec to 3 nearby enemies within 10 yards dealing 1605 damage over 5 sec. Lasts for 45 sec.\n\n
-        /// Brewmaster\n
-        /// Xuen will also taunt the target, forcing it to attack him.
-        /// </summary>
-        [TalentData(index: 16, name: "Invoke Xuen, the White Tiger", maxPoints: 1, icon: "ability_monk_summontigerstatue",
-         tree: 0, column: 2, row: 6, prerequisite: -1, description: new[] {
-@"Invokes the White Tiger Celestial, summoning an effigy at the command of the caster. The effigy will assist you, attacking your primary target and also inflicting tiger lightning every 6 sec to 3 nearby enemies within 10 yards dealing 1605 damage over 5 sec. Lasts for 45 sec.
+1+ Chi: Heals an ally for 2500.
+2+ Chi: This healing also heals all allies within 8 yds of the target.
+3+ Chi: Also summons 8 Healing Spheres in an 8 yd radius ring around the target.
+4+ Chi: Healed allies are also healed for an additional 800 over 6 sec.
 
-Brewmaster 
-Xuen will also taunt the target, forcing it to attack him.",})]
-        public int InvokeXuentheWhiteTiger { get { return _data[16]; } set { _data[16] = value; } }
+Windwalker
+1+ Chi: Deals 2500 Nature damage to an enemy
+2+ Chi: Damaged enemies also take an additional 1500 Nature damage over 6 sec.
+3+ Chi: Also generates a charge of Tigereye Brew.
+4+ Chi: The damage also hits all enemies within 8 yds of the target.")]
+        public bool ChiExplosion { get { return _data[19]; } set { _data[19] = value; } }
         /// <summary>
-        /// Torpedo a distance in front of you, dealing 1671 to 1941 damage to all enemies and 2053 healing to all allies in your path.\n\n
-        /// Chi Torpedo replaces Roll.
+        /// 
+        /// Brewmaster & Windwalker
         /// </summary>
-        [TalentData(index: 17, name: "Chi Torpedo", maxPoints: 1, icon: "ability_monk_quitornado",
-         tree: 0, column: 3, row: 6, prerequisite: -1, description: new[] {
-@"Torpedo a distance in front of you, dealing 1671 to 1941 damage to all enemies and 2053 healing to all allies in your path.
+        [TalentData(index: 20, name: "Serene Mists", icon: "inv_elemental_primal_life",
+         column: 2, row: 6,
+         description: @"
+Brewmaster & Windwalker")]
+        public bool SereneMists { get { return _data[20]; } set { _data[20] = value; } }
+        #endregion
+    }
 
-Chi Torpedo replaces Roll.",})]
-        public int ChiTorpedo { get { return _data[17]; } set { _data[17] = value; } }
+    public partial class DruidTalents : TalentsBase
+    {
+        public override TalentsBase Clone()
+        {
+            DruidTalents clone = (DruidTalents)MemberwiseClone();
+            clone._data = (bool[])_data.Clone();
+            clone._glyphData = (bool[])_glyphData.Clone();
+            clone.TalentCount = -1;
+            return clone;
+        }
+
+        private bool[] _data = new bool[21];
+        public override bool[] Data { get { return _data; } }
+        public DruidTalents() { }
+        public DruidTalents(string talents, int[][] glyphEncodes = null)
+        {
+            LoadString(talents, glyphEncodes);
+        }
+
+        private static string[] specializationNames = new[] {
+			@"Balance",@"Feral",@"Guardian"};
+        public override string[] SpecializationNames
+        {
+            get { return specializationNames; }
+        }
+        #region Druid
+        /// <summary>
+        /// Increases your movement speed by 15%.
+        /// </summary>
+        [TalentData(index: 0, name: "Feline Swiftness", icon: "spell_druid_tirelesspursuit",
+         column: 0, row: 0,
+         description: @"Increases your movement speed by 15%.")]
+        public bool FelineSwiftness { get { return _data[0]; } set { _data[0] = value; } }
+        /// <summary>
+        /// Teleports the Druid up to 20 yards forward, activates Cat Form, and increases movement speed by 50% for 4 sec.
+        /// </summary>
+        [TalentData(index: 1, name: "Displacer Beast", icon: "spell_druid_displacement",
+         column: 1, row: 0,
+         description: @"Teleports the Druid up to 20 yards forward, activates Cat Form, and increases movement speed by 50% for 4 sec.")]
+        public bool DisplacerBeast { get { return _data[1]; } set { _data[1] = value; } }
+        /// <summary>
+        /// Fly to a nearby ally's position.
+        /// </summary>
+        [TalentData(index: 2, name: "Wild Charge", icon: "spell_druid_wildcharge",
+         column: 2, row: 0,
+         description: @"Fly to a nearby ally's position.")]
+        public bool WildCharge { get { return _data[2]; } set { _data[2] = value; } }
+        /// <summary>
+        /// Every 5 sec, heals you for 5% of your maximum health. If you are at full health, the most injured nearby ally will be healed instead.
+        /// </summary>
+        [TalentData(index: 3, name: "Ysera's Gift", icon: "inv_misc_head_dragon_green",
+         column: 0, row: 1,
+         description: @"Every 5 sec, heals you for 5% of your maximum health. If you are at full health, the most injured nearby ally will be healed instead.")]
+        public bool YserasGift { get { return _data[3]; } set { _data[3] = value; } }
+        /// <summary>
+        /// Instantly heals the Druid for 30% of maximum health. Useable in all shapeshift forms.
+        /// </summary>
+        [TalentData(index: 4, name: "Renewal", icon: "spell_nature_natureblessing",
+         column: 1, row: 1,
+         description: @"Instantly heals the Druid for 30% of maximum health. Useable in all shapeshift forms.")]
+        public bool Renewal { get { return _data[4]; } set { _data[4] = value; } }
+        /// <summary>
+        /// Protects a friendly target, causing any damage taken to heal the target for [ 12,349 + 104% of Spell Power ] every 2 sec for 6 sec. Gaining the healing effect consumes the Cenarion Ward. Useable in all shapeshift forms. Lasts 30 sec.
+        /// </summary>
+        [TalentData(index: 5, name: "Cenarion Ward", icon: "ability_druid_naturalperfection",
+         column: 2, row: 1,
+         description: @"Protects a friendly target, causing any damage taken to heal the target for [&nbsp;12,349 + 104% of Spell Power&nbsp;] every 2 sec for 6 sec. Gaining the healing effect consumes the Cenarion Ward. Useable in all shapeshift forms. Lasts 30 sec.")]
+        public bool CenarionWard { get { return _data[5]; } set { _data[5] = value; } }
+        /// <summary>
+        /// Grants an improved version of Faerie Fire that also reduces the target's movement speed by 50% for 15 sec.
+        /// This talent replaces Faerie Fire.
+        /// </summary>
+        [TalentData(index: 6, name: "Faerie Swarm", icon: "spell_druid_swarm",
+         column: 0, row: 2,
+         description: @"Grants an improved version of Faerie Fire that also reduces the target's movement speed by 50% for 15 sec.This talent replaces Faerie Fire.")]
+        public bool FaerieSwarm { get { return _data[6]; } set { _data[6] = value; } }
+        /// <summary>
+        /// Roots your target in place for 20 sec and spreads to additional nearby enemies. Damage caused may interrupt the effect. Useable in all shapeshift forms.
+        /// </summary>
+        [TalentData(index: 7, name: "Mass Entanglement", icon: "spell_druid_massentanglement",
+         column: 1, row: 2,
+         description: @"Roots your target in place for 20 sec and spreads to additional nearby enemies. Damage caused may interrupt the effect. Useable in all shapeshift forms.")]
+        public bool MassEntanglement { get { return _data[7]; } set { _data[7] = value; } }
+        /// <summary>
+        /// Summons a violent Typhoon that strikes targets in front of the caster within 30 yards, knocking them back and dazing them for 6 sec. Useable in all shapeshift forms.
+        /// </summary>
+        [TalentData(index: 8, name: "Typhoon", icon: "ability_druid_typhoon",
+         column: 2, row: 2,
+         description: @"Summons a violent Typhoon that strikes targets in front of the caster within 30 yards, knocking them back and dazing them for 6 sec. Useable in all shapeshift forms.")]
+        public bool Typhoon { get { return _data[8]; } set { _data[8] = value; } }
+        /// <summary>
+        /// Aessina's blessing grants a benefit which varies by your combat specialization.
+        /// BalanceYour Wrath, Starfire, and Starsurge casts have a 8% chance to cause your next Astral Communion to instantly grant 100 Lunar or Solar Power.
+        /// FeralYour finishing moves grant 4 Energy per combo point.
+        /// GuardianMangle (Bear) now generates 30% more Rage and deals 15% more damage.
+        /// RestorationYou gain 100% haste for your next spell when you cast Swiftmend.
+        /// </summary>
+        [TalentData(index: 9, name: "Soul of the Forest", icon: "ability_druid_manatree",
+         column: 0, row: 3,
+         description: @"Aessina's blessing grants a benefit which varies by your combat specialization.BalanceYour Wrath, Starfire, and Starsurge casts have a 8% chance to cause your next Astral Communion to instantly grant 100 Lunar or Solar Power.FeralYour finishing moves grant 4 Energy per combo point.GuardianMangle (Bear) now generates 30% more Rage and deals 15% more damage.RestorationYou gain 100% haste for your next spell when you cast Swiftmend.")]
+        public bool SoulOfTheForest { get { return _data[9]; } set { _data[9] = value; } }
+        /// <summary>
+        /// Grants a superior shapeshifting form appropriate to your specialization for 30 sec. You may freely shapeshift in and out of this form for the duration of Incarnation.
+        /// Balance: Chosen of EluneImproved Moonkin Form that gains 25% increased Arcane and Nature damage while Eclipse is active.
+        /// Feral: King of the JungleImproved Cat Form that allows the use of all abilities which normally require stealth, allows the use of Prowl while in combat, and removes the positional requirement of Ravage.
+        /// Guardian: Son of UrsocImproved Bear Form that reduces the cooldown on melee damage abilities and Growl to 1.
+        /// 5 sec.
+        /// Restoration: Tree of LifeTree of Life Form that increases healing done by 15%, increases armor by 120%, and enhances Lifebloom, Wild Growth, Regrowth, and Entangling Roots spellcasts.
+        /// </summary>
+        [TalentData(index: 10, name: "Incarnation", icon: "spell_druid_incarnation",
+         column: 1, row: 3,
+         description: @"Grants a superior shapeshifting form appropriate to your specialization for 30 sec. You may freely shapeshift in and out of this form for the duration of Incarnation.Balance: Chosen of EluneImproved Moonkin Form that gains 25% increased Arcane and Nature damage while Eclipse is active.Feral: King of the JungleImproved Cat Form that allows the use of all abilities which normally require stealth, allows the use of Prowl while in combat, and removes the positional requirement of Ravage.Guardian: Son of UrsocImproved Bear Form that reduces the cooldown on melee damage abilities and Growl to 1.5 sec.Restoration: Tree of LifeTree of Life Form that increases healing done by 15%, increases armor by 120%, and enhances Lifebloom, Wild Growth, Regrowth, and Entangling Roots spellcasts.")]
+        public bool Incarnation { get { return _data[10]; } set { _data[10] = value; } }
+        /// <summary>
+        /// Summons a Treant to assist in the Druid's current combat role for 15 sec. Useable in all shapeshift forms.
+        /// BalanceCasts Wrath for [ 2,052 + 37.
+        /// 5% of Spell Power ] Nature damage every 2 sec and will cast Entangling Roots. FeralMelees for [ 2 + 10.
+        /// 7% of AP ] Physical damage every 2 sec and will cast Entangling Roots.
+        /// GuardianMelees for [ 1 + 2.
+        /// 1% of AP ] Physical damage every 2 sec and will use Taunt.
+        /// RestorationHeals a nearby injured ally for [ 3,490 + 32.
+        /// 3% of Spell Power ] every 2.
+        /// 5 sec and will use Swiftmend.
+        /// </summary>
+        [TalentData(index: 11, name: "Force of Nature", icon: "ability_druid_forceofnature",
+         column: 2, row: 3,
+         description: @"Summons a Treant to assist in the Druid's current combat role for 15 sec. Useable in all shapeshift forms.BalanceCasts Wrath for [&nbsp;2,052 + 37.5% of Spell Power&nbsp;] Nature damage every 2 sec and will cast Entangling Roots. FeralMelees for [&nbsp;2 + 10.7% of AP&nbsp;] Physical damage every 2 sec and will cast Entangling Roots.GuardianMelees for [&nbsp;1 + 2.1% of AP&nbsp;] Physical damage every 2 sec and will use Taunt.RestorationHeals a nearby injured ally for [&nbsp;3,490 + 32.3% of Spell Power&nbsp;] every 2.5 sec and will use Swiftmend.")]
+        public bool ForceOfNature { get { return _data[11]; } set { _data[11] = value; } }
+        /// <summary>
+        /// Invokes the spirit of Ursol to roar, disorienting all enemies within 10 yards for 3 sec. Any damage caused will remove the effect. Useable in all shapeshift forms.
+        /// </summary>
+        [TalentData(index: 12, name: "Disorienting Roar", icon: "ability_druid_demoralizingroar",
+         column: 0, row: 4,
+         description: @"Invokes the spirit of Ursol to roar, disorienting all enemies within 10 yards for 3 sec. Any damage caused will remove the effect. Useable in all shapeshift forms.")]
+        public bool DisorientingRoar { get { return _data[12]; } set { _data[12] = value; } }
+        /// <summary>
+        /// Conjures a vortex of wind at the destination location that reduces the movement speed of all enemies within 8 yards by 50%.
+        /// The first time an enemy attempts to leave the vortex, winds will pull that enemy back to its center.
+        /// Lasts 10 sec. Useable in all shapeshift forms.
+        /// </summary>
+        [TalentData(index: 13, name: "Ursol's Vortex", icon: "spell_druid_ursolsvortex",
+         column: 1, row: 4,
+         description: @"Conjures a vortex of wind at the destination location that reduces the movement speed of all enemies within 8 yards by 50%.The first time an enemy attempts to leave the vortex, winds will pull that enemy back to its center.Lasts 10 sec. Useable in all shapeshift forms.")]
+        public bool UrsolsVortex { get { return _data[13]; } set { _data[13] = value; } }
+        /// <summary>
+        /// Invokes the spirit of Ursoc to stun the target for 5 sec. Useable in all shapeshift forms.
+        /// </summary>
+        [TalentData(index: 14, name: "Mighty Bash", icon: "ability_druid_bash",
+         column: 2, row: 4,
+         description: @"Invokes the spirit of Ursoc to stun the target for 5 sec. Useable in all shapeshift forms.")]
+        public bool MightyBash { get { return _data[14]; } set { _data[14] = value; } }
+        /// <summary>
+        /// Increases Stamina, Agility, and Intellect by 6% at all times. When activated, increases all healing done and dramatically improves the Druid's ability to perform roles outside of their normal specialization for 45 sec. Grants the following benefits based on current specialization:Non-GuardianWhile in Bear Form, Agility, Expertise, Hit Chance, and armor bonuses increased, Vengeance granted, chance to be hit by melee critical strikes reduced.
+        /// Non-FeralWhile in Cat Form, Agility, Hit Chance, and Expertise increased.
+        /// Non-RestorationMana cost of all healing spells reduced by 100%. Guardian Druids may also cast Rejuvenation while shapeshifted.
+        /// Non-BalanceSpell Damage and Hit Chance increased. Mana cost of all damage spells reduced by 100%.
+        /// </summary>
+        [TalentData(index: 15, name: "Heart of the Wild", icon: "spell_holy_blessingofagility",
+         column: 0, row: 5,
+         description: @"Increases Stamina, Agility, and Intellect by 6% at all times. When activated, increases all healing done and dramatically improves the Druid's ability to perform roles outside of their normal specialization for 45 sec. Grants the following benefits based on current specialization:Non-GuardianWhile in Bear Form, Agility, Expertise, Hit Chance, and armor bonuses increased, Vengeance granted, chance to be hit by melee critical strikes reduced.Non-FeralWhile in Cat Form, Agility, Hit Chance, and Expertise increased.Non-RestorationMana cost of all healing spells reduced by 100%. Guardian Druids may also cast Rejuvenation while shapeshifted.Non-BalanceSpell Damage and Hit Chance increased. Mana cost of all damage spells reduced by 100%.")]
+        public bool HeartOfTheWild { get { return _data[15]; } set { _data[15] = value; } }
+        /// <summary>
+        /// The Emerald Dream grants a benefit which varies by your combat specialization.
+        /// BalanceIncreases healing from Healing Touch by 20% and casting Healing Touch increases the damage bonus of your next Eclipse by 25%.
+        /// FeralIncreases healing from Healing Touch by 20% and casting Healing Touch causes your next two melee abilities to deal 30% additional damage.
+        /// GuardianIncreases healing from Healing Touch by 20%, Critical Strike chance of Mangle (Bear) by 10%, and your Mangle (Bear) critical strikes have a 40% chance to make your next Healing Touch or Rebirth instant, free, and castable in all forms, and benefit from Attack Power instead of Spell Power.
+        /// RestorationIncreases Wrath damage by 20% and your Wrath spell causes a nearby ally to be healed for 100% of the damage done.
+        /// </summary>
+        [TalentData(index: 16, name: "Dream of Cenarius", icon: "ability_druid_dreamstate",
+         column: 1, row: 5,
+         description: @"The Emerald Dream grants a benefit which varies by your combat specialization.BalanceIncreases healing from Healing Touch by 20% and casting Healing Touch increases the damage bonus of your next Eclipse by 25%.FeralIncreases healing from Healing Touch by 20% and casting Healing Touch causes your next two melee abilities to deal 30% additional damage.GuardianIncreases healing from Healing Touch by 20%, Critical Strike chance of Mangle (Bear) by 10%, and your Mangle (Bear) critical strikes have a 40% chance to make your next Healing Touch or Rebirth instant, free, and castable in all forms, and benefit from Attack Power instead of Spell Power.RestorationIncreases Wrath damage by 20% and your Wrath spell causes a nearby ally to be healed for 100% of the damage done.")]
+        public bool DreamOfCenarius { get { return _data[16]; } set { _data[16] = value; } }
+        /// <summary>
+        /// Increases all damage and healing done by 12% for 30 sec. While active, all single-target healing spells also damage a nearby enemy target for 25% of the healing done, and all single-target healing and damage spells and abilities also heal a nearby friendly target for 25% of the amount done.
+        /// </summary>
+        [TalentData(index: 17, name: "Nature's Vigil", icon: "achievement_zone_feralas",
+         column: 2, row: 5,
+         description: @"Increases all damage and healing done by 12% for 30 sec. While active, all single-target healing spells also damage a nearby enemy target for 25% of the healing done, and all single-target healing and damage spells and abilities also heal a nearby friendly target for 25% of the amount done.")]
+        public bool NaturesVigil { get { return _data[17]; } set { _data[17] = value; } }
+        /// <summary>
+        /// 
+        /// Balance
+        /// </summary>
+        [TalentData(index: 18, name: "Touch of Elune", icon: "inv_jewelry_necklace_11",
+         column: 0, row: 6,
+         description: @"
+Balance")]
+        public bool TouchOfElune { get { return _data[18]; } set { _data[18] = value; } }
+        /// <summary>
+        /// 
+        /// </summary>
+        [TalentData(index: 19, name: "Will of Malfurion", icon: "achievement_character_nightelf_male",
+         column: 1, row: 6,
+         description: @"")]
+        public bool WillOfMalfurion { get { return _data[19]; } set { _data[19] = value; } }
+        /// <summary>
+        /// 
+        /// </summary>
+        [TalentData(index: 20, name: "Might of Malorne", icon: "trade_archaeology_antleredcloakclasp",
+         column: 2, row: 6,
+         description: @"")]
+        public bool MightOfMalorne { get { return _data[20]; } set { _data[20] = value; } }
         #endregion
     }
 

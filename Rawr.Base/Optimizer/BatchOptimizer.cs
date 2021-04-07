@@ -795,7 +795,7 @@ namespace Rawr.Optimizer
             }
             else if (calculation.StartsWith("[Talent ", StringComparison.Ordinal))
             {
-                return character.CurrentTalents.Data[int.Parse(calculation.Substring(8).TrimEnd(']'))];
+                return character.CurrentTalents.Data[int.Parse(calculation.Substring(8).TrimEnd(']'))] ? 1 : 0;
             }
             else if (calculation.StartsWith("[Glyph ", StringComparison.Ordinal))
             {

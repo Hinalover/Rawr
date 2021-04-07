@@ -339,7 +339,7 @@ namespace Rawr
                 // we're most likely dealing with non-English data, try to determine by position in tree
                 foreach (SavedVariablesDictionary tree in talent_tree.Values)
                 {
-                    if ((long)tree["Order"] == talent.Tree + 1)
+                    if ((long)tree["Order"] == talent.Column)
                     {
                         string loc = talent.Row + ":" + talent.Column;
                         foreach (object t in tree.Values)
@@ -395,8 +395,8 @@ namespace Rawr
                     {
                         TalentDataAttribute talentData = talentDatas[0];
 
-                        int points = getTalentPointsFromTree(talent_tree, treeNames[talentData.Tree], talentData);
-                        m_character.CurrentTalents.Data[talentData.Index] = points;
+                        //int points = getTalentPointsFromTree(talent_tree, treeNames[talentData.Tree], talentData);
+                        //m_character.CurrentTalents.Data[talentData.Index] = points;
                     }
                 }
             }

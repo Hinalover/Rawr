@@ -114,7 +114,6 @@ namespace Rawr.Mage
         private bool segmentMana;
         private int advancedConstraintsLevel;
         private bool integralMana;
-        private string armor;
         public bool UseIncrementalOptimizations { get; private set; }
         private bool useGlobalOptimizations;
         public bool NeedsDisplayCalculations { get; private set; }
@@ -130,19 +129,11 @@ namespace Rawr.Mage
 
         // initialized in CalculateCycles
 
-        //public float FrBDFFFBIL_KFrB;
-        //public float FrBDFFFBIL_KFFB;
-        //public float FrBDFFFBIL_KFFBS;
-        //public float FrBDFFFBIL_KILS;
-        //public float FrBDFFFBIL_KDFS;
-
         // initialized in Initialize
         public Stats BaseStats { get; set; }
         public List<Buff> ActiveBuffs;
         private List<Buff> autoActivatedBuffs;
         private TargetDebuffStats targetDebuffs;
-        //private bool restrictThreat;
-        private int baseArmorMask;
 
         public bool Mage2T10 { get; set; }
         public bool Mage4T10 { get; set; }
@@ -190,12 +181,9 @@ namespace Rawr.Mage
         private bool evocationAvailable;
         private bool manaPotionAvailable;
         private bool bloodFuryAvailable;
-        private bool mageArmorAvailable;
-        private bool moltenArmorAvailable;
-        private bool frostArmorAvailable;
 
         // initialized in InitializeEffectCooldowns
-        private const int standardEffectCount = 18; // can't just compute from enum, because that counts the combined masks also
+        private const int standardEffectCount = 15; // can't just compute from enum, because that counts the combined masks also
         public List<EffectCooldown> CooldownList { get; set; }
         public Dictionary<int, EffectCooldown> EffectCooldown { get; set; }
         private int[] effectExclusionList;
@@ -354,6 +342,10 @@ namespace Rawr.Mage
 
         public float IncomingDamageDps { get; set; }
         public float IncomingDamageDpsRaw { get; set; }
+
+        public float MasteryRatingMultiplier { get; set; }
+        public float CritRatingMultiplier { get; set; }
+        public float MultistrikeRatingMultiplier { get; set; }
 
         public float Mastery { get; set; }
         public float ManaAdeptBonus { get; set; }
@@ -1202,12 +1194,12 @@ namespace Rawr.Mage
         }
         #endregion
 
-        public Solver(Character character, CalculationOptionsMage calculationOptions, bool segmentCooldowns, bool segmentMana, bool integralMana, int advancedConstraintsLevel, string armor, bool useIncrementalOptimizations, bool useGlobalOptimizations, bool needsDisplayCalculations, bool needsSolutionVariables, bool solveCycles, bool combinatorialSolver, bool simpleStacking)
+        public Solver(Character character, CalculationOptionsMage calculationOptions, bool segmentCooldowns, bool segmentMana, bool integralMana, int advancedConstraintsLevel, bool useIncrementalOptimizations, bool useGlobalOptimizations, bool needsDisplayCalculations, bool needsSolutionVariables, bool solveCycles, bool combinatorialSolver, bool simpleStacking)
         {
-            Construct(character, calculationOptions, segmentCooldowns, segmentMana, integralMana, advancedConstraintsLevel, armor, useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, needsSolutionVariables, solveCycles, combinatorialSolver, simpleStacking);
+            Construct(character, calculationOptions, segmentCooldowns, segmentMana, integralMana, advancedConstraintsLevel, useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, needsSolutionVariables, solveCycles, combinatorialSolver, simpleStacking);
         }
 
-        private void Construct(Character character, CalculationOptionsMage calculationOptions, bool segmentCooldowns, bool segmentMana, bool integralMana, int advancedConstraintsLevel, string armor, bool useIncrementalOptimizations, bool useGlobalOptimizations, bool needsDisplayCalculations, bool needsSolutionVariables, bool solveCycles, bool combinatorialSolver, bool simpleStacking)
+        private void Construct(Character character, CalculationOptionsMage calculationOptions, bool segmentCooldowns, bool segmentMana, bool integralMana, int advancedConstraintsLevel, bool useIncrementalOptimizations, bool useGlobalOptimizations, bool needsDisplayCalculations, bool needsSolutionVariables, bool solveCycles, bool combinatorialSolver, bool simpleStacking)
         {
             this.Character = character;
             this.MageTalents = character.MageTalents;
@@ -1216,7 +1208,6 @@ namespace Rawr.Mage
             this.segmentMana = segmentMana;
             this.advancedConstraintsLevel = advancedConstraintsLevel;
             this.integralMana = integralMana;
-            this.armor = armor;
             this.UseIncrementalOptimizations = useIncrementalOptimizations;
             this.useGlobalOptimizations = useGlobalOptimizations;
             this.NeedsDisplayCalculations = needsDisplayCalculations;
@@ -1240,22 +1231,22 @@ namespace Rawr.Mage
         [ThreadStatic]
         private static Solver threadSolver;
 
-        public static CharacterCalculationsMage GetCharacterCalculations(Character character, Item additionalItem, CalculationOptionsMage calculationOptions, CalculationsMage calculations, string armor, bool segmentCooldowns, bool segmentMana, bool integralMana, int advancedConstraintsLevel, bool useIncrementalOptimizations, bool useGlobalOptimizations, bool needsDisplayCalculations, bool needsSolutionVariables, bool solveCycles, bool combinatorialSolver, bool simpleStacking)
+        public static CharacterCalculationsMage GetCharacterCalculations(Character character, Item additionalItem, CalculationOptionsMage calculationOptions, CalculationsMage calculations, bool segmentCooldowns, bool segmentMana, bool integralMana, int advancedConstraintsLevel, bool useIncrementalOptimizations, bool useGlobalOptimizations, bool needsDisplayCalculations, bool needsSolutionVariables, bool solveCycles, bool combinatorialSolver, bool simpleStacking)
         {
             if (needsDisplayCalculations)
             {
                 // if we need display calculations then solver data has to remain clean because calls from display calculations
                 // that generate spell/cycle tooltips use that data (for example otherwise mage armor solver gets overwritten with molten armor solver data and we get bad data)
-                var displaySolver = new Solver(character, calculationOptions, segmentCooldowns, segmentMana, integralMana, advancedConstraintsLevel, armor, useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, needsSolutionVariables, solveCycles, combinatorialSolver, simpleStacking);
+                var displaySolver = new Solver(character, calculationOptions, segmentCooldowns, segmentMana, integralMana, advancedConstraintsLevel, useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, needsSolutionVariables, solveCycles, combinatorialSolver, simpleStacking);
                 return displaySolver.GetCharacterCalculations(additionalItem);
             }
             if (threadSolver == null)
             {
-                threadSolver = new Solver(character, calculationOptions, segmentCooldowns, segmentMana, integralMana, advancedConstraintsLevel, armor, useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, needsSolutionVariables, solveCycles, combinatorialSolver, simpleStacking);
+                threadSolver = new Solver(character, calculationOptions, segmentCooldowns, segmentMana, integralMana, advancedConstraintsLevel, useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, needsSolutionVariables, solveCycles, combinatorialSolver, simpleStacking);
             }
             else
             {
-                threadSolver.Construct(character, calculationOptions, segmentCooldowns, segmentMana, integralMana, advancedConstraintsLevel, armor, useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, needsSolutionVariables, solveCycles, combinatorialSolver, simpleStacking);
+                threadSolver.Construct(character, calculationOptions, segmentCooldowns, segmentMana, integralMana, advancedConstraintsLevel, useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, needsSolutionVariables, solveCycles, combinatorialSolver, simpleStacking);
             }
             return threadSolver.GetCharacterCalculations(additionalItem);
         }
@@ -1582,7 +1573,7 @@ namespace Rawr.Mage
                 {
                     UpdateCastingState(list);
                     Duration = 6.0 / CastingState.CastingSpeed;
-                    if (CastingState.MageTalents.Invocation > 0)
+                    if (CastingState.MageTalents.Invocation)
                     {
                         Duration /= 2;
                     }
@@ -2196,7 +2187,7 @@ namespace Rawr.Mage
                 // create a basic stacking sequence based on current item based order
                 combList = new CombList(CooldownList, stateList, this);
 
-                if (MageTalents.Invocation > 0 && evo >= 0)
+                if (MageTalents.Invocation && evo >= 0)
                 {
                     // one time cooldowns on last burn
                     // others on burn unless you can fit multiple inside a 2 min period
@@ -2295,7 +2286,7 @@ namespace Rawr.Mage
                         t += ((Specialization == Specialization.Arcane) ? 25 : 70);
                     }
                 }
-                else if (MageTalents.RuneOfPower > 0 || evo == -1)
+                else if (MageTalents.RuneOfPower || evo == -1)
                 {
                     // no evocation so just place everything as it comes
                     double t = 0;
@@ -2365,7 +2356,7 @@ namespace Rawr.Mage
                         }
                     }
                 }
-                else if (MageTalents.IncantersWard > 0 && evo >= 0)
+                else if (MageTalents.IncantersWard && evo >= 0)
                 {
                     // one time cooldowns on last burn
                     // others on burn unless you can fit multiple inside a 2 min period
@@ -3313,16 +3304,9 @@ namespace Rawr.Mage
                 }
             }
 
-            if (armor == null)
-            {
-                if (Character.ActiveBuffs.Contains(CalculationsMage.MoltenArmorBuff)) armor = "Molten Armor";
-                else if (Character.ActiveBuffs.Contains(CalculationsMage.MageArmorBuff)) armor = "Mage Armor";
-                else if (Character.ActiveBuffs.Contains(CalculationsMage.FrostArmorBuff)) armor = "Frost Armor";
-            }
-
             CalculationsMage calculations = CalculationsMage.Instance;
             targetDebuffs = null;
-            calculations.AccumulateRawStats(rawStats, Character, additionalItem, CalculationOptions, out autoActivatedBuffs, armor, out ActiveBuffs);
+            calculations.AccumulateRawStats(rawStats, Character, additionalItem, CalculationOptions, out autoActivatedBuffs, out ActiveBuffs);
 
             // apply set bonuses
             int setCount;
@@ -3364,27 +3348,27 @@ namespace Rawr.Mage
                 rawStats.AddSpecialEffect(SpecialEffect2T12);
             }
 
-            // armor            
-            if (CalculationOptions.ArmorSwapping)
-            {
-                baseArmorMask = (int)StandardEffect.MoltenArmor;
-                moltenArmorAvailable = true;
-                mageArmorAvailable = true;
-                frostArmorAvailable = false;
-            }
-            else
-            {
-                baseArmorMask = 0;
-                mageArmorAvailable = false;
-                moltenArmorAvailable = false;
-                frostArmorAvailable = false;
-            }
-
-            BaseStats = calculations.GetCharacterStats(Character, additionalItem, rawStats, CalculationOptions, !CalculationOptions.ArmorSwapping);
+            BaseStats = calculations.GetCharacterStats(Character, additionalItem, rawStats, CalculationOptions);
 
             Specialization = (Specialization)(MageTalents.Specialization + 1);
 
-            evocationAvailable = CalculationOptions.EvocationEnabled && !CalculationOptions.EffectDisableManaSources && MageTalents.RuneOfPower == 0;
+            if (Specialization == Specialization.Arcane && CalculationOptions.PlayerLevel >= 80)
+            {
+                // Mage Armor
+                BaseStats.MasteryRating += (float)Math.Round(BaseCombatRating.ConstantSpellScaling(CalculationOptions.PlayerLevel) * 2.1070001125f);
+            }
+            if (Specialization == Specialization.Fire && CalculationOptions.PlayerLevel >= 34)
+            {
+                // Molten Armor
+                BaseStats.SpellCrit += 0.05f;
+            }
+            if (Specialization == Specialization.Frost && CalculationOptions.PlayerLevel >= 54)
+            {
+                // Frost Armor
+                BaseStats.MultistrikeProc += 0.08f;
+            }
+
+            evocationAvailable = CalculationOptions.EvocationEnabled && !CalculationOptions.EffectDisableManaSources && !MageTalents.RuneOfPower;
             manaPotionAvailable = CalculationOptions.ManaPotionEnabled && !CalculationOptions.EffectDisableManaSources;
             //restrictThreat = segmentCooldowns && CalculationOptions.TpsLimit > 0f;
             powerInfusionAvailable = !CalculationOptions.DisableCooldowns && CalculationOptions.PowerInfusionAvailable;
@@ -3735,27 +3719,6 @@ namespace Rawr.Mage
             StandardEffect = StandardEffect.BloodFury,
             Color = Color.FromArgb(0xFF, 0xA5, 0x2A, 0x2A) //Brown
         };
-        EffectCooldown cachedEffectMageArmor = new EffectCooldown()
-        {
-            Mask = (int)StandardEffect.MageArmor,
-            Name = "Mage Armor",
-            StandardEffect = StandardEffect.MageArmor,
-            Color = Color.FromArgb(0xFF, 0x0, 0xFF, 0xFF)
-        };
-        EffectCooldown cachedEffectMoltenArmor = new EffectCooldown()
-        {
-            Mask = (int)StandardEffect.MoltenArmor,
-            Name = "Molten Armor",
-            StandardEffect = StandardEffect.MoltenArmor,
-            Color = Color.FromArgb(0xFF, 0x80, 0x0, 0x0)
-        };
-        EffectCooldown cachedEffectFrostArmor = new EffectCooldown()
-        {
-            Mask = (int)StandardEffect.FrostArmor,
-            Name = "Frost Armor",
-            StandardEffect = StandardEffect.FrostArmor,
-            Color = Color.FromArgb(0xFF, 0x0, 0x0, 0xFF)
-        };
         EffectCooldown cachedEffectInvocation = new EffectCooldown()
         {
             Cooldown = 0.0f,
@@ -3802,7 +3765,7 @@ namespace Rawr.Mage
                 CooldownList.Clear();
             }
 
-            EvocationCooldown = (MageTalents.Invocation > 0) ? 0.0f : 120.0f;
+            EvocationCooldown = CalculationOptions.ImprovedEvocation ? 90.0f : 120.0f;
             ColdsnapCooldown = (8 * 60);
             ArcanePowerCooldown = 90.0f;
             if (Mage4T13)
@@ -3881,7 +3844,7 @@ namespace Rawr.Mage
             {
                 EffectCooldown cooldown = NewStandardEffectCooldown(cachedEffectIcyVeins);
                 cooldown.Cooldown = IcyVeinsCooldown;
-                cooldown.AutomaticStackingConstraints = cooldown.AutomaticConstraints = (MageTalents.ColdSnap == 0);
+                cooldown.AutomaticStackingConstraints = cooldown.AutomaticConstraints = (!MageTalents.ColdSnap);
                 CooldownList.Add(cooldown);
             }
             if (mirrorImageAvailable)
@@ -3894,27 +3857,12 @@ namespace Rawr.Mage
                 EffectCooldown cooldown = NewStandardEffectCooldown(cachedEffectBloodFury);
                 CooldownList.Add(cooldown);
             }
-            if (mageArmorAvailable)
-            {
-                EffectCooldown cooldown = NewStandardEffectCooldown(cachedEffectMageArmor);
-                CooldownList.Add(cooldown);
-            }
-            if (moltenArmorAvailable)
-            {
-                EffectCooldown cooldown = NewStandardEffectCooldown(cachedEffectMoltenArmor);
-                CooldownList.Add(cooldown);
-            }
-            if (frostArmorAvailable)
-            {
-                EffectCooldown cooldown = NewStandardEffectCooldown(cachedEffectFrostArmor);
-                CooldownList.Add(cooldown);
-            }
-            if (MageTalents.Invocation > 0)
+            if (MageTalents.Invocation)
             {
                 EffectCooldown cooldown = NewStandardEffectCooldown(cachedEffectInvocation);
                 CooldownList.Add(cooldown);
             }
-            if (MageTalents.IncantersWard > 0 && IncomingDamageDpsRaw > 0)
+            if (MageTalents.IncantersWard && IncomingDamageDpsRaw > 0)
             {
                 EffectCooldown cooldown = NewStandardEffectCooldown(cachedEffectIncantersWard);
                 CooldownList.Add(cooldown);
@@ -4153,10 +4101,26 @@ namespace Rawr.Mage
         private void CalculateBaseStateStats()
         {
             Stats baseStats = BaseStats;            
-            BaseSpellHit = (baseStats.HitRating + baseStats.ExpertiseRating) * 0.01f / CalculationOptions.HitRatingMultiplier + baseStats.SpellHit + baseStats.Expertise;
+            BaseSpellHit = 0;
 
             int targetLevel = CalculationOptions.TargetLevel;
             int playerLevel = CalculationOptions.PlayerLevel;
+
+            MasteryRatingMultiplier = 1;
+            CritRatingMultiplier = 1;
+            MultistrikeRatingMultiplier = 1;
+            if (Specialization == Specialization.Arcane && playerLevel >= 90)
+            {
+                MasteryRatingMultiplier = 1.05f;
+            }
+            else if (Specialization == Specialization.Fire && playerLevel >= 90)
+            {
+                CritRatingMultiplier = 1.05f;
+            }
+            else if (Specialization == Specialization.Frost && playerLevel >= 90)
+            {
+                MultistrikeRatingMultiplier = 1.05f;
+            }
 
             float hitRate = ((targetLevel >= playerLevel - 2) ? (0.94f - (targetLevel - playerLevel) * 0.03f) : 1.0f) + BaseSpellHit;
             RawArcaneHitRate = hitRate;
@@ -4187,7 +4151,7 @@ namespace Rawr.Mage
             {
                 baseSpellModifier *= (1 + baseStats.PvPPower * 0.01f / CalculationOptions.PvPPowerMultiplier);
             }
-            if (MageTalents.RuneOfPower > 0)
+            if (MageTalents.RuneOfPower)
             {
                 baseSpellModifier *= 1.15f;
             }
@@ -4209,7 +4173,7 @@ namespace Rawr.Mage
             BaseFrostFireSpellModifier = baseSpellModifier * Math.Max(1 + baseStats.BonusFireDamageMultiplier, 1 + baseStats.BonusFrostDamageMultiplier);
             BaseFrostFireAdditiveSpellModifier = baseAdditiveSpellModifier;
 
-            float spellCritBase = 0.9100000374019f;
+            float spellCritBase = 5.0000000745058f;
             SpellCritPerInt = 1 / BaseCombatRating.MageChanceToSpellCrit(playerLevel);
 
             float spellCrit = 0.01f * (baseStats.Intellect * SpellCritPerInt + spellCritBase) + baseStats.CritRating * 0.01f / CalculationOptions.CritRatingMultiplier + baseStats.SpellCrit + baseStats.SpellCritOnTarget;
@@ -4227,7 +4191,7 @@ namespace Rawr.Mage
             BaseShadowCritRate = spellCrit;
             BaseHolyCritRate = spellCrit;
 
-            Mastery = 8 + baseStats.Mastery + baseStats.MasteryRating / CalculationOptions.MasteryRatingMultiplier;
+            Mastery = 8 + baseStats.Mastery + (float)Math.Round(baseStats.MasteryRating * MasteryRatingMultiplier) / CalculationOptions.MasteryRatingMultiplier;
             ManaAdeptBonus = 0.0f;
             IgniteBonus = 0.0f;
             FrostburnBonus = 0.0f;
@@ -4263,29 +4227,10 @@ namespace Rawr.Mage
             BaseCastingSpeed = (1 + baseStats.HasteRating * 0.01f / CalculationOptions.HasteRatingMultiplier) * CastingSpeedMultiplier;
             BaseGlobalCooldown = Math.Max(Spell.GlobalCooldownLimit, 1.5f / BaseCastingSpeed);
 
-            float baseRegen = 0f;
-            float regenMultiplier = 0.01f;
-            if (playerLevel < 90)
-            {
-                regenMultiplier = Math.Min(0.02f, 0.01f + (90 - playerLevel) * 0.02f);
-            }
-            float baseCombatRegen = CalculationOptions.BaseMana * regenMultiplier;
-            baseRegen = BaseCombatRating.MageManaPerSpirit(playerLevel);
-
             if (!CalculationOptions.EffectDisableManaSources)
             {
-                SpiritRegen = (0.001f + 5 * baseStats.Spirit * BaseCombatRating.MageManaPerSpirit(playerLevel)) * CalculationOptions.EffectRegenMultiplier;
-                BaseManaRegen = baseCombatRegen;
-                if (MageTalents.Invocation > 0)
-                {
-                    //SpiritRegen *= 0.5f;
-                    //BaseManaRegen *= 0.5f;
-                }
-                else if (MageTalents.RuneOfPower > 0)
-                {
-                    SpiritRegen *= 1.75f;
-                    BaseManaRegen *= 1.75f;
-                }
+                SpiritRegen = 4.5f / 5.0f * (0.001f + 5 * baseStats.Spirit * BaseCombatRating.MageManaPerSpirit(playerLevel)) * CalculationOptions.EffectRegenMultiplier;
+                BaseManaRegen = CalculationOptions.BaseMana * 0.018f;
                 FlatManaRegen = baseStats.Mp5 / 5f + 15732 * CalculationOptions.Innervate / CalculationOptions.FightDuration + baseStats.ManaRestoreFromMaxManaPerSecond * baseStats.Mana;
             }
             else
@@ -4329,8 +4274,7 @@ namespace Rawr.Mage
             //MeleeMitigation = (1 - 1 / (1 + 0.1f * baseStats.Armor / (8.5f * (targetLevel + 4.5f * (targetLevel - 59)) + 40)));
             MeleeMitigation = baseStats.Armor / (baseStats.Armor + 2167.5f * targetLevel - 158167.5f);
             //Defense = 5 * playerLevel + baseStats.DefenseRating / 4.918498039f; // this is for level 80 only
-            int molten = (armor == "Molten Armor") ? 1 : 0;
-            PhysicalCritReduction = (/*0.04f * (Defense - 5 * CalculationOptions.PlayerLevel) / 100 +*/ /*baseStats.Resilience / resilienceFactor * levelScalingFactor + */molten * 0.06f);
+            PhysicalCritReduction = ((Specialization == Specialization.Fire) ? 0.06f : 0.0f);
             //SpellCritReduction = (baseStats.Resilience / resilienceFactor * levelScalingFactor + molten * 0.05f);
             //CritDamageReduction = (baseStats.Resilience / resilienceFactor * 2.2f * levelScalingFactor);
             SpellCritReduction = 0;
@@ -4915,7 +4859,7 @@ namespace Rawr.Mage
                             }
                         }
                     }
-                    else if (CombinatorialSolver && (MageTalents.Invocation > 0))
+                    else if (CombinatorialSolver && (MageTalents.Invocation))
                     {
                         // need to handle evocation overflowing since we're forcing it to max duration
                         for (int i = 0; i < combList.Count; i++)
@@ -5406,7 +5350,7 @@ namespace Rawr.Mage
                 CastingState evoBaseState = BaseState;
                 int evocationSegments = (restrictManaUse) ? SegmentList.Count : 1;
                 float evocationDuration = 6f / evoBaseState.CastingSpeed;
-                if (MageTalents.Invocation > 0)
+                if (MageTalents.Invocation)
                 {
                     evocationDuration /= 2;
                 }
@@ -5755,7 +5699,7 @@ namespace Rawr.Mage
             double evoFactor;
 
             var duration = 6f / evoState.CastingSpeed;
-            if (MageTalents.Invocation > 0)
+            if (MageTalents.Invocation)
             {
                 duration /= 2;
             }
@@ -6599,12 +6543,12 @@ namespace Rawr.Mage
                         {
                             if (ccRow == ccCount)
                             {
-                                if (!(CooldownList[combList[i].Cooldown].StandardEffect == StandardEffect.Evocation && minSeg == maxSeg && MageTalents.Invocation == 0))
+                                if (!(CooldownList[combList[i].Cooldown].StandardEffect == StandardEffect.Evocation && minSeg == maxSeg && !MageTalents.Invocation))
                                 {
                                     arr[ccCount].Row = rowCount++;
                                     arr[ccCount].MinSegment = minSeg;
                                     arr[ccCount].MaxSegment = maxSeg;
-                                    if (MageTalents.Invocation > 0 && CooldownList[combList[i].Cooldown].StandardEffect == StandardEffect.Evocation)
+                                    if (MageTalents.Invocation && CooldownList[combList[i].Cooldown].StandardEffect == StandardEffect.Evocation)
                                     {
                                         if (maxj >= 0 && maxj + 1 < combList.Count && combList[maxj + 1].Activation && CooldownList[combList[maxj + 1].Cooldown].StandardEffect == StandardEffect.Invocation)
                                         {
@@ -6629,7 +6573,7 @@ namespace Rawr.Mage
                             }
                             else
                             {
-                                if (MageTalents.Invocation > 0 && CooldownList[combList[i].Cooldown].StandardEffect == StandardEffect.Evocation)
+                                if (MageTalents.Invocation && CooldownList[combList[i].Cooldown].StandardEffect == StandardEffect.Evocation)
                                 {
                                     if (maxj >= 0 && maxj + 1 < combList.Count && combList[maxj + 1].Activation && CooldownList[combList[maxj + 1].Cooldown].StandardEffect == StandardEffect.Invocation)
                                     {
@@ -7377,7 +7321,7 @@ namespace Rawr.Mage
 
         private void GenerateStateList()
         {
-            BaseState = CastingState.New(this, baseArmorMask, false, 0);
+            BaseState = CastingState.New(this, 0, false, 0);
 
             if (stateList == null)
             {
@@ -7442,19 +7386,6 @@ namespace Rawr.Mage
                                 valid = false;
                                 break;
                             }
-                        }
-                        // make sure only one armor is active, but at least one if one is available
-                        int armorCountActive = 0;
-                        if ((incrementalSetIndex & (int)StandardEffect.MageArmor) != 0) armorCountActive++;
-                        if ((incrementalSetIndex & (int)StandardEffect.MoltenArmor) != 0) armorCountActive++;
-                        if ((incrementalSetIndex & (int)StandardEffect.FrostArmor) != 0) armorCountActive++;
-                        if (armorCountActive > 1)
-                        {
-                            valid = false;
-                        }
-                        else if (armorCountActive == 0 && (mageArmorAvailable || moltenArmorAvailable || frostArmorAvailable))
-                        {
-                            valid = false;
                         }
                         if (valid)
                         {
@@ -7594,8 +7525,6 @@ namespace Rawr.Mage
             displayCalculations.ColdsnapCooldown = ColdsnapCooldown;
             displayCalculations.ArcanePowerCooldown = ArcanePowerCooldown;
             displayCalculations.ArcanePowerDuration = ArcanePowerDuration;
-            //displayCalculations.WaterElementalCooldown = WaterElementalCooldown;
-            //displayCalculations.WaterElementalDuration = WaterElementalDuration;
             displayCalculations.EvocationCooldown = EvocationCooldown;
             displayCalculations.ManaGemEffectDuration = ManaGemEffectDuration;
 
@@ -7605,14 +7534,11 @@ namespace Rawr.Mage
             displayCalculations.ManaGemEffect = manaGemEffectAvailable;
             displayCalculations.ChanceToDie = ChanceToDie;
             displayCalculations.MeanIncomingDps = MeanIncomingDps;
-            displayCalculations.MageArmor = armor;
             displayCalculations.DamageTakenReduction = DamageTakenReduction;
 
-            //displayCalculations.FrBDFFFBIL_KDFS = FrBDFFFBIL_KDFS;
-            //displayCalculations.FrBDFFFBIL_KFFB = FrBDFFFBIL_KFFB;
-            //displayCalculations.FrBDFFFBIL_KFFBS = FrBDFFFBIL_KFFBS;
-            //displayCalculations.FrBDFFFBIL_KFrB = FrBDFFFBIL_KFrB;
-            //displayCalculations.FrBDFFFBIL_KILS = FrBDFFFBIL_KILS;
+            displayCalculations.MasteryRatingMultiplier = MasteryRatingMultiplier;
+            displayCalculations.CritRatingMultiplier = CritRatingMultiplier;
+            displayCalculations.MultistrikeRatingMultiplier = MultistrikeRatingMultiplier;
 
             if (!requiresMIP)
             {
@@ -7624,13 +7550,6 @@ namespace Rawr.Mage
                 displayCalculations.UpperBound = upperBound;
                 if (integralMana && segmentCooldowns && advancedConstraintsLevel >= 5) displayCalculations.LowerBound = lowerBound;
             }
-
-            /*float threat = 0;
-            for (int i = 0; i < SolutionVariable.Count; i++)
-            {
-                threat += (float)(SolutionVariable[i].Tps * solution[i]);
-            }
-            displayCalculations.Tps = threat / CalculationOptions.FightDuration;*/
 
             return displayCalculations;
         }
@@ -7646,7 +7565,6 @@ namespace Rawr.Mage
             optimizableCalculations.HasteRating = BaseStats.HasteRating;
             optimizableCalculations.CritRating = BaseStats.CritRating;
             optimizableCalculations.Health = BaseStats.Health;
-            optimizableCalculations.HitRating = BaseStats.HitRating;
             optimizableCalculations.MovementSpeed = BaseStats.MovementSpeed;
             optimizableCalculations.NatureResistance = BaseStats.NatureResistance;
             optimizableCalculations.PVPTrinket = BaseStats.PVPTrinket;

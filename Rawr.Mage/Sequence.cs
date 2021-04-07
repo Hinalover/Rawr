@@ -1074,7 +1074,7 @@ namespace Rawr.Mage.SequenceReconstruction
             {
                 if (item.CastingState.IcyVeins) list.Add(item);
             }
-            if (list.Count > 0) GroupCooldown(list, 20.0, SequenceItem.Calculations.IcyVeinsCooldown, SequenceItem.Calculations.Character.MageTalents.ColdSnap == 1, Calculations.EffectCooldown[(int)StandardEffect.IcyVeins], VariableType.None, 0.0);
+            if (list.Count > 0) GroupCooldown(list, 20.0, SequenceItem.Calculations.IcyVeinsCooldown, SequenceItem.Calculations.Character.MageTalents.ColdSnap, Calculations.EffectCooldown[(int)StandardEffect.IcyVeins], VariableType.None, 0.0);
         }
 
         /*public void GroupWaterElemental()
@@ -2149,7 +2149,7 @@ namespace Rawr.Mage.SequenceReconstruction
             int i = 0;
             index[0] = 0;
             constructionTimeHistory[0] = constructionTime;
-            int maxColdsnap = Calculations.MageTalents.ColdSnap + 1;
+            int maxColdsnap = Calculations.MageTalents.ColdSnap ? 2 : 1;
             coldsnap[0] = maxColdsnap;
             do
             {
@@ -3347,7 +3347,7 @@ namespace Rawr.Mage.SequenceReconstruction
 
             ReportMode reportMode = ReportMode.Compact;
 
-            bool coldsnap = SequenceItem.Calculations.Character.MageTalents.ColdSnap == 1;
+            bool coldsnap = SequenceItem.Calculations.Character.MageTalents.ColdSnap;
             double coldsnapCooldownDuration = SequenceItem.Calculations.ColdsnapCooldown;
             bool gemActivated = SequenceItem.Calculations.ManaGemEffect;
 

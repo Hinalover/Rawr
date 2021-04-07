@@ -289,8 +289,8 @@ namespace Rawr.Mage
             Spell AB4 = castingState.GetSpell(SpellId.ArcaneBlast4);
             Spell AM4 = castingState.GetSpell(SpellId.ArcaneMissiles4);
 
-            cycle.AddSpell(needsDisplayCalculations, AB4, 0.714285743392939);
-            cycle.AddSpell(needsDisplayCalculations, AM4, 0.285714277894434);
+			cycle.AddSpell(needsDisplayCalculations, AB4, 0.714285932538934);
+			cycle.AddSpell(needsDisplayCalculations, AM4, 0.285714373308031);
             cycle.Calculate();
 
             cycle.AreaEffect = false;
@@ -315,14 +315,14 @@ namespace Rawr.Mage
             Spell AM2 = castingState.GetSpell(SpellId.ArcaneMissiles2);
             Spell ABar4 = castingState.GetSpell(SpellId.ArcaneBarrage4);
 
-            cycle.AddSpell(needsDisplayCalculations, AB3, 0.129601004696835);
-            cycle.AddSpell(needsDisplayCalculations, AB2, 0.130556974963356);
-            cycle.AddSpell(needsDisplayCalculations, AB1, 0.159929029486659);
-            cycle.AddSpell(needsDisplayCalculations, AB0, 0.159929024720403);
-            cycle.AddSpell(needsDisplayCalculations, AM4, 0.200354877273342);
-            cycle.AddSpell(needsDisplayCalculations, AM3, 0.0303280325431359);
-            cycle.AddSpell(needsDisplayCalculations, AM2, 0.0293720584142035);
-            cycle.AddSpell(needsDisplayCalculations, ABar4, 0.159929042006227);
+			cycle.AddSpell(needsDisplayCalculations, AB3, 0.136477806159648);
+			cycle.AddSpell(needsDisplayCalculations, AB2, 0.145641419423834);
+			cycle.AddSpell(needsDisplayCalculations, AB1, 0.146799011716437);
+			cycle.AddSpell(needsDisplayCalculations, AB0, 0.146799007341485);
+			cycle.AddSpell(needsDisplayCalculations, AM4, 0.266004963327073);
+			cycle.AddSpell(needsDisplayCalculations, AM3, 0.010321213964596);
+			cycle.AddSpell(needsDisplayCalculations, AM2, 0.00115759663305476);
+			cycle.AddSpell(needsDisplayCalculations, ABar4, 0.146799002966534);
             cycle.Calculate();
 
             cycle.AreaEffect = false;
@@ -660,14 +660,14 @@ namespace Rawr.Mage
         }
     }
 
-    public class ArcaneCycleGeneratorMOP : CycleGenerator
+    public class ArcaneCycleGeneratorWOD : CycleGenerator
     {
         private class State : CycleState
         {
             public int ArcaneMissilesRegistered { get; set; }
             public int ArcaneMissilesProcced { get; set; }
             public float ArcaneBarrageCooldown { get; set; }
-            public int ArcaneBlastStack { get; set; }
+            public int ArcaneChargeStack { get; set; }
         }
 
         public Spell[] AB;
@@ -676,6 +676,7 @@ namespace Rawr.Mage
 
         private float AMProc;
         private int maxStack;
+		private int maxAMStack;
         private float channelLatency;
 
         private bool ABarOnCooldownOnly;
@@ -683,16 +684,18 @@ namespace Rawr.Mage
 
         public override Cycle WrapCycle(Cycle baseCycle, CastingState castingState)
         {
-            return NetherTempestCycle.GetCycle(true, castingState, baseCycle);
+            //return NetherTempestCycle.GetCycle(true, castingState, baseCycle);
+			return baseCycle;
         }
 
-        public ArcaneCycleGeneratorMOP(CastingState castingState, bool ABarOnCooldownOnly, bool ABarCooldownCollapsed, bool aoe)
+        public ArcaneCycleGeneratorWOD(CastingState castingState, bool ABarOnCooldownOnly, bool ABarCooldownCollapsed, bool aoe)
         {
             this.ABarOnCooldownOnly = ABarOnCooldownOnly;
             this.ABarCooldownCollapsed = ABarCooldownCollapsed;
 
             var calc = castingState.Solver;
             maxStack = 4;
+			maxAMStack = 3;
 
             AB = new Spell[maxStack + 1];
             ABar = new Spell[maxStack + 1];
@@ -726,11 +729,11 @@ namespace Rawr.Mage
             Spell AB = null;
             Spell AM = null;
             Spell ABar = null;
-            AB = this.AB[s.ArcaneBlastStack];
-            ABar = this.ABar[s.ArcaneBlastStack];
+            AB = this.AB[s.ArcaneChargeStack];
+            ABar = this.ABar[s.ArcaneChargeStack];
             if (s.ArcaneMissilesRegistered > 0)
             {
-                AM = this.AM[s.ArcaneBlastStack];
+                AM = this.AM[s.ArcaneChargeStack];
             }
             if (AMProc > 0)
             {
@@ -739,9 +742,9 @@ namespace Rawr.Mage
                     Spell = AB,
                     TargetState = GetState(
                         Math.Max(0.0f, s.ArcaneBarrageCooldown - AB.CastTime),
-                        Math.Min(maxStack, s.ArcaneBlastStack + 1),
+                        Math.Min(maxStack, s.ArcaneChargeStack + 1),
                         s.ArcaneMissilesProcced,
-                        Math.Min(2, s.ArcaneMissilesProcced + 1)),
+                        Math.Min(maxAMStack, s.ArcaneMissilesProcced + 1)),
                     TransitionProbability = AMProc
                 });
             }
@@ -750,7 +753,7 @@ namespace Rawr.Mage
                 Spell = AB,
                 TargetState = GetState(
                     Math.Max(0.0f, s.ArcaneBarrageCooldown - AB.CastTime),
-                    Math.Min(maxStack, s.ArcaneBlastStack + 1),
+                    Math.Min(maxStack, s.ArcaneChargeStack + 1),
                     s.ArcaneMissilesProcced,
                     s.ArcaneMissilesProcced),
                 TransitionProbability = (1 - AMProc)
@@ -762,13 +765,13 @@ namespace Rawr.Mage
                     Spell = AM,
                     TargetState = GetState(
                         Math.Max(0.0f, s.ArcaneBarrageCooldown - AM.CastTime),
-                        Math.Min(maxStack, s.ArcaneBlastStack + 1),
+                        Math.Min(maxStack, s.ArcaneChargeStack + 1),
                         s.ArcaneMissilesProcced - 1,
                         s.ArcaneMissilesProcced - 1),
                     TransitionProbability = 1.0f
                 });
             }
-            if (!ABarOnCooldownOnly || s.ArcaneBarrageCooldown == 0.0)
+            if ((!ABarOnCooldownOnly || s.ArcaneBarrageCooldown == 0.0) && s.ArcaneChargeStack == maxStack)
             {
                 if (AMProc > 0)
                 {
@@ -779,8 +782,8 @@ namespace Rawr.Mage
                         TargetState = GetState(
                             ABar.Cooldown - ABar.CastTime,
                             0,
-                            Math.Min(2, s.ArcaneMissilesProcced + 1),
-                            Math.Min(2, s.ArcaneMissilesProcced + 1)),
+                            Math.Min(maxAMStack, s.ArcaneMissilesProcced + 1),
+                            Math.Min(maxAMStack, s.ArcaneMissilesProcced + 1)),
                         TransitionProbability = AMProc
                     });
                 }
@@ -809,7 +812,7 @@ namespace Rawr.Mage
             State state;
             if (!stateDictionary.TryGetValue(name, out state))
             {
-                state = new State() { Name = name, ArcaneBarrageCooldown = arcaneBarrageCooldown, ArcaneBlastStack = arcaneBlastStack, ArcaneMissilesProcced = arcaneMissilesProcced, ArcaneMissilesRegistered = arcaneMissilesRegistered };
+                state = new State() { Name = name, ArcaneBarrageCooldown = arcaneBarrageCooldown, ArcaneChargeStack = arcaneBlastStack, ArcaneMissilesProcced = arcaneMissilesProcced, ArcaneMissilesRegistered = arcaneMissilesRegistered };
                 stateDictionary[name] = state;
             }
             return state;
@@ -819,7 +822,7 @@ namespace Rawr.Mage
         {
             State a = (State)state1;
             State b = (State)state2;
-            return (a.ArcaneBlastStack != b.ArcaneBlastStack ||
+            return (a.ArcaneChargeStack != b.ArcaneChargeStack ||
                 (!ABarCooldownCollapsed && a.ArcaneBarrageCooldown != b.ArcaneBarrageCooldown) ||
                 ((a.ArcaneBarrageCooldown > 0) != (b.ArcaneBarrageCooldown > 0)) ||
                 a.ArcaneMissilesRegistered != b.ArcaneMissilesRegistered);

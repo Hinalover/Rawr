@@ -29,7 +29,7 @@ namespace Rawr.Hunter.Skills
             shortName = "ES";
 
             ReqTalent = true;
-            Talent2ChksValue = ((Specialization)Talents.Specialization == Specialization.Survival ? 1 : 0);
+            Talent2ChksValue = ((Specialization)Talents.Specialization == Specialization.Survival);
             ReqRangedWeap = true;
             ReqSkillsRange = true;
             Cd = Cooldown; // In Seconds
@@ -75,7 +75,7 @@ namespace Rawr.Hunter.Skills
 
             Name = "Explosive Shot";
             ReqTalent = true;
-            Talent2ChksValue = ((Specialization)Talents.HighestTree == Specialization.Survival ? 1 : 0);
+            Talent2ChksValue = (c.HunterTalents.Specialization == (int)Specialization.Survival);
             ReqRangedWeap = true;
             ReqSkillsRange = true;
             Cd = 0f; // In Seconds

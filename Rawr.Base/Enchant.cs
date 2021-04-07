@@ -307,7 +307,6 @@ namespace Rawr
             Stats enchantTemp = new Stats();
             // The All Important No Enchant, works in all slots
             defaultEnchants.Add(new Enchant(0, "No Enchant", ItemSlot.None, new Stats(), ""));
-            //defaultEnchants.Add(new Enchant(3878, "Mind Amplification Dish", ItemSlot.Waist, new Stats() { Stamina = 45f })); // Uhhh wut?
             #region Head
             #region Level 85 (Cataclysm)
             defaultEnchants.Add(new Enchant(4207, "Arcanum of Hyjal", ItemSlot.Head, new Stats() { Intellect = 60, CritRating = 35 }, "spell_fire_masterofelements"));
@@ -335,14 +334,7 @@ namespace Rawr
             defaultEnchants.Add(new Enchant(3795, "Arcanum of Triumph", ItemSlot.Head, new Stats() { AttackPower = 50, PvPResilience = 20 }, "ability_warrior_shieldmastery")); // Will probably be vamped again
             #endregion
             #region Level 70 (BC)
-            //defaultEnchants.Add(new Enchant(3006, "Arcanum of Arcane Warding", ItemSlot.Head, new Stats() { ArcaneResistance = 20 }, "spell_arcane_arcaneresilience"));
-            defaultEnchants.Add(new Enchant(3003, "Arcanum of Ferocity", ItemSlot.Head, new Stats() { AttackPower = 34, HitRating = 16 }, "ability_druid_demoralizingroar"));
-            //defaultEnchants.Add(new Enchant(3007, "Arcanum of Fire Warding", ItemSlot.Head, new Stats() { FireResistance = 20 }, "spell_fire_sealoffire"));
-            //defaultEnchants.Add(new Enchant(3008, "Arcanum of Frost Warding", ItemSlot.Head, new Stats() { FrostResistance = 20 }, "spell_frost_frostarmor02"));
-            //defaultEnchants.Add(new Enchant(3005, "Arcanum of Nature Warding", ItemSlot.Head, new Stats() { NatureResistance = 20 }, "spell_nature_protectionformnature"));
-            defaultEnchants.Add(new Enchant(3002, "Arcanum of Power", ItemSlot.Head, new Stats() { SpellPower = 22, HitRating = 14 }, "spell_nature_lightningoverload"));
             defaultEnchants.Add(new Enchant(3001, "Arcanum of Renewal", ItemSlot.Head, new Stats() { Intellect = 16, Spirit = 18 }, "spell_holy_healingaura"));
-            //defaultEnchants.Add(new Enchant(3009, "Arcanum of Shadow Warding", ItemSlot.Head, new Stats() { ShadowResistance = 20 }, "spell_shadow_sealofkings"));
             defaultEnchants.Add(new Enchant(2999, "Arcanum of the Defender", ItemSlot.Head, new Stats() { ParryRating = 16, DodgeRating = 17 }, "ability_warrior_victoryrush"));
             defaultEnchants.Add(new Enchant(3004, "Arcanum of the Gladiator", ItemSlot.Head, new Stats() { Stamina = 18, PvPResilience = 20 }, "inv_misc_statue_04"));
             defaultEnchants.Add(new Enchant(3096, "Arcanum of the Outcast", ItemSlot.Head, new Stats() { Strength = 17, Intellect = 16 }, "ability_rogue_masterofsubtlety"));
@@ -352,41 +344,41 @@ namespace Rawr
             #endregion
             #region Shoulders
             #region Level 90 (MoP)
-            defaultEnchants.Add(new Enchant(4806, "Greater Crane Wing Inscription", ItemSlot.Shoulders, new Stats() { Intellect = 200, CritRating = 100 }, "inv_misc_mastersinscription"));
-            defaultEnchants.Add(new Enchant(4805, "Greater Ox Horn Inscription", ItemSlot.Shoulders, new Stats() { Stamina = 300, DodgeRating = 100 }, "inv_misc_mastersinscription"));
-            defaultEnchants.Add(new Enchant(4803, "Greater Tiger Fang Inscription", ItemSlot.Shoulders, new Stats() { Strength = 200, CritRating = 100 }, "inv_misc_mastersinscription"));
-            defaultEnchants.Add(new Enchant(4804, "Greater Tiger Claw Inscription", ItemSlot.Shoulders, new Stats() { Agility = 200, CritRating = 100 }, "inv_misc_mastersinscription"));
-            defaultEnchants.Add(new Enchant(4909, "Crane Wing Inscription", ItemSlot.Shoulders, new Stats() { Intellect = 120, CritRating = 80 }, "inv_misc_mastersinscription"));
-            defaultEnchants.Add(new Enchant(4910, "Ox Horn Inscription", ItemSlot.Shoulders, new Stats() { Stamina = 180, DodgeRating = 80 }, "inv_misc_mastersinscription"));
-            defaultEnchants.Add(new Enchant(4907, "Tiger Fang Inscription", ItemSlot.Shoulders, new Stats() { Strength = 120, CritRating = 80 }, "inv_misc_mastersinscription"));
-            defaultEnchants.Add(new Enchant(4908, "Tiger Claw Inscription", ItemSlot.Shoulders, new Stats() { Agility = 120, CritRating = 80 }, "inv_misc_mastersinscription"));
+            defaultEnchants.Add(new Enchant(4806, "Greater Crane Wing Inscription", ItemSlot.Shoulders, new Stats() { Intellect = 12, CritRating = 6 }, "inv_misc_mastersinscription"));
+            defaultEnchants.Add(new Enchant(4805, "Greater Ox Horn Inscription", ItemSlot.Shoulders, new Stats() { Stamina = 19, DodgeRating = 6 }, "inv_misc_mastersinscription"));
+            defaultEnchants.Add(new Enchant(4803, "Greater Tiger Fang Inscription", ItemSlot.Shoulders, new Stats() { Strength = 13, CritRating = 6 }, "inv_misc_mastersinscription"));
+            defaultEnchants.Add(new Enchant(4804, "Greater Tiger Claw Inscription", ItemSlot.Shoulders, new Stats() { Agility = 13, CritRating = 6 }, "inv_misc_mastersinscription"));
+            defaultEnchants.Add(new Enchant(4909, "Crane Wing Inscription", ItemSlot.Shoulders, new Stats() { Intellect = 8, CritRating = 5 }, "inv_misc_mastersinscription"));
+            defaultEnchants.Add(new Enchant(4910, "Ox Horn Inscription", ItemSlot.Shoulders, new Stats() { Stamina = 11, DodgeRating = 5 }, "inv_misc_mastersinscription"));
+            defaultEnchants.Add(new Enchant(4907, "Tiger Fang Inscription", ItemSlot.Shoulders, new Stats() { Strength = 8, CritRating = 5 }, "inv_misc_mastersinscription"));
+            defaultEnchants.Add(new Enchant(4908, "Tiger Claw Inscription", ItemSlot.Shoulders, new Stats() { Agility = 8, CritRating = 5 }, "inv_misc_mastersinscription"));
             #endregion
             #region Level 85 (Cataclysm)
-            defaultEnchants.Add(new Enchant(4200, "Greater Inscription of Charged Lodestone", ItemSlot.Shoulders, new Stats() { Intellect = 50, HasteRating = 25 }, "inv_misc_gem_bloodstone_02"));
-            defaultEnchants.Add(new Enchant(4202, "Greater Inscription of Jagged Stone", ItemSlot.Shoulders, new Stats() { Strength = 50, CritRating = 25 }, "inv_misc_gem_emeraldrough_02"));
-            defaultEnchants.Add(new Enchant(4204, "Greater Inscription of Shattered Crystal", ItemSlot.Shoulders, new Stats() { Agility = 50, MasteryRating = 25 }, "inv_misc_gem_goldendraenite_01"));
-            defaultEnchants.Add(new Enchant(4198, "Greater Inscription of Unbreakable Quartz", ItemSlot.Shoulders, new Stats() { Stamina = 75, DodgeRating = 25 }, "inv_misc_gem_crystal_01"));
-            defaultEnchants.Add(new Enchant(4199, "Lesser Inscription of Charged Lodestone", ItemSlot.Shoulders, new Stats() { Intellect = 30, HasteRating = 20 }, "inv_misc_gem_bloodstone_02"));
-            defaultEnchants.Add(new Enchant(4201, "Lesser Inscription of Jagged Stone", ItemSlot.Shoulders, new Stats() { Strength = 30, CritRating = 20 }, "inv_misc_gem_emeraldrough_02"));
-            defaultEnchants.Add(new Enchant(4205, "Lesser Inscription of Shattered Crystal", ItemSlot.Shoulders, new Stats() { Agility = 30, MasteryRating = 20 }, "inv_misc_gem_goldendraenite_01"));
-            defaultEnchants.Add(new Enchant(4197, "Lesser Inscription of Unbreakable Quartz", ItemSlot.Shoulders, new Stats() { Stamina = 45, DodgeRating = 20 }, "inv_misc_gem_crystal_01"));
+            defaultEnchants.Add(new Enchant(4200, "Greater Inscription of Charged Lodestone", ItemSlot.Shoulders, new Stats() { Intellect = 10, HasteRating = 5 }, "inv_misc_gem_bloodstone_02"));
+            defaultEnchants.Add(new Enchant(4202, "Greater Inscription of Jagged Stone", ItemSlot.Shoulders, new Stats() { Strength = 10, CritRating = 5 }, "inv_misc_gem_emeraldrough_02"));
+            defaultEnchants.Add(new Enchant(4204, "Greater Inscription of Shattered Crystal", ItemSlot.Shoulders, new Stats() { Agility = 10, MasteryRating = 5 }, "inv_misc_gem_goldendraenite_01"));
+            defaultEnchants.Add(new Enchant(4198, "Greater Inscription of Unbreakable Quartz", ItemSlot.Shoulders, new Stats() { Stamina = 15, DodgeRating = 5 }, "inv_misc_gem_crystal_01"));
+            defaultEnchants.Add(new Enchant(4199, "Lesser Inscription of Charged Lodestone", ItemSlot.Shoulders, new Stats() { Intellect = 6, HasteRating = 4 }, "inv_misc_gem_bloodstone_02"));
+            defaultEnchants.Add(new Enchant(4201, "Lesser Inscription of Jagged Stone", ItemSlot.Shoulders, new Stats() { Strength = 6, CritRating = 4 }, "inv_misc_gem_emeraldrough_02"));
+            defaultEnchants.Add(new Enchant(4205, "Lesser Inscription of Shattered Crystal", ItemSlot.Shoulders, new Stats() { Agility = 6, MasteryRating = 4 }, "inv_misc_gem_goldendraenite_01"));
+            defaultEnchants.Add(new Enchant(4197, "Lesser Inscription of Unbreakable Quartz", ItemSlot.Shoulders, new Stats() { Stamina = 9, DodgeRating = 4 }, "inv_misc_gem_crystal_01"));
             // Patch 4.0.6+ added new Agility, Strength, and Intellect PvP Shoulder enchants
-            defaultEnchants.Add(new Enchant(4250, "Greater Inscription of Vicious Agility", ItemSlot.Shoulders, new Stats() { Agility = 50, PvPResilience = 25 }, "inv_misc_gem_goldendraenite_01"));
-            defaultEnchants.Add(new Enchant(4249, "Greater Inscription of Vicious Strength", ItemSlot.Shoulders, new Stats() { Strength = 50, PvPResilience = 25 }, "inv_misc_gem_emeraldrough_02"));
-            defaultEnchants.Add(new Enchant(4248, "Greater Inscription of Vicious Intellect", ItemSlot.Shoulders, new Stats() { Intellect = 50, PvPResilience = 25 }, "inv_misc_gem_bloodstone_02"));
+            defaultEnchants.Add(new Enchant(4250, "Greater Inscription of Vicious Agility", ItemSlot.Shoulders, new Stats() { Agility = 10, PvPResilience = 5 }, "inv_misc_gem_goldendraenite_01"));
+            defaultEnchants.Add(new Enchant(4249, "Greater Inscription of Vicious Strength", ItemSlot.Shoulders, new Stats() { Strength = 10, PvPResilience = 5 }, "inv_misc_gem_emeraldrough_02"));
+            defaultEnchants.Add(new Enchant(4248, "Greater Inscription of Vicious Intellect", ItemSlot.Shoulders, new Stats() { Intellect = 10, PvPResilience = 5 }, "inv_misc_gem_bloodstone_02"));
             #endregion
             #region Level 80 (WotLK)
-            defaultEnchants.Add(new Enchant(3808, "Greater Inscription of the Axe", ItemSlot.Shoulders, new Stats() { AttackPower = 40, CritRating = 15 }, "inv_axe_85"));
-            defaultEnchants.Add(new Enchant(3809, "Greater Inscription of the Crag", ItemSlot.Shoulders, new Stats() { Intellect = 21, Spirit = 16 }, "spell_arcane_teleportorgrimmar"));
-            defaultEnchants.Add(new Enchant(3811, "Greater Inscription of the Pinnacle", ItemSlot.Shoulders, new Stats() { DodgeRating = 20, Stamina = 22 }, "spell_holy_divinepurpose"));
-            defaultEnchants.Add(new Enchant(3810, "Greater Inscription of the Storm", ItemSlot.Shoulders, new Stats() { SpellPower = 24, CritRating = 15 }, "spell_nature_lightningoverload"));
-            defaultEnchants.Add(new Enchant(3875, "Lesser Inscription of the Axe", ItemSlot.Shoulders, new Stats() { AttackPower = 30, CritRating = 10 }, "inv_axe_82"));
-            defaultEnchants.Add(new Enchant(3807, "Lesser Inscription of the Crag", ItemSlot.Shoulders, new Stats() { Intellect = 15, Spirit = 10 }, "spell_nature_farsight"));
-            defaultEnchants.Add(new Enchant(3876, "Lesser Inscription of the Pinnacle", ItemSlot.Shoulders, new Stats() { DodgeRating = 15, ParryRating = 10 }, "spell_holy_divinepurpose"));
-            defaultEnchants.Add(new Enchant(3806, "Lesser Inscription of the Storm", ItemSlot.Shoulders, new Stats() { SpellPower = 18, CritRating = 10 }, "spell_nature_lightning"));
-            defaultEnchants.Add(new Enchant(3852, "Greater Inscription of the Gladiator", ItemSlot.Shoulders, new Stats() { Stamina = 30, PvPResilience = 15 }, "inv_shoulder_61"));
-            defaultEnchants.Add(new Enchant(3793, "Inscription of Triumph", ItemSlot.Shoulders, new Stats() { AttackPower = 40, PvPResilience = 15 }, "spell_holy_weaponmastery"));
-            defaultEnchants.Add(new Enchant(3794, "Inscription of Dominance", ItemSlot.Shoulders, new Stats() { SpellPower = 23, PvPResilience = 15 }, "spell_holy_powerinfusion"));
+            defaultEnchants.Add(new Enchant(3808, "Greater Inscription of the Axe", ItemSlot.Shoulders, new Stats() { AttackPower = 10, CritRating = 8 }, "inv_axe_85"));
+            defaultEnchants.Add(new Enchant(3809, "Greater Inscription of the Crag", ItemSlot.Shoulders, new Stats() { Intellect = 10, Spirit = 8 }, "spell_arcane_teleportorgrimmar"));
+            defaultEnchants.Add(new Enchant(3811, "Greater Inscription of the Pinnacle", ItemSlot.Shoulders, new Stats() { DodgeRating = 10, Stamina = 11 }, "spell_holy_divinepurpose"));
+            defaultEnchants.Add(new Enchant(3810, "Greater Inscription of the Storm", ItemSlot.Shoulders, new Stats() { SpellPower = 12, CritRating = 8 }, "spell_nature_lightningoverload"));
+            defaultEnchants.Add(new Enchant(3875, "Lesser Inscription of the Axe", ItemSlot.Shoulders, new Stats() { AttackPower = 15, CritRating = 5 }, "inv_axe_82"));
+            defaultEnchants.Add(new Enchant(3807, "Lesser Inscription of the Crag", ItemSlot.Shoulders, new Stats() { Intellect = 8, Spirit = 5 }, "spell_nature_farsight"));
+            defaultEnchants.Add(new Enchant(3876, "Lesser Inscription of the Pinnacle", ItemSlot.Shoulders, new Stats() { DodgeRating = 8, ParryRating = 5 }, "spell_holy_divinepurpose"));
+            defaultEnchants.Add(new Enchant(3806, "Lesser Inscription of the Storm", ItemSlot.Shoulders, new Stats() { SpellPower = 9, CritRating = 5 }, "spell_nature_lightning"));
+            defaultEnchants.Add(new Enchant(3852, "Greater Inscription of the Gladiator", ItemSlot.Shoulders, new Stats() { Stamina = 15, PvPResilience = 8 }, "inv_shoulder_61"));
+            defaultEnchants.Add(new Enchant(3793, "Inscription of Triumph", ItemSlot.Shoulders, new Stats() { AttackPower = 20, PvPResilience = 8 }, "spell_holy_weaponmastery"));
+            defaultEnchants.Add(new Enchant(3794, "Inscription of Dominance", ItemSlot.Shoulders, new Stats() { SpellPower = 12, PvPResilience = 8 }, "spell_holy_powerinfusion"));
             #endregion
             #region Level 70 (BC)
             defaultEnchants.Add(new Enchant(2982, "Greater Inscription of Discipline", ItemSlot.Shoulders, new Stats() { SpellPower = 18, CritRating = 10 }, "spell_holy_sealofwisdom"));
@@ -419,33 +411,32 @@ namespace Rawr
             #endregion
             #region Back
             #region Level 90 (MoP)
-            defaultEnchants.Add(new Enchant(4421, "Accuracy", ItemSlot.Back, new Stats() { HitRating = 180 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(4422, "Greater Protection", ItemSlot.Back, new Stats() { Stamina = 200 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4423, "Superior Intellect", ItemSlot.Back, new Stats() { Intellect = 180 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4424, "Superior Critical Strike", ItemSlot.Back, new Stats() { CritRating = 180 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(4422, "Greater Protection", ItemSlot.Back, new Stats() { Stamina = 13 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4423, "Superior Intellect", ItemSlot.Back, new Stats() { Intellect = 11 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4424, "Superior Critical Strike", ItemSlot.Back, new Stats() { CritRating = 11 }, "inv_enchant_formulagood_01"));
             #endregion
             #region Level 85 (Cataclysm)
-            defaultEnchants.Add(new Enchant(4100, "Greater Critical Strike", ItemSlot.Back, new Stats() { CritRating = 65 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(4096, "Greater Intellect", ItemSlot.Back, new Stats() { Intellect = 50 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4100, "Greater Critical Strike", ItemSlot.Back, new Stats() { CritRating = 13 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(4096, "Greater Intellect", ItemSlot.Back, new Stats() { Intellect = 10 }, "spell_holy_greaterheal"));
             defaultEnchants.Add(new Enchant(4064, "Greater Spell Piercing", ItemSlot.Back, new Stats() { PvPPower = 56 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4090, "Protection", ItemSlot.Back, new Stats() { Stamina = 30 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4087, "Critical Strike", ItemSlot.Back, new Stats() { CritRating = 50 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4072, "Intellect", ItemSlot.Back, new Stats() { Intellect = 30 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4090, "Protection", ItemSlot.Back, new Stats() { Stamina = 6 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4087, "Critical Strike", ItemSlot.Back, new Stats() { CritRating = 10 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4072, "Intellect", ItemSlot.Back, new Stats() { Intellect = 6 }, "spell_holy_greaterheal"));
             #endregion
             #region Level 80 (WotLK)
             defaultEnchants.Add(new Enchant(3243, "Spell Piercing", ItemSlot.Back, new Stats() { PvPPower = 28 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(983, "Superior Agility", ItemSlot.Back, new Stats() { Agility = 16 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(983, "Superior Agility", ItemSlot.Back, new Stats() { Agility = 8 }, "inv_enchant_formulagood_01"));
             //defaultEnchants.Add(new Enchant(1262, "Superior Arcane Resistance", ItemSlot.Back, new Stats() { ArcaneResistance = 20 }, "inv_enchant_formulagood_01"));
             //defaultEnchants.Add(new Enchant(1446, "Superior Shadow Resistance", ItemSlot.Back, new Stats() { ShadowResistance = 20 }, "inv_enchant_formulagood_01"));
             //defaultEnchants.Add(new Enchant(1354, "Superior Fire Resistance", ItemSlot.Back, new Stats() { FireResistance = 20 }, "inv_enchant_formulagood_01"));
             //defaultEnchants.Add(new Enchant(3230, "Superior Frost Resistance", ItemSlot.Back, new Stats() { FrostResistance = 20 }, "inv_enchant_formulagood_01"));
             //defaultEnchants.Add(new Enchant(1400, "Superior Nature Resistance", ItemSlot.Back, new Stats() { NatureResistance = 20 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(1099, "Major Agility", ItemSlot.Back, new Stats() { Agility = 22 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(3831, "Greater Speed", ItemSlot.Back, new Stats() { HasteRating = 23 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(3294, "Mighty Stamina", ItemSlot.Back, new Stats() { Stamina = 25 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(1099, "Major Agility", ItemSlot.Back, new Stats() { Agility = 11 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(3831, "Greater Speed", ItemSlot.Back, new Stats() { HasteRating = 12 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(3294, "Mighty Stamina", ItemSlot.Back, new Stats() { Stamina = 13 }, "inv_enchant_formulagood_01"));
             defaultEnchants.Add(new Enchant(1951, "Titanweave", ItemSlot.Back, new Stats() { DodgeRating = 16 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(3256, "Shadow Armor", ItemSlot.Back, new Stats() { Agility = 10, BonusArmor = 40 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(3296, "Wisdom", ItemSlot.Back, new Stats() { ThreatReductionMultiplier = 0.02f, Spirit = 10 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(3256, "Shadow Armor", ItemSlot.Back, new Stats() { Agility = 5, BonusArmor = 20 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(3296, "Wisdom", ItemSlot.Back, new Stats() { ThreatReductionMultiplier = 0.02f, Spirit = 5 }, "inv_enchant_formulagood_01"));
             #endregion
             #region Level 70 (BC)
             defaultEnchants.Add(new Enchant(368, "Greater Agility", ItemSlot.Back, new Stats() { Agility = 12 }, "spell_holy_greaterheal"));
@@ -467,35 +458,35 @@ namespace Rawr
             #endregion
             #region Chest
             #region Level 90 (MoP)
-            defaultEnchants.Add(new Enchant(4417, "Super Resilience", ItemSlot.Chest, new Stats() { PvPResilience = 200 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4418, "Mighty Spirit", ItemSlot.Chest, new Stats() { Spirit = 200 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4419, "Glorious Stats", ItemSlot.Chest, new Stats() { Agility = 80, Strength = 80, Stamina = 80, Intellect = 80, Spirit = 80 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(4420, "Superior Stamina", ItemSlot.Chest, new Stats() { Stamina = 300 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(4417, "Super Resilience", ItemSlot.Chest, new Stats() { PvPResilience = 13 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4418, "Mighty Spirit", ItemSlot.Chest, new Stats() { Spirit = 13 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4419, "Glorious Stats", ItemSlot.Chest, new Stats() { Agility = 3, Strength = 3, Stamina = 3, Intellect = 3, Spirit = 3 }, "inv_enchant_formulagood_01")); // display doesn't agree with actual stats given
+            defaultEnchants.Add(new Enchant(4420, "Superior Stamina", ItemSlot.Chest, new Stats() { Stamina = 19 }, "inv_enchant_formulagood_01"));
             #endregion
             #region Level 85 (Cataclysm)
-            defaultEnchants.Add(new Enchant(4088, "Exceptional Spirit", ItemSlot.Chest, new Stats() { Spirit = 40 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4103, "Greater Stamina", ItemSlot.Chest, new Stats() { Stamina = 75 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(4102, "Peerless Stats", ItemSlot.Chest, new Stats() { Agility = 20, Strength = 20, Stamina = 20, Intellect = 20, Spirit = 20 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(4077, "Mighty Resilience", ItemSlot.Chest, new Stats() { PvPResilience = 40 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4063, "Mighty Stats", ItemSlot.Chest, new Stats() { Agility = 15, Strength = 15, Stamina = 15, Intellect = 15, Spirit = 15 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4070, "Stamina", ItemSlot.Chest, new Stats() { Stamina = 55 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4088, "Exceptional Spirit", ItemSlot.Chest, new Stats() { Spirit = 8 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4103, "Greater Stamina", ItemSlot.Chest, new Stats() { Stamina = 15 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(4102, "Peerless Stats", ItemSlot.Chest, new Stats() { Agility = 4, Strength = 4, Stamina = 4, Intellect = 4, Spirit = 4 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(4077, "Mighty Resilience", ItemSlot.Chest, new Stats() { PvPResilience = 8 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4063, "Mighty Stats", ItemSlot.Chest, new Stats() { Agility = 3, Strength = 3, Stamina = 3, Intellect = 3, Spirit = 3 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4070, "Stamina", ItemSlot.Chest, new Stats() { Stamina = 11 }, "spell_holy_greaterheal"));
             #endregion
             #region Level 80 (WotLK)
-            defaultEnchants.Add(new Enchant(1953, "Greater Dodge", ItemSlot.Chest, new Stats() { DodgeRating = 22 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(3252, "Super Stats", ItemSlot.Chest, new Stats() { Agility = 8, Strength = 8, Stamina = 8, Intellect = 8, Spirit = 8 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(3832, "Powerful Stats", ItemSlot.Chest, new Stats() { Agility = 10, Strength = 10, Stamina = 10, Intellect = 10, Spirit = 10 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(1953, "Greater Dodge", ItemSlot.Chest, new Stats() { DodgeRating = 11 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(3252, "Super Stats", ItemSlot.Chest, new Stats() { Agility = 4, Strength = 4, Stamina = 4, Intellect = 4, Spirit = 4 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(3832, "Powerful Stats", ItemSlot.Chest, new Stats() { Agility = 5, Strength = 5, Stamina = 5, Intellect = 5, Spirit = 5 }, "inv_enchant_formulagood_01"));
             defaultEnchants.Add(new Enchant(2659, "Exceptional Health", ItemSlot.Chest, new Stats() { Health = 150 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(3236, "Mighty Health", ItemSlot.Chest, new Stats() { Health = 200 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(3297, "Super Health", ItemSlot.Chest, new Stats() { Health = 275 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(2381, "Greater Mana Restoration", ItemSlot.Chest, new Stats() { Spirit = 20f }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(3236, "Mighty Health", ItemSlot.Chest, new Stats() { Health = 100 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(3297, "Super Health", ItemSlot.Chest, new Stats() { Health = 138 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(2381, "Greater Mana Restoration", ItemSlot.Chest, new Stats() { Spirit = 10 }, "spell_holy_greaterheal"));
             #endregion
             #region Level 70 (BC)
-            defaultEnchants.Add(new Enchant(1951, "Defense", ItemSlot.Chest, new Stats() { DodgeRating = 16 }, "inv_misc_note_01"));
+            defaultEnchants.Add(new Enchant(1951, "Defense", ItemSlot.Chest, new Stats() { DodgeRating = 18 }, "inv_misc_note_01"));
             defaultEnchants.Add(new Enchant(2661, "Exceptional Stats", ItemSlot.Chest, new Stats() { Agility = 6, Strength = 6, Stamina = 6, Intellect = 6, Spirit = 6 }, "inv_misc_note_01"));
             defaultEnchants.Add(new Enchant(2933, "Major Resilience", ItemSlot.Chest, new Stats() { PvPResilience = 15 }, "inv_enchant_formulagood_01"));
             defaultEnchants.Add(new Enchant(3233, "Exceptional Mana", ItemSlot.Chest, new Stats() { Mana = 250 }, "inv_misc_note_01"));
             defaultEnchants.Add(new Enchant(1144, "Major Spirit", ItemSlot.Chest, new Stats() { Spirit = 15 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(3245, "Exceptional Resilience", ItemSlot.Chest, new Stats() { PvPResilience = 20 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(3245, "Exceptional Resilience", ItemSlot.Chest, new Stats() { PvPResilience = 10 }, "inv_enchant_formulagood_01"));
             defaultEnchants.Add(new Enchant(3150, "Restore Mana Prime", ItemSlot.Chest, new Stats() { Spirit = 14 }, "spell_holy_greaterheal"));
             #endregion
             // Level 60 (Vanilla)
@@ -503,35 +494,32 @@ namespace Rawr
             #endregion
             #region Wrist
             #region Level 90 (MoP)
-            defaultEnchants.Add(new Enchant(4411, "Mastery", ItemSlot.Wrist, new Stats() { MasteryRating = 170 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4412, "Superior Dodge", ItemSlot.Wrist, new Stats() { DodgeRating = 170 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4414, "Super Intellect", ItemSlot.Wrist, new Stats() { Intellect = 180 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4415, "Exceptional Strength", ItemSlot.Wrist, new Stats() { Strength = 180 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4416, "Greater Agility", ItemSlot.Wrist, new Stats() { Agility = 180 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4411, "Mastery", ItemSlot.Wrist, new Stats() { MasteryRating = 11 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4412, "Superior Dodge", ItemSlot.Wrist, new Stats() { DodgeRating = 10 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4414, "Super Intellect", ItemSlot.Wrist, new Stats() { Intellect = 11 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4415, "Exceptional Strength", ItemSlot.Wrist, new Stats() { Strength = 11 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4416, "Greater Agility", ItemSlot.Wrist, new Stats() { Agility = 11 }, "spell_holy_greaterheal"));
             #endregion
             #region Level 85 (Cataclysm)
-            defaultEnchants.Add(new Enchant(4071, "Critical Strike", ItemSlot.Wrist, new Stats() { CritRating = 50 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4086, "Dodge", ItemSlot.Wrist, new Stats() { DodgeRating = 50 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4089, "Precision", ItemSlot.Wrist, new Stats() { HitRating = 50 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4093, "Exceptional Spirit", ItemSlot.Wrist, new Stats() { Spirit = 50 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4095, "Greater Expertise", ItemSlot.Wrist, new Stats() { ExpertiseRating = 50 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4101, "Greater Critical Strike", ItemSlot.Wrist, new Stats() { CritRating = 65 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(4108, "Greater Speed", ItemSlot.Wrist, new Stats() { HasteRating = 65 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(4065, "Speed", ItemSlot.Wrist, new Stats() { HasteRating = 50 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4071, "Critical Strike", ItemSlot.Wrist, new Stats() { CritRating = 10 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4086, "Dodge", ItemSlot.Wrist, new Stats() { DodgeRating = 5 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4093, "Exceptional Spirit", ItemSlot.Wrist, new Stats() { Spirit = 10 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4101, "Greater Critical Strike", ItemSlot.Wrist, new Stats() { CritRating = 13 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(4108, "Greater Speed", ItemSlot.Wrist, new Stats() { HasteRating = 13 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(4065, "Speed", ItemSlot.Wrist, new Stats() { HasteRating = 10 }, "spell_holy_greaterheal"));
             // Patch 4.0.6+ added Agility, Strength, and Intellect to bracers
-            defaultEnchants.Add(new Enchant(4258, "Agility", ItemSlot.Wrist, new Stats() { Agility = 50 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4256, "Major Strength", ItemSlot.Wrist, new Stats() { Strength = 50 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4257, "Mighty Intellect", ItemSlot.Wrist, new Stats() { Intellect = 50 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4258, "Agility", ItemSlot.Wrist, new Stats() { Agility = 10 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4256, "Major Strength", ItemSlot.Wrist, new Stats() { Strength = 10 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4257, "Mighty Intellect", ItemSlot.Wrist, new Stats() { Intellect = 10 }, "spell_holy_greaterheal"));
             #endregion
             #region Level 80 (WotLK)
-            defaultEnchants.Add(new Enchant(2326, "Greater Spellpower", ItemSlot.Wrist, new Stats() { SpellPower = 23 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(2661, "Greater Stats", ItemSlot.Wrist, new Stats() { Agility = 6, Strength = 6, Stamina = 6, Intellect = 6, Spirit = 6 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(1147, "Major Spirit", ItemSlot.Wrist, new Stats() { Spirit = 18 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(3231, "Expertise", ItemSlot.Wrist, new Stats() { ExpertiseRating = 15 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(3845, "Greater Assault", ItemSlot.Wrist, new Stats() { AttackPower = 50 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(2332, "Superior Spellpower", ItemSlot.Wrist, new Stats() { SpellPower = 30 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(3850, "Major Stamina", ItemSlot.Wrist, new Stats() { Stamina = 40 }, "inv_enchant_formulasuperior_01"));
-            defaultEnchants.Add(new Enchant(1119, "Exceptional Intellect", ItemSlot.Wrist, new Stats() { Intellect = 16 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(2326, "Greater Spellpower", ItemSlot.Wrist, new Stats() { SpellPower = 12 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(2661, "Greater Stats", ItemSlot.Wrist, new Stats() { Agility = 3, Strength = 3, Stamina = 3, Intellect = 3, Spirit = 3 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(1147, "Major Spirit", ItemSlot.Wrist, new Stats() { Spirit = 9 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(3845, "Greater Assault", ItemSlot.Wrist, new Stats() { AttackPower = 25 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(2332, "Superior Spellpower", ItemSlot.Wrist, new Stats() { SpellPower = 15 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(3850, "Major Stamina", ItemSlot.Wrist, new Stats() { Stamina = 20 }, "inv_enchant_formulasuperior_01"));
+            defaultEnchants.Add(new Enchant(1119, "Exceptional Intellect", ItemSlot.Wrist, new Stats() { Intellect = 8 }, "spell_holy_greaterheal"));
             #endregion
             #region Level 70 (BC)
             defaultEnchants.Add(new Enchant(2647, "Brawn", ItemSlot.Wrist, new Stats() { Strength = 12 }, "spell_holy_greaterheal"));
@@ -552,36 +540,31 @@ namespace Rawr
             #endregion
             #region Hands
             #region Level 90 (MoP)
-            defaultEnchants.Add(new Enchant(4430, "Greater Haste", ItemSlot.Hands, new Stats() { HasteRating = 170 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4431, "Superior Expertise", ItemSlot.Hands, new Stats() { ExpertiseRating = 170 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4432, "Super Strength", ItemSlot.Hands, new Stats() { Strength = 170 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(4433, "Superior Mastery", ItemSlot.Hands, new Stats() { MasteryRating = 170 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4430, "Greater Haste", ItemSlot.Hands, new Stats() { HasteRating = 11 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4432, "Super Strength", ItemSlot.Hands, new Stats() { Strength = 11 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(4433, "Superior Mastery", ItemSlot.Hands, new Stats() { MasteryRating = 11 }, "spell_holy_greaterheal"));
             #endregion
             #region Level 85 (Cataclysm)
-            defaultEnchants.Add(new Enchant(4068, "Haste", ItemSlot.Hands, new Stats() { HasteRating = 50 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4075, "Exceptional Strength", ItemSlot.Hands, new Stats() { Strength = 35 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4082, "Greater Expertise", ItemSlot.Hands, new Stats() { ExpertiseRating = 50 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4107, "Greater Mastery", ItemSlot.Hands, new Stats() { MasteryRating = 65 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(4106, "Mighty Strength", ItemSlot.Hands, new Stats() { Strength = 50 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(4061, "Mastery", ItemSlot.Hands, new Stats() { MasteryRating = 50 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(3253, "Armsman", ItemSlot.Hands, new Stats() { ThreatIncreaseMultiplier = 0.02f, ParryRating = 10 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(4068, "Haste", ItemSlot.Hands, new Stats() { HasteRating = 10 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4075, "Exceptional Strength", ItemSlot.Hands, new Stats() { Strength = 7 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4107, "Greater Mastery", ItemSlot.Hands, new Stats() { MasteryRating = 13 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(4106, "Mighty Strength", ItemSlot.Hands, new Stats() { Strength = 10 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(4061, "Mastery", ItemSlot.Hands, new Stats() { MasteryRating = 10 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(3253, "Armsman", ItemSlot.Hands, new Stats() { ThreatIncreaseMultiplier = 0.02f, ParryRating = 5 }, "inv_enchant_formulagood_01"));
             #endregion
             #region Level 80 (WotLK)
-            defaultEnchants.Add(new Enchant(3231, "Expertise", ItemSlot.Hands, new Stats() { ExpertiseRating = 15 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(3234, "Precision", ItemSlot.Hands, new Stats() { HitRating = 20 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(3222, "Major Agility", ItemSlot.Hands, new Stats() { Agility = 20 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(3829, "Greater Assault", ItemSlot.Hands, new Stats() { AttackPower = 35 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(1603, "Crusher", ItemSlot.Hands, new Stats() { AttackPower = 44 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(3246, "Exceptional Spellpower", ItemSlot.Hands, new Stats() { SpellPower = 28 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(3222, "Major Agility", ItemSlot.Hands, new Stats() { Agility = 10 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(3829, "Greater Assault", ItemSlot.Hands, new Stats() { AttackPower = 9 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(1603, "Crusher", ItemSlot.Hands, new Stats() { AttackPower = 11 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(3246, "Exceptional Spellpower", ItemSlot.Hands, new Stats() { SpellPower = 14 }, "spell_holy_greaterheal"));
             #endregion
             #region Level 70 (BC)
             defaultEnchants.Add(new Enchant(2934, "Blasting", ItemSlot.Hands, new Stats() { CritRating = 10 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(1594, "Assault", ItemSlot.Hands, new Stats() { AttackPower = 26 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(1594, "Assault", ItemSlot.Hands, new Stats() { AttackPower = 13 }, "spell_holy_greaterheal"));
             defaultEnchants.Add(new Enchant(3260, "Glove Reinforcements", ItemSlot.Hands, new Stats() { Stamina = 24 }, "inv_misc_armorkit_08"));
             defaultEnchants.Add(new Enchant(684, "Major Strength", ItemSlot.Hands, new Stats() { Strength = 15 }, "spell_holy_greaterheal"));
             defaultEnchants.Add(new Enchant(2322, "Major Healing", ItemSlot.Hands, new Stats() { SpellPower = 19 }, "inv_enchant_formulagood_01"));
             defaultEnchants.Add(new Enchant(2937, "Major Spellpower", ItemSlot.Hands, new Stats() { SpellPower = 20 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(2935, "Precise Strikes", ItemSlot.Hands, new Stats() { HitRating = 15 }, "inv_enchant_formulagood_01"));
             #endregion
             #region Level 60 (Vanilla)
             defaultEnchants.Add(new Enchant(931, "Minor Haste", ItemSlot.Hands, new Stats() { HasteRating = 10 }, "spell_holy_greaterheal"));
@@ -601,7 +584,7 @@ namespace Rawr
             defaultEnchants.Add(new Enchant(5004, "Pearlescent Spellthread", ItemSlot.Legs, new Stats() { Intellect = 170, Spirit = 100 }, "inv_bracer_69"));
             defaultEnchants.Add(new Enchant(5003, "Cerulean Spellthread", ItemSlot.Legs, new Stats() { Intellect = 170, CritRating = 100 }, "inv_misc_thread_eternium"));
             defaultEnchants.Add(new Enchant(4826, "Greater Pearlescent Spellthread", ItemSlot.Legs, new Stats() { Intellect = 285, Spirit = 165 }, "inv_belt_42c"));
-            defaultEnchants.Add(new Enchant(4825, "Greater Cerulean Spellthread", ItemSlot.Legs, new Stats() { Intellect = 285, CritRating = 165 }, "inv_belt_42"));
+            defaultEnchants.Add(new Enchant(4825, "Greater Cerulean Spellthread", ItemSlot.Legs, new Stats() { Intellect = 18, CritRating = 10 }, "inv_belt_42"));
             #endregion
             #region Level 85 (Cataclysm)
             defaultEnchants.Add(new Enchant(4127, "Charscale Leg Armor", ItemSlot.Legs, new Stats() { Agility = 55, Stamina = 145 }, "inv_misc_monsterscales_20"));
@@ -642,14 +625,12 @@ namespace Rawr
             #region Feet
             #region Level 90 (MoP)
             defaultEnchants.Add(new Enchant(4426, "Greater Haste", ItemSlot.Feet, new Stats() { HasteRating = 175 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4427, "Greater Precision", ItemSlot.Feet, new Stats() { HitRating = 175 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4428, "Blurred Speed", ItemSlot.Feet, new Stats() { Agility = 140, MovementSpeed = 0.08f }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(4429, "Pandaren's Step", ItemSlot.Feet, new Stats() { MasteryRating = 140, MovementSpeed = 0.08f }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(4428, "Blurred Speed", ItemSlot.Feet, new Stats() { Agility = 140, MovementSpeed = 0.1f }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(4429, "Pandaren's Step", ItemSlot.Feet, new Stats() { MasteryRating = 9, MovementSpeed = 0.1f }, "inv_enchant_formulagood_01"));
             #endregion
             #region Level 85 (Cataclysm)
             defaultEnchants.Add(new Enchant(4069, "Haste", ItemSlot.Feet, new Stats() { HasteRating = 50 }, "spell_holy_greaterheal"));
             defaultEnchants.Add(new Enchant(4076, "Major Agility", ItemSlot.Feet, new Stats() { Agility = 35 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4092, "Precision", ItemSlot.Feet, new Stats() { HitRating = 50 }, "spell_holy_greaterheal"));
             defaultEnchants.Add(new Enchant(4094, "Mastery", ItemSlot.Feet, new Stats() { MasteryRating = 50 }, "spell_holy_greaterheal"));
             defaultEnchants.Add(new Enchant(4105, "Assassin's Step", ItemSlot.Feet, new Stats() { Agility = 25, MovementSpeed = 0.08f }, "inv_enchant_formulagood_01"));
             defaultEnchants.Add(new Enchant(4104, "Lavawalker", ItemSlot.Feet, new Stats() { MasteryRating = 35, MovementSpeed = 0.08f }, "inv_enchant_formulagood_01"));
@@ -657,7 +638,6 @@ namespace Rawr
             #endregion
             #region Level 80 (WotLK)
             defaultEnchants.Add(new Enchant(1075, "Greater Fortitude", ItemSlot.Feet, new Stats() { Stamina = 22 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(3826, "Icewalker", ItemSlot.Feet, new Stats() { CritRating = 12, HitRating = 12 }, "spell_holy_greaterheal"));
             defaultEnchants.Add(new Enchant(3244, "Greater Vitality", ItemSlot.Feet, new Stats() { Stamina = 14f, Spirit = 14f }, "spell_holy_greaterheal"));
             defaultEnchants.Add(new Enchant(1147, "Greater Spirit", ItemSlot.Feet, new Stats() { Spirit = 18 }, "spell_holy_greaterheal"));
             defaultEnchants.Add(new Enchant(983, "Superior Agility", ItemSlot.Feet, new Stats() { Agility = 16 }, "inv_enchant_formulagood_01"));
@@ -670,7 +650,6 @@ namespace Rawr
             defaultEnchants.Add(new Enchant(2657, "Dexterity", ItemSlot.Feet, new Stats() { Agility = 12 }, "inv_enchant_formulasuperior_01"));
             defaultEnchants.Add(new Enchant(2940, "Boar's Speed", ItemSlot.Feet, new Stats() { Stamina = 9, MovementSpeed = 0.08f }, "inv_enchant_formulasuperior_01"));
             defaultEnchants.Add(new Enchant(2939, "Cat's Swiftness", ItemSlot.Feet, new Stats() { Agility = 6, MovementSpeed = 0.08f }, "inv_enchant_formulasuperior_01"));
-            defaultEnchants.Add(new Enchant(2658, "Surefooted", ItemSlot.Feet, new Stats() { CritRating = 10, HitRating = 10 }, "inv_enchant_formulagood_01"));
             defaultEnchants.Add(new Enchant(3824, "Assault", ItemSlot.Feet, new Stats() { AttackPower = 24 }, "spell_holy_greaterheal"));
             #endregion
             #region Level 60 (Vanilla)
@@ -681,14 +660,14 @@ namespace Rawr
             #region Weapons
             #region Two Handers
             #region Level 85 (Cataclysm)
-            defaultEnchants.Add(new Enchant(4227, "Mighty Agility", ItemSlot.TwoHand, new Stats() { Agility = 130 }, "inv_potion_162"));
+            defaultEnchants.Add(new Enchant(4227, "Mighty Agility", ItemSlot.TwoHand, new Stats() { Agility = 26 }, "inv_potion_162"));
             #endregion
             #region Level 80 (WotLK)
-            defaultEnchants.Add(new Enchant(3855, "Spellpower (Staff)", ItemSlot.TwoHand, new Stats() { SpellPower = 69 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(3828, "Greater Savagery", ItemSlot.TwoHand, new Stats() { AttackPower = 85 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(3827, "Massacre", ItemSlot.TwoHand, new Stats() { AttackPower = 110 }, "inv_enchant_formulasuperior_01"));
-            //defaultEnchants.Add(new Enchant(3827, "Scourgebane", ItemSlot.TwoHand, new Stats() { AttackPowerAgainstUndead = 140 }, "inv_enchant_formulasuperior_01")); // No modelling
-            defaultEnchants.Add(new Enchant(3854, "Greater Spellpower (Staff)", ItemSlot.TwoHand, new Stats() { SpellPower = 81 }, "inv_enchant_formulasuperior_01"));
+            defaultEnchants.Add(new Enchant(3855, "Spellpower (Staff)", ItemSlot.TwoHand, new Stats() { SpellPower = 35 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(3828, "Greater Savagery", ItemSlot.TwoHand, new Stats() { AttackPower = 43 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(3827, "Massacre", ItemSlot.TwoHand, new Stats() { AttackPower = 55 }, "inv_enchant_formulasuperior_01"));
+            //defaultEnchants.Add(new Enchant(3827, "Scourgebane", ItemSlot.TwoHand, new Stats() { AttackPowerAgainstUndead = 70 }, "inv_enchant_formulasuperior_01")); // No modelling
+            defaultEnchants.Add(new Enchant(3854, "Greater Spellpower (Staff)", ItemSlot.TwoHand, new Stats() { SpellPower = 41 }, "inv_enchant_formulasuperior_01"));
             #endregion
             #region Level 70 (BC)
             defaultEnchants.Add(new Enchant(2667, "Savagery", ItemSlot.TwoHand, new Stats() { AttackPower = 70 }, "inv_enchant_formulagood_01"));
@@ -722,7 +701,7 @@ namespace Rawr
                 // Mastery - http://mop.wowhead.com/spell=104510
                 float dur = 12f;
                 float chance = -2.2f / 3f;
-                float proc = 1500f;
+                float proc = 75f;
                 enchantTemp = new Stats() { };
                 enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { CritRating = proc }, dur, 1, chance));
                 enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { HasteRating = proc }, dur, 1, chance));
@@ -736,15 +715,15 @@ namespace Rawr
                 // http://mop.wowhead.com/item=74724
                 // Proc spell - http://mop.wowhead.com/spell=104993
                 enchantTemp = new Stats() { };
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.SpellHit, new Stats() { Intellect = 1650, JadeSpiritProcSpirit = 750 }, 12, 50, -2.2f)); //, 12, 0, -2) { RealPPM = true });
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.SpellHit, new Stats() { Intellect = 103, JadeSpiritProcSpirit = 47 }, 12, 50, -2.2f)); //, 12, 0, -2) { RealPPM = true });
                 defaultEnchants.Add(new Enchant(4442, "Jade Spirit", ItemSlot.OneHand, enchantTemp, "spell_shaman_spiritlink"));
             }
             {
                 // http://mop.wowhead.com/item=74725
                 // Proc spell - http://mop.wowhead.com/spell=116616
                 enchantTemp = new Stats() { };
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { FireDamage = 3000, }, 0, 0.1f, -10f) { RealPPM = true });
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.DamageSpellHit, new Stats() { FireDamage = 3000, }, 0, 0.1f, -10f) { RealPPM = true });
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { FireDamage = 174, }, 0, 0.1f, -10f) { RealPPM = true });
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.DamageSpellHit, new Stats() { FireDamage = 174, }, 0, 0.1f, -10f) { RealPPM = true });
                 defaultEnchants.Add(new Enchant(4443, "Elemental Force", ItemSlot.OneHand, enchantTemp, "ability_mage_firestarter"));
             }
             {
@@ -752,55 +731,55 @@ namespace Rawr
                 // Strength - http://mop.wowhead.com/spell=118335
                 // Agility - http://mop.wowhead.com/spell=118334
                 enchantTemp = new Stats() { };
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { HighestStat = 1650, }, 12, 0, -1f)); //, 12, 0, -2) { RealPPM = true });
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { HighestStat = 103, }, 12, 0, -1f)); //, 12, 0, -2) { RealPPM = true });
                 defaultEnchants.Add(new Enchant(4444, "Dancing Steel", ItemSlot.OneHand, enchantTemp, "trade_archaeology_zinrokh-sword"));
             }
             {
                 // http://mop.wowhead.com/item=74727
                 // Proc spell - http://mop.wowhead.com/spell=116631
                 enchantTemp = new Stats() { };
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeAttack, new Stats() { DamageAbsorbed = 7500, }, 10, 3, -3f));//, 10, 0, -6) { RealPPM = true });
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeAttack, new Stats() { DamageAbsorbed = 469, }, 10, 3, -3f));//, 10, 0, -6) { RealPPM = true });
                 defaultEnchants.Add(new Enchant(4445, "Colossus", ItemSlot.OneHand, enchantTemp, "ability_vehicle_shellshieldgenerator"));
             }
             {
                 // http://mop.wowhead.com/item=74728
                 // Proc spell - http://mop.wowhead.com/spell=116660
                 enchantTemp = new Stats() { };
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeAttack, new Stats() { DodgeRating = 1650, }, 7, 0, -2f)); //, 7, 0, -4) { RealPPM = true });
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeAttack, new Stats() { DodgeRating = 83, }, 7, 0, -2f)); //, 7, 0, -4) { RealPPM = true });
                 defaultEnchants.Add(new Enchant(4446, "River's Song", ItemSlot.OneHand, enchantTemp, "inv_misc_volatilewater"));
             }
             #endregion
             #region Level 85 (Cataclysm)
             {
                 enchantTemp = new Stats() { };
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { HasteRating = 450, }, 12, 0, -1f)); // read info off of cata.wowhead.com
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.SpellCast, new Stats() { HasteRating = 450, }, 12, 45, 0.15f)); // read info off of cata.wowhead.com
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { HasteRating = 90, }, 12, 0, -1f)); // read info off of cata.wowhead.com
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.SpellCast, new Stats() { HasteRating = 90, }, 12, 45, 0.15f)); // read info off of cata.wowhead.com
                 defaultEnchants.Add(new Enchant(4083, "Hurricane", ItemSlot.OneHand, enchantTemp, "spell_nature_cyclone"));
             }
             {
                 enchantTemp = new Stats() { };
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.SpellCast, new Stats() { Spirit = 200, }, 15, 20, 0.25f)); // read info off of cata.wowhead.com
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.SpellCast, new Stats() { Spirit = 40, }, 15, 20, 0.25f)); // read info off of cata.wowhead.com
                 defaultEnchants.Add(new Enchant(4084, "Heartsong", ItemSlot.OneHand, enchantTemp, "ability_paladin_sacredcleansing"));
             }
             {
                 enchantTemp = new Stats() { };
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { AttackPower = 1000, }, 12, 0f, -1f)); // read info off of cata.wowhead.com, and based proc times off of berserking
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { AttackPower = 100, }, 12, 0f, -1f)); // read info off of cata.wowhead.com, and based proc times off of berserking
                 defaultEnchants.Add(new Enchant(4099, "Landslide", ItemSlot.OneHand, enchantTemp, "ability_paladin_sacredcleansing"));
             }
             {
                 enchantTemp = new Stats() { };
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.DamageOrHealingDone, new Stats() { Intellect = 500, }, 12, 45f, 0.33f)); // read info off of cata.wowhead.com
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.DamageOrHealingDone, new Stats() { Intellect = 100, }, 12, 45f, 0.33f)); // read info off of cata.wowhead.com
                 defaultEnchants.Add(new Enchant(4097, "Power Torrent", ItemSlot.OneHand, enchantTemp, "ability_paladin_sacredcleansing"));
             }
             {
                 enchantTemp = new Stats() { };
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { DodgeRating = 600, MovementSpeed = 0.15f }, 10, 0f, -1f)); // 2 PPM
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { DodgeRating = 120, MovementSpeed = 0.15f }, 10, 0f, -1f)); // 2 PPM
                 defaultEnchants.Add(new Enchant(4098, "Windwalk", ItemSlot.OneHand, enchantTemp, "ability_paladin_sacredcleansing"));
             }
             {
                 enchantTemp = new Stats();
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.PhysicalHit, new Stats() { NatureDamage = 500f, }, 0f, 0f, -5f)); // 5 PPM
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.DamageSpellHit, new Stats() { NatureDamage = 500f, }, 0f, 10f, .2f)); // 20% chance with 10 sec ICD (http://elitistjerks.com/f76/t110342-retribution_concordance_4_0_6_compliant/p31/#post1872409)
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.PhysicalHit, new Stats() { NatureDamage = 100, }, 0f, 0f, -5f)); // 5 PPM
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.DamageSpellHit, new Stats() { NatureDamage = 100, }, 0f, 10f, .2f)); // 20% chance with 10 sec ICD (http://elitistjerks.com/f76/t110342-retribution_concordance_4_0_6_compliant/p31/#post1872409)
                 defaultEnchants.Add(new Enchant(4067, "Avalanche", ItemSlot.OneHand, enchantTemp, "spell_fire_burnout"));
             }
             {
@@ -808,15 +787,13 @@ namespace Rawr
                 enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.DamageDone, new Stats() { HealthRestore = 800f, }, 0f, 0f, -4.6f)); // 4.6 PPM
                 defaultEnchants.Add(new Enchant(4066, "Mending", ItemSlot.OneHand, enchantTemp, "spell_nature_healingway"));
             }
-            // Patch 4.0.6+ Weapon Chains now reduce disarm duration by 60%, up from 50%.
-            defaultEnchants.Add(new Enchant(4217, "Pyrium Weapon Chain", ItemSlot.OneHand, new Stats() { HitRating = 40, DisarmDurReduc = 0.60f }, "inv_misc_steelweaponchain"));
             // Not modelling Elemental Slayer
             #endregion
             #region Level 80 (WotLK)
-            defaultEnchants.Add(new Enchant(1606, "Greater Potency", ItemSlot.OneHand, new Stats() { AttackPower = 50 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(3830, "Exceptional Spellpower", ItemSlot.OneHand, new Stats() { SpellPower = 50 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(3844, "Exceptional Spirit", ItemSlot.OneHand, new Stats() { Spirit = 45 }, "inv_enchant_formulagood_01"));
-            defaultEnchants.Add(new Enchant(1103, "Exceptional Agility", ItemSlot.OneHand, new Stats() { Agility = 26 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(1606, "Greater Potency", ItemSlot.OneHand, new Stats() { AttackPower = 25 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(3830, "Exceptional Spellpower", ItemSlot.OneHand, new Stats() { SpellPower = 25 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(3844, "Exceptional Spirit", ItemSlot.OneHand, new Stats() { Spirit = 23 }, "inv_enchant_formulagood_01"));
+            defaultEnchants.Add(new Enchant(1103, "Exceptional Agility", ItemSlot.OneHand, new Stats() { Agility = 13 }, "inv_enchant_formulagood_01"));
             {
                 enchantTemp = new Stats();
                 enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { FireDamage = 200f, }, 0f, 0f, -3)); // 3 PPM = 9% Chance to proc
@@ -827,34 +804,31 @@ namespace Rawr
                 enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { HealthRestore = 333f, }, 0f, 0f, -4.6f)); // 4.6 PPM
                 defaultEnchants.Add(new Enchant(3241, "Lifeward", ItemSlot.OneHand, enchantTemp, "spell_nature_healingway"));
             }
-            defaultEnchants.Add(new Enchant(3834, "Mighty Spellpower", ItemSlot.OneHand, new Stats() { SpellPower = 63 }, "inv_enchant_formulasuperior_01"));
-            defaultEnchants.Add(new Enchant(3833, "Superior Potency", ItemSlot.OneHand, new Stats() { AttackPower = 65 }, "inv_enchant_formulasuperior_01"));
-            defaultEnchants.Add(new Enchant(3788, "Accuracy", ItemSlot.OneHand, new Stats() { CritRating = 25, HitRating = 25 }, "inv_enchant_formulasuperior_01"));
+            defaultEnchants.Add(new Enchant(3834, "Mighty Spellpower", ItemSlot.OneHand, new Stats() { SpellPower = 32 }, "inv_enchant_formulasuperior_01"));
+            defaultEnchants.Add(new Enchant(3833, "Superior Potency", ItemSlot.OneHand, new Stats() { AttackPower = 33 }, "inv_enchant_formulasuperior_01"));
             {
                 enchantTemp = new Stats();
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { AttackPower = 400f, BonusArmorMultiplier = -.05f }, 15f, 0f, -1f));
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { AttackPower = 100, BonusArmorMultiplier = -.05f }, 15f, 0f, -1f));
                 defaultEnchants.Add(new Enchant(3789, "Berserking", ItemSlot.OneHand, enchantTemp, "spell_nature_strength"));
             }
             {
                 enchantTemp = new Stats();
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.DamageSpellHit, new Stats() { HasteRating = 250f }, 10f, 35f, 0.35f));
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MangleCatOrShredOrInfectedWoundsHit, new Stats() { HasteRating = 250f }, 10f, 35f, 0.35f));
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.DamageSpellHit, new Stats() { HasteRating = 125 }, 10f, 35f, 0.35f));
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MangleCatOrShredOrInfectedWoundsHit, new Stats() { HasteRating = 125 }, 10f, 35f, 0.35f));
                 defaultEnchants.Add(new Enchant(3790, "Black Magic", ItemSlot.OneHand, enchantTemp, "spell_shadow_unstableaffliction_1"));
             }
             {
                 enchantTemp = new Stats();
-                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { ParryRating = 200f, }, 10f, 0f, -1f)); // Need to add the 600-800 Physical Damage on next Parry
+                enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { ParryRating = 100, }, 10f, 0f, -1f)); // Need to add the 600-800 Physical Damage on next Parry
                 defaultEnchants.Add(new Enchant(3869, "Blade Ward", ItemSlot.OneHand, enchantTemp, "inv_sword_121"));
             }
             {
                 Stats blood_drain_a = new Stats(); // Once at 35% Health, your melee Hits restores 400 health per stack
-                blood_drain_a.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { HealthRestore = (360f + 440f) / 2f }, 20f, 0f, 1f, 5));
+                blood_drain_a.AddSpecialEffect(new SpecialEffect(Trigger.MeleeHit, new Stats() { HealthRestore = 200 }, 20f, 0f, 1f, 5));
                 enchantTemp = new Stats();
                 enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.DamageTaken, blood_drain_a, 0f, 0f, .35f));
                 defaultEnchants.Add(new Enchant(3870, "Blood Draining", ItemSlot.OneHand, enchantTemp, "inv_misc_gem_bloodstone_03"));
             }
-            // Patch 4.0.6+ Weapon Chains now reduce disarm duration by 60%, up from 50%.
-            defaultEnchants.Add(new Enchant(3731, "Titanium Weapon Chain", ItemSlot.OneHand, new Stats() { HitRating = 28, DisarmDurReduc = 0.60f }, "inv_belt_18"));
             #endregion
             #region Level 70 (BC)
             defaultEnchants.Add(new Enchant(2666, "Major Intellect", ItemSlot.OneHand, new Stats() { Intellect = 30 }, "inv_enchant_formulagood_01"));
@@ -883,19 +857,19 @@ namespace Rawr
             #endregion
             #region Off Handers Only (Usually Means Shields)
             #region Level 90 (MoP)
-            defaultEnchants.Add(new Enchant(4993, "Greater Parry", ItemSlot.OffHand, new Stats() { ParryRating = 170 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4434, "Major Intellect", ItemSlot.OffHand, new Stats() { Intellect = 165 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4993, "Greater Parry", ItemSlot.OffHand, new Stats() { ParryRating = 11 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4434, "Major Intellect", ItemSlot.OffHand, new Stats() { Intellect = 10 }, "spell_holy_greaterheal"));
             #endregion
             #region Level 85 (Cataclysm)
             // Patch 4.0.6+ lowered the Off-hand enchant from 100 Intellect to 40 Intellect
-            defaultEnchants.Add(new Enchant(4091, "Superior Intellect", ItemSlot.OffHand, new Stats() { Intellect = 40 }, "spell_holy_greaterheal"));
-            defaultEnchants.Add(new Enchant(4085, "Mastery", ItemSlot.OffHand, new Stats() { MasteryRating = 50 }, "spell_holy_greaterheal", true));
-            defaultEnchants.Add(new Enchant(4073, "Protection", ItemSlot.OffHand, new Stats() { BonusArmor = 160 }, "spell_holy_greaterheal", true));
+            defaultEnchants.Add(new Enchant(4091, "Superior Intellect", ItemSlot.OffHand, new Stats() { Intellect = 8 }, "spell_holy_greaterheal"));
+            defaultEnchants.Add(new Enchant(4085, "Mastery", ItemSlot.OffHand, new Stats() { MasteryRating = 10 }, "spell_holy_greaterheal", true));
+            defaultEnchants.Add(new Enchant(4073, "Protection", ItemSlot.OffHand, new Stats() { Stamina = 3 }, "spell_holy_greaterheal", true));
             #endregion
             #region Level 80 (WotLK)
             defaultEnchants.Add(new Enchant(3849, "Titanium Plating", ItemSlot.OffHand, new Stats() { ParryRating = 26, DisarmDurReduc = 0.50f }, "inv_shield_19", true));
-            defaultEnchants.Add(new Enchant(1952, "Dodge", ItemSlot.OffHand, new Stats() { DodgeRating = 20 }, "spell_holy_greaterheal", true));
-            defaultEnchants.Add(new Enchant(1128, "Greater Intellect", ItemSlot.OffHand, new Stats() { Intellect = 25 }, "spell_holy_greaterheal", true));
+            defaultEnchants.Add(new Enchant(1952, "Dodge", ItemSlot.OffHand, new Stats() { DodgeRating = 10 }, "spell_holy_greaterheal", true));
+            defaultEnchants.Add(new Enchant(1128, "Greater Intellect", ItemSlot.OffHand, new Stats() { Intellect = 13 }, "spell_holy_greaterheal", true));
             #endregion
             #region Level 70 (BC)
             //defaultEnchants.Add(new Enchant(1888, "Resistance", ItemSlot.OffHand, new Stats() { ShadowResistance = 5, ArcaneResistance = 5, NatureResistance = 5, FireResistance = 5, FrostResistance = 5 }, "inv_enchant_formulagood_01", true));
@@ -927,7 +901,6 @@ namespace Rawr
                 enchantTemp.AddSpecialEffect(new SpecialEffect(Trigger.RangedHit, new Stats() { PhysicalDamage = (550f + 1650f) / 2f, Agility = 300, }, 10, 45, 0.10f));
                 defaultEnchants.Add(new Enchant(4267, "Flintlocke's Woodchucker", ItemSlot.Ranged, enchantTemp, "inv_misc_scopeb"));
             }
-            defaultEnchants.Add(new Enchant(4176, "R19 Threatfinder", ItemSlot.Ranged, new Stats() { HitRating = 88 }, "inv_misc_scopec"));
             defaultEnchants.Add(new Enchant(4177, "Safety Catch Removal Kit", ItemSlot.Ranged, new Stats() { HasteRating = 88 }, "inv_misc_enggizmos_37"));
             #endregion
             #region Level 80 (WotLK)
@@ -981,9 +954,7 @@ namespace Rawr
             #region Cogwheel
             defaultEnchants.Add(new Enchant(59491, "Flashing Cogwheel", ItemSlot.Cogwheel, new Stats() { ParryRating = 208 }, "inv_misc_enggizmos_30"));
             defaultEnchants.Add(new Enchant(59480, "Fractured Cogwheel", ItemSlot.Cogwheel, new Stats() { MasteryRating = 208 }, "inv_misc_enggizmos_30"));
-            defaultEnchants.Add(new Enchant(59489, "Precise Cogwheel", ItemSlot.Cogwheel, new Stats() { ExpertiseRating = 208 }, "inv_misc_enggizmos_30"));
             defaultEnchants.Add(new Enchant(59479, "Quick Cogwheel", ItemSlot.Cogwheel, new Stats() { HasteRating = 208 }, "inv_misc_enggizmos_30"));
-            defaultEnchants.Add(new Enchant(59493, "Rigid Cogwheel", ItemSlot.Cogwheel, new Stats() { HitRating = 208 }, "inv_misc_enggizmos_30"));
             defaultEnchants.Add(new Enchant(59478, "Smooth Cogwheel", ItemSlot.Cogwheel, new Stats() { CritRating = 208 }, "inv_misc_enggizmos_30"));
             defaultEnchants.Add(new Enchant(59496, "Sparkling Cogwheel", ItemSlot.Cogwheel, new Stats() { Spirit = 208 }, "inv_misc_enggizmos_30"));
             defaultEnchants.Add(new Enchant(59477, "Subtle Cogwheel", ItemSlot.Cogwheel, new Stats() { DodgeRating = 208 }, "inv_misc_enggizmos_30"));

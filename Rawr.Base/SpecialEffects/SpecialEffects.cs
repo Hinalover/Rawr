@@ -151,14 +151,8 @@ namespace Rawr {
                             case "Block Rating":
                                 stats.BlockRating = gemBonusValue;
                                 break;
-                            case "Hit Rating":
-                                stats.HitRating = gemBonusValue;
-                                break;
                             case "Haste Rating":
                                 stats.HasteRating = gemBonusValue;
-                                break;
-                            case "Expertise Rating":
-                                stats.ExpertiseRating = gemBonusValue;
                                 break;
                             case "Strength":
                                 stats.Strength = gemBonusValue;
@@ -184,9 +178,6 @@ namespace Rawr {
                             case "Resilience":
                             case "Resilience Rating":
                                 stats.Resilience = gemBonusValue;
-                                break;
-                            case "Spell Hit Rating":
-                                stats.HitRating = gemBonusValue;
                                 break;
                             case "Spell Haste Rating":
                                 stats.HasteRating = gemBonusValue;
@@ -1669,12 +1660,6 @@ namespace Rawr {
                 line = line.Replace(".", "").Replace(" ", "");
                 stats.SpellPenetration += int.Parse(line);
             }
-            else if (isArmory && line.StartsWith("Increases hit rating by "))
-            {
-                line = line.Substring("Increases hit rating by ".Length);
-                line = line.Replace(".", "").Replace(" ", "");
-                stats.HitRating += int.Parse(line);
-            }
             // Restores 7 mana per 5 sec
             // Check to see if the desc contains the token 'mana'.  Items like Frostwolf Insignia
             // and Essense Infused Shroom Restore health.
@@ -1718,13 +1703,6 @@ namespace Rawr {
                 if (line.Contains(".")) line = line.Substring(0, line.IndexOf("."));
                 if (line.Contains(" ")) line = line.Substring(0, line.IndexOf(" "));
                 stats.BlockRating += int.Parse(line);
-            }
-            else if (isArmory && line.StartsWith("Increases your hit rating by "))
-            {
-                line = line.Substring("Increases your hit rating by ".Length);
-                if (line.Contains(".")) line = line.Substring(0, line.IndexOf("."));
-                if (line.Contains(" ")) line = line.Substring(0, line.IndexOf(" "));
-                stats.HitRating += int.Parse(line);
             }
             #endregion
             #region 3.0.1 Trinkets
@@ -2393,20 +2371,6 @@ namespace Rawr {
                     0f, 60f, 1f));
             }
             #endregion
-            #region Expertise Rating
-            else if ((match = new Regex(@"Increases your expertise rating by (?<amount>\d+) for (?<dur>\d+) sec").Match(line.Replace("  ", " "))).Success)
-            {
-                stats.AddSpecialEffect(new SpecialEffect(Trigger.Use,
-                    new Stats() { ExpertiseRating = int.Parse(match.Groups["amount"].Value), },
-                    int.Parse(match.Groups["dur"].Value), int.Parse(match.Groups["dur"].Value) * 6f));
-            }
-            else if ((match = new Regex(@"Increases expertise rating by (?<amount>\d+) for (?<dur>\d+) sec").Match(line.Replace("  ", " "))).Success)
-            {
-                stats.AddSpecialEffect(new SpecialEffect(Trigger.Use,
-                    new Stats() { ExpertiseRating = int.Parse(match.Groups["amount"].Value), },
-                    int.Parse(match.Groups["dur"].Value), int.Parse(match.Groups["dur"].Value) * 6f));
-            }
-            #endregion
             #region Healed
             // Living Ice Crystals
             else if ((match = new Regex(@"Summons a keg of Flamelager's Summer Brew at the target location").Match(line)).Success)
@@ -2506,20 +2470,6 @@ namespace Rawr {
                     int.Parse(match.Groups["dur"].Value), int.Parse(match.Groups["dur"].Value) * 6f));
             }
             
-            #endregion
-            #region Hit Rating
-            else if ((match = new Regex(@"Increases your hit rating by (?<amount>\d+) for (?<dur>\d+) sec").Match(line.Replace("  ", " "))).Success)
-            {
-                stats.AddSpecialEffect(new SpecialEffect(Trigger.Use,
-                    new Stats() { HitRating = int.Parse(match.Groups["amount"].Value), },
-                    int.Parse(match.Groups["dur"].Value), int.Parse(match.Groups["dur"].Value) * 6f));
-            }
-            else if ((match = new Regex(@"Increases hit rating by (?<amount>\d+) for (?<dur>\d+) sec").Match(line.Replace("  ", " "))).Success)
-            {
-                stats.AddSpecialEffect(new SpecialEffect(Trigger.Use,
-                    new Stats() { HitRating = int.Parse(match.Groups["amount"].Value), },
-                    int.Parse(match.Groups["dur"].Value), int.Parse(match.Groups["dur"].Value) * 6f));
-            }
             #endregion
             #region Intellect
             else if ((match = new Regex(@"Increases your Intellect by (?<amount>\d+) for (?<dur>\d+) sec\.?\s*\((?<cd1>\d+) Min, (?<cd2>\d+) Sec Cooldown\)").Match(line.Replace("  ", " "))).Success)

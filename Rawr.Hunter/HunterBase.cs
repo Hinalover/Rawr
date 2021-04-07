@@ -35,7 +35,8 @@ namespace Rawr.Hunter
         /// <summary>Shows the amount of Health the player has.</summary>
         public float Health { get { return Stats.Health; } }
         /// <summary>Shows the amount of Focus the player has. Base is 100 Focus. Beast Mastery players can have up to 110 Focus</summary>
-        public float Focus { get { return 100f + (Talents.KindredSpirits * 5f); } }
+        //public float Focus { get { return 100f + (Talents.KindredSpirits * 5f); } }
+        public float Focus { get { return 100f; } }
         /// <summary>Shows the amount of Armor the player has.</summary>
         public float Armor { get { return Stats.Armor; } }
         /// <summary>Shows the amount of Agility the player has.</summary>
@@ -44,45 +45,45 @@ namespace Rawr.Hunter
         public float RangedAttackPower { get { return Stats.RangedAttackPower; } }
 
         /// <summary>Show base Physical Hit chance</summary>
-        public float PhysicalHit { get { return Stats.PhysicalHit; } }
+        //public float PhysicalHit { get { return Stats.PhysicalHit; } }
         /// <summary>Show base Hit Rating</summary>
-        public float HitRating { get { return Stats.HitRating; } }
+        //public float HitRating { get { return Stats.HitRating; } }
         /// <summary>Show Hit Rating Percent from Hit Rating</summary>
-        public float HitRatingPercent { get { return StatConversion.GetHitFromRating(this.HitRating); } }
+        //public float HitRatingPercent { get { return StatConversion.GetHitFromRating(this.HitRating); } }
         /// <summary>Show amount of hit from bonuses</summary>
-        public float HitFromBonus { get { return this.PhysicalHit - this.HitRatingPercent; } }
+        //public float HitFromBonus { get { return this.PhysicalHit - this.HitRatingPercent; } }
         /// <summary>Show amount of hit rating from bonuses</summary>
-        public float HitRatingFromBonus { get { return StatConversion.GetRatingFromHit(this.HitFromBonus); } }
+        //public float HitRatingFromBonus { get { return StatConversion.GetRatingFromHit(this.HitFromBonus); } }
         /// <summary>Returns the amount of Hit Rating needed to cap</summary>
-        public float HitRatingCap { get { return (float)Math.Ceiling(StatConversion.GetRatingFromHit(StatConversion.WHITE_MISS_CHANCE_CAP[this.TargetLevel - character.Level])); } }
+        //public float HitRatingCap { get { return (float)Math.Ceiling(StatConversion.GetRatingFromHit(StatConversion.WHITE_MISS_CHANCE_CAP[this.TargetLevel - character.Level])); } }
         /// <summary>Returns difference between the hit cap and what the player currently has</summary>
-        public float HitCapDifference { get { return (this.HitRatingCap - this.HitRating); } }
+        //public float HitCapDifference { get { return (this.HitRatingCap - this.HitRating); } }
         /// <summary>Shows the label for how much hit rating the user needs</summary>
-        public string HitNeededLabel { get { return ((this.HitCapDifference < 0) ? "You can free {2:0} Hit Rating" : ((this.HitCapDifference > 0) ? "You need {2:0} more Hit Rating" : "You are exactly at the Hit Rating cap")); } }
+        //public string HitNeededLabel { get { return ((this.HitCapDifference < 0) ? "You can free {2:0} Hit Rating" : ((this.HitCapDifference > 0) ? "You need {2:0} more Hit Rating" : "You are exactly at the Hit Rating cap")); } }
         /// <summary>Shows the Hit Rating the user needs to cap</summary>
-        public float HitRatingNeeded { get { return (this.HitCapDifference < 0) ? this.HitCapDifference * -1f : this.HitCapDifference; } }
+        //public float HitRatingNeeded { get { return (this.HitCapDifference < 0) ? this.HitCapDifference * -1f : this.HitCapDifference; } }
 
 
         /// <summary>Show base Expertise Rating</summary>
-        public float ExpertiseRating { get { return Stats.ExpertiseRating; } }
+        //public float ExpertiseRating { get { return Stats.ExpertiseRating; } }
         /// <summary>Show Expertise Rating Percent from Hit Rating</summary>
-        public float ExpertiseRatingPercent { get { return StatConversion.GetExpertiseFromRating(this.ExpertiseRating); } }
+        //public float ExpertiseRatingPercent { get { return StatConversion.GetExpertiseFromRating(this.ExpertiseRating); } }
         /// <summary>Show amount of Expertise rating from bonuses</summary>
-        public float ExpertiseRatingFromBonus { get { return StatConversion.GetRatingFromHit(this.ExpertiseRatingFromBonus); } }
+        //public float ExpertiseRatingFromBonus { get { return StatConversion.GetRatingFromHit(this.ExpertiseRatingFromBonus); } }
         /// <summary>Returns the amount of Expertise Rating needed to cap</summary>
-        public float ExpertiseRatingCap { get { return (float)Math.Ceiling(StatConversion.GetRatingFromExpertise(StatConversion.WHITE_DODGE_CHANCE_CAP[this.TargetLevel - character.Level])); } }
+        //public float ExpertiseRatingCap { get { return (float)Math.Ceiling(StatConversion.GetRatingFromExpertise(StatConversion.WHITE_DODGE_CHANCE_CAP[this.TargetLevel - character.Level])); } }
         /// <summary>Returns difference between the Expertise cap and what the player currently has</summary>
-        public float ExpertiseCapDifference { get { return (this.ExpertiseRatingCap - this.ExpertiseRating); } }
+        //public float ExpertiseCapDifference { get { return (this.ExpertiseRatingCap - this.ExpertiseRating); } }
         /// <summary>Shows the label for how much Expertise rating the user needs</summary>
-        public string ExpertiseNeededLabel { get { return ((this.ExpertiseCapDifference < 0) ? "You can free {2:0} Expertise Rating" : ((this.ExpertiseCapDifference > 0) ? "You need {2:0} more Expertise Rating" : "You are exactly at the Expertise Rating cap")); } }
+        //public string ExpertiseNeededLabel { get { return ((this.ExpertiseCapDifference < 0) ? "You can free {2:0} Expertise Rating" : ((this.ExpertiseCapDifference > 0) ? "You need {2:0} more Expertise Rating" : "You are exactly at the Expertise Rating cap")); } }
         /// <summary>Shows the Expertise Rating the user needs to cap</summary>
-        public float ExpertiseRatingNeeded { get { return (this.ExpertiseCapDifference < 0) ? this.ExpertiseCapDifference * -1f : this.ExpertiseCapDifference; } }
+        //public float ExpertiseRatingNeeded { get { return (this.ExpertiseCapDifference < 0) ? this.ExpertiseCapDifference * -1f : this.ExpertiseCapDifference; } }
         
 
         /// <summary>Show chance to miss on hit</summary>
-        public float ChancetoMiss { get { return Math.Max(0f, StatConversion.WHITE_MISS_CHANCE_CAP[this.TargetLevel - character.Level] - this.HitRatingPercent); } }
+        public float ChancetoMiss { get { return 0f; } }//{ return Math.Max(0f, StatConversion.WHITE_MISS_CHANCE_CAP[this.TargetLevel - character.Level] - this.HitRatingPercent); } }
         /// <summary>Show chance to be dodged on hit</summary>
-        public float ChancetoBeDodged { get { return Math.Max(0f, StatConversion.WHITE_DODGE_CHANCE_CAP[this.TargetLevel - character.Level] - this.ExpertiseRatingPercent); } }
+        public float ChancetoBeDodged { get { return 0f; } }//{ return Math.Max(0f, StatConversion.WHITE_DODGE_CHANCE_CAP[this.TargetLevel - character.Level] - this.ExpertiseRatingPercent); } }
         /// <summary>Show chance to hit target</summary>
         public float ChancetoHit { get { return 1f - this.ChancetoMiss - this.ChancetoBeDodged; } }
 
@@ -122,7 +123,7 @@ namespace Rawr.Hunter
              * 7) Glyph of Rapid Fire adds 10% base regen (4.00->6.00).
              * 8) Focused Fire adds 15% base regen (4.00->4.60).
          */
-        public float FocusRegen { get { return 4f * (1f + (Talents.Pathing * 0.01f)) * (1 + (this.BaseHaste * 2f)); } }
+        public float FocusRegen { get { return 4f * (1 + (this.BaseHaste * 2f)); } }
 
         /// <summary>Returns the Base amount of Mastery value in % per Tree, before Mastery Rating is added</summary>
         [Percentage]

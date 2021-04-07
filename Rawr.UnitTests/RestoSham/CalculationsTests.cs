@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Collections.Generic;
-using Rawr.RestoSham;
+//using Rawr.RestoSham;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Rawr.UnitTests.RestoSham

@@ -43,7 +43,7 @@ namespace Rawr.Hunter
             get { return _CDCutoff; }
             set { _CDCutoff = value; OnPropertyChanged("CDCutoff"); }
         }
-        private Aspect _SelectedAspect = Aspect.Hawk;
+        private Aspect _SelectedAspect = Aspect.None;
         public Aspect SelectedAspect
         {
             get { return _SelectedAspect; }

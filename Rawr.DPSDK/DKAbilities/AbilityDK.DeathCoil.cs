@@ -25,7 +25,7 @@ namespace Rawr.DK
         public override void UpdateCombatState(CombatState CS)
         {
             base.UpdateCombatState(CS);
-            float RPCost = 40 - (CS.m_Talents.RunicCorruption * 3);
+            float RPCost = 40 - (CS.m_Talents.RunicCorruption ? 3 : 0);
             //RPCost /= (1f + (.05f * (float)CS.m_Talents.SuddenDoom));  
             // Moving SD procs to be extra DCs in the rotation rather than reduced cost.
             // This makes it more like Rime.

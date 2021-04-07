@@ -164,7 +164,7 @@ namespace Rawr.ProtPaladin
         {
             double[] castDistributionTable = new double[RotationAbilities.Length];
             // Derive the cast table from the current talent selection, boss under 20% percentage, Avenging Wrath uptime
-            DeriveCastTable(bossOpts.Under20Perc, calcs.AvengingWrathUptime, calcs.HolyAvengerUptime, character.PaladinTalents.SanctifiedWrath > 0, character.PaladinTalents.HolyAvenger > 0, character.PaladinTalents.DivinePurpose > 0, castDistributionTable);
+            DeriveCastTable(bossOpts.Under20Perc, calcs.AvengingWrathUptime, calcs.HolyAvengerUptime, character.PaladinTalents.SanctifiedWrath, character.PaladinTalents.HolyAvenger, character.PaladinTalents.DivinePurpose, castDistributionTable);
 
             return castDistributionTable;
         }
@@ -253,7 +253,7 @@ namespace Rawr.ProtPaladin
                     }
                 }
                 // Holy Avenger, HP generators used during HA do 30% more damage (18 sec/2 min)
-                if (character.PaladinTalents.HolyAvenger > 0 &&
+                if (character.PaladinTalents.HolyAvenger &&
                     (ability.Name == "CS" || ability.Name == "J" || ability.Name == "HotR"))
                 {
                     abilityScaledDamage *= 1 + (0.3 * calcs.HolyAvengerUptime);
@@ -302,14 +302,14 @@ namespace Rawr.ProtPaladin
             rotationDPS += ((107 + 0.094 * calcs.BasicStats.SpellPower) * 5 * spellDamageMultiplier) / 3.0;
             calcs.Abilities["Censure"] = (float)((107 + 0.094 * calcs.BasicStats.SpellPower) * 5 * spellDamageMultiplier);
             // Level 90 talent DPS
-            if (character.PaladinTalents.LightsHammer > 0)
+            if (character.PaladinTalents.LightsHammer)
             {
                 double abilityScaledDamage = (3630 + .321 * calcs.BasicStats.SpellPower) * 8 * spellDamageMultiplier;
                 calcs.Abilities["LH"] = (float)abilityScaledDamage;
                 abilityScaledDamage = CalculateConsecrationSpellDamage(abilityScaledDamage, calcs, 8, levelDelta);
                 rotationDPS += abilityScaledDamage / 60.0;
             }
-            else if (character.PaladinTalents.HolyPrism > 0)
+            else if (character.PaladinTalents.HolyPrism)
             {
                 double missedPercentage = 0;
                 double abilityScaledDamage = (16136 + 1.428 * calcs.BasicStats.SpellPower) * spellDamageMultiplier;
@@ -317,7 +317,7 @@ namespace Rawr.ProtPaladin
                 abilityScaledDamage = (abilityScaledDamage * (1 - calcs.SpellCrit) + abilityScaledDamage * 2 * calcs.SpellCrit) * (1 - missedPercentage);
                 rotationDPS += abilityScaledDamage / 20.0;
             }
-            else if (character.PaladinTalents.ExecutionSentence > 0)
+            else if (character.PaladinTalents.ExecutionSentence)
             {
                 double missedPercentage = Math.Max(0, StatConversion.SPELL_MISS_CHANCE_CAP[levelDelta] - calcs.SpellHit);
                 double abilityScaledDamage = (12989 + 5.936 * calcs.BasicStats.SpellPower) * spellDamageMultiplier;

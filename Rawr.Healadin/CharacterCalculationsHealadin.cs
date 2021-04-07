@@ -72,10 +72,9 @@ namespace Rawr.Healadin
         public float RotationHR { get; set; }
         public float RotationLoH { get; set; }
         public float RotationCleanse { get; set; }
-        public float RotationMelee { get; set; }  // Time spend melee, NOT during instant casts. Just doing melee for mana. - Removed as of 5.3
+        public float RotationMelee { get; set; }  // Time spend melee, NOT during instant casts. Just doing melee for mana.
         public float RotationTotal { get; set; }
         public float HolyPowerCasts { get; set; }
-        public float HolyPowerTotal { get; set; }
 
         // total healed for each spell
         public float HealedFoL { get; set; }
@@ -184,7 +183,7 @@ namespace Rawr.Healadin
                         FightLength.ToString("N00"), ActiveTime.ToString("N00"), RotationTotal.ToString("N00"));
 
          
-            // Healing Breakdown - Prepare for Holy light's removal
+            // Healing Breakdown
             dictValues["Holy Light Healed"] = string.Format("{0} *Holy Light Information: \nNumber of Casts: {1}\nTotal cast time: {2} sec\nTotal mana used: {3}",
                                                             HealedHL.ToString("N00"), HLCasts.ToString("N01"), RotationHL.ToString("N02"), UsageHL.ToString("N00"));
             dictValues["Divine Light Healed"] = string.Format("{0} *Divine Light Information: \nNumber of Casts: {1}\nTotal cast time: {2} sec\nTotal mana used: {3}",

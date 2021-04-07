@@ -2,7 +2,7 @@
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Rawr;
-using Rawr.ShadowPriest;
+//using Rawr.ShadowPriest;
 
 namespace Rawr.UnitTests.ShadowPriest
 {
@@ -61,10 +61,10 @@ namespace Rawr.UnitTests.ShadowPriest
 
         protected void AssertStatCorrect(Func<Stats, float> property, float expected)
         {
-            CalculationsShadowPriest calculations = new CalculationsShadowPriest();
+            //CalculationsShadowPriest calculations = new CalculationsShadowPriest();
 
-            Calculations.Models["ShadowPriest"] = typeof(CalculationsShadowPriest);
-            Calculations.LoadModel(calculations);
+            //Calculations.Models["ShadowPriest"] = typeof(CalculationsShadowPriest);
+            //Calculations.LoadModel(calculations);
 
 
             //OpOv: Direct private access of fields is no longer allowed
@@ -74,7 +74,7 @@ namespace Rawr.UnitTests.ShadowPriest
 
             //_character.CurrentModel = "ShadowPriest";
 
-            Stats stats = calculations.GetCharacterStats(_character, null);
+            //Stats stats = calculations.GetCharacterStats(_character, null);
 
             //Assert.That(property(stats), Is.EqualTo(expected).Within(0.00005f));
         }

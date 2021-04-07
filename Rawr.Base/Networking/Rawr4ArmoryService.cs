@@ -428,10 +428,8 @@ namespace Rawr
                 foreach (XElement node in xtooltip.SelectNodes("bonusIntellect")) { stats.Intellect = int.Parse(node.Value); }
 
                 foreach (XElement node in xtooltip.SelectNodes("bonusStrength")) { stats.Strength = int.Parse(node.Value); }
-                foreach (XElement node in xtooltip.SelectNodes("bonusHitRating")) { stats.HitRating = int.Parse(node.Value); }
                 foreach (XElement node in xtooltip.SelectNodes("bonusHasteRating")) { stats.HasteRating = int.Parse(node.Value); }
                 foreach (XElement node in xtooltip.SelectNodes("bonusCritRating")) { stats.CritRating = int.Parse(node.Value); }
-                foreach (XElement node in xtooltip.SelectNodes("bonusExpertiseRating")) { stats.ExpertiseRating = int.Parse(node.Value); }
 
                 foreach (XElement node in xtooltip.SelectNodes("arcaneResist")) { stats.ArcaneResistance = int.Parse(node.Value); }
                 foreach (XElement node in xtooltip.SelectNodes("fireResist")) { stats.FireResistance = int.Parse(node.Value); }
@@ -440,7 +438,6 @@ namespace Rawr
                 foreach (XElement node in xtooltip.SelectNodes("shadowResist")) { stats.ShadowResistance = int.Parse(node.Value); }
 
                 foreach (XElement node in xtooltip.SelectNodes("bonusCritSpellRating")) { stats.CritRating = int.Parse(node.Value); }
-                foreach (XElement node in xtooltip.SelectNodes("bonusHitSpellRating")) { stats.HitRating = int.Parse(node.Value); }
                 foreach (XElement node in xtooltip.SelectNodes("bonusHasteSpellRating")) { stats.HasteRating = int.Parse(node.Value); }
                 foreach (XElement node in xtooltip.SelectNodes("bonusSpellPower")) { stats.SpellPower = int.Parse(node.Value); }
 
@@ -553,14 +550,8 @@ namespace Rawr
                                 case "Block Rating":
                                     socketStats.BlockRating = socketBonusValue;
                                     break;
-                                case "Hit Rating":
-                                    socketStats.HitRating = socketBonusValue;
-                                    break;
                                 case "Haste Rating":
                                     socketStats.HasteRating = socketBonusValue;
-                                    break;
-                                case "Expertise Rating":
-                                    socketStats.ExpertiseRating = socketBonusValue;
                                     break;
                                 case "Strength":
                                     socketStats.Strength = socketBonusValue;
@@ -608,8 +599,6 @@ namespace Rawr
                                 //    sockets.Stats.SpellDamageRating = socketBonusValue;
                                 //    sockets.Stats.Healing = socketBonusValue;
                                 //    break;
-                                case "Spell Hit Rating":
-                                    socketStats.HitRating = socketBonusValue;
                                     break;
                                 case "Intellect":
                                     socketStats.Intellect = socketBonusValue;
@@ -733,14 +722,8 @@ namespace Rawr
                                     case "Block Rating":
                                         stats.BlockRating = gemBonusValue;
                                         break;
-                                    case "Hit Rating":
-                                        stats.HitRating = gemBonusValue;
-                                        break;
                                     case "Haste Rating":
                                         stats.HasteRating = gemBonusValue;
-                                        break;
-                                    case "Expertise Rating":
-                                        stats.ExpertiseRating = gemBonusValue;
                                         break;
                                     case "Strength":
                                         stats.Strength = gemBonusValue;
@@ -760,9 +743,6 @@ namespace Rawr
                                     case "Resilience":
                                     case "Resilience Rating":
                                         stats.Resilience = gemBonusValue;
-                                        break;
-                                    case "Spell Hit Rating":
-                                        stats.HitRating = gemBonusValue;
                                         break;
                                     case "Spell Haste Rating":
                                         stats.HasteRating = gemBonusValue;

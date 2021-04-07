@@ -558,7 +558,7 @@ namespace Rawr.Healadin
                         ItemType.Plate,
                         ItemType.None,
                         ItemType.Shield,
-                        //ItemType.Libram,ItemType.Relic, Relices removed in MoP
+                        ItemType.Libram,ItemType.Relic,
                         ItemType.OneHandAxe,
                         ItemType.OneHandMace,
                         ItemType.OneHandSword

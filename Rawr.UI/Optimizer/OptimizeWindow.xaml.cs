@@ -290,9 +290,9 @@ namespace Rawr.UI
                     int totalPoints = 0;
                     for (int i = 0; i < talents.Data.Length; i++)
                     {
-                        totalPoints += talents.Data[i];
+                        totalPoints += talents.Data[i] ? 1 : 0;
                     }
-                    if (totalPoints == 41/*character.Level - 9*/)//that's the old method
+                    if (totalPoints == 7)
                     {
                         talentSpecs.Add(talents);
                     }

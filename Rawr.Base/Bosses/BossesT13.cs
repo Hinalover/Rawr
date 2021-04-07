@@ -169,18 +169,6 @@ namespace Rawr.Bosses
                 BladeDance.SetAffectsRoles_All();
                 Phase2.Attacks.Add(BladeDance);
 
-                BuffState BladeDance_Hit_Reduction = new BuffState
-                {
-                    Name = "Blade Dance Hit Reduction",
-                    Duration = 15f * 1000,
-                    Frequency = 15f,
-                    Chance = 1f,
-                    Breakable = false,
-                    Stats = new Stats() { SpellHit = -1f, PhysicalHit = -1f },
-                };
-                BladeDance_Hit_Reduction.SetAffectsRoles_All();
-                Phase2.BuffStates.Add(BladeDance_Hit_Reduction);
-
                 // Everyone needs to move out
                 Impedance BladeDanceImpedance = new Impedance
                 {

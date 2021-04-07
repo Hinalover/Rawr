@@ -76,7 +76,7 @@ namespace Rawr.Bear
         {
             get
             {
-                if (guardianCombatState.Talents.CenarionWard > 0)
+                if (guardianCombatState.Talents.CenarionWard)
                     return h_Formula();
                 else
                     return 0f;

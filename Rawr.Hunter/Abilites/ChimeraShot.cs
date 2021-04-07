@@ -29,7 +29,7 @@ namespace Rawr.Hunter.Skills
 
             ReqTalent = true;
             
-            Talent2ChksValue = (c.HunterTalents.Specialization == (int)Specialization.Marksmanship ? 1 : 0);
+            Talent2ChksValue = (c.HunterTalents.Specialization == (int)Specialization.Marksmanship );
             ReqRangedWeap = true;
             ReqSkillsRange = true;
             DamageType = ItemDamageType.Nature;
@@ -51,7 +51,7 @@ namespace Rawr.Hunter.Skills
 
         public float piercingShots_TickSize()
         {
-            float damage = Damage * Talents.PiercingShots * 0.10f;
+            float damage = Damage * 0.10f;
             float NumTicks = 8f;
             return damage * DamageBonus * (1f + StatS.BonusDamageMultiplier) * (1f + StatS.BonusNatureDamageMultiplier) / NumTicks;
         }

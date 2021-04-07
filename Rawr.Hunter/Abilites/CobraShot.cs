@@ -30,7 +30,7 @@ namespace Rawr.Hunter.Skills
             shortName = "Cob";
 
             ReqTalent = true;
-            Talent2ChksValue = (c.HunterTalents.Specialization == (int)Specialization.Survival ? 1 : 0);
+            Talent2ChksValue = (c.HunterTalents.Specialization == (int)Specialization.Survival );
             ReqRangedWeap = true;
             ReqSkillsRange = true;
             CastTime = 1.5f;

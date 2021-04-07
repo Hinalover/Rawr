@@ -245,7 +245,7 @@ namespace Rawr.Tree
                     if ((calc.Division.EffectMasks[div] & (1 << j)) != 0)
                     {
                         if (calc.Division.Effects[j].Stats is CalculationsTree.TreeOfLifeStats)
-                            treeOfLifeActive = Talents.Incarnation == 1;
+                            treeOfLifeActive = Talents.Incarnation;
                         else
                             statsWithOnUse.Accumulate(calc.Division.Effects[j].Stats);
                     }
@@ -847,7 +847,7 @@ namespace Rawr.Tree
             #endregion
 
             #region Nature's Swiftness
-            if (Talents.NaturesSwiftness > 0)
+            if (true)
             {
                 // Nature's Swiftness is actually additive
                 double nshtMultiplier = 1 + 0.5 / (1 + stats.PassiveDirectHealBonus + spells[(int)TreeSpell.HealingTouch].ExtraDirectBonus);
@@ -1020,7 +1020,7 @@ namespace Rawr.Tree
             }
 
             List<int> candidatesList = new List<int>();
-            if(Talents.NaturesSwiftness > 0)
+            if(true)
                 candidatesList.Add((int)TreeAction.RaidSwiftHT);
             candidatesList.Add((int)TreeAction.RaidRejuvenation);
             candidatesList.Add((int)TreeAction.RaidHealingTouch);
@@ -1068,7 +1068,7 @@ namespace Rawr.Tree
             }
 
             List<int> candidatesList = new List<int>();
-            if (Talents.NaturesSwiftness > 0)
+            if (true)
                 candidatesList.Add((int)TreeAction.TankSwiftHT);
             candidatesList.Add((int)TreeAction.TankRejuvenation);
             candidatesList.Add((int)TreeAction.TankHealingTouch);

@@ -22,20 +22,21 @@ namespace Rawr.Hunter.Skills
             Name = "Bestial Wrath";
             shortName = "BW";
 
-            Cd = ((2f * 60f) * (1f - Talents.Longevity)) - (Talents.GlyphOfBestialWrath ? 20f : 0f); // In Seconds
+            Cd = ((2f * 60f) - (Talents.GlyphOfBestialWrath ? 20f : 0f)); // In Seconds
             Duration = 10f;
             UseHitTable = false;
             ReqTalent = true;
-            Talent2ChksValue = (c.HunterTalents.Specialization == (int)Specialization.BeastMastery ? 1 : 0);
+            Talent2ChksValue = (c.HunterTalents.Specialization == (int)Specialization.BeastMastery);
 
             // TODO: Move these to static SEs.
             Effect = new SpecialEffect(Trigger.Use,
                 new Stats() { BonusPetDamageMultiplier = 0.20f }, Duration, Cd);
-            if (Talents.TheBeastWithin > 0f)
-            {
-                Effect = new SpecialEffect(Trigger.Use,
-                    new Stats() { BonusDamageMultiplier = 0.10f }, Duration, Cd);
-            }
+            //OpOv: Commented out during WoD sync: 
+            //if (Talents.TheBeastWithin > 0f)
+            //{
+            //    Effect = new SpecialEffect(Trigger.Use,
+            //        new Stats() { BonusDamageMultiplier = 0.10f }, Duration, Cd);
+            //}
             eShot = Shots.BestialWrath;
 
             Initialize();

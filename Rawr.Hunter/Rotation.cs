@@ -215,7 +215,7 @@ namespace Rawr.Hunter {
 
         // Buffs.
         public Skills.BestialWrath Bestial;
-        public Skills.RapidFire Rapid;
+        
 //        public Skills.BlackArrowBuff BlackArrowB;
         public Skills.Readiness Ready;
 
@@ -223,7 +223,7 @@ namespace Rawr.Hunter {
         public Skills.PiercingShots Piercing;
         public Skills.BlackArrow BlackArrowD;
 
-        public Skills.SerpentSting Serpent;
+        
 
         // Traps.
 //        public Skills.ImmolationTrap Immolation;
@@ -234,7 +234,7 @@ namespace Rawr.Hunter {
         //New Talent skills
         public Skills.MurderOfCrows MurderOfCrows;
         //TODO: OpOv - Blink Strike needs to be implemented
-        public Skills.LynxRush LynxRush;
+        
         public Skills.GlaiveToss GlaiveToss;
         public Skills.Powershot Powershot;
         public Skills.Barrage Barrage;
@@ -312,31 +312,32 @@ namespace Rawr.Hunter {
             iActions += AbilityList[typeof(KillShot)].numActivates;
             iActions += AbilityList[typeof(SerpentSting)].numActivates; 
 #endif
+            //OpOv: Commented out as part of WoD update
+            //#region WildQuiver
+            //if (FightDuration > 0 && Char.HunterTalents.HighestTree == (int)Specialization.Marksmanship)
+            //{
+            //    float numWQProcs = (iActions * calcs.Hunter.MasteryRatePercent);
+            //    calcs.WildQuiverDPS = (numWQProcs * WhiteAtks.RwDamageOnUse) / FightDuration;
+            //}
+            //#endregion
 
-            #region WildQuiver
-            if (FightDuration > 0 && Char.HunterTalents.HighestTree == (int)Specialization.Marksmanship)
-            {
-                float numWQProcs = (iActions * calcs.Hunter.MasteryRatePercent);
-                calcs.WildQuiverDPS = (numWQProcs * WhiteAtks.RwDamageOnUse) / FightDuration;
-            }
-            #endregion
-
-            #region Piercing Shots
-            if (Char.HunterTalents.HighestTree == (int)Specialization.Marksmanship)
-            {
-                float PiercingShotsPerc = .3f;
-                float SScritRate = AbilityList[typeof(SteadyShot)].ability.GetXActs(AttackTableSelector.Crit, 1);
-                calcs.PiercingShotsDPSSteadyShot = AbilityList[typeof(SteadyShot)].DPS * SScritRate * PiercingShotsPerc;
-                float CScritRate = AbilityList[typeof(ChimeraShot)].ability.GetXActs(AttackTableSelector.Crit, 1);
-                calcs.PiercingShotsDPSChimeraShot = AbilityList[typeof(ChimeraShot)].DPS * CScritRate * PiercingShotsPerc;
-                float AScritRate = AbilityList[typeof(AimedShot)].ability.GetXActs(AttackTableSelector.Crit, 1);
-                calcs.PiercingShotsDPSAimedShot = AbilityList[typeof(AimedShot)].DPS * AScritRate * PiercingShotsPerc;
-                float MMMAScritRate = AbilityList[typeof(MMMAimedShot)].ability.GetXActs(AttackTableSelector.Crit, 1);
-                calcs.PiercingShotsDPSAimedShot += AbilityList[typeof(MMMAimedShot)].DPS * MMMAScritRate * PiercingShotsPerc;
-                float CAAScritRate = AbilityList[typeof(CAAimedShot)].ability.GetXActs(AttackTableSelector.Crit, 1);
-                calcs.PiercingShotsDPSAimedShot += AbilityList[typeof(CAAimedShot)].DPS * CAAScritRate * PiercingShotsPerc;
-            }
-            #endregion
+            //OpOv: Commented out as part of WoD update
+            //#region Piercing Shots
+            //if (Char.HunterTalents.HighestTree == (int)Specialization.Marksmanship)
+            //{
+            //    float PiercingShotsPerc = .3f;
+            //    float SScritRate = AbilityList[typeof(SteadyShot)].ability.GetXActs(AttackTableSelector.Crit, 1);
+            //    calcs.PiercingShotsDPSSteadyShot = AbilityList[typeof(SteadyShot)].DPS * SScritRate * PiercingShotsPerc;
+            //    float CScritRate = AbilityList[typeof(ChimeraShot)].ability.GetXActs(AttackTableSelector.Crit, 1);
+            //    calcs.PiercingShotsDPSChimeraShot = AbilityList[typeof(ChimeraShot)].DPS * CScritRate * PiercingShotsPerc;
+            //    float AScritRate = AbilityList[typeof(AimedShot)].ability.GetXActs(AttackTableSelector.Crit, 1);
+            //    calcs.PiercingShotsDPSAimedShot = AbilityList[typeof(AimedShot)].DPS * AScritRate * PiercingShotsPerc;
+            //    float MMMAScritRate = AbilityList[typeof(MMMAimedShot)].ability.GetXActs(AttackTableSelector.Crit, 1);
+            //    calcs.PiercingShotsDPSAimedShot += AbilityList[typeof(MMMAimedShot)].DPS * MMMAScritRate * PiercingShotsPerc;
+            //    float CAAScritRate = AbilityList[typeof(CAAimedShot)].ability.GetXActs(AttackTableSelector.Crit, 1);
+            //    calcs.PiercingShotsDPSAimedShot += AbilityList[typeof(CAAimedShot)].DPS * CAAScritRate * PiercingShotsPerc;
+            //}
+            //#endregion
 
             float fDPS = WhiteAtks.RwDPS;
             fDPS += calcs.WildQuiverDPS;
@@ -352,11 +353,11 @@ namespace Rawr.Hunter {
             fDPS += AbilityList[typeof(AimedShot)].DPS;
             fDPS += AbilityList[typeof(ChimeraShot)].DPS;
             fDPS += AbilityList[typeof(KillShot)].DPS;
-            fDPS += AbilityList[typeof(SerpentSting)].DPS;
+            
 
             fDPS += AbilityList[typeof(MurderOfCrows)].DPS;
         
-            fDPS += AbilityList[typeof(LynxRush)].DPS;
+            
             fDPS += AbilityList[typeof(GlaiveToss)].DPS;
             fDPS += AbilityList[typeof(Powershot)].DPS;
             fDPS += AbilityList[typeof(Barrage)].DPS;
@@ -405,13 +406,14 @@ namespace Rawr.Hunter {
             calcs.Kill = AbilityList[typeof(KillShot)];
 
             // Buffs
-            calcs.Rapid = Rapid;
-            calcs.Ready = Ready;
             
+            calcs.Ready = Ready;
+
+            //TODO: Revise talents and implement missing ones
             //MoP
             calcs.MurderOfCrows = this.AbilityList[typeof(MurderOfCrows)];
-            //TODO: OpOv - Blink Strike needs to be implemented
-            calcs.LynxRush = this.AbilityList[typeof(LynxRush)];
+            
+            
             calcs.GlaiveToss = this.AbilityList[typeof(GlaiveToss)];
             calcs.Powershot = this.AbilityList[typeof(Powershot)];
             calcs.Barrage = this.AbilityList[typeof(Barrage)];
@@ -420,7 +422,7 @@ namespace Rawr.Hunter {
 
 
             // DOT
-            calcs.Serpent = AbilityList[typeof(SerpentSting)];
+            //calcs.Serpent = AbilityList[typeof(SerpentSting)];
 
             // Traps
 //            calcs.Immolation = Immolation;
@@ -512,8 +514,7 @@ namespace Rawr.Hunter {
             MurderOfCrows = new Skills.MurderOfCrows(Char, StatS, CombatFactors, WhiteAtks, CalcOpts);
             AddAbility(new AbilWrapper(MurderOfCrows));
             //TODO: OpOv - Blink Strike needs to be implemented
-            LynxRush = new Skills.LynxRush(Char, StatS, CombatFactors, WhiteAtks, CalcOpts);
-            AddAbility(new AbilWrapper(LynxRush));
+            
             GlaiveToss = new Skills.GlaiveToss(Char, StatS, CombatFactors, WhiteAtks, CalcOpts);
             AddAbility(new AbilWrapper(GlaiveToss));
             Powershot = new Skills.Powershot(Char, StatS, CombatFactors, WhiteAtks, CalcOpts);
@@ -526,15 +527,11 @@ namespace Rawr.Hunter {
             AddAbility(new AbilWrapper(DireBeast));
             //Survival Specific
 
-            // Buffs
-            Rapid = new Skills.RapidFire(Char, StatS, CombatFactors, WhiteAtks, CalcOpts);
-            AddAbility(new AbilWrapper(Rapid));
+
             Ready = new Skills.Readiness(Char, StatS, CombatFactors, WhiteAtks, CalcOpts);
             AddAbility(new AbilWrapper(Ready));
 
-            // DOT
-            Serpent = new Skills.SerpentSting(Char, StatS, CombatFactors, WhiteAtks, CalcOpts);
-            AddAbility(new AbilWrapper(Serpent));
+
 
             // Traps
             //AddAbility(new AbilWrapper(new Skills.ImmolationTrap(Char, StatS, CombatFactors, WhiteAtks, CalcOpts);

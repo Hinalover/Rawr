@@ -327,7 +327,7 @@ namespace Rawr.Mage
             // but it's as close as we can get without major rework, will probably overestimate a bit
             if (CastingState.Solver.Specialization == Specialization.Arcane)
             {
-                manaAdeptBonus += 0.015f * effectMasteryRating / CastingState.CalculationOptions.MasteryRatingMultiplier;
+                manaAdeptBonus += 0.015f * effectMasteryRating * CastingState.Solver.MasteryRatingMultiplier / CastingState.CalculationOptions.MasteryRatingMultiplier;
             }
 
             return (damagePerSecond + effectDamagePerSecondSpell) * (1 + manaPercent * manaAdeptBonus * effectManaAdeptMultiplier) + effectDamagePerSecondProc;
@@ -342,7 +342,7 @@ namespace Rawr.Mage
             // sum_i dps[i] * (1 + mm[i] * (k + mas[i])) * x[i]  -  0.5 * sum_i sum_j dps[i] * mps[j] / M * mm[i] * (k + mas[i])) * x[i] * x[j]
             // dps[i] * mps[j] / M * k   =>  [dps[i] * mm[i] * (k + mas[i])] * mps[j] / M
 
-            return (damagePerSecond + effectDamagePerSecondSpell) * (CastingState.ManaAdeptBonus + CastingState.Solver.ManaAdeptMultiplier * effectMasteryRating / CastingState.CalculationOptions.MasteryRatingMultiplier) * effectManaAdeptMultiplier;
+            return (damagePerSecond + effectDamagePerSecondSpell) * (CastingState.ManaAdeptBonus + CastingState.Solver.ManaAdeptMultiplier * effectMasteryRating * CastingState.Solver.MasteryRatingMultiplier / CastingState.CalculationOptions.MasteryRatingMultiplier) * effectManaAdeptMultiplier;
         }
 
         /*internal double threatPerSecond;
@@ -531,7 +531,7 @@ namespace Rawr.Mage
             spellPower *= (1 + CastingState.BaseStats.BonusSpellPowerMultiplier);
             effectSpellPower = spellPower;
             effectDamagePerSecondSpell += spellPower * DpsPerSpellPower;
-            effectMastery = effectMasteryRating / CastingState.CalculationOptions.MasteryRatingMultiplier;
+            effectMastery = effectMasteryRating * CastingState.Solver.MasteryRatingMultiplier / CastingState.CalculationOptions.MasteryRatingMultiplier;
             effectDamagePerSecondSpell += effectMastery * DpsPerMastery;
             effectCrit += effectIntellect * 0.01f * CastingState.Solver.SpellCritPerInt;
             if (Ticks > 0)
@@ -841,7 +841,7 @@ namespace Rawr.Mage
                     float spellMultiplier = 1f;
                     if (CastingState.Solver.Specialization == Specialization.Arcane)
                     {
-                        double manaAdeptBonus = CastingState.ManaAdeptBonus + 0.015f * effectMasteryRating / CastingState.CalculationOptions.MasteryRatingMultiplier;
+                        double manaAdeptBonus = CastingState.ManaAdeptBonus + 0.015f * effectMasteryRating * CastingState.Solver.MasteryRatingMultiplier / CastingState.CalculationOptions.MasteryRatingMultiplier;
                         spellMultiplier = (float)(1 + averageMana / CastingState.BaseStats.Mana * manaAdeptBonus * effectManaAdeptMultiplier);
                     }
                     if (effect.Stats.ArcaneDamage > 0)

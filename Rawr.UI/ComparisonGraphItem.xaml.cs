@@ -167,6 +167,8 @@ namespace Rawr.UI
                 rects.Add(r);
                 values.Add(0f);
             }
+
+            PosStack.Init(values, colors);
         }
 
         private float _GraphBarStart = 162f;
@@ -197,6 +199,9 @@ namespace Rawr.UI
         {
             if (ActualWidth > (GraphBarStart + 8 + SecondLastColumnWidth/*+ GraphBarEnd*/))//170
             {
+                PosStack.MaxScale = MaxScale;
+                PosStack.InvalidateVisual();
+
                 if (NameGridCol.Width == null || NameGridCol.Width.Value != GraphBarStart)
                     NameGridCol.Width = new GridLength(GraphBarStart);
                 if (NameGrid.Width != GraphBarStart)
@@ -250,6 +255,7 @@ namespace Rawr.UI
 
         private void AddRectToStack(ComparisonGraphBar rect, bool positive, int index)
         {
+            return;
             if (positive)
             {
                 if (NegativeStack.Children.Contains(rect))

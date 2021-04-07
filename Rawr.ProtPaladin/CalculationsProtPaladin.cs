@@ -448,7 +448,7 @@ focus on Survival Points.",
             StatsProtPaladin statsTotal = new StatsProtPaladin();
 
             // Avenging Wrath lasts 50% longer with Sanctified Wrath
-            if (character.PaladinTalents.SanctifiedWrath > 0)
+            if (character.PaladinTalents.SanctifiedWrath)
                 AvengingWrath.Duration = 30;
             else
                 AvengingWrath.Duration = 20;
@@ -458,8 +458,7 @@ focus on Survival Points.",
             statsBase.AddSpecialEffect(AvengingWrath);
             if (character.PaladinTalents.GlyphOfDivineProtection)
                 statsTalents.AddSpecialEffect(DivineProtection);
-            if (character.PaladinTalents.ArdentDefender > 0)
-                statsTalents.AddSpecialEffect(ArdentDefender);
+            statsTalents.AddSpecialEffect(ArdentDefender);
 
             statsTotal.Accumulate(statsBase);
             statsTotal.Accumulate(statsItems);

@@ -51,7 +51,7 @@ namespace Rawr.ProtPaladin
             float usageConsecration = 0f;
             float usageHammerOfWrath = 0f;
 
-            float grandCrusaderChance = 1f - (float)Math.Pow(1f - (Character.PaladinTalents.GrandCrusader * 0.1f), 3f);
+            float grandCrusaderChance = 1f - (float)Math.Pow(1f - 0.3f, 3f);
             float twoConsecutiveGrandCrusaders = (float)Math.Pow(grandCrusaderChance, 2f);
 
             IList order = (IList)(CalcOpts.Priority).Replace(" ", "").Split('>');

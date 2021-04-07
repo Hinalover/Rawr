@@ -38,7 +38,6 @@ namespace Rawr.Moonkin
         private int cog_fractured = 77547;  //Mastery
         private int cog_sparkling = 77546;  //Spirit
         private int cog_quick = 77542;  //Haste
-        private int cog_rigid = 77545;  //Hit
         private int cog_smooth = 77541;  //Crit
 
         // Hydraulic (Legendary)
@@ -59,14 +58,10 @@ namespace Rawr.Moonkin
                 retval.AddRange(new GemmingTemplate[] {
                 // Engineering cogwheel templates (meta and 2 cogs each, no repeats)
                 CreateMoonkinCogwheelTemplate(burning, cog_fractured, cog_quick),
-                CreateMoonkinCogwheelTemplate(burning, cog_fractured, cog_rigid),
                 CreateMoonkinCogwheelTemplate(burning, cog_fractured, cog_smooth),
                 CreateMoonkinCogwheelTemplate(burning, cog_fractured, cog_sparkling),
-                CreateMoonkinCogwheelTemplate(burning, cog_quick, cog_rigid),
                 CreateMoonkinCogwheelTemplate(burning, cog_quick, cog_smooth),
                 CreateMoonkinCogwheelTemplate(burning, cog_quick, cog_sparkling),
-                CreateMoonkinCogwheelTemplate(burning, cog_rigid, cog_smooth),
-                CreateMoonkinCogwheelTemplate(burning, cog_rigid, cog_sparkling),
                 CreateMoonkinCogwheelTemplate(burning, cog_smooth, cog_sparkling),
                 });
                 return retval;
@@ -141,7 +136,6 @@ namespace Rawr.Moonkin
             {
                 if (_optimizableCalculationLabels == null)
                     _optimizableCalculationLabels = new string[] {
-                    "Hit Rating",
                     "Haste Rating",
                     "Crit Rating",
                     "Mastery Rating"
@@ -182,7 +176,6 @@ namespace Rawr.Moonkin
                     "Basic Stats:Spirit",
                     "Basic Stats:Armor",
                     "Spell Stats:Spell Power",
-                    "Spell Stats:Spell Hit",
                     "Spell Stats:Spell Crit",
                     "Spell Stats:Spell Haste",
                     "Spell Stats:Mastery",
@@ -198,16 +191,11 @@ namespace Rawr.Moonkin
                     "Solution:Burst Time To OOM",
                     "Solution:Burst Cycle Length",
                     "Solution:Burst Spell Breakdown",
-                    "Solution:Nature's Grace Uptime",
-                    "Solution:Solar Eclipse Uptime",
-                    "Solution:Lunar Eclipse Uptime",
                     "Spell Info:Starfire",
                     "Spell Info:Wrath",
                     "Spell Info:Starsurge",
                     "Spell Info:Moonfire",
-                    "Spell Info:Starfall",
-                    "Spell Info:Treants",
-                    "Spell Info:Wild Mushroom"
+                    "Spell Info:Sunfire",
                     };
                 }
                 return characterDisplayCalculationLabels;
@@ -246,31 +234,6 @@ namespace Rawr.Moonkin
         {
             if (slot == CharacterSlot.OffHand && item.Slot == ItemSlot.OneHand) return false;
             return base.ItemFitsInSlot(item, character, slot, ignoreUnique);
-        }
-
-        public override List<Reforging> GetReforgingOptions(Item baseItem, int randomSuffixId, int upgradeItemLevel)
-        {
-            List<Reforging> retval = base.GetReforgingOptions(baseItem, randomSuffixId, upgradeItemLevel);
-
-            // If the item has spirit, do not allow reforging spirit -> hit
-            if (baseItem.Stats.Spirit > 0)
-            {
-                // I put this in a sub-if because putting it above messes with the if-else/if-else code flow
-                if (!_enableSpiritToHit)
-                    retval.RemoveAll(rf => rf != null && rf.ReforgeFrom == AdditiveStat.Spirit && rf.ReforgeTo == AdditiveStat.HitRating);
-            }
-            // If it has hit, do not allow reforging hit -> spirit
-            else if (baseItem.Stats.HitRating > 0)
-            {
-                retval.RemoveAll(rf => rf != null && rf.ReforgeFrom == AdditiveStat.HitRating && rf.ReforgeTo == AdditiveStat.Spirit);
-            }
-            // If it has neither, pick one based on the current calculation options.
-            else
-            {
-                retval.RemoveAll(rf => rf != null && rf.ReforgeTo == (_reforgePriority == 0 ? AdditiveStat.HitRating : AdditiveStat.Spirit));
-            }
-
-            return retval;
         }
 
         private static List<string> _relevantGlyphs;
@@ -375,12 +338,10 @@ namespace Rawr.Moonkin
                 Spirit = stats.Spirit,
                 Armor = stats.Armor,
                 HasteRating = stats.HasteRating,
-                HitRating = stats.HitRating,
                 CritRating = stats.CritRating,
                 SpellPower = stats.SpellPower,
                 Mastery = stats.Mastery,
                 MasteryRating = stats.MasteryRating,
-                ExpertiseRating = stats.ExpertiseRating,
                 // SpellPenetration = stats.SpellPenetration,
                 Mp5 = stats.Mp5,
                 BonusArmor = stats.BonusArmor,
@@ -391,7 +352,6 @@ namespace Rawr.Moonkin
                 // Combat Values
                 SpellCrit = stats.SpellCrit,
                 SpellCritOnTarget = stats.SpellCritOnTarget,
-                SpellHit = stats.SpellHit,
                 SpellCombatManaRegeneration = stats.SpellCombatManaRegeneration,
 
                 // Spell Combat Ratings
@@ -479,7 +439,6 @@ namespace Rawr.Moonkin
                 // Combat Values
                 stats.SpellCrit != 0 ||
                 stats.SpellCritOnTarget != 0 ||
-                stats.SpellHit != 0 ||
 
                 // Spell Combat Ratings
                 stats.SpellArcaneDamageRating != 0 ||
@@ -526,7 +485,6 @@ namespace Rawr.Moonkin
                 // Base Stats
                 stats.Mana != 0 ||
                 stats.HasteRating != 0 ||
-                stats.HitRating != 0 ||
                 stats.CritRating != 0 ||
                 stats.Mp5 != 0 ||
                 stats.Mastery != 0 ||
@@ -814,9 +772,7 @@ namespace Rawr.Moonkin
                     ComparisonCalculationMoonkin mf = new ComparisonCalculationMoonkin() { Name = "Moonfire", ImageSource = "spell_nature_starfall" };
                     ComparisonCalculationMoonkin wr = new ComparisonCalculationMoonkin() { Name = "Wrath", ImageSource = "spell_nature_abolishmagic" };
                     ComparisonCalculationMoonkin ss = new ComparisonCalculationMoonkin() { Name = "Starsurge", ImageSource = "spell_arcane_arcane03" };
-                    ComparisonCalculationMoonkin ssInst = new ComparisonCalculationMoonkin() { Name = "Shooting Stars Proc", ImageSource = "ability_mage_arcanebarrage" };
-                    ComparisonCalculationMoonkin wm = new ComparisonCalculationMoonkin() { Name = "Wild Mushroom", ImageSource = "druid_ability_wildmushroom_b" };
-                    ComparisonCalculationMoonkin sfa = new ComparisonCalculationMoonkin() { Name = "Starfall", ImageSource = "ability_druid_starfall" };
+                    ComparisonCalculationMoonkin suf = new ComparisonCalculationMoonkin() { Name = "Sunfire", ImageSource = "spell_nature_sunfire" };
                     ComparisonCalculationMoonkin fon = new ComparisonCalculationMoonkin() { Name = "Force of Nature", ImageSource = "ability_druid_forceofnature" };
                     sf.BurstDamagePoints = calcsBase.SelectedRotation.StarfireAvgHit / calcsBase.SelectedRotation.StarfireAvgCast;
                     sf.OverallPoints = sf.BurstDamagePoints;
@@ -824,19 +780,13 @@ namespace Rawr.Moonkin
                     mf.OverallPoints = mf.BurstDamagePoints;
                     wr.BurstDamagePoints = calcsBase.SelectedRotation.WrathAvgHit / calcsBase.SelectedRotation.WrathAvgCast;
                     wr.OverallPoints = wr.BurstDamagePoints;
-                    // Use the Wrath average cast here because the Starsurge average cast is actually the combined weighted average
-                    // of Starsurge and Shooting Stars
-                    ss.BurstDamagePoints = calcsBase.SelectedRotation.StarSurgeAvgHit / calcsBase.SelectedRotation.WrathAvgCast;
+                    ss.BurstDamagePoints = calcsBase.SelectedRotation.StarSurgeAvgHit / calcsBase.SelectedRotation.StarSurgeAvgCast;
                     ss.OverallPoints = ss.BurstDamagePoints;
-                    ssInst.BurstDamagePoints = calcsBase.SelectedRotation.StarSurgeAvgHit / calcsBase.SelectedRotation.AverageInstantCast;
-                    ssInst.OverallPoints = ssInst.BurstDamagePoints;
-                    wm.BurstDamagePoints = calcsBase.SelectedRotation.MushroomDamage / 3f;
-                    wm.OverallPoints = wm.BurstDamagePoints;
-                    sfa.BurstDamagePoints = calcsBase.SelectedRotation.StarfallDamage / calcsBase.SelectedRotation.AverageInstantCast;
-                    sfa.OverallPoints = sfa.BurstDamagePoints;
+                    suf.BurstDamagePoints = calcsBase.SelectedRotation.SunfireAvgHit / calcsBase.SelectedRotation.SunfireAvgCast;
+                    suf.OverallPoints = suf.BurstDamagePoints;
                     fon.BurstDamagePoints = calcsBase.SelectedRotation.TreantDamage / calcsBase.SelectedRotation.AverageInstantCast;
                     fon.OverallPoints = fon.BurstDamagePoints;
-                    return new ComparisonCalculationMoonkin[] { sf, mf, wr, ss, ssInst, sfa, fon, wm };
+                    return new ComparisonCalculationMoonkin[] { sf, mf, wr, ss, suf, fon };
                 case "Rotation Comparison":
                     List<ComparisonCalculationMoonkin> comparisons = new List<ComparisonCalculationMoonkin>();
                     calcsBase = GetCharacterCalculations(character) as CharacterCalculationsMoonkin;
@@ -893,8 +843,6 @@ namespace Rawr.Moonkin
             calc.SpellPower = (float)Math.Floor((1 + stats.BonusSpellPowerMultiplier) * (stats.SpellPower + stats.Intellect - 10));
             calc.SpellCritPenalty = StatConversion.NPC_LEVEL_SPELL_CRIT_MOD[character.BossOptions.Level - character.Level];
             calc.SpellCrit = StatConversion.GetSpellCritFromIntellect(stats.Intellect) + StatConversion.GetSpellCritFromRating(stats.CritRating) + stats.SpellCrit + stats.SpellCritOnTarget + calc.SpellCritPenalty;
-            calc.SpellHit = StatConversion.GetSpellHitFromRating(stats.HitRating) + stats.SpellHit;
-            calc.SpellHitCap = StatConversion.GetSpellMiss(character.BossOptions.Level - character.Level, false);
             calc.SpellHaste = (1 + StatConversion.GetSpellHasteFromRating(stats.HasteRating)) * (1 + stats.SpellHaste) - 1;
             calc.Mastery = stats.Mastery + StatConversion.GetMasteryFromRating(stats.MasteryRating);
             calc.ManaRegen = stats.Mp5 / 5f;
@@ -1034,22 +982,22 @@ namespace Rawr.Moonkin
             // Talented bonus multipliers
             Stats statsTalents = new StatsMoonkin()
             {
-                BonusAgilityMultiplier = 0.06f * character.DruidTalents.HeartOfTheWild,
-                BonusStaminaMultiplier = 0.06f * character.DruidTalents.HeartOfTheWild,
+                BonusAgilityMultiplier = character.DruidTalents.HeartOfTheWild ? 0.06f : 0f,
+                BonusStaminaMultiplier = character.DruidTalents.HeartOfTheWild ? 0.06f : 0f,
                 BonusIntellectMultiplier = (1 + (Character.ValidateArmorSpecialization(character, ItemType.Leather) ? 0.05f : 0f)) *
-                (1 + (0.06f * character.DruidTalents.HeartOfTheWild)) - 1,
+                (1 + (character.DruidTalents.HeartOfTheWild ? 0.06f : 0f)) - 1,
                 BonusManaMultiplier = 4f
             };
 
             // Nature's Vigil is calculated in with Incarnation and CA.
             // The NV special effects added here are to calculate what is left over if Incarnation is not taken, and for 5.2 PTR.
-            if (character.DruidTalents.Incarnation > 0)
+            if (character.DruidTalents.Incarnation)
                 statsTotal.BonusEclipseDamageMultiplier = 0.25f;
-            else if (character.DruidTalents.NaturesVigil > 0)
+            else if (character.DruidTalents.NaturesVigil)
                 statsTotal.AddSpecialEffect(_SE_NATURESVIGIL_NOINCARNATION);
-            if (character.DruidTalents.NaturesVigil > 0)
+            if (character.DruidTalents.NaturesVigil)
                 statsTotal.AddSpecialEffect(_SE_NATURESVIGIL);
-            if (character.DruidTalents.DreamOfCenarius > 0)
+            if (character.DruidTalents.DreamOfCenarius)
                 statsTotal.BonusMoonfireDamageMultiplier = 0.5f;
             statsTotal.BonusSpellDamageMultiplier = 0.1f;
 
@@ -1078,8 +1026,6 @@ namespace Rawr.Moonkin
             statsTotal.BonusArmor = statsTotal.BonusArmor * (1f + statsTotal.BonusArmorMultiplier);
             statsTotal.Armor += statsTotal.BonusArmor;
             statsTotal.Armor = (float)Math.Round(statsTotal.Armor);
-
-            statsTotal.HitRating += statsTotal.Spirit - statsBase.Spirit + statsTotal.ExpertiseRating;
 
             return statsTotal;
         }

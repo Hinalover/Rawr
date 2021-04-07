@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Media;
-using Rawr.Elemental.Spells;
 
-namespace Rawr.Elemental {
+namespace Rawr.Elemental
+{
     [Rawr.Calculations.RawrModelInfo("Elemental", "Spell_Nature_Lightning", CharacterClass.Shaman)]
     public class CalculationsElemental : CalculationsBase
     {
@@ -33,60 +33,108 @@ namespace Rawr.Elemental {
             }
         }
         #endregion
-        #region Variables and Properties
+
+        #region Display Labels
         private string[] _characterDisplayCalculationLabels = null;
         public override string[] CharacterDisplayCalculationLabels
         {
             get
             {
                 if (_characterDisplayCalculationLabels == null)
-                    _characterDisplayCalculationLabels = new string[] {
-                    "Summary:Overall Points*Sum of burst and sustained points",
-                    "Summary:Burst Points*DPS until you go out of mana",
-                    "Summary:Sustained Points*Total DPS of the fight",
+                    _characterDisplayCalculationLabels = new string[]
+                    {
+                        #region Summary
+                        "Summary:DPS Points*Your total expected DPS with this kit and selected glyphs and buffs",
+                        "Summary:Survivability Points*Assumes basic 2% of total health as Survivability",
+                        "Summary:Overall Points*This is the sum of Total DPS and Survivability. If you want sort items by DPS only select DPS from the sort dropdown top right",
+                        #endregion
+                        #region Basic Stats
+                        "Base Stats:Health",
+                        "Base Stats:Mana",
+                        "Base Stats:Strength",
+                        "Base Stats:Agility",
+                        "Base Stats:Stamina",
+                        "Base Stats:Intellect",
+                        "Base Stats:Spirit",
+                        "Base Stats:Mastery",
 
-                    "Basic Stats:Health",
-                    "Basic Stats:Mana",
-                    "Basic Stats:Stamina",
-                    "Basic Stats:Spell Power",
-                    "Basic Stats:Hit Rating",
-                    "Basic Stats:Crit Rating",
-                    "Basic Stats:Haste Rating",
-                    "Basic Stats:Mastery Rating", 
-                    "Basic Stats:Mana Regen",
+                        "Melee:Expertise",
 
-                    "Combat Stats:Average Health",
-                    "Combat Stats:Average Mana",
-                    "Combat Stats:Average Stamina",
-                    "Combat Stats:Average Spell Power",
-                    "Combat Stats:Average Hit Rating",
-                    "Combat Stats:Average Crit Rating",
-                    "Combat Stats:Average Haste Rating",
-                    "Combat Stats:Average Mastery Rating",
-                    "Combat Stats:Average Mana Regen",
+                        "Spell:Spell Power",
+                        "Spell:Spell Haste",
+                        "Spell:Spell Hit",
+                        "Spell:Spell Crit",
+                        "Spell:Combat Regen",
+                        #endregion
+                        #region Complex Stats
+                        "Complex Stats:EF Uptime*Elemental Focus Uptime percentage",
+                        "Complex Stats:Avg Time to 7 Stacks*Average time it takes to get 7 stacks of Lightning Shield.",
+                        "Complex Stats:MH Enchant Uptime",
+                        "Complex Stats:OH Enchant Uptime",
+                        "Complex Stats:Trinket 1 Uptime",
+                        "Complex Stats:Trinket 2 Uptime",
+                        "Complex Stats:Fire Totem Uptime",
+                        #endregion
+                        #region Attacks Breakdown
+                        "Attacks:Elemental Blast",
+                        "Attacks:Lava Burst",
+                        "Attacks:Lightning Bolt",
+                        "Attacks:Earth Shock",
+                        "Attacks:Flame Shock",
+                        "Attacks:Fulmination",
+                        "Attacks:Unleash Flame",
+                        "Attacks:Searing Totem",
+                        "Attacks:Earth Elemental",
+                        "Attacks:Fire Elemental",
+                        "Attacks:Air Elemental",
 
-                    "Attacks:Lightning Bolt",
-                    "Attacks:Chain Lightning",
-                    "Attacks:Lava Burst",
-                    "Attacks:Flame Shock",
-                    "Attacks:Earth Shock",
-                    "Attacks:Fulmination",
-                    "Attacks:Searing Totem",
-                    "Attacks:Magma Totem",
-                    "Attacks:Unleashed Elements",
-                    
-                    "Simulation:Simulation",
-                    "Simulation:Rotation",
-                    "Simulation:Priority List"
-                };
+                        "Attacks:Chain Lightning",
+                        "Attacks:Earthquake",
+                        "Attacks:Lava Beam",
+                        "Attacks:Magma Totem",
+                        "Attacks:Thunderstorm",
+                        
+                        "Attacks:Magic Other",
+                        "Attacks:Physical Other",
+                        
+                        "Attacks:Total DPS",
+                        #endregion
+                    };
                 return _characterDisplayCalculationLabels;
             }
+        }
+        #endregion
+
+        #region Overrides
+        public override CharacterClass TargetClass { get { return CharacterClass.Shaman; } }
+        public override ComparisonCalculationBase CreateNewComparisonCalculation() { return new ComparisonCalculationElemental(); }
+        public override CharacterCalculationsBase CreateNewCharacterCalculations() { return new CharacterCalculationsElemental(); }
+
+        private ICalculationOptionsPanel _calculationOptionsPanel = null;
+        public override ICalculationOptionsPanel CalculationOptionsPanel
+        {
+            get
+            {
+                if (_calculationOptionsPanel == null)
+                {
+                    _calculationOptionsPanel = new CalculationOptionsPanelElemental();
+                }
+                return _calculationOptionsPanel;
+            }
+        }
+        public override ICalculationOptionBase DeserializeDataObject(string xml)
+        {
+            System.Xml.Serialization.XmlSerializer serializer =
+                new System.Xml.Serialization.XmlSerializer(typeof(CalculationOptionsElemental));
+            System.IO.StringReader reader = new System.IO.StringReader(xml);
+            CalculationOptionsElemental calcOpts = serializer.Deserialize(reader) as CalculationOptionsElemental;
+            return calcOpts;
         }
 
         private string[] _optimizableCalculationLabels = null;
         public override string[] OptimizableCalculationLabels
-        { 
-            get 
+        {
+            get
             {
                 if (_optimizableCalculationLabels == null)
                     _optimizableCalculationLabels = new string[]
@@ -98,34 +146,189 @@ namespace Rawr.Elemental {
             }
         }
 
+        private string[] _customChartNames = null;
+        public override string[] CustomChartNames
+        {
+            get
+            {
+                if (_customChartNames == null)
+                    _customChartNames = new string[] {
+                    "Combat Table (Spell)",
+                    "Damage per Cast Time",
+                    "Mana Gains By Source"
+                    };
+                return _customChartNames;
+            }
+        }
+
         private Dictionary<string, Color> _subPointNameColors = null;
-        public override Dictionary<string, Color> SubPointNameColors {
-            get {
-                if (_subPointNameColors == null) {
+        public override Dictionary<string, Color> SubPointNameColors
+        {
+            get
+            {
+                if (_subPointNameColors == null)
+                {
                     _subPointNameColors = new Dictionary<string, Color>();
-                    _subPointNameColors.Add("Burst DPS", Colors.Red);  // 0xFFFF0000 (Red)
-                    _subPointNameColors.Add("Sustained DPS", Colors.Blue);  // 0xFF0000FF (Blue)
-                    //_subPointNameColors.Add("Survivability", Color.FromArgb(255, 64, 128, 32));  // 0xFF408020
+                    _subPointNameColors.Add("DPS", Color.FromArgb(255, 160, 0, 224));  // 0xFFA000E0
+                    _subPointNameColors.Add("Survivability", Color.FromArgb(255, 64, 128, 32));  // 0xFF408020
                 }
                 return _subPointNameColors;
             }
         }
+        #endregion
 
-        public override CharacterClass TargetClass { get { return CharacterClass.Shaman; } }
-        public override ComparisonCalculationBase CreateNewComparisonCalculation() { return new ComparisonCalculationElemental(); }
-        public override CharacterCalculationsBase CreateNewCharacterCalculations() { return new CharacterCalculationsElemental(); }
-        private ICalculationOptionsPanel _calculationOptionsPanel = null;
-        public override ICalculationOptionsPanel CalculationOptionsPanel { get { return _calculationOptionsPanel ?? (_calculationOptionsPanel = new CalculationOptionsPanelElemental()); } }
+        #region Model Specific Variables and Functions
+        private static int _reforgePriority = 0;
+        private static bool _enableSpiritToHit = false;
+        #endregion
 
-        public override ICalculationOptionBase DeserializeDataObject(string xml)
+        #region Main Calculations
+        /// <summary>
+        /// GetCharacterCalculations is the primary method of each model, where a majority of the calculations
+        /// and formulae will be used. GetCharacterCalculations should call GetCharacterStats(), and based on
+        /// those total stats for the character, and any calculationoptions on the character, perform all the 
+        /// calculations required to come up with the final calculations defined in 
+        /// CharacterDisplayCalculationLabels, including an Overall rating, and all Sub ratings defined in 
+        /// SubPointNameColors.
+        /// </summary>
+        /// <param name="character">The character to perform calculations for.</param>
+        /// <param name="additionalItem">An additional item to treat the character as wearing.
+        /// This is used for gems, which don't have a slot on the character to fit in, so are just
+        /// added onto the character, in order to get gem calculations.</param>
+        /// <returns>A custom CharacterCalculations object which inherits from CharacterCalculationsBase,
+        /// containing all of the final calculations defined in CharacterDisplayCalculationLabels. See
+        /// CharacterCalculationsBase comments for more details.</returns>
+        public override CharacterCalculationsBase GetCharacterCalculations(Character character, Item additionalItem, bool referenceCalculation, bool significantChange, bool needsDisplayCalculations)
         {
-            System.Xml.Serialization.XmlSerializer serializer =
-                new System.Xml.Serialization.XmlSerializer(typeof(CalculationOptionsElemental));
-            System.IO.StringReader reader = new System.IO.StringReader(xml);
-            CalculationOptionsElemental calcOpts = serializer.Deserialize(reader) as CalculationOptionsElemental;
-            return calcOpts;
+            // First things first, we need to ensure that we aren't using bad data
+            CharacterCalculationsElemental calc = new CharacterCalculationsElemental();
+            if (character == null) { return calc; }
+            CalculationOptionsElemental calcOpts = character.CalculationOptions as CalculationOptionsElemental;
+            if (calcOpts == null) { return calc; }
+            BossOptions bossOpts = character.BossOptions;
+            if (bossOpts == null) { bossOpts = new BossOptions(); }
+
+            _reforgePriority = calcOpts.ReforgePriority;
+            _enableSpiritToHit = calcOpts.AllowReforgingSpiritToHit;
+            StatsElemental stats = GetCharacterStats(character, additionalItem, true);
+            calc.BasicStats = stats;
+            
+            return calc;
+        }
+        #endregion
+
+        #region Get Character Stats
+        /// <summary>
+        /// GetCharacterStats is the 2nd-most calculation intensive method in a model. Here the model will
+        /// combine all of the information about the character, including race, gear, enchants, buffs,
+        /// calculationoptions, etc., to form a single combined Stats object. Three of the methods below
+        /// can be called from this method to help total up stats: GetItemStats(character, additionalItem),
+        /// GetEnchantsStats(character), and GetBuffsStats(character.ActiveBuffs).
+        /// </summary>
+        /// <param name="character">The character whose stats should be totaled.</param>
+        /// <param name="additionalItem">An additional item to treat the character as wearing.
+        /// This is used for gems, which don't have a slot on the character to fit in, so are just
+        /// added onto the character, in order to get gem calculations.</param>
+        /// <returns>A Stats object containing the final totaled values of all character stats.</returns>
+        public override Stats GetCharacterStats(Character character, Item additionalItem)
+        {
+            StatsElemental statsTotal = GetCharacterStats(character, additionalItem, true);
+
+            return statsTotal;
         }
 
+        private StatsElemental GetCharacterStats(Character character, Item additionalItem, Boolean buffs)
+        {
+            CalculationOptionsElemental calcOpts = character.CalculationOptions as CalculationOptionsElemental;
+            BossOptions bossOpts = character.BossOptions;
+            ShamanTalents talents = character.ShamanTalents;
+
+            StatsElemental statsRace = new StatsElemental();
+            statsRace.Accumulate(BaseStats.GetBaseStats(character));
+            StatsElemental statsItems = new StatsElemental();
+            AccumulateItemStats(statsItems, character, additionalItem);
+            StatsElemental statsBuffs = new StatsElemental();
+            AccumulateBuffsStats(statsBuffs, character.ActiveBuffs);
+
+            StatsElemental statsTalents = new StatsElemental()
+            {
+                //// Passive Bonuses
+                // Mail Specialization
+                BonusIntellectMultiplier = Character.ValidateArmorSpecialization(character, ItemType.Mail) ? 0.05f : 0f,
+                // Spiritual Insight
+                BonusManaMultiplier = 4f,
+                // Elemental Fury
+                BonusCritDamageMultiplier = 0.5f,
+
+                //// Talents
+                SpellHaste = talents.AncestralSwiftness ? 0.05f : 0.0f,
+                PhysicalHaste = talents.AncestralSwiftness ? 0.1f : 0.0f,
+            };
+
+            #region Set Bonuses
+            StatsElemental statsSetBonuses = new StatsElemental();
+            int T16Count;
+            character.SetBonusCount.TryGetValue("Elemental T16", out T16Count);
+            if (T16Count >= 2)
+            {
+                // 2 Piece: Fulmination increases all Fire and Nature damage dealt to that target from the Shaman by 4% for 2 sec per Lightning Shield charge consumed.
+            }
+            if (T16Count >= 4)
+            {
+                // 4 Piece: Your Lightning Bolt and Chain Lightning spells have a chance to summon a Lightning Elemental to fight by your side for 10 sec.
+            }
+            #endregion
+
+            StatsElemental statsTotal = new StatsElemental();
+            statsTotal.Accumulate(statsRace);
+            statsTotal.Accumulate(statsItems);
+            statsTotal.Accumulate(statsTalents);
+            statsTotal.Accumulate(statsSetBonuses);
+
+            if (buffs)
+            {
+                statsTotal.Accumulate(statsBuffs);
+            }
+
+            if (statsTotal.HighestStat > 0) {
+                if (statsTotal.Spirit > statsTotal.Intellect) {
+                    statsTotal.Spirit += (statsTotal.HighestStat * 15f / 50f);
+                } else {
+                    statsTotal.Intellect += (statsTotal.HighestStat * 15f / 50f);
+                }
+            }
+
+            // Base stats: Strength, Agility, Stamina, Intellect, Spirit
+            statsTotal.Strength = (float)Math.Floor(statsTotal.Strength * (1f + statsTotal.BonusStrengthMultiplier));
+            statsTotal.Agility = (float)Math.Floor(statsTotal.Agility * (1f + statsTotal.BonusAgilityMultiplier));
+            statsTotal.Stamina = (float)Math.Floor(statsTotal.Stamina * (1f + statsTotal.BonusStaminaMultiplier));
+            statsTotal.Intellect = (float)Math.Floor(statsTotal.Intellect * (1f + statsTotal.BonusIntellectMultiplier));
+            statsTotal.Spirit = (float)Math.Floor(statsTotal.Spirit * (1f + statsTotal.BonusSpiritMultiplier));
+
+            // Derived stats: Health, Mana, Armour
+            statsTotal.Health += (float)Math.Floor(StatConversion.GetHealthFromStamina(statsTotal.Stamina));
+            statsTotal.Health = (float)Math.Floor(statsTotal.Health * (1f + statsTotal.BonusHealthMultiplier));
+            statsTotal.Mana = (float)Math.Floor(statsTotal.Mana * (1f + statsTotal.BonusManaMultiplier));
+            statsTotal.BonusArmor = (float)Math.Floor(statsTotal.BonusArmor * (1f + statsTotal.BonusArmorMultiplier));
+            statsTotal.Armor = (float)Math.Floor(statsTotal.Armor * (1f + statsTotal.BaseArmorMultiplier));
+            statsTotal.Armor += statsTotal.BonusArmor;
+
+            statsTotal.SpellPower += statsTotal.Intellect - 10;
+            statsTotal.SpellPower = (float)Math.Floor(statsTotal.SpellPower * (1f + statsTotal.BonusSpellPowerMultiplier));
+
+            statsTotal.SpellCrit += StatConversion.GetSpellCritFromRating(statsTotal.CritRating);
+            statsTotal.SpellCrit += StatConversion.GetSpellCritFromIntellect(statsTotal.Intellect);
+            statsTotal.SpellCrit += statsTotal.SpellCritOnTarget;
+
+            statsTotal.HitRating += statsTotal.Spirit + statsTotal.Expertise;
+            statsTotal.SpellHit += StatConversion.GetSpellHitFromRating(statsTotal.HitRating);
+
+            statsTotal.SpellHaste = (1 + StatConversion.GetSpellHasteFromRating(statsTotal.HasteRating)) * (1 + statsTotal.SpellHaste) - 1;
+
+            statsTotal.Mastery += StatConversion.GetMasteryFromRating(statsTotal.MasteryRating);
+
+            return statsTotal;
+        }
         #endregion
 
         #region Relevancy
@@ -178,7 +381,7 @@ namespace Rawr.Elemental {
                 _relevantGlyphs.Add("");*/
             }
             return _relevantGlyphs;
-            
+
         }
         #endregion
 
@@ -252,9 +455,11 @@ namespace Rawr.Elemental {
         }
         #endregion
 
-        public override bool IsBuffRelevant(Buff buff, Character character) {
+        public override bool IsBuffRelevant(Buff buff, Character character)
+        {
             string name = buff.Name;
-            if (!buff.AllowedClasses.Contains(CharacterClass.Shaman)) {
+            if (!buff.AllowedClasses.Contains(CharacterClass.Shaman))
+            {
                 return false;
             }
             return base.IsBuffRelevant(buff, character);
@@ -302,7 +507,7 @@ namespace Rawr.Elemental {
                 #region Basic stats
                 Intellect = stats.Intellect,
                 Mana = stats.Mana,
-                Spirit= stats.Spirit,
+                Spirit = stats.Spirit,
                 SpellCrit = stats.SpellCrit,
                 SpellCritOnTarget = stats.SpellCritOnTarget,
                 SpellHit = stats.SpellHit,
@@ -483,163 +688,16 @@ namespace Rawr.Elemental {
         }
         #endregion
 
-        #region Custom Charts
-        private string[] _customChartNames = {};
-        public override string[] CustomChartNames { get { return _customChartNames; } }
-        public override ComparisonCalculationBase[] GetCustomChartData(Character character, string chartName) { return new ComparisonCalculationBase[0]; }
+        #region Custom Chart Data
+        public override ComparisonCalculationBase[] GetCustomChartData(Character character, string chartName)
+        {
+            return new ComparisonCalculationBase[] { };
+        }
         #endregion
-
-        #region Model Specific Variables and Functions
-        private static int _reforgePriority = 0;
-        private static bool _enableSpiritToHit = false;
-        #endregion
-
-        /// <summary>
-        /// GetCharacterCalculations is the primary method of each model, where a majority of the calculations
-        /// and formulae will be used. GetCharacterCalculations should call GetCharacterStats(), and based on
-        /// those total stats for the character, and any calculationoptions on the character, perform all the 
-        /// calculations required to come up with the final calculations defined in 
-        /// CharacterDisplayCalculationLabels, including an Overall rating, and all Sub ratings defined in 
-        /// SubPointNameColors.
-        /// </summary>
-        /// <param name="character">The character to perform calculations for.</param>
-        /// <param name="additionalItem">An additional item to treat the character as wearing.
-        /// This is used for gems, which don't have a slot on the character to fit in, so are just
-        /// added onto the character, in order to get gem calculations.</param>
-        /// <returns>A custom CharacterCalculations object which inherits from CharacterCalculationsBase,
-        /// containing all of the final calculations defined in CharacterDisplayCalculationLabels. See
-        /// CharacterCalculationsBase comments for more details.</returns>
-        public override CharacterCalculationsBase GetCharacterCalculations(Character character, Item additionalItem, bool referenceCalculation, bool significantChange, bool needsDisplayCalculations)
-        {
-            // First things first, we need to ensure that we aren't using bad data
-            CharacterCalculationsElemental calc = new CharacterCalculationsElemental();
-            if (character == null) { return calc; }
-            CalculationOptionsElemental calcOpts = character.CalculationOptions as CalculationOptionsElemental;
-            if (calcOpts == null) { return calc; }
-            BossOptions bossOpts = character.BossOptions;
-            if (bossOpts == null) { bossOpts = new BossOptions(); }
-
-            _reforgePriority = calcOpts.ReforgePriority;
-            _enableSpiritToHit = calcOpts.AllowReforgingSpiritToHit;
-            Stats stats = GetCharacterStats(character, additionalItem, true);
-            calc.BasicStats = stats;
-            //calc.EnhSimStats = GetCharacterStats(character, additionalItem, false);
-
-            calc.LocalCharacter = character;
-
-            Rawr.Elemental.Estimation.solve(calc, calcOpts, bossOpts);
-
-            return calc;
-        }
-
-        /// <summary>
-        /// GetCharacterStats is the 2nd-most calculation intensive method in a model. Here the model will
-        /// combine all of the information about the character, including race, gear, enchants, buffs,
-        /// calculationoptions, etc., to form a single combined Stats object. Three of the methods below
-        /// can be called from this method to help total up stats: GetItemStats(character, additionalItem),
-        /// GetEnchantsStats(character), and GetBuffsStats(character.ActiveBuffs).
-        /// </summary>
-        /// <param name="character">The character whose stats should be totaled.</param>
-        /// <param name="additionalItem">An additional item to treat the character as wearing.
-        /// This is used for gems, which don't have a slot on the character to fit in, so are just
-        /// added onto the character, in order to get gem calculations.</param>
-        /// <returns>A Stats object containing the final totaled values of all character stats.</returns>
-        public override Stats GetCharacterStats(Character character, Item additionalItem)
-        {
-            Stats statsTotal = GetCharacterStats(character, additionalItem, true)/* as StatsElemental*/;
-
-            return statsTotal;
-        }
-
-        private Stats GetCharacterStats(Character character, Item additionalItem, Boolean buffs)
-        {
-            CalculationOptionsElemental calcOpts = character.CalculationOptions as CalculationOptionsElemental;
-            BossOptions bossOpts = character.BossOptions;
-            ShamanTalents talents = character.ShamanTalents;
-
-            Stats statsRace = new Stats();
-            statsRace.Accumulate(BaseStats.GetBaseStats(character));
-            Stats statsItems = new Stats();
-            AccumulateItemStats(statsItems, character, additionalItem);
-            Stats statsBuffs = new Stats();
-            AccumulateBuffsStats(statsBuffs, character.ActiveBuffs);
-
-            StatsElemental statsTalents = new StatsElemental()
-            {
-                //// Passive Bonuses
-                // Mail Specialization
-                BonusIntellectMultiplier = Character.ValidateArmorSpecialization(character, ItemType.Mail) ? 0.05f : 0f,
-                // Spiritual Insight
-                BonusManaMultiplier = 4f,
-                // Elemental Fury
-                BonusCritDamageMultiplier = 0.5f,
-
-
-                //// Talents
-                SpellHaste = talents.AncestralSwiftness * 0.05f,
-
-                //// Glyphs
-
-            };
-
-            #region Set Bonuses
-            StatsElemental statsSetBonuses = new StatsElemental();
-            int T14Count;
-            character.SetBonusCount.TryGetValue("Elemental T14", out T14Count);
-            if (T14Count >= 2)
-            {
-                // Increases the damage done by your Lightning Bolt spell by 5%.
-                statsSetBonuses.BonusLightningBoltDamageMultiplier = (1f + statsSetBonuses.BonusLightningBoltDamageMultiplier) * (1f + 0.05f) - 1f;
-            }
-            if (T14Count >= 4)
-            {
-                // Your Rolling Thunder ability now grants 2 Lightning Shield charges each time it triggers.
-            }
-            #endregion
-
-            Stats statsTotal = new Stats();
-            statsTotal.Accumulate(statsRace);
-            statsTotal.Accumulate(statsItems);
-            statsTotal.Accumulate(statsTalents);
-            statsTotal.Accumulate(statsSetBonuses);
-
-            if (buffs)
-            {
-                statsTotal.Accumulate(statsBuffs);
-            }
-
-            if (statsTotal.HighestStat > 0) {
-                if (statsTotal.Spirit > statsTotal.Intellect) {
-                    statsTotal.Spirit += (statsTotal.HighestStat * 15f / 50f);
-                } else {
-                    statsTotal.Intellect += (statsTotal.HighestStat * 15f / 50f);
-                }
-            }
-
-            statsTotal.Strength = (float)Math.Floor(statsTotal.Strength * (1f + statsTotal.BonusStrengthMultiplier));
-            statsTotal.Stamina = (float)Math.Floor(statsTotal.Stamina * (1f + statsTotal.BonusStaminaMultiplier));
-            statsTotal.Intellect = (float)Math.Floor(statsTotal.Intellect * (1f + statsTotal.BonusIntellectMultiplier));
-            statsTotal.Spirit = (float)Math.Floor(statsTotal.Spirit * (1f + statsTotal.BonusSpiritMultiplier));
-
-            statsTotal.Health += (float)Math.Floor(StatConversion.GetHealthFromStamina(statsTotal.Stamina));
-            statsTotal.Health = (float)Math.Floor(statsTotal.Health * (1f + statsTotal.BonusHealthMultiplier));
-            //statsTotal.Mana += (float)Math.Floor(StatConversion.GetManaFromIntellect(statsTotal.Intellect));
-            statsTotal.Mana = (float)Math.Floor(statsTotal.Mana * (1f + statsTotal.BonusManaMultiplier));
-
-            statsTotal.SpellPower += statsTotal.Intellect * 2f;
-            statsTotal.SpellPower = (float)Math.Floor(statsTotal.SpellPower * (1f + statsTotal.BonusSpellPowerMultiplier));
-
-            statsTotal.SpellCrit += StatConversion.GetSpellCritFromRating(statsTotal.CritRating);
-            statsTotal.SpellCrit += StatConversion.GetSpellCritFromIntellect(statsTotal.Intellect);
-            statsTotal.SpellCrit += statsTotal.SpellCritOnTarget;
-            statsTotal.SpellHit += StatConversion.GetSpellHitFromRating(statsTotal.HitRating + statsTotal.Spirit);
-
-            return statsTotal;
-        }
     }
 }
+
 public static class Constants
 {
-    // Source: http://www.wowwiki.com/Base_mana
     public static float BaseMana = 20000;
 }

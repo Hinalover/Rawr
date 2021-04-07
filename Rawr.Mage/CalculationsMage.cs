@@ -100,18 +100,19 @@ namespace Rawr.Mage
             {
                 if (_characterDisplayCalculationLabels == null)
                     _characterDisplayCalculationLabels = new string[] {
-                    "Basic Stats:Stamina",
-                    "Basic Stats:Intellect",
                     "Basic Stats:Health",
                     "Basic Stats:Mana",
+                    "Basic Stats:Intellect",
+                    "Basic Stats:Stamina",
                     "Spell Stats:Spell Power",
-                    "Spell Stats:Haste",
-                    "Spell Stats:Hit Chance",
-                    "Spell Stats:Penetration",
                     "Spell Stats:Mana Regen",
-                    "Spell Stats:Combat Regen",
-                    "Spell Stats:Crit Chance",
+                    "Spell Stats:Critical Strike",
+                    "Spell Stats:Haste",
                     "Spell Stats:Mastery",
+                    "Spell Stats:Spirit",
+					"Spell Stats:Multistrike",
+					"Spell Stats:Versatility",
+                    "Spell Stats:Hit Chance",
                     "Solution:Total Damage",
                     "Solution:Score",
                     "Solution:Dps",
@@ -119,7 +120,7 @@ namespace Rawr.Mage
                     "Solution:By Spell",
                     "Solution:Sequence*Cycle sequence reconstruction based on optimum cycles",
                     "Spell Info:Arcane Missiles",
-                    "Spell Info:Arcane Blast(6)*Full debuff stack",
+                    "Spell Info:Arcane Blast(4)*Full debuff stack",
                     "Spell Info:Arcane Blast(0)*Non-debuffed",
                     "Spell Info:Arcane Barrage",
                     "Spell Info:Nether Tempest",
@@ -233,7 +234,6 @@ namespace Rawr.Mage
                         new Stats() { SpellPower = 1.17f },
                         new Stats() { CritRating = 1 },
                         new Stats() { HasteRating = 1 },
-                        new Stats() { HitRating = 1 },
                         new Stats() { Intellect = 1 },
                         new Stats() { MasteryRating = 1 },
                     };
@@ -438,22 +438,11 @@ namespace Rawr.Mage
             }
             if (useIncrementalOptimizations && !character.DisableBuffAutoActivation)
             {
-                return GetCharacterCalculations(character, additionalItem, calcOpts, calcOpts.IncrementalSetArmor, useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, computeIncrementalSet, solveCycles);
-            }
-            else if (calcOpts.AutomaticArmor && !calcOpts.ArmorSwapping && !character.DisableBuffAutoActivation)
-            {
-                CharacterCalculationsMage mage = GetCharacterCalculations(character, additionalItem, calcOpts, "Mage Armor", useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, computeIncrementalSet, solveCycles);
-                CharacterCalculationsMage molten = GetCharacterCalculations(character, additionalItem, calcOpts, "Molten Armor", useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, computeIncrementalSet, solveCycles);
-                CharacterCalculationsMage calc = (mage.OverallPoints > molten.OverallPoints) ? mage : molten;
-                CharacterCalculationsMage ice = GetCharacterCalculations(character, additionalItem, calcOpts, "Frost Armor", useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, computeIncrementalSet, solveCycles);
-                if (ice.OverallPoints > calc.OverallPoints) calc = ice;
-                if (computeIncrementalSet) StoreIncrementalSet(character, calc.DisplayCalculations);
-                if (referenceCalculation) StoreCycleSolutions(character, calc.DisplayCalculations);
-                return calc;
+                return GetCharacterCalculations(character, additionalItem, calcOpts, useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, computeIncrementalSet, solveCycles);
             }
             else
             {
-                CharacterCalculationsMage calc = GetCharacterCalculations(character, additionalItem, calcOpts, null, useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, computeIncrementalSet, solveCycles);
+                CharacterCalculationsMage calc = GetCharacterCalculations(character, additionalItem, calcOpts, useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, computeIncrementalSet, solveCycles);
                 if (computeIncrementalSet) StoreIncrementalSet(character, calc.DisplayCalculations);
                 if (referenceCalculation) StoreCycleSolutions(character, calc.DisplayCalculations);
                 return calc;
@@ -541,99 +530,30 @@ namespace Rawr.Mage
             calculationOptions.IncrementalSetVariableType = variableTypeList.ToArray();
             calculationOptions.IncrementalSetManaSegment = manaSegmentList.ToArray();
             calculationOptions.IncrementalSetManaNeutralMix = manaNeutralMixList.ToArray();
-            if (calculationOptions.AutomaticArmor)
-            {
-                calculationOptions.IncrementalSetArmor = calculations.MageArmor;
-            }
-            else
-            {
-                calculationOptions.IncrementalSetArmor = null;
-            }
 
             List<int> filteredCooldowns = ListUtils.RemoveDuplicates(cooldownList);
             filteredCooldowns.Sort();
             calculationOptions.IncrementalSetSortedStates = filteredCooldowns.ToArray();
         }
 
-        public CharacterCalculationsMage GetCharacterCalculations(Character character, Item additionalItem, CalculationOptionsMage calculationOptions, string armor, bool useIncrementalOptimizations, bool useGlobalOptimizations, bool needsDisplayCalculations, bool needsSolutionVariables, bool solveCycles)
+        public CharacterCalculationsMage GetCharacterCalculations(Character character, Item additionalItem, CalculationOptionsMage calculationOptions, bool useIncrementalOptimizations, bool useGlobalOptimizations, bool needsDisplayCalculations, bool needsSolutionVariables, bool solveCycles)
         {
-            return Solver.GetCharacterCalculations(character, additionalItem, calculationOptions, this, armor, calculationOptions.ComparisonSegmentCooldowns, calculationOptions.ComparisonSegmentMana, calculationOptions.ComparisonIntegralMana, calculationOptions.ComparisonAdvancedConstraintsLevel, useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, needsSolutionVariables, solveCycles, calculationOptions.SimpleStacking, calculationOptions.SimpleStacking);
+            return Solver.GetCharacterCalculations(character, additionalItem, calculationOptions, this, calculationOptions.ComparisonSegmentCooldowns, calculationOptions.ComparisonSegmentMana, calculationOptions.ComparisonIntegralMana, calculationOptions.ComparisonAdvancedConstraintsLevel, useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, needsSolutionVariables, solveCycles, calculationOptions.SimpleStacking, calculationOptions.SimpleStacking);
         }
 
-        //public static readonly Buff CriticalMassBuff = Buff.GetBuffByName("Critical Mass");
-        //public static readonly Buff ArcaneTacticsBuff = Buff.GetBuffByName("Arcane Tactics");
-        public static readonly Buff MoltenArmorBuff = Buff.GetBuffByName("Molten Armor");
-        public static readonly Buff MageArmorBuff = Buff.GetBuffByName("Mage Armor");
-        public static readonly Buff FrostArmorBuff = Buff.GetBuffByName("Frost Armor");
-
-        public void AccumulateRawStats(Stats stats, Character character, Item additionalItem, CalculationOptionsMage calculationOptions, out List<Buff> autoActivatedBuffs, string armor, out List<Buff> activeBuffs)
+        public void AccumulateRawStats(Stats stats, Character character, Item additionalItem, CalculationOptionsMage calculationOptions, out List<Buff> autoActivatedBuffs, out List<Buff> activeBuffs)
         {
             AccumulateItemStats(stats, character, additionalItem);
 
-            bool activeBuffsCloned = false;
             activeBuffs = character.ActiveBuffs;
             autoActivatedBuffs = null;
 
             if (!character.DisableBuffAutoActivation)
             {
                 MageTalents talents = character.MageTalents;
-                /*if (talents.CriticalMass > 0)
-                {
-                    if (!character.ActiveBuffs.Contains(ImprovedScorchBuff) && !character.ActiveBuffs.Contains(WintersChillBuff))
-                    {
-                        if (!activeBuffsCloned)
-                        {
-                            activeBuffs = new List<Buff>(character.ActiveBuffs);
-                            autoActivatedBuffs = new List<Buff>();
-                            activeBuffsCloned = true;
-                        }
-                        activeBuffs.Add(ImprovedScorchBuff);
-                        autoActivatedBuffs.Add(ImprovedScorchBuff);
-                        RemoveConflictingBuffs(activeBuffs, ImprovedScorchBuff);
-                    }
-                }*/
-                if (armor != null)
-                {
-                    Buff armorBuff = null;
-                    switch (armor)
-                    {
-                        case "Molten Armor":
-                            armorBuff = MoltenArmorBuff;
-                            break;
-                        case "Mage Armor":
-                            armorBuff = MageArmorBuff;
-                            break;
-                        case "Frost Armor":
-                            armorBuff = FrostArmorBuff;
-                            break;
-                    }
-                    if (!character.ActiveBuffs.Contains(armorBuff))
-                    {
-                        if (!activeBuffsCloned)
-                        {
-                            activeBuffs = new List<Buff>(character.ActiveBuffs);
-                            autoActivatedBuffs = new List<Buff>();
-                            activeBuffsCloned = true;
-                        }
-                        activeBuffs.Add(armorBuff);
-                        autoActivatedBuffs.Add(armorBuff);
-                        RemoveConflictingBuffs(activeBuffs, armorBuff);
-                    }
-                }
             }
 
             AccumulateBuffsStats(stats, activeBuffs);
-
-            // moving away to handling these as normal procs, reevaluate if needed
-            /*for (int i = 0; i < stats._rawSpecialEffectDataSize; i++)
-            {
-                SpecialEffect effect = stats._rawSpecialEffectData[i];
-                if (effect.MaxStack > 1 && effect.Chance == 1f && effect.Cooldown == 0f && (effect.Trigger == Trigger.DamageSpellCast || effect.Trigger == Trigger.DamageSpellHit || effect.Trigger == Trigger.SpellCast || effect.Trigger == Trigger.SpellHit))
-                {
-                    effect.Stats.GenerateSparseData();
-                    stats.Accumulate(effect.Stats, effect.MaxStack);
-                }                
-            }*/
         }
 
         // required by base class, but never used
@@ -643,11 +563,16 @@ namespace Rawr.Mage
             List<Buff> ignore;
             List<Buff> ignore2;
             Stats stats = new Stats();
-            AccumulateRawStats(stats, character, additionalItem, calculationOptions, out ignore2, null, out ignore);
-            return GetCharacterStats(character, additionalItem, stats, calculationOptions, true);
+            AccumulateRawStats(stats, character, additionalItem, calculationOptions, out ignore2, out ignore);
+            return GetCharacterStats(character, additionalItem, stats, calculationOptions);
         }
 
-        public Stats GetCharacterStats(Character character, Item additionalItem, Stats rawStats, CalculationOptionsMage calculationOptions, bool includeArmor)
+        private float GetBaseStatValue(float raceValue, float itemValue, float multiplier)
+        {
+            return (float)Math.Floor(raceValue * multiplier) + (float)Math.Floor(itemValue * multiplier);
+        }
+
+        public Stats GetCharacterStats(Character character, Item additionalItem, Stats rawStats, CalculationOptionsMage calculationOptions)
         {
             float statsRaceHealth;
             float statsRaceMana;
@@ -659,32 +584,13 @@ namespace Rawr.Mage
 
             statsRaceHealth = BaseCombatRating.BaseHP(calculationOptions.PlayerLevel);
             statsRaceMana = BaseCombatRating.MageBaseMana(calculationOptions.PlayerLevel);
-            /*switch (character.Race)
-            {
-                // Alliance
-                case CharacterRace.Human: default: statsRaceStrength = 20; statsRaceAgility = 20; statsRaceStamina = 20; statsRaceIntellect = 20; statsRaceSpirit = 20; break;
-                case CharacterRace.Dwarf: statsRaceStrength = 25; statsRaceAgility = 16; statsRaceStamina = 21; statsRaceIntellect = 19; statsRaceSpirit = 19; break;
-                case CharacterRace.NightElf: statsRaceStrength = 16; statsRaceAgility = 24; statsRaceStamina = 20; statsRaceIntellect = 20; statsRaceSpirit = 20; break;
-                case CharacterRace.Gnome: statsRaceStrength = 15; statsRaceAgility = 22; statsRaceStamina = 20; statsRaceIntellect = 24; statsRaceSpirit = 20; break;
-                case CharacterRace.Draenei: statsRaceStrength = 21; statsRaceAgility = 17; statsRaceStamina = 20; statsRaceIntellect = 20; statsRaceSpirit = 22; break;
-                case CharacterRace.Worgen: statsRaceStrength = 23; statsRaceAgility = 22; statsRaceStamina = 20; statsRaceIntellect = 16; statsRaceSpirit = 19; break;
-                case CharacterRace.PandarenAlliance: statsRaceStrength = 21; statsRaceAgility = 19; statsRaceStamina = 22; statsRaceIntellect = 21; statsRaceSpirit = 22; break;
-                // Horde
-                case CharacterRace.Orc: statsRaceStrength = 23; statsRaceAgility = 17; statsRaceStamina = 21; statsRaceIntellect = 17; statsRaceSpirit = 22; break;
-                case CharacterRace.Undead: statsRaceStrength = 19; statsRaceAgility = 18; statsRaceStamina = 20; statsRaceIntellect = 18; statsRaceSpirit = 25; break;
-                case CharacterRace.Tauren: statsRaceStrength = 25; statsRaceAgility = 16; statsRaceStamina = 21; statsRaceIntellect = 16; statsRaceSpirit = 22; break;
-                case CharacterRace.Troll: statsRaceStrength = 21; statsRaceAgility = 22; statsRaceStamina = 20; statsRaceIntellect = 16; statsRaceSpirit = 21; break;
-                case CharacterRace.BloodElf: statsRaceStrength = 17; statsRaceAgility = 22; statsRaceStamina = 20; statsRaceIntellect = 23; statsRaceSpirit = 18; break;
-                case CharacterRace.Goblin: statsRaceStrength = 17; statsRaceAgility = 22; statsRaceStamina = 20; statsRaceIntellect = 23; statsRaceSpirit = 20; break;
-                case CharacterRace.PandarenHorde: statsRaceStrength = 21; statsRaceAgility = 19; statsRaceStamina = 22; statsRaceIntellect = 21; statsRaceSpirit = 22; break;
-            };
-            statsRaceStrength += 17; statsRaceAgility += 26; statsRaceStamina += 43; statsRaceIntellect += 187; statsRaceSpirit += 170;*/
-            BaseCombatStatInfo statsRace = BaseCombatRating.TotalBaseStats(character.Race, character.Class, calculationOptions.PlayerLevel);
-            statsRaceStrength = statsRace.Strength;
-            statsRaceAgility = statsRace.Agility;
-            statsRaceStamina = statsRace.Stamina;
-            statsRaceIntellect = statsRace.Intellect;
-            statsRaceSpirit = statsRace.Spirit;
+            BaseCombatStatInfo statsRace = BaseCombatRating.RaceStats(character.Race);
+            BaseCombatStatInfo statsClass = BaseCombatRating.MageClassStats(calculationOptions.PlayerLevel);
+            statsRaceStrength = statsRace.Strength + statsClass.Strength;
+            statsRaceAgility = statsRace.Agility + statsClass.Agility;
+            statsRaceStamina = statsRace.Stamina + statsClass.Stamina;
+            statsRaceIntellect = statsRace.Intellect + statsClass.Intellect;
+            statsRaceSpirit = statsRace.Spirit + statsClass.Spirit;
 
             MageTalents talents = character.MageTalents;
 
@@ -714,13 +620,13 @@ namespace Rawr.Mage
             {
                 statsTotal.BonusSpiritMultiplier = (1 + statsTotal.BonusSpiritMultiplier) * calculationOptions.EffectSpiritMultiplier - 1;
             }
-            statsTotal.Strength = (float)Math.Floor((statsRaceStrength + statsTotal.Strength) * (1 + statsTotal.BonusStrengthMultiplier));
-            statsTotal.Agility = (float)Math.Floor((statsRaceAgility + statsTotal.Agility) * (1 + statsTotal.BonusAgilityMultiplier));
-            statsTotal.Intellect = (float)Math.Floor((statsRaceIntellect + statsTotal.Intellect) * (1 + statsRaceBonusIntellectMultiplier) * (1 + statsTalentBonusIntellectMultiplier) * (1 + statsWizardryBonusIntellectMultiplier) * (1 + statsTotal.BonusIntellectMultiplier));
-            statsTotal.Stamina = (float)Math.Floor((statsRaceStamina + statsTotal.Stamina) * (1 + statsTotal.BonusStaminaMultiplier));
-            statsTotal.Spirit = (float)Math.Floor((statsRaceSpirit + statsTotal.Spirit) * (1 + statsRaceBonusSpiritMultiplier) * (1 + statsTalentBonusSpiritMultiplier) * (1 + statsTotal.BonusSpiritMultiplier));
+            statsTotal.Strength = GetBaseStatValue(statsRaceStrength, statsTotal.Strength, (1 + statsTotal.BonusStrengthMultiplier));
+            statsTotal.Agility = GetBaseStatValue(statsRaceAgility, statsTotal.Agility, (1 + statsTotal.BonusAgilityMultiplier));
+            statsTotal.Intellect = GetBaseStatValue(statsRaceIntellect, statsTotal.Intellect, (1 + statsRaceBonusIntellectMultiplier) * (1 + statsTalentBonusIntellectMultiplier) * (1 + statsWizardryBonusIntellectMultiplier) * (1 + statsTotal.BonusIntellectMultiplier));
+            statsTotal.Stamina = GetBaseStatValue(statsRaceStamina, statsTotal.Stamina, (1 + statsTotal.BonusStaminaMultiplier));
+            statsTotal.Spirit = GetBaseStatValue(statsRaceSpirit, statsTotal.Spirit, (1 + statsRaceBonusSpiritMultiplier) * (1 + statsTalentBonusSpiritMultiplier) * (1 + statsTotal.BonusSpiritMultiplier));
 
-            statsTotal.Health = (float)Math.Round((statsTotal.Health + statsRaceHealth + 20 + ((statsTotal.Stamina - 20) * BaseCombatRating.HPPerStamina(calculationOptions.PlayerLevel))) * (character.Race == CharacterRace.Tauren ? 1.05f : 1f) * (1 + statsTotal.BonusHealthMultiplier));
+            statsTotal.Health = (float)Math.Round((statsTotal.Health + statsRaceHealth + (statsTotal.Stamina * BaseCombatRating.HPPerStamina(calculationOptions.PlayerLevel))) * (character.Race == CharacterRace.Tauren ? 1.05f : 1f) * (1 + statsTotal.BonusHealthMultiplier));
             statsTotal.Mana = (float)Math.Round((statsTotal.Mana + statsRaceMana) * statsRaceBonusManaMultiplier);
             statsTotal.Armor = (float)Math.Round(statsTotal.Armor);
 
@@ -731,42 +637,8 @@ namespace Rawr.Mage
             {
                 statsTotal.Mp5 += 5 * 0.06f * statsTotal.Mana / 120;
             }
-            if (character.Race == CharacterRace.Draenei)
-            {
-                statsTotal.SpellHit += 0.01f;
-            }
-            if (character.Race == CharacterRace.Human)
-            {
-                if (character.MainHand != null && character.MainHand.Item != null && character.MainHand.Item.Type == ItemType.OneHandSword)
-                {
-                    statsTotal.SpellHit += 0.01f;
-                }
-            }
-            if (character.Race == CharacterRace.Gnome)
-            {
-                if (character.MainHand != null && character.MainHand.Item != null && (character.MainHand.Item.Type == ItemType.OneHandSword || character.MainHand.Item.Type == ItemType.Dagger))
-                {
-                    statsTotal.SpellHit += 0.01f;
-                }
-            }
-
 
             float allResist = 0;
-            if (includeArmor)
-            {
-                if (statsTotal.MageMageArmor > 0)
-                {
-                    statsTotal.MasteryRating += (float)Math.Round(BaseCombatRating.ConstantSpellScaling(calculationOptions.PlayerLevel) * 1.7545000315f);
-                }
-                if (statsTotal.MageMoltenArmor > 0)
-                {
-                    statsTotal.SpellCrit += 0.05f;
-                }
-                if (statsTotal.MageFrostArmor > 0)
-                {
-                    statsTotal.SpellHaste = (1 + statsTotal.SpellHaste) * 1.07f - 1;
-                }
-            }
             if (calculationOptions.EffectCritBonus > 0)
             {
                 statsTotal.SpellCrit += calculationOptions.EffectCritBonus;
@@ -775,22 +647,15 @@ namespace Rawr.Mage
             {
                 statsTotal.SpellCrit += 0.01f;
             }
-            if (character.Race == CharacterRace.Goblin)
+            if (character.Race == CharacterRace.Goblin || character.Race == CharacterRace.Gnome)
             {
                 statsTotal.SpellHaste = (1f + statsTotal.SpellHaste) * 1.01f - 1f;
             }
-            /*if (talents.GlyphOfManaGem)
-            {
-                statsTotal.BonusManaGem += 0.4f;
-            }*/
-
-            //statsTotal.Mp5 += calculationOptions.ShadowPriest;
 
             float spellDamageFromIntellectPercentage = 0f;
 
             statsTotal.SpellPower += (float)Math.Floor(spellDamageFromIntellectPercentage * statsTotal.Intellect);
-            statsTotal.SpellPower += statsTotal.Intellect - 10;
-            //statsTotal.SpellPower += spellDamageFromSpiritPercentage * statsTotal.Spirit;
+            statsTotal.SpellPower += statsTotal.Intellect;
 
             statsTotal.CritBonusDamage += calculationOptions.EffectCritDamageBonus;
 
@@ -840,7 +705,6 @@ namespace Rawr.Mage
                         new Stats() { SpellPower = 1.17f },
                         new Stats() { CritRating = 1 },
                         new Stats() { HasteRating = 1 },
-                        new Stats() { HitRating = 1 },
                         new Stats() { Intellect = 1 },
                         new Stats() { MasteryRating = 1 },
                     };
@@ -1449,7 +1313,6 @@ namespace Rawr.Mage
                     "Arcane Resistance",
                     "Resilience",
                     "Chance to Live",
-                    "Hit Rating",
                     "Haste Rating",
                     "Crit Rating",
                     "PVP Trinket",
@@ -1658,7 +1521,6 @@ namespace Rawr.Mage
                 SpellPower = stats.SpellPower,
                 SpellFireDamageRating = stats.SpellFireDamageRating,
                 HasteRating = stats.HasteRating,
-                HitRating = stats.HitRating,
                 BonusIntellectMultiplier = stats.BonusIntellectMultiplier,
                 BonusSpellCritDamageMultiplier = stats.BonusSpellCritDamageMultiplier,
                 BonusStaminaMultiplier = stats.BonusStaminaMultiplier,
@@ -1673,30 +1535,10 @@ namespace Rawr.Mage
                 BonusArcaneDamageMultiplier = stats.BonusArcaneDamageMultiplier,
                 BonusFireDamageMultiplier = stats.BonusFireDamageMultiplier,
                 BonusFrostDamageMultiplier = stats.BonusFrostDamageMultiplier,
-                //SpellPowerFor6SecOnCrit = stats.SpellPowerFor6SecOnCrit,
-                //EvocationExtension = stats.EvocationExtension,
-                //BonusMageNukeMultiplier = stats.BonusMageNukeMultiplier,
-                //LightningCapacitorProc = stats.LightningCapacitorProc,
-                //SpellPowerFor20SecOnUse2Min = stats.SpellPowerFor20SecOnUse2Min,
-                //HasteRatingFor20SecOnUse2Min = stats.HasteRatingFor20SecOnUse2Min,
-                //ManaRestoreFromBaseManaPPM = stats.ManaRestoreFromBaseManaPPM,
                 BonusManaGem = stats.BonusManaGem,
-                //SpellPowerFor10SecOnHit_10_45 = stats.SpellPowerFor10SecOnHit_10_45,
-                //SpellPowerFor10SecOnResist = stats.SpellPowerFor10SecOnResist,
-                //SpellPowerFor15SecOnCrit_20_45 = stats.SpellPowerFor15SecOnCrit_20_45,
-                //SpellPowerFor15SecOnUse90Sec = stats.SpellPowerFor15SecOnUse90Sec,
-                //SpellHasteFor5SecOnCrit_50 = stats.SpellHasteFor5SecOnCrit_50,
-                //SpellHasteFor6SecOnCast_15_45 = stats.SpellHasteFor6SecOnCast_15_45,
-                //SpellDamageFor10SecOnHit_5 = stats.SpellDamageFor10SecOnHit_5,
-                //SpellHasteFor6SecOnHit_10_45 = stats.SpellHasteFor6SecOnHit_10_45,
-                //SpellPowerFor10SecOnCrit_20_45 = stats.SpellPowerFor10SecOnCrit_20_45,
-                //SpellPowerFor10SecOnCast_10_45 = stats.SpellPowerFor10SecOnCast_10_45,
                 BonusManaPotionEffectMultiplier = stats.BonusManaPotionEffectMultiplier,
                 ThreatIncreaseMultiplier = stats.ThreatIncreaseMultiplier,
                 ThreatReductionMultiplier = stats.ThreatReductionMultiplier,
-                //HasteRatingFor20SecOnUse5Min = stats.HasteRatingFor20SecOnUse5Min,
-                //SpellPowerFor15SecOnUse2Min = stats.SpellPowerFor15SecOnUse2Min,
-                //ManaRestoreOnCast_5_15 = stats.ManaRestoreOnCast_5_15,
                 InterruptProtection = stats.InterruptProtection,
                 ArcaneResistanceBuff = stats.ArcaneResistanceBuff,
                 FireResistanceBuff = stats.FireResistanceBuff,
@@ -1705,32 +1547,18 @@ namespace Rawr.Mage
                 NatureResistanceBuff = stats.NatureResistanceBuff,
                 PVPTrinket = stats.PVPTrinket,
                 MovementSpeed = stats.MovementSpeed,
-                MageFrostArmor = stats.MageFrostArmor,
-                MageMageArmor = stats.MageMageArmor,
-                MageMoltenArmor = stats.MageMoltenArmor,
                 ManaRestoreFromMaxManaPerSecond = stats.ManaRestoreFromMaxManaPerSecond,
-                SpellHit = stats.SpellHit,
                 SpellCrit = stats.SpellCrit,
                 SpellCritOnTarget = stats.SpellCritOnTarget,
                 SpellHaste = stats.SpellHaste,
-                //SpellPowerFor10SecOnCast_15_45 = stats.SpellPowerFor10SecOnCast_15_45,
-                //ManaRestoreOnCast_10_45 = stats.ManaRestoreOnCast_10_45,
-                //SpellHasteFor10SecOnCast_10_45 = stats.SpellHasteFor10SecOnCast_10_45,
-                //ManaRestoreOnCrit_25_45 = stats.ManaRestoreOnCrit_25_45,
-                //PendulumOfTelluricCurrentsProc = stats.PendulumOfTelluricCurrentsProc,
-                //ThunderCapacitorProc = stats.ThunderCapacitorProc,
-                //SpellPowerFor20SecOnUse5Min = stats.SpellPowerFor20SecOnUse5Min,
                 CritBonusDamage = stats.CritBonusDamage,
                 BonusDamageMultiplier = stats.BonusDamageMultiplier,
-                //SpellPowerFor15SecOnCast_50_45 = stats.SpellPowerFor15SecOnCast_50_45,
                 SpellsManaCostReduction = stats.SpellsManaCostReduction,
                 BonusHealthMultiplier = stats.BonusHealthMultiplier,
                 MasteryRating = stats.MasteryRating,
                 BonusSpellPowerMultiplier = stats.BonusSpellPowerMultiplier,
                 BonusManaMultiplier = stats.BonusManaMultiplier,
                 DragonwrathProc = stats.DragonwrathProc,
-                Expertise = stats.Expertise,
-                ExpertiseRating = stats.ExpertiseRating
             };
             foreach (SpecialEffect effect in stats.SpecialEffects())
             {
@@ -1744,20 +1572,20 @@ namespace Rawr.Mage
 
         private static bool HasEffectStats(Stats stats)
         {
-            float commonStats = stats.CritRating + stats.HasteRating + stats.HitRating;
+            float commonStats = stats.CritRating + stats.HasteRating;
             return HasMageStats(stats) || (commonStats > 0);
         }
 
         private static bool HasMageStats(Stats stats)
         {
-            float mageStats = stats.Intellect + stats.Mp5 + stats.SpellPower + stats.SpellFireDamageRating + stats.BonusIntellectMultiplier + stats.BonusSpellCritDamageMultiplier + stats.BonusSpiritMultiplier + stats.SpellFrostDamageRating + stats.SpellArcaneDamageRating + stats.SpellPenetration + stats.Mana + stats.SpellCombatManaRegeneration + stats.BonusArcaneDamageMultiplier + stats.BonusFireDamageMultiplier + stats.BonusFrostDamageMultiplier + /*stats.EvocationExtension + stats.BonusMageNukeMultiplier + stats.LightningCapacitorProc + stats.ManaRestoreFromBaseManaPPM +*/ stats.BonusManaGem + stats.BonusManaPotionEffectMultiplier + stats.ThreatReductionMultiplier + stats.ArcaneResistance + stats.FireResistance + stats.FrostResistance + stats.NatureResistance + stats.ShadowResistance + stats.InterruptProtection + stats.ArcaneResistanceBuff + stats.FrostResistanceBuff + stats.FireResistanceBuff + stats.NatureResistanceBuff + stats.ShadowResistanceBuff + stats.MageFrostArmor + stats.MageMageArmor + stats.MageMoltenArmor + stats.ManaRestoreFromMaxManaPerSecond + stats.SpellCrit + stats.SpellCritOnTarget + stats.SpellHit + stats.SpellHaste + /*stats.PendulumOfTelluricCurrentsProc + stats.ThunderCapacitorProc + */stats.CritBonusDamage + stats.BonusDamageMultiplier + stats.SpellsManaCostReduction + stats.BonusSpellPowerMultiplier + stats.BonusManaMultiplier + stats.DragonwrathProc;
+            float mageStats = stats.Intellect + stats.Mp5 + stats.SpellPower + stats.SpellFireDamageRating + stats.BonusIntellectMultiplier + stats.BonusSpellCritDamageMultiplier + stats.BonusSpiritMultiplier + stats.SpellFrostDamageRating + stats.SpellArcaneDamageRating + stats.SpellPenetration + stats.Mana + stats.SpellCombatManaRegeneration + stats.BonusArcaneDamageMultiplier + stats.BonusFireDamageMultiplier + stats.BonusFrostDamageMultiplier + /*stats.EvocationExtension + stats.BonusMageNukeMultiplier + stats.LightningCapacitorProc + stats.ManaRestoreFromBaseManaPPM +*/ stats.BonusManaGem + stats.BonusManaPotionEffectMultiplier + stats.ThreatReductionMultiplier + stats.ArcaneResistance + stats.FireResistance + stats.FrostResistance + stats.NatureResistance + stats.ShadowResistance + stats.InterruptProtection + stats.ArcaneResistanceBuff + stats.FrostResistanceBuff + stats.FireResistanceBuff + stats.NatureResistanceBuff + stats.ShadowResistanceBuff + stats.ManaRestoreFromMaxManaPerSecond + stats.SpellCrit + stats.SpellCritOnTarget + stats.SpellHaste + /*stats.PendulumOfTelluricCurrentsProc + stats.ThunderCapacitorProc + */stats.CritBonusDamage + stats.BonusDamageMultiplier + stats.SpellsManaCostReduction + stats.BonusSpellPowerMultiplier + stats.BonusManaMultiplier + stats.DragonwrathProc;
             return mageStats > 0;
         }
 
         public override bool HasRelevantStats(Stats stats)
         {
             bool mageStats = HasMageStats(stats);
-            float commonStats = stats.CritRating + stats.HasteRating + stats.HitRating + stats.Health + stats.Stamina + stats.Armor + stats.PVPTrinket + stats.MovementSpeed + stats.SnareRootDurReduc + stats.FearDurReduc + stats.StunDurReduc + stats.PvPResilience + stats.PvPPower + stats.BonusHealthMultiplier + stats.MasteryRating + stats.Expertise + stats.ExpertiseRating;
+            float commonStats = stats.CritRating + stats.HasteRating + stats.Health + stats.Stamina + stats.Armor + stats.PVPTrinket + stats.MovementSpeed + stats.SnareRootDurReduc + stats.FearDurReduc + stats.StunDurReduc + stats.PvPResilience + stats.PvPPower + stats.BonusHealthMultiplier + stats.MasteryRating;
             float ignoreStats = stats.Agility + stats.Strength + stats.AttackPower + stats.Dodge + stats.Parry + stats.DodgeRating + stats.ParryRating + stats.Block + stats.BlockRating + stats.SpellShadowDamageRating + stats.SpellNatureDamageRating + stats.ArmorPenetration + stats.TargetArmorReduction;
             foreach (SpecialEffect effect in stats.SpecialEffects())
             {
@@ -1790,26 +1618,6 @@ namespace Rawr.Mage
         {
             if (slot == CharacterSlot.OffHand && item.Slot == ItemSlot.OneHand) return false;
             return base.ItemFitsInSlot(item, character, slot, ignoreUnique);
-        }
-
-        public override List<Reforging> GetReforgingOptions(Item baseItem, int randomSuffixId, int upgradeItemLevel)
-        {
-            List<Reforging> retval = base.GetReforgingOptions(baseItem, randomSuffixId, upgradeItemLevel);
-
-            if (baseItem.Stats.ExpertiseRating > 0)
-            {
-                retval.RemoveAll(rf => rf != null && rf.ReforgeFrom == AdditiveStat.ExpertiseRating && rf.ReforgeTo == AdditiveStat.HitRating);
-            }
-            else if (baseItem.Stats.HitRating > 0)
-            {
-                retval.RemoveAll(rf => rf != null && rf.ReforgeFrom == AdditiveStat.HitRating && rf.ReforgeTo == AdditiveStat.ExpertiseRating);
-            }
-            else
-            {
-                retval.RemoveAll(rf => rf != null && rf.ReforgeTo == AdditiveStat.ExpertiseRating);
-            }
-
-            return retval;
         }
     }
 }

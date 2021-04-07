@@ -114,8 +114,6 @@
     <Compile Include="CalculationsMoonkin.cs" />
     <Compile Include="CharacterCalculationsMoonkin.cs" />
     <Compile Include="ComparisonCalculationMoonkin.cs" />
-    <Compile Include="MoonkinCycleGenerator.cs" />
-    <Compile Include="MoonkinSimulator.cs" />
     <Compile Include="MoonkinSolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PTRCastDistributions.cs" />

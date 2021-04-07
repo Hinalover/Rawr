@@ -128,7 +128,6 @@
     <Compile Include="Bosses\BossHandler.cs" />
     <Compile Include="Bosses\BossList.cs" />
     <Compile Include="Bosses\BossStuff.cs" />
-    <Compile Include="CataclysmClassTalents.cs" />
     <Compile Include="CustomControls\ErrorBox.cs" />
     <Compile Include="CustomControls\ErrorWindow.xaml.cs">
       <DependentUpon>ErrorWindow.xaml</DependentUpon>

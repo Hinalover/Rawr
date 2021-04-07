@@ -51,7 +51,7 @@ namespace Rawr.Bear
         public override void UpdateCombatState(GuardianCombatState CState)
         {
             base.UpdateCombatState(CState);
-            Rage = 5 + (CState.Talents.SoulOfTheForest > 0 ? 2 : 0);
+            Rage = 5 + (CState.Talents.SoulOfTheForest ? 2 : 0);
         }
 
         private float _DamageMultiplierModifer = 0;

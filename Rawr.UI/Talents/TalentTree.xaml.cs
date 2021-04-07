@@ -25,7 +25,6 @@ namespace Rawr.UI
             MinHeight = 465;
 #endif*/
             talentAttributes = new Dictionary<int, TalentDataAttribute>();
-            prereqArrows = new Dictionary<int, Image>();
             belowRow = new Dictionary<int, int>();
         }
 
@@ -42,7 +41,7 @@ namespace Rawr.UI
                 if (value != null)
                 {
                     talents = value;
-                    for (int r = 1; r <= 6; r++)
+                    for (int r = 1; r <= 7; r++)
                     {
                         for (int c = 1; c <= 3; c++)
                         {
@@ -51,14 +50,6 @@ namespace Rawr.UI
                     }
                     talentAttributes.Clear();
                     belowRow.Clear();
-                    if (prereqArrows != null)
-                    {
-                        foreach (KeyValuePair<int, Image> kvp in prereqArrows)
-                        {
-                            GridPanel.Children.Remove(kvp.Value);
-                        }
-                    }
-                    prereqArrows.Clear();
                     Class = talents.GetClass();
                     //TreeName = ((string[])Talents.GetType().GetField("TreeNames").GetValue(Talents))[Tree];
                     //BackgroundImage.Source = Icons.TreeBackground(Class, Tree);
@@ -69,150 +60,15 @@ namespace Rawr.UI
                         {
                             TalentDataAttribute talentData = talentDatas[0];
                             //if (talentData.Tree != Tree) continue;
-                            this[talentData.Row, talentData.Column].TalentData = talentData;
+                            this[talentData.Row + 1, talentData.Column + 1].TalentData = talentData;
                             talentAttributes[talentData.Index] = talentData;
                         }
                     }
-                    for (int r = 1; r <= 6; r++)
+                    for (int r = 1; r <= 7; r++)
                     {
                         for (int c = 1; c <= 3; c++)
                         {
                             this[r, c].Update();
-                        }
-                    }
-                    UpdatePrereqs();
-                }
-            }
-        }
-
-        private Dictionary<int,Image> prereqArrows;
-        public void UpdatePrereqs()
-        {
-            foreach (KeyValuePair<int, TalentDataAttribute> kvp in talentAttributes)
-            {
-                if (kvp.Value.Prerequisite >= 0)
-                {
-                    TalentDataAttribute prereq = GetAttribute(kvp.Value.Prerequisite);
-                    int row = kvp.Value.Row - prereq.Row;
-                    int col = kvp.Value.Column - prereq.Column;
-
-                    string suffix;
-                    if (kvp.Value.MaxPoints == Talents.Data[kvp.Value.Index]) suffix = "-yellow.png";
-                    else if (PointsBelowRow(kvp.Value.Row) >= (kvp.Value.Row - 1)
-                            && PointsInRow(kvp.Value.Row) == 0
-                            && Talents.Data[prereq.Index] == prereq.MaxPoints) suffix = "-green.png";
-                    else suffix = "-grey.png";
-
-                    Image image;
-                    if (prereqArrows.ContainsKey(kvp.Value.Index))
-                    {
-                        image = prereqArrows[kvp.Value.Index];
-                    }
-                    else
-                    {
-                        image = new Image();
-                        Grid.SetColumn(image, kvp.Value.Column);
-                        Grid.SetRow(image, kvp.Value.Row);
-#if SILVERLIGHT
-                        image.Stretch = Stretch.None;
-#else
-                        // it looks like these images have non standard dpi, so make sure wpf doesn't stretch it around
-                        image.Stretch = Stretch.Fill;
-                        image.SetBinding(Image.WidthProperty, new System.Windows.Data.Binding() { Path = new PropertyPath("Source.PixelWidth"), RelativeSource = new System.Windows.Data.RelativeSource(System.Windows.Data.RelativeSourceMode.Self) });
-                        image.SetBinding(Image.HeightProperty, new System.Windows.Data.Binding() { Path = new PropertyPath("Source.PixelHeight"), RelativeSource = new System.Windows.Data.RelativeSource(System.Windows.Data.RelativeSourceMode.Self) });
-#endif
-                        image.HorizontalAlignment = HorizontalAlignment.Left;
-                        image.VerticalAlignment = VerticalAlignment.Top;
-                        GridPanel.Children.Add(image);
-                        prereqArrows[kvp.Value.Index] = image;
-                    }
-
-#if SILVERLIGHT
-                    string iconPrefix = "..";
-#else
-                    string iconPrefix = "/Rawr.UI.WPF;component";
-#endif
-
-                    if (row == 0)
-                    {
-                        if (col == -1) 
-                        {
-                            image.Source = Icons.NewBitmapImage(new Uri(iconPrefix + "/Images/across-left" + suffix, UriKind.Relative));
-                            image.Margin = new Thickness(47, 15, 0, 0);
-                        }
-                        else if (col == 1)
-                        {
-                            image.Source = Icons.NewBitmapImage(new Uri(iconPrefix + "/Images/across-right" + suffix, UriKind.Relative));
-                            image.Margin = new Thickness(-17, 15, 0, 0);
-                        }
-                    }
-                    else if (row == 1)
-                    {
-                        if (col == -1)
-                        {
-                            image.Source = Icons.NewBitmapImage(new Uri(iconPrefix + "/Images/down-left" + suffix, UriKind.Relative));
-                            image.Margin = new Thickness(13, -44, 0, 0);
-                            Grid.SetRowSpan(image, 2);
-                        }
-                        else if (col == 0)
-                        {
-                            image.Source = Icons.NewBitmapImage(new Uri(iconPrefix + "/Images/down-1" + suffix, UriKind.Relative));
-                            image.Margin = new Thickness(14, -17, 0, 0);
-                        }
-                        else if (col == 1)
-                        {
-                            image.Source = Icons.NewBitmapImage(new Uri(iconPrefix + "/Images/down-right" + suffix, UriKind.Relative));
-                            image.Margin = new Thickness(-18, -44, 0, 0);
-                        }
-                    }
-                    else if (row == 2)
-                    {
-                        if (col == -1) {
-                            image.Source = Icons.NewBitmapImage(new Uri(iconPrefix + "/Images/down-2-left" + suffix, UriKind.Relative));
-                            image.Margin = new Thickness(-18, 20, 0, 0);
-                            Grid.SetRowSpan(image, 2);  
-                        }
-                        else if (col == 0)
-                        {
-                            image.Source = Icons.NewBitmapImage(new Uri(iconPrefix + "/Images/down-2" + suffix, UriKind.Relative));
-                            image.Margin = new Thickness(13, -81, 0, 0);
-                            Grid.SetRowSpan(image, 2);
-                        }
-                        else if (col == 1)
-                        {
-                            image.Source = Icons.NewBitmapImage(new Uri(iconPrefix + "/Images/down-2-right" + suffix, UriKind.Relative));
-                            image.Margin = new Thickness(46, 20, 0, 0);
-                            Grid.SetRowSpan(image, 2);
-                        }
-                    }
-                    else if (row == 3)
-                    {
-                        if (col == -1)
-                        {
-                            image.Source = Icons.NewBitmapImage(new Uri(iconPrefix + "/Images/down-3-left" + suffix, UriKind.Relative));
-                            image.Margin = new Thickness(-18, 84, 0, 0);
-                            Grid.SetRowSpan(image, 2);
-                        }
-                        else if (col == 0)
-                        {
-                            image.Source = Icons.NewBitmapImage(new Uri(iconPrefix + "/Images/down-3" + suffix, UriKind.Relative));
-                            image.Margin = new Thickness(13, -145, 0, 0);
-                            Grid.SetRowSpan(image, 2);
-                        }
-                        else if (col == 1)
-                        {
-                            image.Source = Icons.NewBitmapImage(new Uri(iconPrefix + "/Images/down-3-right" + suffix, UriKind.Relative));
-                            image.Margin = new Thickness(46, 84, 0, 0);
-                            Grid.SetRowSpan(image, 2);
-                        }
-                    }
-                    else if (row == 4)
-                    {
-                        if (col == 0)
-                        {
-                            image.Source = Icons.NewBitmapImage(new Uri(iconPrefix + "/Images/down-4" + suffix, UriKind.Relative));
-                            image.Margin = new Thickness(13, -209, 0, 0);
-                            Grid.SetRowSpan(image, 2);
                         }
                     }
                 }
@@ -222,14 +78,13 @@ namespace Rawr.UI
         public void RankChanged()
         {
             belowRow.Clear();
-            for (int r = 1; r <= 6; r++)
+            for (int r = 1; r <= 7; r++)
             {
                 for (int c = 1; c <= 3; c++)
                 {
                     this[r, c].Update();
                 }
             }
-            UpdatePrereqs();
             if (TalentsChanged != null) TalentsChanged.Invoke(this, EventArgs.Empty);
         }
 
@@ -253,7 +108,7 @@ namespace Rawr.UI
         }
         public int PointsInRow(int row)
         {
-            if (row < 1 || row > 6) return 0;
+            if (row < 1 || row > 7) return 0;
             int pts = 0;
             for (int c = 1; c <= 3; c++)
             {
@@ -261,7 +116,7 @@ namespace Rawr.UI
             }
             return pts;
         }
-        public int Points() { return PointsBelowRow(7); }
+        public int Points() { return PointsBelowRow(8); }
 
         private Dictionary<int, TalentDataAttribute> talentAttributes;
         public TalentDataAttribute GetAttribute(int index)
@@ -316,14 +171,14 @@ namespace Rawr.UI
                     if (col == 3) return Talent_6_3;
                     //if (col == 4) return Talent_6_4;
                 }
-                /*else if (row == 7)
+                else if (row == 7)
                 {
                     if (col == 1) return Talent_7_1;
                     if (col == 2) return Talent_7_2;
                     if (col == 3) return Talent_7_3;
-                    if (col == 4) return Talent_7_4;
+                    //if (col == 4) return Talent_7_4;
                 }
-                else if (row == 8)
+                /*else if (row == 8)
                 {
                     if (col == 1) return Talent_8_1;
                     if (col == 2) return Talent_8_2;

@@ -50,6 +50,8 @@ namespace Rawr
         HitRating,
         CritRating,
         HasteRating,
+        MultistrikeRating,
+        VersatilityRating,
         RangedAttackPower,
         RangedHitRating,
         RangedCritRating,
@@ -146,9 +148,6 @@ namespace Rawr
         #endregion
         #region Added by Mages
         BonusManaGem,
-        MageIceArmor,
-        MageMageArmor,
-        MageMoltenArmor,
         #endregion
     }
     public enum MultiplicativeStat : int {
@@ -727,24 +726,6 @@ namespace Rawr
             set { _rawAdditiveData[(int)AdditiveStat.MasteryRating] = value; }
         }
         [DefaultValueAttribute(0f)]
-        [DisplayName("Expertise Rating")]
-        [Category("Base Stats")]
-        [CommonStat]
-        public float ExpertiseRating
-        {
-            get { return _rawAdditiveData[(int)AdditiveStat.ExpertiseRating]; }
-            set { _rawAdditiveData[(int)AdditiveStat.ExpertiseRating] = value; }
-        }
-        [DefaultValueAttribute(0f)]
-        [DisplayName("Hit Rating")]
-        [Category("Base Stats")]
-        [CommonStat]
-        public float HitRating
-        {
-            get { return _rawAdditiveData[(int)AdditiveStat.HitRating]; }
-            set { _rawAdditiveData[(int)AdditiveStat.HitRating] = value; }
-        }
-        [DefaultValueAttribute(0f)]
         [DisplayName("Crit Rating")]
         [Category("Base Stats")]
         [CommonStat]
@@ -761,6 +742,24 @@ namespace Rawr
         {
             get { return _rawAdditiveData[(int)AdditiveStat.HasteRating]; }
             set { _rawAdditiveData[(int)AdditiveStat.HasteRating] = value; }
+        }
+        [DefaultValueAttribute(0f)]
+        [DisplayName("Multistrike Rating")]
+        [Category("Base Stats")]
+        [CommonStat(MinRange = 10f)]
+        public float MultistrikeRating
+        {
+            get { return _rawAdditiveData[(int)AdditiveStat.MultistrikeRating]; }
+            set { _rawAdditiveData[(int)AdditiveStat.MultistrikeRating] = value; }
+        }
+        [DefaultValueAttribute(0f)]
+        [DisplayName("Versatility Rating")]
+        [Category("Base Stats")]
+        [CommonStat(MinRange = 10f)]
+        public float VersatilityRating
+        {
+            get { return _rawAdditiveData[(int)AdditiveStat.VersatilityRating]; }
+            set { _rawAdditiveData[(int)AdditiveStat.VersatilityRating] = value; }
         }
         [DefaultValueAttribute(0f)]
         [DisplayName("Ranged Attack Power")]
@@ -822,14 +821,6 @@ namespace Rawr
             get { return _rawAdditiveData[(int)AdditiveStat.WeaponDamage]; }
             set { _rawAdditiveData[(int)AdditiveStat.WeaponDamage] = value; }
         }
-        // Converted Values
-        [DefaultValueAttribute(0f)]
-        [Category("Combat Values")]
-        public float Expertise
-        {
-            get { return _rawAdditiveData[(int)AdditiveStat.Expertise]; }
-            set { _rawAdditiveData[(int)AdditiveStat.Expertise] = value; }
-        }
         [DefaultValueAttribute(0f)]
         [Category("Combat Values")]
         public float Mastery
@@ -844,16 +835,6 @@ namespace Rawr
             get { return _rawAdditiveData[(int)AdditiveStat.SpellDamageFromIntellectPercentage]; }
             set { _rawAdditiveData[(int)AdditiveStat.SpellDamageFromIntellectPercentage] = value; }
         }
-        // Percentage
-        [DefaultValueAttribute(0f)]
-        [DisplayName("% Physical Hit")]
-        [Percentage]
-        [Category("Combat Values")]
-        public float PhysicalHit
-        {
-            get { return _rawAdditiveData[(int)AdditiveStat.PhysicalHit]; }
-            set { _rawAdditiveData[(int)AdditiveStat.PhysicalHit] = value; }
-        }
         [DefaultValueAttribute(0f)]
         [DisplayName("% Physical Crit")]
         [Percentage]
@@ -862,15 +843,6 @@ namespace Rawr
         {
             get { return _rawAdditiveData[(int)AdditiveStat.PhysicalCrit]; }
             set { _rawAdditiveData[(int)AdditiveStat.PhysicalCrit] = value; }
-        }
-        [DefaultValueAttribute(0f)]
-        [DisplayName("% Spell Hit")]
-        [Percentage]
-        [Category("Combat Values")]
-        public float SpellHit
-        {
-            get { return _rawAdditiveData[(int)AdditiveStat.SpellHit]; }
-            set { _rawAdditiveData[(int)AdditiveStat.SpellHit] = value; }
         }
         [DefaultValueAttribute(0f)]
         [DisplayName("% Spell Crit")]
@@ -1433,30 +1405,6 @@ namespace Rawr
         {
             get { return _rawAdditiveData[(int)AdditiveStat.BonusManaGem]; }
             set { _rawAdditiveData[(int)AdditiveStat.BonusManaGem] = value; }
-        }
-        [DisplayName("Frost Armor")]
-        [Category("Mage")]
-        [DefaultValueAttribute(0f)]
-        public float MageFrostArmor
-        {
-            get { return _rawAdditiveData[(int)AdditiveStat.MageIceArmor]; }
-            set { _rawAdditiveData[(int)AdditiveStat.MageIceArmor] = value; }
-        }
-        [DisplayName("Mage Armor")]
-        [Category("Mage")]
-        [DefaultValueAttribute(0f)]
-        public float MageMageArmor
-        {
-            get { return _rawAdditiveData[(int)AdditiveStat.MageMageArmor]; }
-            set { _rawAdditiveData[(int)AdditiveStat.MageMageArmor] = value; }
-        }
-        [DisplayName("Molten Armor")]
-        [Category("Mage")]
-        [DefaultValueAttribute(0f)]
-        public float MageMoltenArmor
-        {
-            get { return _rawAdditiveData[(int)AdditiveStat.MageMoltenArmor]; }
-            set { _rawAdditiveData[(int)AdditiveStat.MageMoltenArmor] = value; }
         }
         #endregion
         #endregion

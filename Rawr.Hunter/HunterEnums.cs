@@ -13,7 +13,7 @@ namespace Rawr.Hunter
 
     public enum Aspect
     {
-        Hawk,
+
         Fox,
         None
     }

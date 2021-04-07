@@ -33,7 +33,7 @@ namespace Rawr.Hunter.Skills
             SpellId = 3674;
             ReqTalent = true;
 
-            Talent2ChksValue = (c.HunterTalents.Specialization == (int)Specialization.Survival ? 1 : 0);
+            Talent2ChksValue = (c.HunterTalents.Specialization == (int)Specialization.Survival );
             
             ReqRangedWeap = true;
             ReqSkillsRange = true;
@@ -50,7 +50,7 @@ namespace Rawr.Hunter.Skills
             // 47.35% RAP + 2035 (total damage)
             // 4.2 Increased the damage by 40%
             DamageBase = (s.RangedAttackPower*1.5f) + 1870f;
-            DamageBonus = 1f + (Talents.TrapMastery * 0.30f);
+            DamageBonus = 1f;
             
             eShot = Shots.BlackArrow;
 

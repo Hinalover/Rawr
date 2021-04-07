@@ -54,8 +54,8 @@ namespace Rawr.Feral
         {
             base.UpdateCombatState(CState);
             this.MainHand = CState.MainHand;
-            if (CombatState.Talents.Stampede > 0)
-                TriggeredAbility[1] = new AbilityFeral_RavageProc(CState);
+            /*if (CombatState.Talents.Stampede > 0)
+                TriggeredAbility[1] = new AbilityFeral_RavageProc(CState);*/
             //CombatState.SavageRoarUptime = true;
         }
 

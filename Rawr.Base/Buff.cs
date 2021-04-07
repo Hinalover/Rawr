@@ -63,21 +63,12 @@ namespace Rawr
         #region Functions
         private bool CheckForConflictingTalent(TalentsBase talents, TalentsBase charTalents)
         {
-            for (int tree = 0; tree < 3; tree++)
+            int pointsSeenSoFar = 0;
+            for (int talent = 0; talent < talents.Data.Length; ++talent)
             {
-                // Check only trees with values in them
-                if (talents.TreeCounts[tree] > 0)
-                {
-                    int pointsSeenSoFar = 0;
-                    for (int talent = talents.TreeStartingIndexes[tree];
-                        talent < (talents.TreeStartingIndexes[tree] + talents.TreeLengths[tree]);
-                        talent++)
-                    {
-                        if (charTalents.Data[talent] >= talents.Data[talent]) { return true; }
-                        pointsSeenSoFar += charTalents.Data[talent];
-                        if (pointsSeenSoFar > charTalents.TreeCounts[tree]) { pointsSeenSoFar = 0; break; }
-                    }
-                }
+                if (charTalents.Data[talent] && talents.Data[talent]) { return true; }
+                pointsSeenSoFar += charTalents.Data[talent] ? 1 : 0;
+                if (pointsSeenSoFar > charTalents.TalentCount) { pointsSeenSoFar = 0; break; }
             }
             for (int glyphTree = 0; glyphTree < 3; glyphTree++)
             {
@@ -781,36 +772,6 @@ namespace Rawr
                 },
                 12f, 3 * 60)
             );
-            #endregion
-
-            #region Class Buffs
-            defaultBuffs.Add(new Buff()
-            {
-                Name = "Mage Armor",
-                Group = "Class Buffs",
-                Stats = { MageMageArmor = 1f },
-                ConflictingBuffs = new List<string>(new string[] { "Mage Class Armor" }),
-                AllowedClasses = new List<CharacterClass> { CharacterClass.Mage },
-                SpellId = 6117,
-            });
-            defaultBuffs.Add(new Buff()
-            {
-                Name = "Molten Armor",
-                Group = "Class Buffs",
-                Stats = { MageMoltenArmor = 1f },
-                ConflictingBuffs = new List<string>(new string[] { "Mage Class Armor" }),
-                AllowedClasses = new List<CharacterClass> { CharacterClass.Mage },
-                SpellId = 30482,
-            });
-            defaultBuffs.Add(new Buff()
-            {
-                Name = "Frost Armor",
-                Group = "Class Buffs",
-                Stats = { MageFrostArmor = 1f },
-                ConflictingBuffs = new List<string>(new string[] { "Mage Class Armor" }),
-                AllowedClasses = new List<CharacterClass> { CharacterClass.Mage },
-                SpellId = 7302,
-            });
             #endregion
 
             #region Temp Power Boosts
@@ -1529,21 +1490,6 @@ namespace Rawr
             });
             defaultBuffs.Add(new Buff()
             {
-                Name = "Elixir of Weaponry",
-                Group = "Elixirs and Flasks",
-                Stats = { ExpertiseRating = 750 },
-                ConflictingBuffs = new List<string>(new string[] { "Battle Elixir" }),
-                Improvements = {
-                    new Buff {
-                        Name = "Elixir of Weaponry (Mixology)",
-                        Stats = { ExpertiseRating = 260 },
-                        Professions = new List<Profession>() { Profession.Alchemy },
-                        ConflictingBuffs = new List<string>(new string[] { "Battle Elixir Mixology" }),
-                    },
-                },
-            });
-            defaultBuffs.Add(new Buff()
-            {
                 Name = "Elixir of the Rapids",
                 Group = "Elixirs and Flasks",
                 Stats = { HasteRating = 750 },
@@ -1567,21 +1513,6 @@ namespace Rawr
                     new Buff {
                         Name = "Elixir of Peace (Mixology)",
                         Stats = { Spirit = 260 },
-                        Professions = new List<Profession>() { Profession.Alchemy },
-                        ConflictingBuffs = new List<string>(new string[] { "Battle Elixir Mixology" }),
-                    },
-                },
-            });
-            defaultBuffs.Add(new Buff()
-            {
-                Name = "Elixir of Perfection",
-                Group = "Elixirs and Flasks",
-                Stats = { HitRating = 750 },
-                ConflictingBuffs = new List<string>(new string[] { "Battle Elixir" }),
-                Improvements = {
-                    new Buff {
-                        Name = "Elixir of Perfection (Mixology)",
-                        Stats = { HitRating = 260 },
                         Professions = new List<Profession>() { Profession.Alchemy },
                         ConflictingBuffs = new List<string>(new string[] { "Battle Elixir Mixology" }),
                     },
@@ -1625,15 +1556,6 @@ namespace Rawr
             });
             defaultBuffs.Add(new Buff()
             {
-                Name = "Elixir of the Naga",
-                Group = "Elixirs and Flasks",
-                Stats = { ExpertiseRating = 225f },
-                ConflictingBuffs = new List<string>(new string[] { "Battle Elixir" }),
-                Improvements = { new Buff { Name = "Elixir of the Naga (Mixology)", Stats = { ExpertiseRating = 40f },
-                    Professions = new List<Profession>() { Profession.Alchemy }, ConflictingBuffs = new List<string>(new string[] { "Battle Elixir Mixology" }), } }
-            });
-            defaultBuffs.Add(new Buff()
-            {
                 Name = "Elixir of the Cobra",
                 Group = "Elixirs and Flasks",
                 Stats = { CritRating = 225f },
@@ -1648,15 +1570,6 @@ namespace Rawr
                 Stats = { HasteRating = 225f },
                 ConflictingBuffs = new List<string>(new string[] { "Battle Elixir" }),
                 Improvements = { new Buff { Name = "Elixir of Mighty Speed (Mixology)", Stats = { HasteRating = 40f },
-                    Professions = new List<Profession>() { Profession.Alchemy }, ConflictingBuffs = new List<string>(new string[] { "Battle Elixir Mixology" }), } }
-            });
-            defaultBuffs.Add(new Buff()
-            {
-                Name = "Elixir of Impossible Accuracy",
-                Group = "Elixirs and Flasks",
-                Stats = { HitRating = 225f },
-                ConflictingBuffs = new List<string>(new string[] { "Battle Elixir" }),
-                Improvements = { new Buff { Name = "Elixir of Impossible Accuracy (Mixology)", Stats = { HitRating = 40f },
                     Professions = new List<Profession>() { Profession.Alchemy }, ConflictingBuffs = new List<string>(new string[] { "Battle Elixir Mixology" }), } }
             });
             #endregion
@@ -1985,8 +1898,6 @@ namespace Rawr
             defaultBuffs.Add(new Buff() { Group = "Food", Name = "Cata Agility Food", Stats = { Agility = 90, Stamina = 90 } }); // Skewered Eel
             defaultBuffs.Add(new Buff() { Group = "Food", Name = "Cata Crit Food", Stats = { CritRating = 90, Stamina = 90 } }); // Baked Rockfish
             defaultBuffs.Add(new Buff() { Group = "Food", Name = "Cata Mastery Food", Stats = { MasteryRating = 90, Stamina = 90 } }); // Lavascale Minestrone
-            defaultBuffs.Add(new Buff() { Group = "Food", Name = "Cata Hit Food", Stats = { HitRating = 90, Stamina = 90 } }); // Grilled Dragon
-            defaultBuffs.Add(new Buff() { Group = "Food", Name = "Cata Expertise Food", Stats = { ExpertiseRating = 90, Stamina = 90 } }); // Crocolisk Au Gratin
             defaultBuffs.Add(new Buff() { Group = "Food", Name = "Cata Haste Food", Stats = { HasteRating = 90, Stamina = 90 } }); // Basilisk Riverdog
             defaultBuffs.Add(new Buff() { Group = "Food", Name = "Cata Spirit Food", Stats = { Stamina = 90, Spirit = 90 } }); // Delicious Sagefish Tail
             defaultBuffs.Add(new Buff() { Group = "Food", Name = "Cata Intellect Food", Stats = { Intellect = 90, Stamina = 90 } }); // Severed Sagefish Head

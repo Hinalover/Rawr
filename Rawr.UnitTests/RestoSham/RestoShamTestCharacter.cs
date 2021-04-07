@@ -1,4 +1,4 @@
-﻿using Rawr.RestoSham;
+﻿//using Rawr.RestoSham;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Rawr.UnitTests.RestoSham
@@ -20,8 +20,8 @@ namespace Rawr.UnitTests.RestoSham
             //this.CurrentModel = "RestoSham";
 
             // Use the default options
-            CalculationOptionsRestoSham opts = new CalculationOptionsRestoSham();
-            this.CalculationOptions = opts;
+            //CalculationOptionsRestoSham opts = new CalculationOptionsRestoSham();
+            //this.CalculationOptions = opts;
 
             // 0/14/57
             // http://www.wowarmory.com/talent-calc.xml?cid=7&tal=00000000000000000000000003050003300000000000000000000050005330335310501122331251

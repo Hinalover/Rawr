@@ -49,12 +49,12 @@ namespace Rawr.UI
             }
         }
 
-        public int ReforgeId
+        public int UpgradeLevelIndex
         {
             get
             {
                 if (_calc.Item == null) return 0;
-                return -_calc.Item.Id - (int)AvailableItemIDModifiers.Reforges;
+				return -_calc.Item.Id;
             }
         }
 

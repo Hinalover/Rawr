@@ -164,7 +164,7 @@ namespace Rawr.Hunter
             // This function is called before we calculate timings, to allow
             // us to calculate cooldown and focus cost for the skill
 
-            float longevityCooldownAdjust = 1f - character.HunterTalents.Longevity * 0.1f;
+            float longevityCooldownAdjust = 1f ;
 
             foreach (PetSkillInstance S in skills)
             {

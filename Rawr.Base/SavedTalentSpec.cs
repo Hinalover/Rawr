@@ -19,11 +19,9 @@ namespace Rawr
         public CharacterClass Class { get; set; }
         public string Spec { get; set; }
 
-        public int Tree1 { get; set; }
-        //public int Tree2 { get; set; }
-        //public int Tree3 { get; set; }
+        public int UsedPoints { get; set; }
 
-        public SavedTalentSpec() : this("", null, 0/*, 0, 0*/) { ; }
+        public SavedTalentSpec() : this("", null, 0) { ; }
 
         public static SavedTalentSpecList AllSpecs { get; private set; }
         public static void Load(TextReader reader)
@@ -59,12 +57,10 @@ namespace Rawr
             return ret;
         }
 
-        public SavedTalentSpec(String name, TalentsBase talentSpec, int tree1/*, int tree2, int tree3*/)
+        public SavedTalentSpec(String name, TalentsBase talentSpec, int usedPoints)
         {
             Name = name;
-            Tree1 = tree1;
-            //Tree2 = tree2;
-            //Tree3 = tree3;
+            UsedPoints = usedPoints;
             if (talentSpec != null)
             {
                 Spec = talentSpec.ToString();
@@ -91,18 +87,15 @@ namespace Rawr
 
         public override string ToString()
         {
-            //return string.Format("{0} ({1}/{2}/{3})", Name, Tree1, Tree2, Tree3);
             string warning = "";
-            // TODO: That 41 shouldn't be hard-coded, but I don't have a Character.Level here.
-            int pointsleft = 6 - (Tree1/* + Tree2 + Tree3*/);
+            int pointsleft = 7 - (UsedPoints);
 
             if (pointsleft > 0)
                 warning = string.Format(" ({0} Points Left)", pointsleft);
             else if (pointsleft < 0)
                 warning = string.Format(" ({0} Points Over)", Math.Abs(pointsleft));
 
-            //return string.Format("{0} ({1}/{2}/{3}){4}", Name, Tree1, Tree2, Tree3, warning);
-            return string.Format("{0} ({1}){2}", Name, Tree1, warning);
+            return string.Format("{0} ({1}){2}", Name, UsedPoints, warning);
         }
 
         public bool Equals(TalentsBase talents)

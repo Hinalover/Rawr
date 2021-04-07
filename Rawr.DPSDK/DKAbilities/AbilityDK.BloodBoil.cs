@@ -32,7 +32,7 @@ namespace Rawr.DK
             this.uArea = (uint)(10 + (CState.m_Talents.GlyphofBloodBoil ? 5 : 0));
             // Roiling Blood:
             // TODO: Add check for if the target is infected.
-            if (CState.m_Talents.RoilingBlood > 0)
+            if (CState.m_Talents.RoilingBlood)
             {
                 this.ml_TriggeredAbility = new AbilityDK_Base[1];
                 this.ml_TriggeredAbility[0] = new AbilityDK_Pestilence(CS);

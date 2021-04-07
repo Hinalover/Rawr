@@ -94,10 +94,7 @@ namespace Rawr.Hunter {
                 /// Agility Red Gems
                 /// </summary>
                 int[] delicate = { 76560, 76692, 76692, 83151 };
-                /// <summary>
-                /// Expertise Rating Red Gems
-                /// </summary>
-                int[] precise = { 76561, 76693, 76693, 83147 };
+               
                 #endregion
 
                 #region Blue Gems
@@ -180,10 +177,7 @@ namespace Rawr.Hunter {
                 /// Mastery Rating Cogwheel
                 /// </summary>
                 int cog_fractured = 77547;
-                /// <summary>
-                /// Expertise Rating Cogwheel
-                /// </summary>
-                int cog_precise = 77543;
+               
                 /// <summary>
                 /// Haste Rating Cogwheel
                 /// </summary>
@@ -292,8 +286,8 @@ namespace Rawr.Hunter {
                         "Basic Stats:Armor",
                         "Basic Stats:Agility",
                         "Basic Stats:Ranged Attack Power",
-                        "Basic Stats:Hit*8.00% chance to miss base for Yellow Attacks",
-                        "Basic Stats:Expertise",
+                        //"Basic Stats:Hit*8.00% chance to miss base for Yellow Attacks",
+                        //"Basic Stats:Expertise",
                         "Basic Stats:Crit",
                         "Basic Stats:Haste",
                         "Basic Stats:Mastery",
@@ -562,10 +556,6 @@ namespace Rawr.Hunter {
                 PhysicalCrit = stats.PhysicalCrit,
                 CritRating = stats.CritRating,
                 RangedCritRating = stats.RangedCritRating,
-                PhysicalHit = stats.PhysicalHit,
-                HitRating = stats.HitRating,
-                RangedHitRating = stats.RangedHitRating,
-                ExpertiseRating = stats.ExpertiseRating,
                 PhysicalHaste = stats.PhysicalHaste,
                 HasteRating = stats.HasteRating,
                 RangedHasteRating = stats.RangedHasteRating,
@@ -654,9 +644,7 @@ namespace Rawr.Hunter {
             if (stats.HasteRating != 0) { return true; }
             if (stats.RangedHasteRating != 0) { return true; }
             if (stats.PhysicalHaste != 0) { return true; }
-            if (stats.HitRating != 0) { return true; }
-            if (stats.RangedHitRating != 0) { return true; }
-            if (stats.ExpertiseRating != 0) { return true; }
+            
             if (stats.Mastery != 0) { return true; }
             if (stats.MasteryRating != 0) { return true; }
             #endregion
@@ -664,7 +652,7 @@ namespace Rawr.Hunter {
             if (stats.TargetArmorReduction != 0) { return true; }
             if (stats.PhysicalCrit != 0) { return true; }
             if (stats.RangedHaste != 0) { return true; }
-            if (stats.PhysicalHit != 0) { return true; }
+            //if (stats.PhysicalHit != 0) { return true; }
             if (stats.MovementSpeed != 0) { return true; }
             if (stats.StunDurReduc != 0) { return true; }
             if (stats.SnareRootDurReduc != 0) { return true; }
@@ -869,40 +857,9 @@ namespace Rawr.Hunter {
             #endregion
 
             #region Passive Ability Auto-Fixing
-            // Removes the Trueshot Aura Buff and it's equivalents Unleashed Rage and Abomination's Might if you are
-            // maintaining it yourself. We are now calculating this internally for better accuracy and to provide
-            // value to relevant talents
-            if (character.HunterTalents.TrueshotAura > 0) {
-                buffGroup.Clear();
-                buffGroup.Add(Buff.GetBuffByName("Trueshot Aura"));
-                buffGroup.Add(Buff.GetBuffByName("Unleashed Rage"));
-                buffGroup.Add(Buff.GetBuffByName("Abomination's Might"));
-                MaintBuffHelper(buffGroup, character, removedBuffs);
-            }
-
-            // Removes the Ferocious Inspiration Buff and it's equivalents Sanctified Retribution and Arcane Tactics if you are
-            // maintaining it yourself. We are now calculating this internally for better accuracy and to provide
-            // value to relevant talents
-            if (character.HunterTalents.FerociousInspiration > 0) {
-                buffGroup.Clear();
-                buffGroup.Add(Buff.GetBuffByName("Ferocious Inspiration"));
-                buffGroup.Add(Buff.GetBuffByName("Sanctified Retribution"));
-                buffGroup.Add(Buff.GetBuffByName("Arcane Tactics"));
-                MaintBuffHelper(buffGroup, character, removedBuffs);
-            }
 
 
-            // Removes the Hunting Party Buff and it's equivalents Improved Icy Talons and Windfury Totem if you are
-            // maintaining it yourself. We are now calculating this internally for better accuracy and to provide
-            // value to relevant talents
-            if (character.HunterTalents.HuntingParty > 0)
-            {
-                buffGroup.Clear();
-                buffGroup.Add(Buff.GetBuffByName("Hunting Party"));
-                buffGroup.Add(Buff.GetBuffByName("Improved Icy Talons"));
-                buffGroup.Add(Buff.GetBuffByName("Windfury Totem"));
-                MaintBuffHelper(buffGroup, character, removedBuffs);
-            }
+
 
             // Removes the Hunter's Mark if you are
             // maintaining it yourself. We are now calculating this internally for better accuracy and to provide
@@ -1062,7 +1019,7 @@ namespace Rawr.Hunter {
                         comparisonFromStat(character, calculations, new Stats() { Agility = 10f }, "10 Agility"),
 //                        comparisonFromStat(character, calculations, new Stats() { Mp5 = 4f }, "4 MP5"),
                         comparisonFromStat(character, calculations, new Stats() { CritRating = 10f }, "10 Crit Rating"),
-                        comparisonFromStat(character, calculations, new Stats() { HitRating = 10f }, "10 Hit Rating"),
+                        //comparisonFromStat(character, calculations, new Stats() { HitRating = 10f }, "10 Hit Rating"),
                         comparisonFromStat(character, calculations, new Stats() { AttackPower = 20f }, "20 Attack Power"),
                         comparisonFromStat(character, calculations, new Stats() { RangedAttackPower = 25f }, "25 Ranged Attack Power"),
                         comparisonFromStat(character, calculations, new Stats() { HasteRating = 10f }, "10 Haste Rating"),
@@ -1688,8 +1645,8 @@ namespace Rawr.Hunter {
                 int targetLevel = bossOpts.Level;
                 float hasteBonus = StatConversion.GetPhysicalHasteFromRating(statsTotal.HasteRating, CharacterClass.Hunter);
                 statsTotal.RangedHaste = (1f + hasteBonus) * (1f + statsTotal.BonusHasteMultiplier) * (1f + statsTotal.PhysicalHaste) - 1f;
-                float hitBonus = StatConversion.GetPhysicalHitFromRating(statsTotal.HitRating) + statsTotal.PhysicalHit;
-                float chanceMiss = Math.Max(0f, StatConversion.WHITE_MISS_CHANCE_CAP[targetLevel - character.Level] - hitBonus);
+                
+                float chanceMiss = Math.Max(0f, StatConversion.WHITE_MISS_CHANCE_CAP[targetLevel - character.Level]);
                 float chanceAvoided = chanceMiss;
 
                 float rawChanceCrit = StatConversion.GetPhysicalCritFromRating(statsTotal.CritRating)
@@ -1840,24 +1797,7 @@ namespace Rawr.Hunter {
 
             }
             #endregion
-
-            #region Beast Master
-            // Talent: Ferocious Inspiration
-            s.BonusDamageMultiplier += talents.FerociousInspiration * 0.03f;
-            #endregion
-
-            #region Marksman
-            // Talent: Trueshot Aura (Always on and part of the paperdoll numbers)
-            s.BonusAttackPowerMultiplier += talents.TrueshotAura * 0.1f;
-            #endregion
-            #region Survival
-            s.BonusStaminaMultiplier += talents.HunterVsWild * 0.05f;
-            s.BonusHasteMultiplier += talents.Pathing * 0.01f;
-            s.BonusAgilityMultiplier += talents.HuntingParty * 0.02f;
-            // This conflics w/ IcyTalons and other similar buffs.
-            s.PhysicalHaste += talents.HuntingParty * .1f;
-            #endregion
-            
+                        
             return s;
         }
 
@@ -1901,8 +1841,8 @@ namespace Rawr.Hunter {
             //    out rangedWeaponSpeed, out rangedWeaponDamage, out autoShotSpeed,
             //    out autoShotsPerSecond, out specialShotsPerSecond, out totalShotsPerSecond, out shotsPerSecondWithoutHawk,
             //    out rotationTest);
-            float ChanceToMiss = Math.Max(0f, StatConversion.WHITE_MISS_CHANCE_CAP[levelDif] - statsTotal.PhysicalHit);
-            float ChanceToSpellMiss = Math.Max(0f, StatConversion.GetSpellMiss(levelDif, false) - statsTotal.SpellHit);
+            float ChanceToMiss = 0f;//Math.Max(0f, StatConversion.WHITE_MISS_CHANCE_CAP[levelDif] - statsTotal.PhysicalHit);
+            float ChanceToSpellMiss = 0f; // Math.Max(0f, StatConversion.GetSpellMiss(levelDif, false) - statsTotal.SpellHit);
 
             // TODO: Ensure that we don't have any div by 0 issues here.
 
@@ -1925,9 +1865,10 @@ namespace Rawr.Hunter {
             triggerChances[Trigger.PhysicalCrit] = Math.Min(1f + critMOD, Math.Max(0f, statsTotal.PhysicalCrit));
 
             // Dots & damage done.
-            triggerIntervals[Trigger.DoTTick] = talents.PiercingShots > 0 ? 1f : 0f; // Also need to add other DOTs into this value. 
-            triggerIntervals[Trigger.DamageDone] = Math.Max(0f, 1f / (totalShotsPerSecond + ((talents.PiercingShots > 0 ? 1f : 0f) > 0 ? 1f / (talents.PiercingShots > 0 ? 1f : 0f) : 0f)));
-            triggerIntervals[Trigger.DamageOrHealingDone] = Math.Max(0f, 1f / (totalShotsPerSecond + ((talents.PiercingShots > 0 ? 1f : 0f) > 0 ? 1f / (talents.PiercingShots > 0 ? 1f : 0f) : 0f))); // Need to add Self/pet-Heals
+            //OpOv Note: Commented out during initial update for WoD
+            //triggerIntervals[Trigger.DoTTick] = talents.PiercingShots > 0 ? 1f : 0f; // Also need to add other DOTs into this value. 
+            //triggerIntervals[Trigger.DamageDone] = Math.Max(0f, 1f / (totalShotsPerSecond + ((talents.PiercingShots > 0 ? 1f : 0f) > 0 ? 1f / (talents.PiercingShots > 0 ? 1f : 0f) : 0f)));
+            //triggerIntervals[Trigger.DamageOrHealingDone] = Math.Max(0f, 1f / (totalShotsPerSecond + ((talents.PiercingShots > 0 ? 1f : 0f) > 0 ? 1f / (talents.PiercingShots > 0 ? 1f : 0f) : 0f))); // Need to add Self/pet-Heals
 
             triggerChances[Trigger.DoTTick] = 1f; // This should be up-time on DoTs & PS. 
             triggerChances[Trigger.DamageDone] = 1f;

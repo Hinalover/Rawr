@@ -1169,7 +1169,7 @@ Select additional abilities to watch how they affect your DPS. Thunder Clap appl
             if (CK_StatsAgility.IsChecked.GetValueOrDefault(true)) { statsList.Add(new Stats() { Agility = 1f }); }
             if (CK_StatsAP.IsChecked.GetValueOrDefault(true)) { statsList.Add(new Stats() { AttackPower = 2f }); }
             if (CK_StatsCrit.IsChecked.GetValueOrDefault(true)) { statsList.Add(new Stats() { CritRating = 1f }); }
-            if (CK_StatsHit.IsChecked.GetValueOrDefault(true)) { statsList.Add(new Stats() { HitRating = 1f }); }
+            //if (CK_StatsHit.IsChecked.GetValueOrDefault(true)) { statsList.Add(new Stats() { HitRating = 1f }); }
             if (CK_StatsHaste.IsChecked.GetValueOrDefault(true)) { statsList.Add(new Stats() { HasteRating = 1f }); }
             if (CK_StatsMastery.IsChecked.GetValueOrDefault(true)) { statsList.Add(new Stats() { MasteryRating = 1f }); }
             return statsList.ToArray();

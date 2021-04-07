@@ -25,7 +25,7 @@ namespace Rawr.UI
         }
 
         public bool IsEnchantList { get; set; }
-        public bool IsReforgeList { get; set; }
+        public bool IsUpgradeList { get; set; }
         public bool IsTinkeringList { get; set; }
         private bool IsGemList { get { return GemSlot == CharacterSlot.Gems || GemSlot == CharacterSlot.Metas; } }
         private bool IsCogwheelList { get { return GemSlot == CharacterSlot.Cogwheels; } }
@@ -146,12 +146,12 @@ namespace Rawr.UI
                         itemCalculations = Calculations.GetTinkeringCalculations(Item.GetItemSlotByCharacterSlot(Slot), Character, current, false);
                     }
                 }
-                else if (IsReforgeList)
+                else if (IsUpgradeList)
                 {
                     CharacterCalculationsBase current = Calculations.GetCharacterCalculations(Character);
                     if (Character != null && current != null)
                     {
-                        itemCalculations = Calculations.GetReforgeCalculations(Slot, Character, current, false);
+                        itemCalculations = Calculations.GetUpgradeCalculations(Slot, Character, current, false);
                     }
                 }
                 else if (IsCogwheelList)
@@ -222,7 +222,7 @@ namespace Rawr.UI
                 Items.Clear();
                 List<ItemListItem> itemListItems = new List<ItemListItem>();
                 ItemListItem selectedListItem = null;
-                int selectedEnchantId = 0, selectedReforgingId = 0, selectedTinkeringId = 0;
+                int selectedEnchantId = 0, selectedUpgradeIndex = 0, selectedTinkeringId = 0;
                 if (IsEnchantList)
                 {
                     Enchant selectedEnchant = Character.GetEnchantBySlot(Slot);
@@ -233,10 +233,13 @@ namespace Rawr.UI
                     Tinkering selectedTinkering = Character.GetTinkeringBySlot(Slot);
                     if (selectedTinkering != null) selectedTinkeringId = selectedTinkering.Id;
                 }
-                else if (IsReforgeList)
+                else if (IsUpgradeList)
                 {
-                    Reforging selectedReforging = Character.GetReforgingBySlot(Slot);
-                    if (selectedReforging != null) selectedReforgingId = selectedReforging.Id;
+					int selectedUpgrade = Character.GetUpgradeBySlot(Slot);
+					if (selectedUpgrade > 0)
+					{
+						selectedUpgradeIndex = (1 + Character[Slot].Item.UpgradeLevels.IndexOf(selectedUpgrade));
+					}
                 }
                 else if (IsGemList)
                 {
@@ -273,9 +276,9 @@ namespace Rawr.UI
                         if (itemListItem.TinkeringId == selectedTinkeringId)
                             selectedListItem = itemListItem;
                     }
-                    else if (IsReforgeList)
+                    else if (IsUpgradeList)
                     {
-                        if (itemListItem.ReforgeId == selectedReforgingId)
+                        if (itemListItem.UpgradeLevelIndex == selectedUpgradeIndex)
                             selectedListItem = itemListItem;
                     }
                     else if (IsGemList || IsHydraulicList || IsCogwheelList)
@@ -424,16 +427,19 @@ namespace Rawr.UI
 
                 if (listItem.TinkeringId == selectedTinkeringId) { this.Close(); }
             }
-            if (!_buildingListItems && IsReforgeList)
+            if (!_buildingListItems && IsUpgradeList)
             {
                 FrameworkElement fe = sender as FrameworkElement;
                 ItemListItem listItem = fe.DataContext as ItemListItem;
 
-                int selectedReforgeId = -1;
-                Reforging selectedReforging = Character.GetReforgingBySlot(Slot);
-                if (selectedReforging != null) selectedReforgeId = selectedReforging.Id;
+                int selectedUpgrade = Character.GetUpgradeBySlot(Slot);
+				int selectedUpgradeIndex = 0;
+				if (selectedUpgrade > 0)
+				{
+					selectedUpgradeIndex = (1 + Character[Slot].Item.UpgradeLevels.IndexOf(selectedUpgrade));
+				}
 
-                if (listItem.ReforgeId == selectedReforgeId) { this.Close(); }
+                if (listItem.UpgradeLevelIndex == selectedUpgradeIndex) { this.Close(); }
             }
         }
 
@@ -476,11 +482,19 @@ namespace Rawr.UI
                         IsPopulated = false;
                         Character[Slot] = copy;
                     }
-                    else if (IsReforgeList)
+                    else if (IsUpgradeList)
                     {
                         ItemListItem listItem = ((ListBox)sender).SelectedItem as ItemListItem;
                         ItemInstance copy = Character[Slot].Clone();
-                        copy.ReforgeId = listItem.ReforgeId;
+						int index = listItem.UpgradeLevelIndex;
+						if (index > 0)
+						{
+							copy.UpgradeLevel = copy.Item.UpgradeLevels[index - 1];
+						}
+						else
+						{
+							copy.UpgradeLevel = 0;
+						}
                         IsShown = false;
                         IsPopulated = false;
                         Character[Slot] = copy;

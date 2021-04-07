@@ -37,25 +37,28 @@ namespace Rawr
         public const float RATING_PER_DODGEPARRYREDUC          = 1f; // Expertise is converted directly to % now
         public const float LEVEL_AVOIDANCE_MULTIPLIER          = 0.20f;
 
+        // Updated for WoD in Rawr6
         // Attack Table for players attacking mobs                                            90       91        92      93
-        public static readonly float[] WHITE_MISS_CHANCE_CAP                = new float[] { 0.0300f, 0.0450f, 0.0600f, 0.0750f };
-        public static readonly float[] WHITE_MISS_CHANCE_CAP_DW             = new float[] { 0.2200f, 0.2350f, 0.2500f, 0.2650f }; //  WHITE_MISS_CHANCE_CAP + 19%
+        public static readonly float[] WHITE_MISS_CHANCE_CAP                = new float[] { 0.0000f, 0.000f, 0.0000f, 0.000f };
+        public static readonly float[] WHITE_MISS_CHANCE_CAP_DW             = new float[] { 0.1700f, 0.170f, 0.1700f, 0.170f }; //  OpOv: Dual wielding imposes 17% miss chance across the board for up to 3 levels higher
         
         public static readonly float[] YELLOW_MISS_CHANCE_CAP               = WHITE_MISS_CHANCE_CAP;
 
-        public static readonly float[] WHITE_DODGE_CHANCE_CAP               = new float[] { 0.0300f, 0.0450f, 0.0600f, 0.0750f };
+        public static readonly float[] WHITE_DODGE_CHANCE_CAP               = new float[] { 0.0000f, 0.000f, 0.0000f, 0.000f };
         public static readonly float[] YELLOW_DODGE_CHANCE_CAP              = WHITE_DODGE_CHANCE_CAP;
 
-        public static readonly float[] WHITE_PARRY_CHANCE_CAP               = new float[] { 0.0300f, 0.0450f, 0.0600f, 0.0750f };
+        public static readonly float[] WHITE_PARRY_CHANCE_CAP = new float[] { 0.0300f, 0.0300f, 0.0300f, 0.0300f };
         public static readonly float[] YELLOW_PARRY_CHANCE_CAP              = WHITE_PARRY_CHANCE_CAP;
 
-        public static readonly float[] WHITE_GLANCE_CHANCE_CAP              = new float[] { 0.1000f, 0.1500f, 0.2000f, 0.2400f }; // 25%
+        public static readonly float[] WHITE_GLANCE_CHANCE_CAP              = new float[] { 0.000f, 0.00f, 0.000f, 0.00f }; // 25%
         public static readonly float[] YELLOW_GLANCE_CHANCE_CAP             = new float[] { 0.0000f, 0.0000f, 0.0000f, 0.0000f }; //  0% Yellows don't glance
+        
 
+        //OpOv Note: TODO: Not sure about block chance in WoD
         public static readonly float[] WHITE_BLOCK_CHANCE_CAP               = new float[] { 0.0300f, 0.0450f, 0.0600f, 0.0750f };
         public static readonly float[] YELLOW_BLOCK_CHANCE_CAP              = WHITE_BLOCK_CHANCE_CAP;
 
-        public static readonly float[] SPELL_MISS_CHANCE_CAP                = new float[] { 0.0600f, 0.0900f, 0.1200f, 0.1500f };
+        public static readonly float[] SPELL_MISS_CHANCE_CAP                = new float[] { 0.0000f, 0.0000f, 0.000f, 0.000f };
 
         /// <summary>
         /// You need to *add* this to your current crit value as it's a negative number.
@@ -106,12 +109,12 @@ namespace Rawr
         /// Source: http://elitistjerks.com/f15/t29453-combat_ratings_level_85_cataclysm/
         /// </summary>
         public static readonly float[] AGI_PER_DODGE = { 0.0f, // Starts at 0
-            10000f, // Patch 4.2 removed Agility to Dodge for Warriors //5.309f * 84.74576271f, // Warrior 1
-            10000f, // Patch 4.2 removed Agility to Dodge for Paladins //5.309f * 59.88023952f, // Paladin 2
+            0, // Patch 4.2 removed Agility to Dodge for Warriors //5.309f * 84.74576271f, // Warrior 1
+            0, // Patch 4.2 removed Agility to Dodge for Paladins //5.309f * 59.88023952f, // Paladin 2
             951.158596f, // Hunter 3
             951.158596f, // Rogue 4
             951.158596f, // Priest 5
-            10000f, // Patch 4.2 removed Agility to Dodge for DKs //5.309f * 84.74576271f, // Death Knight 6
+            0, // Patch 4.2 removed Agility to Dodge for DKs //5.309f * 84.74576271f, // Death Knight 6
             951.158596f, // Shaman 7
             951.158596f, // Mage 8
             951.158596f, // Warlock 9
@@ -120,20 +123,20 @@ namespace Rawr
         };
 
         public static readonly float[] PARRY_PER_STR = { 0.0f, // Stats at 0
-            951.158596f, // Warrior 1
-            951.158596f, // Paladin 2
+            243.58281085f, //90 - 951.158596 // Warrior 1
+            243.58281085f, //90 - 951.158596 // Paladin 2
               0.0f, // Hunter 3
               0.0f, // Rogue 4
               0.0f, // Priest 5
-            951.158596f, // Death Knight 6
+            243.58281085f, //90 - 951.158596 // Death Knight 6
               0.0f, // Shaman 7
               0.0f, // Mage 8
               0.0f, // Warlock 9
-              10000f, // Monk 10
+              0.0f, // Monk 10
               0.0f, // Druid 11
         };
 
-        public static readonly float STR_PER_PARRY_PERCENT = 95115.8596f;
+        public static readonly float STR_PER_PARRY_PERCENT = 95120f;
 
         public static readonly float[] MASTERY_PER_BLOCK = { 0.0f, // Starts at 0
             0.015f, // Warrior 1
@@ -150,12 +153,12 @@ namespace Rawr
         };
 
         public static readonly float[] DR_COEFFIENT = { 0.0f, // Starts at 0
-            0.9560f, // Warrior 1
-            0.8860f, // Paladin 2
+            0.8850f, // Warrior 1
+            0.8850f, // Paladin 2
             0.9880f, // Hunter 3
             0.9880f, // Rogue 4
             0.9530f, // Priest 5
-            0.9560f, // Death Knight 6
+            0.8850f, // Death Knight 6
             0.9880f, // Shaman 7
             0.9530f, // Mage 8
             0.9530f, // Warlock 9
@@ -165,48 +168,48 @@ namespace Rawr
 
         // This is the cap value for DODGE PERCENTAGE.
         public static readonly float[] CAP_DODGE = { 0.0f, // Starts at 0
-             90.6425465f, // Warrior 1
-             66.5674462f, // Paladin 2
+             65.631440f, // Warrior 1
+             65.631440f, // Paladin 2
             145.560408f, // Hunter 3
             145.560408f, // Rogue 4
             150.375940f, // Priest 5
-             90.642574f, // Death Knight 6
+             65.631440f, // Death Knight 6
             145.560408f, // Shaman 7
             150.375940f, // Mage 8
             150.375940f, // Warlock 9
-            501.25313283208020050125313283208f, // Monk 10
-            150.37593984962406015037593984962f, // Druid 11
+            505.000000f, // Monk 10
+            150.375940f, // Druid 11
         };
 
         /// <summary>
         /// This is the 1/CAP_DODGE to cut down the ammount of math going on.
         /// </summary>
         public static readonly float[] CAP_DODGE_INV = { 0.0f, // Starts at 0
-            0.01103234671369255937662783999565f, // Warrior 1
-            0.01502235788038988943517559788857f, // Paladin 2
+            0.01523660f, // Warrior 1
+            0.01523660f, // Paladin 2
             0.00687000f, // Hunter 3
             0.00687000f, // Rogue 4
             0.00665000f, // Priest 5
-            0.01103234336659503954510382725892f, // Death Knight 6
+            0.01523660f, // Death Knight 6
             0.00687000f, // Shaman 7
             0.00665000f, // Mage 8
             0.00665000f, // Warlock 9
-            0.001995f, // Monk 10
-            0.006650f, // Druid 11
+            0.00198020f, // Monk 10
+            0.00665336f, // Druid 11
         };
 
         // This is the cap value for PARRY PERCENTAGE.
         public static readonly float[] CAP_PARRY = { 0.0f, // Starts at 0
-            237.1860812566308333841306857358f, // Warrior 1
-            237.1860812566308333841306857358f, // Paladin 2
+            235.500000f, // Warrior 1
+            235.500000f, // Paladin 2
             145.560408f, // Hunter 3
             145.560408f, // Rogue 4
               0f,        // Priest 5
-            237.1860812566308333841306857358f, // Death Knight 6
+            235.500000f, // Death Knight 6
             145.560408f, // Shaman 7
-              0f,        // Mage 8w
+              0f,        // Mage 8
               0f,        // Warlock 9
-             90.64244f,  // Monk 10
+             91f,        // Monk 10
               0f,        // Druid 11
         };
 
@@ -215,23 +218,23 @@ namespace Rawr
         /// And prevent divide by 0 errors.
         /// </summary>
         public static readonly float[] CAP_PARRY_INV = { 0.0f, // Starts at 0
-            0.004216099f, // Warrior 1
-            0.004216099f, // Paladin 2
+            0.00424628f, // Warrior 1
+            0.00424628f, // Paladin 2
             0.00687000f, // Hunter 3
             0.00687000f, // Rogue 4
             0f,          // Priest 5
-            0.004216099f, // Death Knight 6
-            0.00687000f, // Shaman 74
+            0.00424628f, // Death Knight 6
+            0.00687000f, // Shaman 7
             0f,          // Mage 8
             0f,          // Warlock 9
-            0.01103235967610757168496346744417f, // Monk 10
+            0.01098901f, // Monk 10
             0f,          // Druid 11
         };
 
        // This is the cap value for BLOCK PERCENTAGE.
         public static readonly float[] CAP_BLOCK = { 0.0f, // Starts at 0
-            150.37593984962406015037593984962f,     // Warrior 1
-            150.37593984962406015037593984962f,     // Paladin 2
+            135.1f,     // Warrior 1
+            135.1f,     // Paladin 2
             0f,         // Hunter 3
             0f,         // Rogue 4
             0f,         // Priest 5
@@ -248,8 +251,8 @@ namespace Rawr
        /// and prevent divide by 0 errors.
        /// </summary>
         public static readonly float[] CAP_BLOCK_INV = { 0.0f, // Starts at 0
-            0.00665f,     // Warrior 1
-            0.00665f,     // Paladin 2
+            0.00740192f,     // Warrior 1
+            0.00740192f,     // Paladin 2
             0f,         // Hunter 3
             0f,         // Rogue 4
             0f,         // Priest 5
@@ -725,7 +728,7 @@ namespace Rawr
         #region Functions for More complex things.
 
         /// <summary>Originally from Bear. This should be updated once per expansion</summary>
-        public const float MitigationScaler         = 138772.5f; // value is 75% Armor Reduction at the character level
+        public const float MitigationScaler         = 78210f; // 90 - 138772.5 // value is 75% Armor Reduction at the character level
         public const double SurvivalScalerBase      = 0.1574901d; // fourToTheNegativeFourThirds = Math.Pow(4d, -4d / 3d)
         public const double SurvivalScalerTopRight  = 0.6299605d; // topRight = Math.Pow(fourToTheNegativeFourThirds, 1d / 4d)
 
@@ -806,15 +809,14 @@ namespace Rawr
         /// <returns>How much physical damage is reduced from Armor. (0.095 = 9.5% reduction)</returns>
         public static float GetDamageReductionFromArmor(int AttackerLevel, float TargetArmor)
         {
-            // 5.4 chanced the armor cap to 85% in PvE; 75% in PvP
             if (AttackerLevel > 85)
-                return Math.Min( (AttackerLevel == DEFAULTPLAYERLEVEL ? 0.75f : 0.85f), (TargetArmor) / (TargetArmor + 4037.5f * AttackerLevel - 317117.5f));
+                return Math.Min(0.75f, (TargetArmor) / (TargetArmor + 4037.5f * AttackerLevel - 317117.5f));
             else if (AttackerLevel > 80)
-                return Math.Min(0.85f, (TargetArmor) / (TargetArmor + 2167.5f * AttackerLevel - 158167.5f));
+                return Math.Min(0.75f, (TargetArmor) / (TargetArmor + 2167.5f * AttackerLevel - 158167.5f));
             else if (AttackerLevel > 59)
-                return Math.Min(0.85f, (TargetArmor) / (TargetArmor + 467.5f * AttackerLevel - 22167.5f));
+                return Math.Min(0.75f, (TargetArmor) / (TargetArmor + 467.5f * AttackerLevel - 22167.5f));
             else
-                return Math.Min(0.85f, (TargetArmor) / (TargetArmor + 85f * AttackerLevel - 400f));
+                return Math.Min(0.75f, (TargetArmor) / (TargetArmor + 85f * AttackerLevel - 400f));
             #region LibStatLogic-1.2.lua file in Rating Buster
             // Above is a simplified version of what is in LUA code
             /*

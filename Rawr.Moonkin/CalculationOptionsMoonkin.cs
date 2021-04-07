@@ -69,13 +69,13 @@ namespace Rawr.Moonkin
         [XmlIgnore]
         public bool SG_Int { get { return StatsList[0]; } set { StatsList[0] = value; OnPropertyChanged("SG_Int"); } }
         [XmlIgnore]
-        public bool SG_Spi { get { return StatsList[1]; } set { StatsList[1] = value; OnPropertyChanged("SG_SPI"); } }
+        public bool SG_Multi { get { return StatsList[1]; } set { StatsList[1] = value; OnPropertyChanged("SG_Multi"); } }
         [XmlIgnore]
         public bool SG_SP { get { return StatsList[2]; } set { StatsList[2] = value; OnPropertyChanged("SG_SP"); } }
         [XmlIgnore]
         public bool SG_Crit { get { return StatsList[3]; } set { StatsList[3] = value; OnPropertyChanged("SG_Crit"); } }
         [XmlIgnore]
-        public bool SG_Hit { get { return StatsList[4]; } set { StatsList[4] = value; OnPropertyChanged("SG_Hit"); } }
+        public bool SG_Vers { get { return StatsList[4]; } set { StatsList[4] = value; OnPropertyChanged("SG_Vers"); } }
         [XmlIgnore]
         public bool SG_Haste { get { return StatsList[5]; } set { StatsList[5] = value; OnPropertyChanged("SG_Haste"); } }
         [XmlIgnore]

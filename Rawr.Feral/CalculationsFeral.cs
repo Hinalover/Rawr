@@ -1149,13 +1149,13 @@ namespace Rawr.Feral
             StatsFeral statsTalents = new StatsFeral()
             {
                 BonusAgilityMultiplier = ((1 + (Character.ValidateArmorSpecialization(character, ItemType.Leather) ? 0.05f : 0f))
-                                            * (1 + (character.DruidTalents.HeartOfTheWild > 0 ? 0.06f : 0))
+                                            * (1 + (character.DruidTalents.HeartOfTheWild ? 0.06f : 0))
                                             - 1f),
-                BonusIntellectMultiplier = (character.DruidTalents.HeartOfTheWild > 0 ? 0.06f : 0),
+                BonusIntellectMultiplier = (character.DruidTalents.HeartOfTheWild ? 0.06f : 0),
                 BonusAttackPowerMultiplier = 0.25f,
-                BonusStaminaMultiplier = (character.DruidTalents.HeartOfTheWild > 0 ? 0.06f : 0),
+                BonusStaminaMultiplier = (character.DruidTalents.HeartOfTheWild ? 0.06f : 0),
                 MaxEnergy = 100,
-                FeralMovementSpeed = (character.DruidTalents.FelineSwiftness > 0 ? 0.15f : 0),
+                FeralMovementSpeed = (character.DruidTalents.FelineSwiftness ? 0.15f : 0),
             };
 
             statsTotal.Accumulate(statsTalents);

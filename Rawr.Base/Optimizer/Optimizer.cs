@@ -429,13 +429,6 @@ namespace Rawr.Optimizer
                         }
                     }
                 }
-                for (int i = 0; i < talentItemCount; i++)
-                {
-                    if (talentItem[i].talentData.Prerequisite >= 0)
-                    {
-                        talentItem[talentItem[i].talentData.Prerequisite].childList.Add(i);
-                    }
-                }
             }
             else
             {
@@ -1698,7 +1691,7 @@ namespace Rawr.Optimizer
             }
             else if (calculation.StartsWith("[Talent ", StringComparison.Ordinal))
             {
-                return character.CurrentTalents.Data[int.Parse(calculation.Substring(8).TrimEnd(']'))];
+                return character.CurrentTalents.Data[int.Parse(calculation.Substring(8).TrimEnd(']'))] ? 1 : 0;
             }
             else if (calculation.StartsWith("[Glyph ", StringComparison.Ordinal))
             {
@@ -2724,28 +2717,27 @@ namespace Rawr.Optimizer
 
             if (mutateTalents)
             {
-                int[,] treeCount = new int[3, 11];
+                bool[,] treeCount = new bool[3, 7];
                 for (int j = 0; j < talentItemCount; j++)
                 {
-                    treeCount[talentItem[j].talentData.Tree, talentItem[j].talentData.Row - 1] += talents.Data[j];
+                    treeCount[j % 3, j / 3] = talents.Data[j];
                 }
                 // add the talent somewhere
                 bool talentAdded = false;
                 do
                 {
                     int index = rand.Next(talentItemCount);
-                    if (talents.Data[index] == talentItem[index].talentData.MaxPoints) continue;
-                    int p = talentItem[index].talentData.Prerequisite;
-                    if (p >= 0 && talents.Data[p] < talentItem[p].talentData.MaxPoints) continue;
+                    if (talents.Data[index]) continue;
                     int points = 0;
                     for (int k = 0; k < talentItem[index].talentData.Row - 1; k++)
                     {
-                        points += treeCount[talentItem[index].talentData.Tree, k];
+                        if (treeCount[0, k] || treeCount[1, k] || treeCount[2, k])
+                            ++points;
                     }
-                    if (points < 5 * (talentItem[index].talentData.Row - 1)) continue;
+                    if (points != (talentItem[index].talentData.Row - 1)) continue;
                     // we're good, we can add the talent point
-                    talents.Data[index]++;
-                    treeCount[talentItem[index].talentData.Tree, talentItem[index].talentData.Row - 1]++;
+                    talents.Data[index] = true;
+                    treeCount[talentItem[index].talentData.Column - 1, talentItem[index].talentData.Row - 1] = true;
                     talentAdded = true;
                 } while (!talentAdded);
                 // pick a talent with some points invested that we can take points out of
@@ -2753,11 +2745,11 @@ namespace Rawr.Optimizer
                 do
                 {
                     int index = rand.Next(talentItemCount);
-                    if (talents.Data[index] == 0) continue;
+                    if (!talents.Data[index]) continue;
                     bool locked = false;
                     foreach (int child in talentItem[index].childList)
                     {
-                        if (talents.Data[child] > 0)
+                        if (talents.Data[child])
                         {
                             locked = true;
                             break;
@@ -2768,16 +2760,16 @@ namespace Rawr.Optimizer
                         int i = 1;
                         int pts = 0;
                         int _row = talentItem[index].talentData.Row - 1;
-                        int tree = talentItem[index].talentData.Tree;
-                        for (i = 0; i <= _row; i++) pts += treeCount[tree, i];
+                        int tree = talentItem[index].talentData.Column - 1;
+                        for (i = 0; i <= _row; i++) pts += treeCount[tree, i] ? 1 : 0;
                         pts = pts - 1;
-                        for (i = _row + 1; i < 11; i++)
+                        for (i = _row + 1; i < 7; i++)
                         {
-                            if (treeCount[tree, i] > 0)
+                            if (treeCount[tree, i])
                             {
-                                if (pts >= i * 5)
+                                if (pts == i)
                                 {
-                                    pts += treeCount[tree, i];
+                                    pts += treeCount[tree, i] ? 1 : 0;
                                 }
                                 else
                                 {
@@ -2789,8 +2781,8 @@ namespace Rawr.Optimizer
                         if (i >= 0)
                         {
                             // we're good, we can remove the talent point
-                            talents.Data[index]--;
-                            treeCount[talentItem[index].talentData.Tree, talentItem[index].talentData.Row - 1]--;
+                            talents.Data[index] = false;
+                            treeCount[talentItem[index].talentData.Column - 1, talentItem[index].talentData.Row - 1] = false;
                             talentRemoved = true;
                         }
                     }

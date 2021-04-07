@@ -1432,14 +1432,14 @@ the Threat Scale defined on the Options tab.",
             // Talented bonus multipliers
             StatsBear statsTalents = new StatsBear()
             {
-                BonusAgilityMultiplier = (character.DruidTalents.HeartOfTheWild > 0 ? 0.06f : 0),
+                BonusAgilityMultiplier = (character.DruidTalents.HeartOfTheWild ? 0.06f : 0),
                 BaseArmorMultiplier = 3.30f, // In the end end up with 3.3 when calculated
-                BonusIntellectMultiplier = (character.DruidTalents.HeartOfTheWild > 0 ? 0.06f : 0),
+                BonusIntellectMultiplier = (character.DruidTalents.HeartOfTheWild ? 0.06f : 0),
                 BonusAttackPowerMultiplier = 0.25f,
                 BonusStaminaMultiplier = ((1 + (Character.ValidateArmorSpecialization(character, ItemType.Leather) ? 0.05f : 0f))
-                                            * (1 + (character.DruidTalents.HeartOfTheWild > 0 ? 0.06f : 0))
+                                            * (1 + (character.DruidTalents.HeartOfTheWild ? 0.06f : 0))
                                             - 1f),
-                GuardianMovementSpeed = (character.DruidTalents.FelineSwiftness > 0 ? 0.15f : 0),
+                GuardianMovementSpeed = (character.DruidTalents.FelineSwiftness ? 0.15f : 0),
                 CritChanceReduction = 0.06f,
                 // Magic Damage reduction
                 ArcaneDamageReductionMultiplier = 0.25f,

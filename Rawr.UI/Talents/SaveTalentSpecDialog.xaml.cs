@@ -49,7 +49,7 @@ namespace Rawr.UI
             {
                 SavedTalentSpec spec = UpdateCombo.SelectedItem as SavedTalentSpec;
                 spec.Spec = Talents.ToString();
-                spec.Tree1 = Tree1;
+                spec.UsedPoints = Tree1;
                 //spec.Tree2 = Tree2;
                 //spec.Tree3 = Tree3;
             }

@@ -1,4 +1,4 @@
-using Rawr.Rogue;
+//using Rawr.Rogue;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Rawr.UnitTests.Rogue
@@ -20,7 +20,7 @@ namespace Rawr.UnitTests.Rogue
             //CurrentModel = "Rogue";
             
             
-            CalculationOptions = new CalculationOptionsRogue();
+            //CalculationOptions = new CalculationOptionsRogue();
         }
     }
 }

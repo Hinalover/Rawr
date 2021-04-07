@@ -206,7 +206,7 @@ namespace Rawr
         {
             List<Reforging> options = new List<Reforging>();
             options.Add(null);
-            if (baseItem.ItemLevel >= 200)
+            /*if (baseItem.ItemLevel >= 200)
             {
                 foreach (var from in reforgeStatsFrom)
                 {
@@ -223,7 +223,7 @@ namespace Rawr
                         }
                     }
                 }
-            }
+            }*/
             return options;
         }
 

@@ -37,8 +37,6 @@ namespace Rawr.Hunter {
             _c_rwItemSpeed = RW.Speed;
             useRW = _useRW; // public variable gets set once
 
-            _c_rwRacialExpertise = GetRacialExpertiseFromWeaponType(_c_rwItemType);
-            _c_rwexpertise = StatS.Expertise + StatConversion.GetExpertiseFromRating(StatS.ExpertiseRating) + _c_rwRacialExpertise;
             _c_ymiss = YwMissChance;
             _c_wmiss = WhMissChance;
             _c_rwdodge = RwDodgeChance;
@@ -64,8 +62,7 @@ namespace Rawr.Hunter {
         public ItemType _c_rwItemType { get; private set; }
 
         public float _c_rwItemSpeed { get; private set; }
-        public float _c_rwRacialExpertise { get; private set; }
-        public float _c_rwexpertise { get; private set; }
+
         public float _c_rwdodge { get; private set; }
         public float _c_rwparry { get; private set; }
         public float _c_rwblock { get; private set; }
@@ -180,31 +177,14 @@ namespace Rawr.Hunter {
                 return _AttackTableBasicRW;
             }
         }
-        #region Hit Rating
-        public float HitPerc { get { return StatConversion.GetHitFromRating(StatS.HitRating, CharacterClass.Hunter); } }
-        #endregion
-        #region Expertise Rating
-        /*private float GetDPRfromExp(float Expertise) {return StatConversion.GetDodgeParryReducFromExpertise(Expertise, CharacterClass.Hunter);}*/
-        private float GetRacialExpertiseFromWeaponType(ItemType weapon) {
-            CharacterRace r = Char.Race;
-            if (weapon != ItemType.None) {
-                if (r == CharacterRace.Human) {
-                    if (weapon == ItemType.OneHandSword || weapon == ItemType.OneHandMace
-                        || weapon == ItemType.TwoHandSword || weapon == ItemType.TwoHandMace)
-                    {
-                        return 3f;
-                    }
-                }
-            }
-            return 0f;
-        }
-        #endregion
+
+        
 
         #region Miss
         private float MissPrevBonuses {
-            get {
-                return StatS.PhysicalHit    // Hit Perc bonuses like Draenei Racial
-                        + HitPerc;          // Bonus from Hit Rating
+            get
+            {
+                return 0f;
             }
         }
         private float WhMissCap { get { return StatConversion.WHITE_MISS_CHANCE_CAP[BossOpts.Level - Char.Level]; } }
@@ -213,16 +193,15 @@ namespace Rawr.Hunter {
         private float YwMissChance { get { return Math.Max(0f, YwMissCap - MissPrevBonuses); } }
         #endregion
         #region Dodge
-        private float DodgeChanceCap { get { return StatConversion.WHITE_DODGE_CHANCE_CAP[Math.Max(BossOpts.Level - Char.Level,0)]; } }
-        private float RwDodgeChance { get { return Math.Max(0f, DodgeChanceCap - StatConversion.GetDodgeParryReducFromExpertise(_c_rwexpertise, CharacterClass.Hunter) /*- Talents.WeaponMastery * 0.01f*/); } }
+        private float DodgeChanceCap { get { return 0f; } }//{ return StatConversion.WHITE_DODGE_CHANCE_CAP[Math.Max(BossOpts.Level - Char.Level,0)]; } }
+        private float RwDodgeChance { get { return 0f; } }//{ return Math.Max(0f, DodgeChanceCap); } }
         #endregion
         #region Parry
         private float ParryChanceCap { get { return 0f; } }// StatConversion.WHITE_PARRY_CHANCE_CAP[CalcOpts.TargetLevel - Char.Level]; } }
         private float RwParryChance {
             get {
                 return 0f;
-                //float ParryChance = ParryChanceCap - StatConversion.GetDodgeParryReducFromExpertise(_c_rwexpertise, CharacterClass.Hunter);
-                //return Math.Max(0f, CalcOpts.InBack ? ParryChance * (1f - CalcOpts.InBackPerc / 100f) : ParryChance);
+
             }
         }
         #endregion

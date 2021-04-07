@@ -9,8 +9,7 @@ namespace Rawr.Moonkin
         private const int NUM_SPELL_DETAILS = 17;
         public static float BaseMana = 60000f;
         public static float ECLIPSE_MANA_PERCENT = 0.5f;
-        public static float DRAGONWRATH_PROC_RATE = 0.0675f;
-        public static float ECLIPSE_BASE_PERCENT = 0.15f;
+        public static float ECLIPSE_BASE_PERCENT = 0.3f;
 
         // A list of all the damage spells
         private Spell[] _spellData = null;
@@ -24,28 +23,27 @@ namespace Rawr.Moonkin
                         new Spell()
                         {
                             Name = "SF",
-                            BaseDamage = (4269f + 5487f) / 2.0f,
-                            SpellDamageModifier = 2.166f,
-                            BaseCastTime = 2.7f,
+                            BaseDamage = 0f,
+                            SpellDamageModifier = 1.532f,
+                            BaseCastTime = 3f,
                             BaseManaCost = (float)(int)(BaseMana * 0.155f),
                             DotEffect = null,
                             School = SpellSchool.Arcane,
-                            BaseEnergy = 20,
                             AllDamageModifier = 1f
                         },
                         new Spell()
                         {
                             Name = "MF",
-                            BaseDamage = (563f + 688f) / 2.0f,
+                            BaseDamage = 0f,
                             SpellDamageModifier = 0.240f,
                             BaseCastTime = 1.5f,
                             BaseManaCost = (float)(int)(BaseMana * 0.084f),
                             DotEffect = new DotEffect()
                                 {
-                                    BaseDuration = 14.0f,
+                                    BaseDuration = 40.0f,
                                     BaseTickLength = 2.0f,
-                                    TickDamage = 263f,
-                                    SpellDamageModifierPerTick = 0.240f,
+                                    TickDamage = 0f,
+                                    SpellDamageModifierPerTick = 0.172f,
                                     AllDamageModifier = 1f
                                 },
                             School = SpellSchool.Arcane,
@@ -53,28 +51,44 @@ namespace Rawr.Moonkin
                         },
                         new Spell()
                         {
+                            Name = "SuF",
+                            BaseDamage = 0f,
+                            SpellDamageModifier = 0.240f,
+                            BaseCastTime = 1.5f,
+                            BaseManaCost = (float)(int)(BaseMana * 0.084f),
+                            DotEffect = new DotEffect()
+                            {
+                                BaseDuration = 20.0f,
+                                BaseTickLength = 2.0f,
+                                TickDamage = 0f,
+                                SpellDamageModifierPerTick = 0.172f,
+                                AllDamageModifier = 1f
+                            },
+                            School = SpellSchool.Nature,
+                            AllDamageModifier = 1f
+                        },
+                        new Spell()
+                        {
                             Name = "W",
-                            BaseDamage = (2564f + 3295f) / 2.0f,
-                            SpellDamageModifier = 1.338f,
+                            BaseDamage = 0f,
+                            SpellDamageModifier = 0.944f,
                             BaseCastTime = 2.0f,
                             BaseManaCost = (float)(int)(BaseMana * 0.088f),
                             DotEffect = null,
                             School = SpellSchool.Nature,
-                            BaseEnergy = 15f,
                             AllDamageModifier = 1f
                         },
                         new Spell()
                         {
                             Name = "SS",
-                            BaseDamage = (4178f + 5762f) / 2f,
-                            SpellDamageModifier = 2.388f,
+                            BaseDamage = 0f,
+                            SpellDamageModifier = 1.68f,
                             BaseCastTime = 2.0f,
                             BaseManaCost = (float)(int)(BaseMana * 0.155f),
                             DotEffect = null,
                             School = SpellSchool.Spellstorm,
-                            BaseEnergy = 20,
                             AllDamageModifier = 1f
-                        }
+                        },
                     };
                 }
                 return _spellData;
@@ -94,18 +108,25 @@ namespace Rawr.Moonkin
                 return SpellData[1];
             }
         }
-        public Spell Wrath
+        public Spell Sunfire
         {
             get
             {
                 return SpellData[2];
             }
         }
-        public Spell Starsurge
+        public Spell Wrath
         {
             get
             {
                 return SpellData[3];
+            }
+        }
+        public Spell Starsurge
+        {
+            get
+            {
+                return SpellData[4];
             }
         }
         private void ResetSpellList()
@@ -126,9 +147,7 @@ namespace Rawr.Moonkin
                     {
                         new SpellRotation() { RotationData = new RotationData() { Name = "None" } },
                         new SpellRotation() { RotationData = new RotationData() { Name = "Moonfire Always Refresh", MoonfireRefreshMode = MoonfireRefreshMode.AlwaysRefresh } },
-                        //new SpellRotation() { RotationData = new RotationData() { Name = "Moonfire Matching Eclipse", MoonfireRefreshMode = MoonfireRefreshMode.OnlyOnEclipse } },
                     };
-                    //RecreateRotations();
                 }
                 return rotations;
             }
@@ -145,10 +164,12 @@ namespace Rawr.Moonkin
 
             float trinketDPS = 0.0f;
             float baseSpellPower = calcs.SpellPower;
-            float baseHit = 1 - Math.Max(0, calcs.SpellHitCap - calcs.SpellHit);
             float baseCrit = calcs.SpellCrit;
             float baseHaste = calcs.SpellHaste;
             float baseMastery = calcs.Mastery;
+            // TODO: These are hard-coded conversions, we'll want to handle these later
+            float baseMultistrike = Math.Min(1, Math.Max(0, calcs.BasicStats.MultistrikeRating / 100.0f / 100.0f));
+            float baseVersatility = Math.Max(0, calcs.BasicStats.VersatilityRating / 500.0f / 100.0f);
             float sub35PercentTime = (float)(character.BossOptions.Under20Perc + character.BossOptions.Under35Perc);
 
             float maxDamageDone = 0.0f, maxBurstDamageDone = 0.0f;
@@ -174,13 +195,15 @@ namespace Rawr.Moonkin
                 float currentCrit = baseCrit;
                 float currentHaste = baseHaste;
                 float currentMastery = baseMastery;
+                float currentMultistrike = baseMultistrike;
+                float currentVersatility = baseVersatility;
                 float currentTrinketDPS = trinketDPS;
                 calcs.BasicStats.BonusArcaneDamageMultiplier = oldArcaneMultiplier;
                 calcs.BasicStats.BonusNatureDamageMultiplier = oldNatureMultiplier;
                 calcs.BasicStats.BonusCritDamageMultiplier = oldCritDamageMultiplier;
                 float[] spellDetails = new float[NUM_SPELL_DETAILS];
 
-                float baselineDPS = rot.DamageDone(character, calcs, calcOpts.TreantLifespan, currentSpellPower, baseHit, currentCrit, currentHaste, currentMastery, calcOpts.Latency);
+                float baselineDPS = rot.DamageDone(character, calcs, calcOpts.TreantLifespan, currentSpellPower, currentCrit, currentHaste, currentMastery, currentMultistrike, currentVersatility, calcOpts.Latency);
 
                 float damageSpellInterval = rot.RotationData.Duration / (rot.RotationData.CastCount - rot.RotationData.TreantCasts);
                 float damageInterval = rot.RotationData.Duration / (rot.RotationData.CastCount - rot.RotationData.TreantCasts + rot.RotationData.DotTicks);
@@ -210,15 +233,15 @@ namespace Rawr.Moonkin
                     { Trigger.Use, 1 },
                     { Trigger.SpellCast, 1 },
                     { Trigger.DamageSpellCast, 1 },
-                    { Trigger.SpellHit, baseHit },
-                    { Trigger.DamageSpellHit, baseHit },
-                    { Trigger.DamageDone, baseHit },
-                    { Trigger.DamageOrHealingDone, baseHit },
+                    { Trigger.SpellHit, 1 },
+                    { Trigger.DamageSpellHit, 1 },
+                    { Trigger.DamageDone, 1 },
+                    { Trigger.DamageOrHealingDone, 1 },
                     { Trigger.SpellCrit, baseCrit },
                     { Trigger.DamageSpellCrit, baseCrit },
                     { Trigger.DoTTick, 1 },
                     { Trigger.EclipseProc, 1 },
-                    { Trigger.DamageSpellHitorDoTTick, baseHit },
+                    { Trigger.DamageSpellHitorDoTTick, 1 },
                     { Trigger.DamageSpellOrDoTCrit, baseCrit }
                 };
 
@@ -337,24 +360,25 @@ namespace Rawr.Moonkin
 
                 float accumulatedDPS = 0.0f;
                 Array.Clear(spellDetails, 0, spellDetails.Length);
-                float damageDone = rot.DamageDone(character, calcs, calcOpts.TreantLifespan, currentSpellPower, baseHit, currentCrit, currentHaste, currentMastery, calcOpts.Latency);
-                float caDamageDone = rot.DoCelestialAlignmentCalcs(calcs, talents, currentSpellPower, baseHit, currentCrit, currentHaste, currentMastery, calcOpts.Latency);
+                float damageDone = rot.DamageDone(character, calcs, calcOpts.TreantLifespan, currentSpellPower, currentCrit, currentHaste, currentMastery, currentMultistrike, currentVersatility, calcOpts.Latency);
+                float caDamageDone = rot.DoCelestialAlignmentCalcs(calcs, talents, currentSpellPower, currentCrit, currentHaste, currentMastery, calcOpts.Latency);
                 accumulatedDPS = damageDone / rot.RotationData.Duration;
                 spellDetails[0] = rot.RotationData.StarfireAvgHit;
                 spellDetails[1] = rot.RotationData.WrathAvgHit;
                 spellDetails[2] = rot.RotationData.MoonfireAvgHit;
-                spellDetails[4] = rot.RotationData.StarSurgeAvgHit;
+                spellDetails[3] = rot.RotationData.StarSurgeAvgHit;
+                spellDetails[4] = rot.RotationData.SunfireAvgHit;
                 spellDetails[5] = rot.RotationData.StarfireAvgCast;
                 spellDetails[6] = rot.RotationData.WrathAvgCast;
                 spellDetails[7] = rot.RotationData.MoonfireAvgCast;
-                spellDetails[9] = rot.RotationData.StarSurgeAvgCast;
-                spellDetails[10] = rot.RotationData.AverageInstantCast;
-                spellDetails[11] = rot.RotationData.StarfireAvgEnergy;
-                spellDetails[12] = rot.RotationData.WrathAvgEnergy;
-                spellDetails[13] = rot.RotationData.StarSurgeAvgEnergy;
-                spellDetails[14] = rot.RotationData.TreantDamage;
-                spellDetails[15] = rot.RotationData.StarfallDamage;
-                spellDetails[16] = rot.RotationData.MushroomDamage;
+                spellDetails[8] = rot.RotationData.StarSurgeAvgCast;
+                spellDetails[9] = rot.RotationData.SunfireAvgCast;
+                spellDetails[10] = rot.RotationData.StarfireAvgEnergy;
+                spellDetails[11] = rot.RotationData.WrathAvgEnergy;
+                spellDetails[12] = rot.RotationData.StarSurgeAvgEnergy;
+                spellDetails[13] = rot.RotationData.MoonfireAvgEnergy;
+                spellDetails[14] = rot.RotationData.SunfireAvgEnergy;
+                spellDetails[15] = rot.RotationData.TreantDamage;
 
                 float burstDPS = accumulatedDPS * ((180 - 15) / 180f) + caDamageDone / 180f;
                 float sustainedDPS = burstDPS;
@@ -377,18 +401,19 @@ namespace Rawr.Moonkin
                 rot.RotationData.StarfireAvgHit = spellDetails[0];
                 rot.RotationData.WrathAvgHit = spellDetails[1];
                 rot.RotationData.MoonfireAvgHit = spellDetails[2];
-                rot.RotationData.StarSurgeAvgHit = spellDetails[4];
+                rot.RotationData.StarSurgeAvgHit = spellDetails[3];
+                rot.RotationData.SunfireAvgHit = spellDetails[4];
                 rot.RotationData.StarfireAvgCast = spellDetails[5];
                 rot.RotationData.WrathAvgCast = spellDetails[6];
                 rot.RotationData.MoonfireAvgCast = spellDetails[7];
-                rot.RotationData.StarSurgeAvgCast = spellDetails[9];
-                rot.RotationData.AverageInstantCast = spellDetails[10];
-                rot.RotationData.StarfireAvgEnergy = spellDetails[11];
-                rot.RotationData.WrathAvgEnergy = spellDetails[12];
-                rot.RotationData.StarSurgeAvgEnergy = spellDetails[13];
-                rot.RotationData.TreantDamage = spellDetails[14];
-                rot.RotationData.StarfallDamage = spellDetails[15];
-                rot.RotationData.MushroomDamage = spellDetails[16];
+                rot.RotationData.StarSurgeAvgCast = spellDetails[8];
+                rot.RotationData.SunfireAvgCast = spellDetails[9];
+                rot.RotationData.StarfireAvgEnergy = spellDetails[10];
+                rot.RotationData.WrathAvgEnergy = spellDetails[11];
+                rot.RotationData.StarSurgeAvgEnergy = spellDetails[12];
+                rot.RotationData.MoonfireAvgEnergy = spellDetails[13];
+                rot.RotationData.SunfireAvgEnergy = spellDetails[14];
+                rot.RotationData.TreantDamage = spellDetails[15];
 
                 // Update the sustained DPS rotation if any one of the following three cases is true:
                 // 1) No user rotation is selected and sustained DPS is maximum

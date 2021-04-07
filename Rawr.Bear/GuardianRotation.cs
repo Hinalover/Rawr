@@ -384,11 +384,12 @@ namespace Rawr.Bear
             LeaderOfThePack.BaseCritInterval = CritInterval;
             LeaderOfThePack.Count = (Duration / LeaderOfThePack.CritInterval);
 
-            HealingTouchWithNaturesSwifteness.Count = (CombatState.Talents.NaturesSwiftness > 0 ? (Duration / HealingTouchWithNaturesSwifteness.Cooldown) : 0);
+            //HealingTouchWithNaturesSwifteness.Count = (CombatState.Talents.NaturesSwiftness > 0 ? (Duration / HealingTouchWithNaturesSwifteness.Cooldown) : 0);
+            HealingTouchWithNaturesSwifteness.Count = (Duration / HealingTouchWithNaturesSwifteness.Cooldown);
 
-            Renewal.Count = (CombatState.Talents.Renewal > 0 ? (Duration / Renewal.Cooldown) : 0);
+            Renewal.Count = (CombatState.Talents.Renewal ? (Duration / Renewal.Cooldown) : 0);
 
-            CenarionWard.Count = (CombatState.Talents.CenarionWard > 0 ? (Duration / CenarionWard.Cooldown) : 0);
+            CenarionWard.Count = (CombatState.Talents.CenarionWard ? (Duration / CenarionWard.Cooldown) : 0);
 
             // Symbiosis
             if (_Symbiosis == GuardianSymbiosis.BoneShield)

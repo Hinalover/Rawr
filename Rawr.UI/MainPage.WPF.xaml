@@ -245,12 +245,12 @@
                     <ScaleTransform />
                 </local:ItemButtonWithEnchant.RenderTransform>
             </local:ItemButtonWithEnchant>
-            <local:ItemButtonWithEnchant x:Name="ShirtButton" Margin="2" ShowEnchant="False" ShowReforge="False" ShowGems="False">
+            <local:ItemButtonWithEnchant x:Name="ShirtButton" Margin="2" ShowEnchant="False" ShowUpgrade="False" ShowGems="False">
                 <local:ItemButtonWithEnchant.RenderTransform>
                     <ScaleTransform />
                 </local:ItemButtonWithEnchant.RenderTransform>
             </local:ItemButtonWithEnchant>
-            <local:ItemButtonWithEnchant x:Name="TabardButton" Margin="2" ShowEnchant="False" ShowReforge="False" ShowGems="False">
+            <local:ItemButtonWithEnchant x:Name="TabardButton" Margin="2" ShowEnchant="False" ShowUpgrade="False" ShowGems="False">
                 <local:ItemButtonWithEnchant.RenderTransform>
                     <ScaleTransform />
                 </local:ItemButtonWithEnchant.RenderTransform>

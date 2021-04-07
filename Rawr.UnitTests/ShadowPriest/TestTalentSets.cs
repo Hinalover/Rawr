@@ -16,7 +16,7 @@ namespace Rawr.UnitTests.ShadowPriest
         public static void LoadSuggested(PriestTalents talents)
         {
             // Discipline Talents
-            talents.ImprovedPowerWordShield = 0;
+            /*talents.ImprovedPowerWordShield = 0;
             talents.TwinDisciplines = 3;
             talents.MentalAgility = 2;
 
@@ -61,7 +61,7 @@ namespace Rawr.UnitTests.ShadowPriest
             talents.SinAndPunishment = 2;
             talents.ShadowyApparition = 3;
 
-            talents.Dispersion = 1;
+            talents.Dispersion = 1;*/
         }
     }
 }

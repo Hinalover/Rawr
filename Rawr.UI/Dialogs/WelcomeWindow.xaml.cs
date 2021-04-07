@@ -160,21 +160,6 @@ FAQStuff.Add(
         }
         private void SetUpPatchNotes()
         {
-            #region Rawr 5.4.2 (November 27, 2013) [r73409]
-            VNStuff.Add("Rawr 5.4.2 (November 27, 2013) [r73409]",
-                @"Mists of Pandaria Release
-Rawr.Base:
-- The Big Item Upgrade Patch: Item upgrades implemented properly for all 5.4 items.
-- Fix bug with certain characters not loading with certain types of randomly enchanted gear.
-
-Rawr.Moonkin:
-- Fix a bug in the calculation of Nature's Grace.
-- Add Nature's Swiftness to the calculations for Dream of Cenarius.
-
-Rawr.Mage:
-- Placeholder support for T16 set bonuses.  None implemented yet.
-");
-            #endregion
             #region Rawr 5.4.1 (September 24, 2013) [r73055]
             VNStuff.Add("Rawr 5.4.1 (September 24, 2013) [r73055]",
                 @"Mists of Pandaria Release

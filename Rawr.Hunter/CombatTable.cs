@@ -118,34 +118,44 @@ namespace Rawr.Hunter
             float tableSize = 0f;
 
             // Miss
-            if (useSpellHit) {
-                //float hitIncrease = StatConversion.GetHitFromRating(StatS.HitRating, Char.Class) + StatS.SpellHit;
-                Miss = Math.Min(1f - tableSize, Math.Max(0.17f - (StatConversion.GetHitFromRating(StatS.HitRating, Char.Class) + StatS.SpellHit), 0f));
-            } else {
-                Miss = Math.Min(1f - tableSize, isWhite ? combatFactors._c_wmiss : combatFactors._c_ymiss);
+            Miss = 0f;
+            //if (useSpellHit) {
+            //    //float hitIncrease = StatConversion.GetHitFromRating(StatS.HitRating, Char.Class) + StatS.SpellHit;
+            //    Miss = Math.Min(1f - tableSize, Math.Max(0.17f - (StatConversion.GetHitFromRating(StatS.HitRating, Char.Class) + StatS.SpellHit), 0f));
+            //} else {
+            //    Miss = Math.Min(1f - tableSize, isWhite ? combatFactors._c_wmiss : combatFactors._c_ymiss);
+            //}
+            //tableSize += Miss;
+
+
+            // Dodge
+            //if (isWhite || Abil.CanBeDodged) {
+            //    Dodge = Math.Min(1f - tableSize, combatFactors._c_rwdodge);
+            //    tableSize += Dodge;
+            //} else 
+            { 
+                Dodge = 0f; 
             }
-            tableSize += Miss;
-           // Dodge
-            if (isWhite || Abil.CanBeDodged) {
-                Dodge = Math.Min(1f - tableSize, combatFactors._c_rwdodge);
-                tableSize += Dodge;
-            } else { Dodge = 0f; }
-            /*             // Parry
-                        if (isWhite || Abil.CanBeParried) {
-                            Parry = 0f; // Math.Min(1f - tableSize, combatFactors._c_rwparry);
-                            tableSize += Parry;
-                        } else { Parry = 0f; }
-                        // Block
-                        if (isWhite || Abil.CanBeBlocked) {
-                            Block = 0f; // Math.Min(1f - tableSize, combatFactors._c_rwblock);
-                            tableSize += Block;
-                        } else { Block = 0f; }
-                      // Glancing Blow
-                        if (isWhite) {
-                            Glance = Math.Min(1f - tableSize, combatFactors._c_glance);
-                            tableSize += Glance;
-                        } else { Glance = 0f; }
-            */          // Critical Hit
+            
+            
+            // Parry
+            if (isWhite || Abil.CanBeParried) {
+                Parry = .03f; // Math.Min(1f - tableSize, combatFactors._c_rwparry);
+                tableSize += Parry;
+            } else { Parry = 0f; }
+            // Block
+            //if (isWhite || Abil.CanBeBlocked) {
+            //    Block = 0f; // Math.Min(1f - tableSize, combatFactors._c_rwblock);
+            //    tableSize += Block;
+            //} else { Block = 0f; }
+            //// Glancing Blow
+            //if (isWhite) {
+            //    Glance = Math.Min(1f - tableSize, combatFactors._c_glance);
+            //    tableSize += Glance;
+            //} else { Glance = 0f; }
+                      
+            
+            // Critical Hit
             if (isWhite) {
                 Crit = Math.Min(1f - tableSize, combatFactors._c_rwycrit);
                 tableSize += Crit;

@@ -26,7 +26,7 @@ namespace Rawr.UI
             //Classes[dir + "EnchantCache.xml"] = typeof(Enchant);
             Classes[dir + "ItemCache.xml"] = typeof(ItemCache);
             Classes[dir + "ItemFilter.xml"] = typeof(ItemFilter);
-            Classes[dir + "PetTalents.xml"] = typeof(Hunter.SavedPetTalentSpec);
+            //Classes[dir + "PetTalents.xml"] = typeof(Hunter.SavedPetTalentSpec);
             Classes[dir + "Settings.xml"] = typeof(Settings);
             Classes[dir + "Talents.xml"] = typeof(SavedTalentSpec);
             //Classes[dir + "TinkeringCache.xml"] = typeof(Tinkering);
@@ -90,30 +90,30 @@ namespace Rawr.UI
             IncreaseQuota iq = sender as IncreaseQuota;
             if (iq == null || iq.DialogResult.GetValueOrDefault(false))
             {
-                Calculations.RegisterModel(typeof(Rawr.Bear.CalculationsBear));
-                Calculations.RegisterModel(typeof(Rawr.Cat.CalculationsCat));
-                Calculations.RegisterModel(typeof(Rawr.DPSDK.CalculationsDPSDK));
-                Calculations.RegisterModel(typeof(Rawr.DPSWarr.CalculationsDPSWarr));
-                Calculations.RegisterModel(typeof(Rawr.Elemental.CalculationsElemental));
-                Calculations.RegisterModel(typeof(Rawr.Enhance.CalculationsEnhance));
-                Calculations.RegisterModel(typeof(Rawr.Feral.CalculationsFeral));
-                Calculations.RegisterModel(typeof(Rawr.Healadin.CalculationsHealadin));
-                Calculations.RegisterModel(typeof(Rawr.HealPriest.CalculationsHealPriest));
-                Calculations.RegisterModel(typeof(Rawr.Hunter.CalculationsHunter));
+                //Calculations.RegisterModel(typeof(Rawr.Bear.CalculationsBear));
+                ////Calculations.RegisterModel(typeof(Rawr.Cat.CalculationsCat));
+                //Calculations.RegisterModel(typeof(Rawr.DPSDK.CalculationsDPSDK));
+                ////Calculations.RegisterModel(typeof(Rawr.DPSWarr.CalculationsDPSWarr));
+                //Calculations.RegisterModel(typeof(Rawr.Elemental.CalculationsElemental));
+                ////Calculations.RegisterModel(typeof(Rawr.Enhance.CalculationsEnhance));
+                //Calculations.RegisterModel(typeof(Rawr.Feral.CalculationsFeral));
+                ////Calculations.RegisterModel(typeof(Rawr.Healadin.CalculationsHealadin));
+                ////Calculations.RegisterModel(typeof(Rawr.HealPriest.CalculationsHealPriest));
+                //Calculations.RegisterModel(typeof(Rawr.Hunter.CalculationsHunter));
                 Calculations.RegisterModel(typeof(Rawr.Mage.CalculationsMage));
                 Calculations.RegisterModel(typeof(Rawr.Moonkin.CalculationsMoonkin));
-                Calculations.RegisterModel(typeof(Rawr.ProtPaladin.CalculationsProtPaladin));
-                Calculations.RegisterModel(typeof(Rawr.ProtWarr.CalculationsProtWarr));
-                Calculations.RegisterModel(typeof(Rawr.RestoSham.CalculationsRestoSham));
-                Calculations.RegisterModel(typeof(Rawr.Retribution.CalculationsRetribution));
-                Calculations.RegisterModel(typeof(Rawr.Rogue.CalculationsRogue));
-                Calculations.RegisterModel(typeof(Rawr.ShadowPriest.CalculationsShadowPriest));
-                Calculations.RegisterModel(typeof(Rawr.TankDK.CalculationsTankDK));
-                Calculations.RegisterModel(typeof(Rawr.Tree.CalculationsTree));
-                Calculations.RegisterModel(typeof(Rawr.Warlock.CalculationsWarlock));
-                Calculations.RegisterModel(typeof(Rawr.Brewmaster.CalculationsBrewmaster));
-                Calculations.RegisterModel(typeof(Rawr.Mistweaver.CalculationsMistweaver));
-                Calculations.RegisterModel(typeof(Rawr.Windwalker.CalculationsWindwalker));
+                //Calculations.RegisterModel(typeof(Rawr.ProtPaladin.CalculationsProtPaladin));
+                ////Calculations.RegisterModel(typeof(Rawr.ProtWarr.CalculationsProtWarr));
+                ////Calculations.RegisterModel(typeof(Rawr.RestoSham.CalculationsRestoSham));
+                ////Calculations.RegisterModel(typeof(Rawr.Retribution.CalculationsRetribution));
+                ////Calculations.RegisterModel(typeof(Rawr.Rogue.CalculationsRogue));
+                ////Calculations.RegisterModel(typeof(Rawr.ShadowPriest.CalculationsShadowPriest));
+                //Calculations.RegisterModel(typeof(Rawr.TankDK.CalculationsTankDK));
+                //Calculations.RegisterModel(typeof(Rawr.Tree.CalculationsTree));
+                ////Calculations.RegisterModel(typeof(Rawr.Warlock.CalculationsWarlock));
+                //Calculations.RegisterModel(typeof(Rawr.Brewmaster.CalculationsBrewmaster));
+                //Calculations.RegisterModel(typeof(Rawr.Mistweaver.CalculationsMistweaver));
+                //Calculations.RegisterModel(typeof(Rawr.Windwalker.CalculationsWindwalker));
 
                 string[] files = new List<string>(Classes.Keys).ToArray();
 

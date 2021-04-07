@@ -32,6 +32,10 @@ namespace Rawr.Hunter.Skills
             SpellId = 3044;
             ReqRangedWeap = true;
             ReqSkillsRange = true;
+            
+            //WoD: Arcane shot is not available to Marksmanship hunters
+            ReqTalent = true;
+            Talent2ChksValue = (c.HunterTalents.Specialization != (int)Specialization.Marksmanship);
 
             FocusCost = 20f;
 

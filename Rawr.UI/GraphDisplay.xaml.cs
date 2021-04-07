@@ -874,17 +874,17 @@ namespace Rawr.UI
 
                 for (int i = 0; i < depth; i++)
                 {
-                    baseChar.CurrentTalents.Data[3 * i] = 0;
-                    baseChar.CurrentTalents.Data[3 * i + 1] = 0;
-                    baseChar.CurrentTalents.Data[3 * i + 2] = 0;
-                    CharacterCalculationsBase baseCalc = Calculations.GetCharacterCalculations(baseChar, null, false, true, false);
+                    baseChar.CurrentTalents.Data[3 * i] = false;
+                    baseChar.CurrentTalents.Data[3 * i + 1] = false;
+                    baseChar.CurrentTalents.Data[3 * i + 2] = false;
+                    CharacterCalculationsBase baseCalc = Calculations.GetCharacterCalculations(baseChar, null, true, true, false);
                     for (int j = 0; j < 3; j++)
                     {
-                        baseChar.CurrentTalents.Data[3 * i + j] = 1;
+                        baseChar.CurrentTalents.Data[3 * i + j] = true;
                         newCalc = Calculations.GetCharacterCalculations(baseChar, null, false, true, false);
-                        compare = Calculations.GetCharacterComparisonCalculations(baseCalc, newCalc, null, Character.CurrentTalents.Data[3 * i + j] == 1, false);
+                        compare = Calculations.GetCharacterComparisonCalculations(baseCalc, newCalc, null, Character.CurrentTalents.Data[3 * i + j], false);
                         talentCompare[3 * i + j] = compare;
-                        baseChar.CurrentTalents.Data[3 * i + j] = 0;
+                        baseChar.CurrentTalents.Data[3 * i + j] = false;
                     }
                     baseChar.CurrentTalents.Data[3 * i] = Character.CurrentTalents.Data[3 * i];
                     baseChar.CurrentTalents.Data[3 * i + 1] = Character.CurrentTalents.Data[3 * i + 1];
@@ -897,10 +897,10 @@ namespace Rawr.UI
                     if (talentDatas.Length > 0)
                     {
                         TalentDataAttribute talentData = talentDatas[0];
-                        compare = talentCompare[3 * (talentData.Row - 1) + (talentData.Column - 1)];
+                        compare = talentCompare[3 * (talentData.Row) + (talentData.Column)];
                         compare.Name = talentData.Name;
                         compare.Item.Name = talentData.Name;
-                        string text = talentData.Description[0];
+                        string text = talentData.Description;
                         compare.Description = text;
                         compare.Item = null;
                         compare.ImageSource = talentData.Icon;
@@ -918,7 +918,7 @@ namespace Rawr.UI
                 Character newChar = Character.Clone();
 
                 TalentsBase nothing = Character.CurrentTalents.Clone();
-                for (int i = 0; i < nothing.Data.Length; i++) nothing.Data[i] = 0;
+                for (int i = 0; i < nothing.Data.Length; i++) nothing.Data[i] = false;
                 for (int i = 0; i < nothing.GlyphData.Length; i++) nothing.GlyphData[i] = false;
                 newChar.CurrentTalents = nothing;
 

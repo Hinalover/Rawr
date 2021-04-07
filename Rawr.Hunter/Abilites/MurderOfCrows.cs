@@ -18,7 +18,7 @@ namespace Rawr.Hunter.Skills
 
             ReqTalent = true;
             
-            Talent2ChksValue = c.HunterTalents.MurderOfCrows;
+            Talent2ChksValue = false;
 
             Cd = Cooldown;
 

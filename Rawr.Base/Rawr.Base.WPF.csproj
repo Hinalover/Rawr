@@ -104,7 +104,6 @@
     <Compile Include="Bosses\BossHandler.cs" />
     <Compile Include="Bosses\BossList.cs" />
     <Compile Include="Bosses\BossStuff.cs" />
-    <Compile Include="CataclysmClassTalents.cs" />
     <Compile Include="CustomControls\ErrorBox.cs" />
     <Compile Include="CustomControls\ErrorWindow.xaml.cs">
       <DependentUpon>ErrorWindow.WPF.xaml</DependentUpon>
@@ -115,6 +114,16 @@
     <Compile Include="CustomControls\Graph.xaml.cs">
       <DependentUpon>Graph.WPF.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DBC\DBCData.cs" />
+    <Compile Include="DBC\DBCLive.cs" />
+    <Compile Include="DBC\DBCPTR.cs" />
+    <Compile Include="DBC\DBCRPPMModifier.cs" />
+    <Compile Include="DBC\DBCSpellData.cs" />
+    <Compile Include="DBC\DBCSpellEffect.cs" />
+    <Compile Include="DBC\DBCSpellPower.cs" />
+    <Compile Include="DBC\Spell.cs" />
+    <Compile Include="DBC\SpellCompilation.cs" />
+    <Compile Include="DBC\Timespan.cs" />
     <Compile Include="ModelFramework\Actions.cs" />
     <Compile Include="Items\Item.cs" />
     <Compile Include="Items\ItemCache.cs" />
@@ -216,6 +225,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

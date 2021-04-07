@@ -218,7 +218,7 @@ namespace Rawr.Hunter.Skills
             CanBeDodged = true;
             CRITBONUS = 0.5f;
             CRITBONUSMULTIPLIER = 1.0f;
-            Talent2ChksValue = 0;
+            Talent2ChksValue = false;
             AbilIterater = -1;
             ReqRangedWeap = false;
             ReqSkillsRange = false;
@@ -250,10 +250,11 @@ namespace Rawr.Hunter.Skills
         private float BONUSCRITCHANCE;
         private bool CANCRIT;
         private bool CANBEDODGED;
+        private bool CANBEPARRIED;
         private float CRITBONUS;
         private float CRITBONUSMULTIPLIER;
         private bool REQTALENT;
-        private int TALENT2CHKSVALUE;
+        private bool TALENT2CHKSVALUE;
         private bool REQRANGEDWEAP;
         private bool REQSKILLSRANGE;
         private bool REQMULTITARGS;
@@ -304,7 +305,7 @@ namespace Rawr.Hunter.Skills
         public string Name { get { return NAME; } set { NAME = value; } }
         public int SpellId { get { return SPELLID; } set { SPELLID = value; } }
         protected bool ReqTalent { get { return REQTALENT; } set { REQTALENT = value; } }
-        protected int Talent2ChksValue { get { return TALENT2CHKSVALUE; } set { TALENT2CHKSVALUE = value; } }
+        protected bool Talent2ChksValue { get { return TALENT2CHKSVALUE; } set { TALENT2CHKSVALUE = value; } }
         protected bool ReqRangedWeap { get { return REQRANGEDWEAP; } set { REQRANGEDWEAP = value; } }
         
         protected bool ReqSkillsRange { get { return REQSKILLSRANGE; } set { REQSKILLSRANGE = value; } }
@@ -331,6 +332,7 @@ namespace Rawr.Hunter.Skills
         protected float Targets { get { return TARGETS; } set { TARGETS = value; } }
         public bool CanCrit { get { return CANCRIT; } set { CANCRIT = value; } }
         public bool CanBeDodged { get { return CANBEDODGED; } set { CANBEDODGED = value; } }
+        public bool CanBeParried { get { return CANBEPARRIED; } set { CANBEPARRIED = value; } }
         public ItemDamageType DamageType { get { return DAMAGETYPE; } set { DAMAGETYPE = value; } }
         public float MinRange { get { return MINRANGE; } set { MINRANGE = value; } } // In Yards 
         public float MaxRange { get { return MAXRANGE; } set { MAXRANGE = value; } } // In Yards
@@ -452,7 +454,7 @@ namespace Rawr.Hunter.Skills
                     return (validatedSet == true);
                 }
 
-                if (ReqTalent && Talent2ChksValue < 1)
+                if (ReqTalent && !Talent2ChksValue)
                 {
                     validatedSet = false;
                 }
@@ -697,9 +699,21 @@ namespace Rawr.Hunter.Skills
             get
             {
                 if (!Validated) { return new StatsHunter(); }
-                StatsHunter bonus = (Effect == null) ? new StatsHunter() { AttackPower = 0f, } : Effect.GetAverageStats(0f, RWAtkTable.Hit + RWAtkTable.Crit, Whiteattacks.RwEffectiveSpeed, combatFactors.TotalHaste, FightDuration) as StatsHunter;
+                StatsHunter bonus;
 
-                bonus.Accumulate((Effect2 == null) ? new StatsHunter() { AttackPower = 0f, } : Effect2.GetAverageStats(0f, RWAtkTable.Hit + RWAtkTable.Crit, Whiteattacks.RwEffectiveSpeed, combatFactors.TotalHaste, FightDuration) as StatsHunter);
+                if (Effect == null)
+                    bonus = new StatsHunter() { AttackPower = 0f, };
+                else
+                {
+                    bonus = Effect.GetAverageStats(0f, RWAtkTable.Hit + RWAtkTable.Crit, Whiteattacks.RwEffectiveSpeed, combatFactors.TotalHaste, FightDuration) as StatsHunter;
+
+                }
+
+                if (Effect2 == null)
+                    bonus.Accumulate(new StatsHunter() { AttackPower = 0f, });
+                else
+                    bonus.Accumulate(Effect2.GetAverageStats(0f, RWAtkTable.Hit + RWAtkTable.Crit, Whiteattacks.RwEffectiveSpeed, combatFactors.TotalHaste, FightDuration) as StatsHunter);
+                
 
                 return bonus;
             }

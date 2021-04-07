@@ -21,6 +21,6 @@
             </Image.Source>
         </Image>
         ENDIFWPF-->
-        <TextBlock x:Name="RankLabel" Margin="0,38,-2,1" Width="34" Text="0/5" Foreground="#FFFFFFFF" d:LayoutOverrides="Width" HorizontalAlignment="Right"/>
+        <TextBlock x:Name="RankLabel" Margin="0,38,-2,1" Width="34" Text="0/1" Foreground="#FFFFFFFF" d:LayoutOverrides="Width" HorizontalAlignment="Right"/>
 	</Grid>
 </UserControl>

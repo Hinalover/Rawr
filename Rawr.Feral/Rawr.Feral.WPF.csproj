@@ -101,7 +101,7 @@
     <Compile Include="Abilities\FeralTemplate.cs" />
     <Compile Include="CalculationOptionsFeral.cs" />
     <Compile Include="CalculationOptionsPanelFeral.xaml.cs">
-      <DependentUpon>CalculationOptionsPanelFeral.xaml</DependentUpon>
+      <DependentUpon>CalculationOptionsPanelFeral.WPF.xaml</DependentUpon>
     </Compile>
     <Compile Include="CalculationsFeral.cs" />
     <Compile Include="CharacterCalculationsFeral.cs" />

@@ -98,7 +98,9 @@ namespace Rawr
                     case CharacterClass.DeathKnight:
                         Stats dk = new Stats() {
                             Dodge = 0.05f, Parry = 0.05f, Block = 0.00f,
-                            PhysicalCrit = 0.050000000745058f, SpellCrit = 0f, AttackPower = 595f,
+                            PhysicalCrit = 0.050000000745058f,
+                            SpellCrit = 0.050000000745058f,
+                            AttackPower = 595f,
                         };
                         S.Accumulate(race);
                         S.Accumulate(dk);
@@ -108,9 +110,9 @@ namespace Rawr
                     case CharacterClass.Druid:
                         Stats druid = new Stats() {
                             Mana = BaseCombatRating.DruidBaseMana(level),
-                            PhysicalCrit = 0.074799999594688f,
+                            PhysicalCrit = 0.050000000745058f,
                             AttackPower = (level * 3),
-                            SpellCrit = 0.018500000238419f,
+                            SpellCrit = 0.050000000745058f,
                         };
                         druid.Mp5 = druid.Mana * 0.02f;
                         S.Accumulate(race);
@@ -139,12 +141,12 @@ namespace Rawr
                             // This assumes ALL AP from full AP += AGI * 2
                             // So naked Hunter has 31 AP un accounted for.
                             // Naked troll, no gear, no spec, LW & Skinning.
-                            PhysicalCrit = -0.015300000086427f, 
+                            PhysicalCrit = 0.050000000745058f, 
                             
                             //OpOv: MoP-attack power base has changed, calc has been moved into the Hunter module for easier management and modification
                             //AttackPower = 31f, RangedAttackPower = 31f, 
-                            
-                            SpellCrit = 0f,
+
+                            SpellCrit = 0.050000000745058f,
                         };
                         S.Accumulate(race);
                         S.Accumulate(hun);
@@ -155,8 +157,8 @@ namespace Rawr
                         Stats mag = new Stats() {
                             Mana = BaseCombatRating.MageBaseMana(level),
                             Dodge = 0.03758f, Parry = 0.05f,
-                            PhysicalCrit = 0.034499999135733f,
-                            SpellCrit = 0.009100000374019f,
+                            PhysicalCrit = 0.050000000745058f,
+                            SpellCrit = 0.050000000745058f,
                         };
                         S.Accumulate(race);
                         S.Accumulate(mag);
@@ -166,9 +168,9 @@ namespace Rawr
                     case CharacterClass.Monk:
                         Stats monk = new Stats() {
                             Dodge = 0.0314f, Parry = 0.0801f,
-                            PhysicalCrit = 0.074799999594688f,
+                            PhysicalCrit = 0.050000000745058f,
                             AttackPower = 0f,
-                            SpellCrit = 0.018500000238419f,
+                            SpellCrit = 0.050000000745058f,
                         };
                         S.Accumulate(race);
                         S.Accumulate(monk);
@@ -181,7 +183,7 @@ namespace Rawr
                             Dodge = 0.03f, Parry = 0.03f, Block = 0.03f,
                             PhysicalCrit = 0.050000000745058f,
                             AttackPower = 235f,
-                            SpellCrit = 0.033399999141693f,
+                            SpellCrit = 0.050000000745058f,
                         };
                         S.Accumulate(race);
                         S.Accumulate(pal);
@@ -193,8 +195,8 @@ namespace Rawr
                             Mana = BaseCombatRating.PriestBaseMana(level),
                             Dodge = 0f,
                             Parry = 0f,
-                            PhysicalCrit = 0.031800001859665f,
-                            SpellCrit = 0.012400000356138f,
+                            PhysicalCrit = 0.050000000745058f,
+                            SpellCrit = 0.050000000745058f,
                         };
                         pri.Mp5 = pri.Mana * 0.05f;     // Always 5% of base mana in regen.
                         S.Accumulate(race);
@@ -205,8 +207,8 @@ namespace Rawr
                     case CharacterClass.Rogue:
                         Stats rog = new Stats() {
                             Dodge = 0.03758f, Parry = 0.05f,
-                            PhysicalCrit = -0.003000000026077f,
-                            SpellCrit = 0f,
+                            PhysicalCrit = 0.050000000745058f,
+                            SpellCrit = 0.050000000745058f,
                             AttackPower = 613f,
                         };
                         S.Accumulate(race);
@@ -218,9 +220,9 @@ namespace Rawr
                         Stats sha = new Stats() {
                             Mana = BaseCombatRating.ShamanBaseMana(level),
                             Dodge = 0.03f, Parry = 0.00f, Block = 0.03f,
-                            PhysicalCrit = 0.029200000688434f,
+                            PhysicalCrit = 0.050000000745058f,
                             AttackPower = 140f,
-                            SpellCrit = 0.021999999880791f,
+                            SpellCrit = 0.050000000745058f,
                             SpellPower = -10,
                         };
                         S.Accumulate(race);
@@ -232,8 +234,8 @@ namespace Rawr
                         Stats warlock = new Stats() {
                             Mana = BaseCombatRating.WarlockBaseMana(level),
                             Dodge = 0f, Parry = 0f, Block = 0f,
-                            PhysicalCrit = 0.026200000196695f,
-                            SpellCrit = 0.017000000923872f,
+                            PhysicalCrit = 0.050000000745058f,
+                            SpellCrit = 0.050000000745058f,
                         };
                         S.Accumulate(race);
                         S.Accumulate(warlock);
@@ -243,7 +245,9 @@ namespace Rawr
                     case CharacterClass.Warrior:
                         Stats war = new Stats() {
                             Dodge = 0.03f, Parry = 0.03f, Block = 0.03f,
-                            PhysicalCrit = 0.050000000745058f, SpellCrit = 0f, AttackPower = 613f,
+                            PhysicalCrit = 0.050000000745058f,
+                            SpellCrit = 0.050000000745058f,
+                            AttackPower = 613f,
                         };
                         S.Accumulate(race);
                         S.Accumulate(war);
@@ -257,74 +261,108 @@ namespace Rawr
                 #endregion
 
                 #region Racials
-                if (characterRace == CharacterRace.Gnome)  //CATA: changed from 5% int to 5% mana
+                if (characterRace == CharacterRace.Gnome)
                 {
+                    // Arcane Resistance - 
                     S.ArcaneDamageReductionMultiplier = 0.01f;
+                    // Expansive Mind - Increases maximum Mana, Rage, Energy, Runic Power by 5%
                     S.BonusManaMultiplier = 0.05f;
-                    //S.BonusIntellectMultiplier = 0.05f;
+                    // Nimble Fingers - Increases haste by 1%
+                    S.PhysicalHaste += 0.01f;
+                    S.SpellHaste += 0.01f;
                 }
                 else if (characterRace == CharacterRace.Human)
                 {
-                    S.BonusSpiritMultiplier = 0.03f;
-                    // Patch 4.0.6+ changed from a 3 minute cooldown to 2 minute cooldown
+                    // The human spirit - Increases two secondary stats of your choice by x%
+                    //S.HighestSecondaryStat = 0.01f;
+                    // Every Man for Himself - PvP trinket
                     S.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { PVPTrinket = 1 }, 0f, 120f));
                 }
                 else if (characterRace == CharacterRace.NightElf)
                 {
+                    // Nature Resistance - 
                     S.NatureDamageReductionMultiplier = 0.01f;
+                    // Quickness - Increases dodge and movement speed by 2%
                     S.Dodge += 0.02f;
+                    S.MovementSpeed += 0.02f;
+                    // Touch of Elune - Increases haste by 1% at night, increases critical strike chance by 1% during the day
+                    S.PhysicalHaste += 0.01f;
+                    S.SpellHaste += 0.01f;
+                    S.PhysicalCrit += 0.01f;
+                    S.SpellCrit += 0.01f;
                 }
                 else if (characterRace == CharacterRace.Dwarf)
                 {
+                    // Frost Resistance - 
                     S.FrostDamageReductionMultiplier = 0.01f;
-                    // Damage taken -10% for 8 sec.
-                    S.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { DamageTakenReductionMultiplier = .1f }, 8, 120));
+                    // Might of the Mountain - Increases critical strike bonus damage and healing by 2%
+                    S.BonusCritDamageMultiplier = 0.02f;
+                    S.BonusCritHealMultiplier = 0.02f;
+                    // Stoneform - Removes magic, curse, poison, disease, bleed effects, and reduces damage taken by 10% for 8s. Not usable in CC.
+                    S.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { DamageTakenReductionMultiplier = 0.1f }, 8, 120));
                     // TODO: Add debuff removal.  Doesn't work on all bosses so not sure if we want to.
-
                 }
                 else if (characterRace == CharacterRace.Draenei)
                 {
+                    // Shadow Resistance - 
                     S.ShadowDamageReductionMultiplier = 0.01f;
-                    S.SpellHit += 0.01f;
-                    S.PhysicalHit += 0.01f;
-                    // Patch 4.0.6+ changed from a scaling Health restore to a flat 20% of max health
-                    S.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { HealthRestoreFromMaxHealth = 0.2f / 15f }, 15f, 180f));
+                    // Heroic Presence - Increases your primary stat by x%
+                    //S.HighestStat = 0.01f;
+                    // Gift of the Naaru
+                    S.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { HealthRestoreFromMaxHealth = 0.2f / 5f }, 5f, 180f));
                 }
                 else if (characterRace == CharacterRace.Worgen)
                 {
+                    // Aberration - 
                     S.NatureDamageReductionMultiplier = 0.01f;
                     S.ShadowDamageReductionMultiplier = 0.01f;
-                    // Patch 4.0.6+ Darkflight changed from a 3 minute CD to a 2 minute CD
+                    // Darkflight - 
                     S.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { MovementSpeed = 0.40f }, 10f, 120f));
+                    // Viciousness - 
                     S.PhysicalCrit += 0.01f;
                     S.SpellCrit += 0.01f;
                 }
                 else if (characterRace == CharacterRace.Tauren)
                 {
+                    // Nature Resistance - 
                     S.NatureDamageReductionMultiplier = 0.01f;
-                    S.Health = (float)Math.Floor(S.Health * 1.05f);
+                    // Brawn - Increases critical strike bonus damage and healing by 2%
+                    S.BonusCritDamageMultiplier = 0.02f;
+                    S.BonusCritHealMultiplier = 0.02f;
+                    // Endurance - Increases stamina by x%
+                    //S.Stamina = 0.01f;
+                    // War Stomp
                 }
                 else if (characterRace == CharacterRace.Troll)
                 {
-                    S.SnareRootDurReduc = .15f;
+                    // Da Voodoo Shuffle - 
+                    S.SnareRootDurReduc = 0.15f;
+                    // Berserking
                     if (characterClass == CharacterClass.DeathKnight || characterClass == CharacterClass.Warrior || characterClass == CharacterClass.Rogue)
-                        S.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { PhysicalHaste = 0.2f }, 10f, 180f));
+                        S.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { PhysicalHaste = 0.15f }, 10f, 180f));
                     else
-                        S.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { SpellHaste = 0.2f, PhysicalHaste = 0.2f }, 10f, 180f));
+                        S.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { SpellHaste = 0.15f, PhysicalHaste = 0.2f }, 10f, 180f));
+                    // Regeneration - 
                 }
                 else if (characterRace == CharacterRace.Undead)
                 {
-                    float touchOfTheGrave = BaseCombatRating.TouchOfTheGraveScaling(level) * BaseCombatRating.TouchOfTheGraveMultiplier;
+                    // Shadow Resistance - 
                     S.ShadowDamageReductionMultiplier = 0.01f;
-                    
-                    S.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { FearDurReduc = 1f }, .1f, 120f));
+                    // Will of the Forsaken - 
+                    S.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { FearDurReduc = 1f }, .1f, 180f));
+                    // Touch of the Grave - 
+                    float touchOfTheGrave = BaseCombatRating.TouchOfTheGraveScaling(level) * BaseCombatRating.TouchOfTheGraveMultiplier;
                     S.AddSpecialEffect(new SpecialEffect(Trigger.DamageSpellCast, new Stats() { ShadowDamage = touchOfTheGrave, HealthRestore = touchOfTheGrave }, 0, 0, 0.20f ));
                     S.AddSpecialEffect(new SpecialEffect(Trigger.PhysicalAttack, new Stats() { ShadowDamage = touchOfTheGrave, HealthRestore = touchOfTheGrave }, 0, 0, 0.20f));
+                    // Cannibalize - 
                 }
                 else if (characterRace == CharacterRace.Orc)
                 {
-                    S.StunDurReduc = 0.15f;
+                    // Hardiness - 
+                    S.StunDurReduc = 0.10f;
+                    // Command - 
                     S.BonusPetDamageMultiplier = 0.02f;
+                    // Blood Fury - 
                     if (characterClass == CharacterClass.Shaman)
                         S.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { AttackPower = 65 + (level * 13), SpellPower = 75 + (level * 6) }, 15f, 120f));
                     else if (characterClass == CharacterClass.Warlock || characterClass == CharacterClass.Mage)
@@ -334,8 +372,15 @@ namespace Rawr
                 }
                 else if (characterRace == CharacterRace.BloodElf)
                 {
+                    // Arcane Resistance - 
                     S.ArcaneDamageReductionMultiplier = 0.01f;
-                    if (characterClass == CharacterClass.DeathKnight || characterClass == CharacterClass.Rogue || characterClass == CharacterClass.Hunter)
+                    // Arcane Acuity - Increases Crit Chance by 1%
+                    S.PhysicalCrit += 0.01f;
+                    S.SpellCrit += 0.01f;
+                    // Arcane Torrent - 
+                    if (characterClass == CharacterClass.DeathKnight)
+                        S.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { ManaorEquivRestore = .20f }, 0f, 120f));
+                    else if (characterClass == CharacterClass.Rogue || characterClass == CharacterClass.Hunter)
                         S.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { ManaorEquivRestore = .15f }, 0f, 120f));
                     else if (characterClass == CharacterClass.Warrior)
                         S.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { BonusRageGen = 15f }, 0f, 120f));
@@ -344,13 +389,18 @@ namespace Rawr
                 }
                 else if (characterRace == CharacterRace.Goblin)
                 {
+                    // Time is Money
                     S.PhysicalHaste += 0.01f;
                     S.SpellHaste += 0.01f;
-                    // TODO: The damage of the rocket belt proc is dependent on the character's current AP and SP
+                    // Rocket Barrage - 
                     S.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { FireDamage = 1f + (level * 2) }, 0f, 120f));
+                    // Rocket Jump - 
                 }
                 else if (characterRace == CharacterRace.PandarenAlliance || characterRace == CharacterRace.PandarenHorde)
                 {
+                    // Epicurean - Your love of food allows you to receive double the stats from Well Fed effects.
+
+                    // Quaking Palm - Strikes the target with lightning speed, incapacitating them for 4 sec, and turns off your attack. 2min CD.
 
                 }
                 #endregion
@@ -360,49 +410,10 @@ namespace Rawr
             }
         }
 
+        [Obsolete("This method is deprecated as all expertise racials have been removed from the game")]
         public static float GetRacialExpertise(Character character, ItemSlot weaponSlot)
         {
-            ItemType weaponType;
-            CharacterRace characterRace = character.Race;
-
-            if (weaponSlot == ItemSlot.MainHand && character.MainHand != null)
-                weaponType = character.MainHand.Item.Type;
-            else if (weaponSlot == ItemSlot.OffHand && character.OffHand != null)
-                weaponType = character.OffHand.Item.Type;
-            else
-                return 0.0f;
-
-            switch (characterRace)
-            {
-                case CharacterRace.Human:
-                    if (weaponType == ItemType.OneHandSword || weaponType == ItemType.TwoHandSword
-                        || weaponType == ItemType.OneHandMace || weaponType == ItemType.TwoHandMace)
-                    {
-                        return 0.01f;
-                    }
-                    break;
-                case CharacterRace.Dwarf:
-                    if (weaponType == ItemType.OneHandMace || weaponType == ItemType.TwoHandMace)
-                    {
-                        return 0.01f;
-                    }
-                    break;
-                case CharacterRace.Gnome:
-                    if (weaponType == ItemType.OneHandSword || weaponType == ItemType.Dagger)
-                    {
-                        return 0.01f;
-                    }
-                    break;
-                case CharacterRace.Orc:
-                    if (weaponType == ItemType.OneHandAxe || weaponType == ItemType.TwoHandAxe
-                        || weaponType == ItemType.FistWeapon)
-                    {
-                        return 0.01f;
-                    }
-                    break;
-            }
-
-            return 0.0f;
+            return 0;
         }
     }
 }

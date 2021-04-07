@@ -23,7 +23,7 @@ namespace Rawr.UI
             set
             {
                 talentData = value;
-                current =  talentData == null ? 0 : (int)Math.Min(TalentTree.Talents.Data[talentData.Index], talentData.MaxPoints);
+                current =  talentData == null ? 0 : (int)Math.Min(TalentTree.Talents.Data[talentData.Index] ? 1 : 0, 1);
             }
         }
 
@@ -33,23 +33,20 @@ namespace Rawr.UI
             get { return current; }
             set
             {
-                if (talentData != null && value >= 0 && value <= talentData.MaxPoints && CanPutPoints())
+                if (talentData != null && value >= 0 && value <= 1 && CanPutPoints())
                 {
                     current = value;
-                    TalentTree.Talents.Data[TalentData.Index] = current;
+                    TalentTree.Talents.Data[TalentData.Index] = current == 1;
                     TalentTree.RankChanged();
                 }
             }
         }
 
-        public bool IsMaxRank() { return current == talentData.MaxPoints; }
+        public bool IsMaxRank() { return current == 1; }
 
         public bool CanPutPoints()
         {
-            return TalentTree.PointsBelowRow(talentData.Row) >= (talentData.Row - 1) &&
-                /*TalentTree.PointsInRow(talentData.Row) == 0 &&*/
-                (talentData.Prerequisite < 0
-                || TalentTree.Talents.Data[talentData.Prerequisite] == TalentTree.GetAttribute(talentData.Prerequisite).MaxPoints);
+            return TalentTree.PointsBelowRow(talentData.Row) >= (talentData.Row - 1);
         }
 
         public void Update()
@@ -62,7 +59,7 @@ namespace Rawr.UI
             if (talentData != null)
             {
                 Brush b;
-                if (Current == talentData.MaxPoints)
+                if (Current == 1)
                 {
                     b = new SolidColorBrush(Colors.Yellow);
                     OverlayImage.Source = Icons.NewBitmapImage(new Uri(iconPrefix + "/Images/icon-over-yellow.png", UriKind.Relative));
@@ -76,7 +73,7 @@ namespace Rawr.UI
                     else OverlayImage.Source = Icons.NewBitmapImage(new Uri(iconPrefix + "/Images/icon-over-grey.png", UriKind.Relative));
                 }
 
-                RankLabel.Text = string.Format("{0}/{1}", Current, talentData.MaxPoints);
+                RankLabel.Text = string.Format("{0}/{1}", Current, 1);
                 RankLabel.Foreground = b;
 
                 //TalentImage.ImageFailed += new EventHandler<ExceptionRoutedEventArgs>(TalentImage_ImageFailed);
@@ -146,13 +143,7 @@ namespace Rawr.UI
         public string GetTooltipString()
         {
             string n = talentData.Name + "\r\n";
-            if (Current == 0) {
-                return string.Format(n + "Next Rank:\n{0}", wrapText(talentData.Description[0]));
-            } else if (Current == talentData.MaxPoints) {
-                return string.Format(n + "Max Points:\n{0}", wrapText(talentData.Description[talentData.MaxPoints - 1]));
-            } else {
-                return string.Format(n + "{0}\n\nNext Rank:\n{1}", wrapText(talentData.Description[Current - 1]), wrapText(talentData.Description[Current]));
-            }
+            return string.Format(n + "\n{0}", wrapText(talentData.Description));
         }
 
         public TalentItem()

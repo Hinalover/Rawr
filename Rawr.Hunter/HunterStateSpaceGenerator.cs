@@ -435,7 +435,7 @@ namespace Rawr.Hunter
                 abilitiesAvailable.Add(AbilityList[typeof(KillShot)]);
 
             //abilitiesAvailable.Add(AbilityList[typeof(Stampede)]);
-            abilitiesAvailable.Add(AbilityList[typeof(RapidFire)]);
+            
             abilitiesAvailable.Add(AbilityList[typeof(Readiness)]);
             abilitiesAvailable.Add(AbilityList[typeof(MMMAimedShot)]);
             abilitiesAvailable.Add(AbilityList[typeof(CAAimedShot)]);
@@ -633,25 +633,24 @@ namespace Rawr.Hunter
 
         private void addTalentShots(ref List<AbilWrapper> abilitiesAvailable, Rotation rotation)
         {
-            if (rotation.Talents.Fervor > 0)
+            if (rotation.Talents.Fervor)
                 abilitiesAvailable.Add(new AbilWrapper(rotation.Fervor));
-            else if (rotation.Talents.DireBeast > 0)
+            else if (rotation.Talents.DireBeast)
                 abilitiesAvailable.Add(new AbilWrapper(rotation.DireBeast));
             //else if (rotation.Talents.ThrillOfTheHunt > 0)
               //IMPLEMENT  
 
 
-            if (rotation.Talents.LynxRush > 0)
-                abilitiesAvailable.Add(new AbilWrapper(rotation.LynxRush));
-            else if (rotation.Talents.MurderOfCrows > 0)
-                abilitiesAvailable.Add(new AbilWrapper(rotation.MurderOfCrows));
+            
+            //else if (rotation.Talents.MurderOfCrows)
+            //    abilitiesAvailable.Add(new AbilWrapper(rotation.MurderOfCrows));
             
             
-            if (rotation.Talents.Barrage > 0)
+            if (rotation.Talents.Barrage)
                 abilitiesAvailable.Add(new AbilWrapper(rotation.Barrage));
-            else if (rotation.Talents.GlaiveToss > 0)
+            else if (rotation.Talents.GlaiveToss)
                 abilitiesAvailable.Add(new AbilWrapper(rotation.GlaiveToss));
-            else if (rotation.Talents.Powershot > 0)
+            else if (rotation.Talents.Powershot)
                 abilitiesAvailable.Add(new AbilWrapper(rotation.Powershot));
 
             

@@ -22,11 +22,8 @@ namespace Rawr.Mage
         ManaGemEffect = 0x800,
         MirrorImage = 0x1000,
         BloodFury = 0x2000,
-        MageArmor = 0x4000,
-        MoltenArmor = 0x8000,
-        FrostArmor = 0x10000,
-        IncantersWardCooldown = 0x20000, // make sure to update shifting of item based effects if this changes (Solver.standardEffectCount)
-        NonItemBasedMask = PowerInfusion | VolcanicPotion | ArcanePower | Combustion | Berserking | Mage2T15Effect | Heroism | IcyVeins | Invocation | ManaGemEffect | MirrorImage | IncantersWard | IncantersWardCooldown | BloodFury | MageArmor | MoltenArmor | FrostArmor
+        IncantersWardCooldown = 0x4000, // make sure to update shifting of item based effects if this changes (Solver.standardEffectCount)
+        NonItemBasedMask = PowerInfusion | VolcanicPotion | ArcanePower | Combustion | Berserking | Mage2T15Effect | Heroism | IcyVeins | Invocation | ManaGemEffect | MirrorImage | IncantersWard | IncantersWardCooldown | BloodFury
     }
 
     public class CastingState
@@ -137,9 +134,6 @@ namespace Rawr.Mage
         public bool MirrorImage { get; private set; }
         public bool PowerInfusion { get; private set; }
         public bool BloodFury { get; private set; }
-        public bool MageArmor { get; private set; }
-        public bool MoltenArmor { get; private set; }
-        public bool FrostArmor { get; private set; }
         public bool Invocation { get; private set; }
         public bool IncantersWard { get; private set; }
         public bool IncantersWardCooldown { get; private set; }
@@ -167,9 +161,6 @@ namespace Rawr.Mage
                 MirrorImage = (value & (int)StandardEffect.MirrorImage) != 0;
                 PowerInfusion = (value & (int)StandardEffect.PowerInfusion) != 0;
                 BloodFury = (value & (int)StandardEffect.BloodFury) != 0;
-                MageArmor = (value & (int)StandardEffect.MageArmor) != 0;
-                MoltenArmor = (value & (int)StandardEffect.MoltenArmor) != 0;
-                FrostArmor = (value & (int)StandardEffect.FrostArmor) != 0;
                 Invocation = (value & (int)StandardEffect.Invocation) != 0;
                 IncantersWard = (value & (int)StandardEffect.IncantersWard) != 0;
                 IncantersWardCooldown = (value & (int)StandardEffect.IncantersWardCooldown) != 0;
@@ -402,7 +393,7 @@ namespace Rawr.Mage
             CastingSpeed = (1 + SpellHasteRating * 0.01f / CalculationOptions.HasteRatingMultiplier) * solver.CastingSpeedMultiplier;
 
             StateCritRate += stateCritRating * 0.01f / CalculationOptions.CritRatingMultiplier;
-            StateMastery += stateMasteryRating / CalculationOptions.MasteryRatingMultiplier;
+            StateMastery += stateMasteryRating * Solver.MasteryRatingMultiplier / CalculationOptions.MasteryRatingMultiplier;
 
             // spell calculations
 
@@ -456,23 +447,10 @@ namespace Rawr.Mage
             {
                 StateSpellModifier *= 1.30f; // TODO modify based on damage absorbed
             }
-            if (MageTalents.IncantersWard > 0 && !IncantersWardCooldown)
+            if (MageTalents.IncantersWard && !IncantersWardCooldown)
             {
                 StateSpellModifier *= 1.06f;
                 StateManaRegenMultiplier *= 1.65f;
-            }
-
-            if (MageArmor)
-            {
-                StateMastery += (float)Math.Round(BaseCombatRating.ConstantSpellScaling(CalculationOptions.PlayerLevel) * 1.7545000315f) / CalculationOptions.MasteryRatingMultiplier;
-            }
-            if (MoltenArmor)
-            {
-                StateCritRate += 0.05f;
-            }
-            if (FrostArmor)
-            {
-                CastingSpeed *= 1.07f;
             }
 
             SpellsCount = 0;
@@ -578,19 +556,19 @@ namespace Rawr.Mage
                         // add combustion mix-in
                         c = CombustionCycle.GetCycle(Solver.NeedsDisplayCalculations, this, c);
                     }
-                    if (MageTalents.NetherTempest == 1)
+                    if (MageTalents.NetherTempest)
                     {
                         c = NetherTempestCycle.GetCycle(Solver.NeedsDisplayCalculations, this, c);
                     }
-                    else if (MageTalents.LivingBomb == 1)
+                    else if (MageTalents.LivingBomb)
                     {
                         c = LivingBombCycle.GetCycle(Solver.NeedsDisplayCalculations, this, c);
                     }
-                    else if (MageTalents.FrostBomb == 1)
+                    else if (MageTalents.FrostBomb)
                     {
                         c = FrostBombCycle.GetCycle(Solver.NeedsDisplayCalculations, this, c);
                     }
-                    if (MageTalents.RuneOfPower == 1)
+                    if (MageTalents.RuneOfPower)
                     {
                         c = RuneOfPowerCycle.GetCycle(Solver.NeedsDisplayCalculations, this, c);
                     }

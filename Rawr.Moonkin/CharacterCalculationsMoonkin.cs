@@ -13,8 +13,6 @@ namespace Rawr.Moonkin
 
         public override float[] SubPoints { get { return subPoints; } set { subPoints = value; } }
 
-        public float SpellHit { get; set; }
-        public float SpellHitCap { get; set; }
         public float SpellCritPenalty { get; set; }
         public float SpellCrit { get; set; }
         public float SpellHaste { get; set; }
@@ -44,14 +42,6 @@ namespace Rawr.Moonkin
             retVal.Add("Spirit", baseStats.Spirit.ToString());
             retVal.Add("Spell Power", SpellPower.ToString());
 
-            float totalHitDelta = SpellHitCap - SpellHit;
-
-            retVal.Add("Spell Hit", String.Format("{0:F}%*{1} Hit Rating, {2:F}% Hit From Gear" + (totalHitDelta != 0 ? ", {3} Rating {4}" : ""),
-                100 * SpellHit,
-                baseStats.HitRating,
-                100 * StatConversion.GetSpellHitFromRating(baseStats.HitRating),
-                StatConversion.GetRatingFromHit(Math.Abs(totalHitDelta)),
-                totalHitDelta > 0 ? "To Cap" : "Over Cap"));
             retVal.Add("Spell Crit", String.Format("{0:F}%*{1} Crit Rating, {2:F}% Crit From Gear, {3:F}% Crit From Intellect",
                 100 * (SpellCrit - SpellCritPenalty),
                 baseStats.CritRating,
@@ -62,9 +52,9 @@ namespace Rawr.Moonkin
                 baseStats.HasteRating,
                 100 * StatConversion.GetSpellHasteFromRating(baseStats.HasteRating)));
             retVal.Add("Mastery", String.Format("{0:F}%*{1} Mastery Rating, {2:F}% Mastery From Gear",
-                Mastery * 1.875f,
+                Mastery * 1.5f,
                 baseStats.MasteryRating,
-                StatConversion.GetMasteryFromRating(baseStats.MasteryRating) * 1.875f));
+                StatConversion.GetMasteryFromRating(baseStats.MasteryRating) * 1.5f));
             retVal.Add("Mana Regen", String.Format("{0:F0}", ManaRegen * 5.0f));
             retVal.Add("Total Score", String.Format("{0:F2}", OverallPoints));
             retVal.Add("Selected Rotation", String.Format("*{0}", SelectedRotation.Name));
@@ -86,14 +76,37 @@ namespace Rawr.Moonkin
             sb.AppendLine(String.Format("{0}: {1:F2}%, {2:F2} damage, {3:F0} count", "Starsurge", 100 * SelectedRotation.StarSurgeAvgHit * SelectedRotation.StarSurgeCount / rotationDamage,
                 SelectedRotation.StarSurgeAvgHit * SelectedRotation.StarSurgeCount,
                 SelectedRotation.StarSurgeCount));
-            sb.AppendLine(String.Format("{0}: {1:F2}%, {2:F2} damage, {3:F0} count", "Starfall", 100 * SelectedRotation.StarfallDamage * SelectedRotation.StarfallCasts / rotationDamage,
-                SelectedRotation.StarfallDamage * SelectedRotation.StarfallCasts,
-                SelectedRotation.StarfallCasts));
-            sb.AppendLine(String.Format("{0}: {1:F2}%, {2:F2} damage, {3:F0} count", "Wild Mushroom", 100 * SelectedRotation.MushroomDamage * SelectedRotation.MushroomCasts / rotationDamage,
-                SelectedRotation.MushroomDamage * SelectedRotation.MushroomCasts,
-                SelectedRotation.MushroomCasts));
+            sb.AppendLine(String.Format("{0}: {1:F2}%, {2:F2} damage, {3:F0} count", "Sunfire", 100 * SelectedRotation.SunfireAvgHit * SelectedRotation.SunfireCasts / rotationDamage,
+                SelectedRotation.SunfireAvgHit * SelectedRotation.SunfireCasts,
+                SelectedRotation.SunfireCasts));
 
             retVal.Add("Selected Spell Breakdown", sb.ToString());
+
+            retVal.Add("Starfire", String.Format("{0:F2} dps*{1:F2} s avg\n {2:F2} avg hit\n{3:F2}% avg energy",
+                SelectedRotation.StarfireAvgHit / (SelectedRotation.StarfireAvgCast > 0 ? SelectedRotation.StarfireAvgCast : 1f),
+                SelectedRotation.StarfireAvgCast,
+                SelectedRotation.StarfireAvgHit,
+                100 * (SelectedRotation.StarfireAvgEnergy - 1)));
+            retVal.Add("Wrath", String.Format("{0:F2} dps*{1:F2} s avg\n {2:F2} avg hit\n{3:F2}% avg energy",
+                SelectedRotation.WrathAvgHit / (SelectedRotation.WrathAvgCast > 0 ? SelectedRotation.WrathAvgCast : 1f),
+                SelectedRotation.WrathAvgCast,
+                SelectedRotation.WrathAvgHit,
+                100 * (SelectedRotation.WrathAvgEnergy - 1)));
+            retVal.Add("Starsurge", String.Format("{0:F2} dps*{1:F2} s avg\n {2:F2} avg hit\n{3:F2}% avg energy",
+                SelectedRotation.StarSurgeAvgHit / (SelectedRotation.StarSurgeAvgCast > 0 ? SelectedRotation.StarSurgeAvgCast : 1f),
+                SelectedRotation.StarSurgeAvgCast,
+                SelectedRotation.StarSurgeAvgHit,
+                100 * (SelectedRotation.StarSurgeAvgEnergy - 1)));
+            retVal.Add("Moonfire", String.Format("{0:F2} dps*{1:F2} s avg\n{2:F2} avg hit\n{3:F2}% avg energy",
+                SelectedRotation.MoonfireAvgHit / (SelectedRotation.MoonfireDuration > 0 ? SelectedRotation.MoonfireDuration : 1f),
+                SelectedRotation.MoonfireAvgCast,
+                SelectedRotation.MoonfireAvgHit,
+                100 * (SelectedRotation.MoonfireAvgEnergy - 1)));
+            retVal.Add("Sunfire", String.Format("{0:F2} dps*{1:F2} s avg\n{2:F2} avg hit\n{3:F2}% avg energy",
+                SelectedRotation.SunfireAvgHit / (SelectedRotation.SunfireDuration > 0 ? SelectedRotation.SunfireDuration : 1f),
+                SelectedRotation.SunfireAvgCast,
+                SelectedRotation.SunfireAvgHit,
+                100 * (SelectedRotation.SunfireAvgEnergy - 1)));
 
             retVal.Add("Burst Rotation", String.Format("*{0}", BurstRotation.Name));
             retVal.Add("Burst DPS", String.Format("{0:F2}", BurstRotation.BurstDPS));
@@ -114,48 +127,37 @@ namespace Rawr.Moonkin
             sb.AppendLine(String.Format("{0}: {1:F2}%, {2:F2} damage, {3:F0} count", "Starsurge", 100 * BurstRotation.StarSurgeAvgHit * BurstRotation.StarSurgeCount / rotationDamage,
                 BurstRotation.StarSurgeAvgHit * BurstRotation.StarSurgeCount,
                 BurstRotation.StarSurgeCount));
-            sb.AppendLine(String.Format("{0}: {1:F2}%, {2:F2} damage, {3:F0} count", "Starfall", 100 * BurstRotation.StarfallDamage * BurstRotation.StarfallCasts / rotationDamage,
-                BurstRotation.StarfallDamage * BurstRotation.StarfallCasts,
-                BurstRotation.StarfallCasts));
-            sb.AppendLine(String.Format("{0}: {1:F2}%, {2:F2} damage, {3:F0} count", "Wild Mushroom", 100 * BurstRotation.MushroomDamage * BurstRotation.MushroomCasts / rotationDamage,
-                BurstRotation.MushroomDamage * BurstRotation.MushroomCasts,
-                BurstRotation.MushroomCasts));
+            sb.AppendLine(String.Format("{0}: {1:F2}%, {2:F2} damage, {3:F0} count", "Sunfire", 100 * BurstRotation.SunfireAvgHit * BurstRotation.SunfireCasts / rotationDamage,
+                BurstRotation.SunfireCasts * BurstRotation.SunfireCasts,
+                BurstRotation.SunfireCasts));
 
             retVal.Add("Burst Spell Breakdown", sb.ToString());
 
-            retVal.Add("Nature's Grace Uptime", String.Format("{0:F2}%", SelectedRotation.NaturesGraceUptime * 100));
-            retVal.Add("Solar Eclipse Uptime", String.Format("{0:F2}%", SelectedRotation.SolarUptime * 100));
-            retVal.Add("Lunar Eclipse Uptime", String.Format("{0:F2}%", SelectedRotation.LunarUptime * 100));
-
-            retVal.Add("Starfire", String.Format("{0:F2} dps*{1:F2} s avg\n {2:F2} avg hit\n{3:F2} avg energy",
-                SelectedRotation.StarfireAvgHit / (SelectedRotation.StarfireAvgCast > 0 ? SelectedRotation.StarfireAvgCast : 1f),
-                SelectedRotation.StarfireAvgCast,
-                SelectedRotation.StarfireAvgHit,
-                SelectedRotation.StarfireAvgEnergy));
+            /*retVal.Add("Starfire", String.Format("{0:F2} dps*{1:F2} s avg\n {2:F2} avg hit\n{3:F2} avg energy",
+                BurstRotation.StarfireAvgHit / (BurstRotation.StarfireAvgCast > 0 ? BurstRotation.StarfireAvgCast : 1f),
+                BurstRotation.StarfireAvgCast,
+                BurstRotation.StarfireAvgHit,
+                BurstRotation.StarfireAvgEnergy - 1));
             retVal.Add("Wrath", String.Format("{0:F2} dps*{1:F2} s avg\n {2:F2} avg hit\n{3:F2} avg energy",
-                SelectedRotation.WrathAvgHit / (SelectedRotation.WrathAvgCast > 0 ? SelectedRotation.WrathAvgCast : 1f),
-                SelectedRotation.WrathAvgCast,
-                SelectedRotation.WrathAvgHit,
-                SelectedRotation.WrathAvgEnergy));
+                BurstRotation.WrathAvgHit / (BurstRotation.WrathAvgCast > 0 ? BurstRotation.WrathAvgCast : 1f),
+                BurstRotation.WrathAvgCast,
+                BurstRotation.WrathAvgHit,
+                BurstRotation.WrathAvgEnergy - 1));
             retVal.Add("Starsurge", String.Format("{0:F2} dps*{1:F2} s avg\n {2:F2} avg hit\n{3:F2} avg energy",
-                SelectedRotation.StarSurgeAvgHit / (SelectedRotation.StarSurgeAvgCast > 0 ? SelectedRotation.StarSurgeAvgCast : 1f),
-                SelectedRotation.StarSurgeAvgCast,
-                SelectedRotation.StarSurgeAvgHit,
-                SelectedRotation.StarSurgeAvgEnergy));
-            retVal.Add("Moonfire", String.Format("{0:F2} dps*{1:F2} s avg\n{2:F2} avg hit",
-                SelectedRotation.MoonfireAvgHit / (SelectedRotation.MoonfireDuration > 0 ? SelectedRotation.MoonfireDuration : 1f),
-                SelectedRotation.MoonfireAvgCast,
-                SelectedRotation.MoonfireAvgHit));
-            retVal.Add("Starfall", String.Format("{0:F2} dps*{1:F2} avg per cast\n{2:F2} avg per star",
-                SelectedRotation.StarfallDamage / 10.0f,
-                SelectedRotation.StarfallDamage,
-                SelectedRotation.StarfallDamage / (SelectedRotation.StarfallStars > 0 ? SelectedRotation.StarfallStars : 1f)));
-            retVal.Add("Treants", String.Format("{0:F2} dps*{1:F2} avg per cast\n{2:F2} avg per tree",
-                SelectedRotation.TreantDamage / 30.0f, SelectedRotation.TreantDamage, SelectedRotation.TreantDamage / 3.0f));
-            retVal.Add("Wild Mushroom", String.Format("{0:F2} dps*{1:F2} avg per cast\n{2:F2} avg per mushroom",
-                SelectedRotation.MushroomDamage / 10.0f,
-                SelectedRotation.MushroomDamage,
-                SelectedRotation.MushroomDamage / 3f));
+                BurstRotation.StarSurgeAvgHit / (BurstRotation.StarSurgeAvgCast > 0 ? BurstRotation.StarSurgeAvgCast : 1f),
+                BurstRotation.StarSurgeAvgCast,
+                BurstRotation.StarSurgeAvgHit,
+                BurstRotation.StarSurgeAvgEnergy - 1));
+            retVal.Add("Moonfire", String.Format("{0:F2} dps*{1:F2} s avg\n{2:F2} avg hit\n{3:F2} avg energy",
+                BurstRotation.MoonfireAvgHit / (BurstRotation.MoonfireDuration > 0 ? BurstRotation.MoonfireDuration : 1f),
+                BurstRotation.MoonfireAvgCast,
+                BurstRotation.MoonfireAvgHit,
+                BurstRotation.MoonfireAvgEnergy - 1));
+            retVal.Add("Insect Swarm", String.Format("{0:F2} dps*{1:F2} s avg\n{2:F2} avg hit{3:F2} avg energy",
+                BurstRotation.SunfireAvgHit / (BurstRotation.SunfireDuration > 0 ? BurstRotation.SunfireDuration : 1f),
+                BurstRotation.SunfireAvgCast,
+                BurstRotation.SunfireAvgHit,
+                BurstRotation.SunfireAvgEnergy - 1));*/
 
             return retVal;
         }
@@ -164,7 +166,6 @@ namespace Rawr.Moonkin
         {
             switch (calculation)
             {
-                case "Hit Rating": return baseStats.HitRating;
                 case "Haste Rating": return baseStats.HasteRating;
                 case "Crit Rating": return baseStats.CritRating;
                 case "Mastery Rating": return baseStats.MasteryRating;

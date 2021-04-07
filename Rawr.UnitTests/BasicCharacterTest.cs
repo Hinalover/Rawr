@@ -47,25 +47,25 @@ namespace Rawr.UnitTests
             m_char = new Character();
 
             Calculations.RegisterModel(typeof(Rawr.Bear.CalculationsBear));
-            Calculations.RegisterModel(typeof(Rawr.Cat.CalculationsCat));
+            //Calculations.RegisterModel(typeof(Rawr.Cat.CalculationsCat));
             Calculations.RegisterModel(typeof(Rawr.DPSDK.CalculationsDPSDK));
-            Calculations.RegisterModel(typeof(Rawr.DPSWarr.CalculationsDPSWarr));
-            Calculations.RegisterModel(typeof(Rawr.Elemental.CalculationsElemental));
-            Calculations.RegisterModel(typeof(Rawr.Enhance.CalculationsEnhance));
-            Calculations.RegisterModel(typeof(Rawr.Healadin.CalculationsHealadin));
-            Calculations.RegisterModel(typeof(Rawr.HealPriest.CalculationsHealPriest));
-            Calculations.RegisterModel(typeof(Rawr.Hunter.CalculationsHunter));
+            //Calculations.RegisterModel(typeof(Rawr.DPSWarr.CalculationsDPSWarr));
+            //Calculations.RegisterModel(typeof(Rawr.Elemental.CalculationsElemental));
+            //Calculations.RegisterModel(typeof(Rawr.Enhance.CalculationsEnhance));
+            //Calculations.RegisterModel(typeof(Rawr.Healadin.CalculationsHealadin));
+            //Calculations.RegisterModel(typeof(Rawr.HealPriest.CalculationsHealPriest));
+            //Calculations.RegisterModel(typeof(Rawr.Hunter.CalculationsHunter));
             Calculations.RegisterModel(typeof(Rawr.Mage.CalculationsMage));
             Calculations.RegisterModel(typeof(Rawr.Moonkin.CalculationsMoonkin));
             Calculations.RegisterModel(typeof(Rawr.ProtPaladin.CalculationsProtPaladin));
-            Calculations.RegisterModel(typeof(Rawr.ProtWarr.CalculationsProtWarr));
-            Calculations.RegisterModel(typeof(Rawr.RestoSham.CalculationsRestoSham));
-            Calculations.RegisterModel(typeof(Rawr.Retribution.CalculationsRetribution));
-            Calculations.RegisterModel(typeof(Rawr.Rogue.CalculationsRogue));
-            Calculations.RegisterModel(typeof(Rawr.ShadowPriest.CalculationsShadowPriest));
+            //Calculations.RegisterModel(typeof(Rawr.ProtWarr.CalculationsProtWarr));
+            //Calculations.RegisterModel(typeof(Rawr.RestoSham.CalculationsRestoSham));
+            //Calculations.RegisterModel(typeof(Rawr.Retribution.CalculationsRetribution));
+            //Calculations.RegisterModel(typeof(Rawr.Rogue.CalculationsRogue));
+            //Calculations.RegisterModel(typeof(Rawr.ShadowPriest.CalculationsShadowPriest));
             Calculations.RegisterModel(typeof(Rawr.TankDK.CalculationsTankDK));
             Calculations.RegisterModel(typeof(Rawr.Tree.CalculationsTree));
-            Calculations.RegisterModel(typeof(Rawr.Warlock.CalculationsWarlock));
+            //Calculations.RegisterModel(typeof(Rawr.Warlock.CalculationsWarlock));
         }
 
         private TestContext testContextInstance;

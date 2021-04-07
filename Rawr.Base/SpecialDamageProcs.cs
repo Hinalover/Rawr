@@ -459,25 +459,19 @@ namespace Rawr.DamageProcs
 
             // Miss
             if (useSpellHit) {
-                Miss = Math.Min(1f - tableSize, Math.Max(0f, StatConversion.GetSpellMiss(-LevelDelta, false) - StatS.SpellHit - StatConversion.GetSpellHitFromRating(StatS.HitRating)));
+                Miss = 0f;
             } else {
-                Miss = Math.Min(1f - tableSize, Math.Max(0f, StatConversion.YELLOW_MISS_CHANCE_CAP[LevelDelta] - StatS.PhysicalHit - StatConversion.GetSpellHitFromRating(StatS.HitRating)));
+                Miss = 0f;
             }
             tableSize += Miss;
             // Dodge
             if (!useSpellHit) {
-                Dodge = Math.Min(1f - tableSize, Math.Max(0f, StatConversion.YELLOW_DODGE_CHANCE_CAP[LevelDelta]
-                                                 - StatConversion.GetDodgeParryReducFromExpertise(
-                                                    StatConversion.GetExpertiseFromRating(StatS.ExpertiseRating, Char.Class), Char.Class))
-                                );
+                Dodge = 0f;
                 tableSize += Dodge;
             } else { Dodge = 0f; }
             // Parry
             if (!useSpellHit) {
-                Parry = Math.Min(1f - tableSize, Math.Max(0f, StatConversion.YELLOW_PARRY_CHANCE_CAP[LevelDelta]
-                                                 - StatConversion.GetDodgeParryReducFromExpertise(
-                                                    StatConversion.GetExpertiseFromRating(StatS.ExpertiseRating, Char.Class), Char.Class))
-                                );
+                Parry = 0.03f;
                 tableSize += Parry;
             } else { Parry = 0f; }
             // Block

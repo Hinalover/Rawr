@@ -108,39 +108,12 @@
     <Compile Include="CalculationOptionsElemental.cs" />
     <Compile Include="CalculationsElemental.cs" />
     <Compile Include="CharacterCalculationsElemental.cs" />
-    <Compile Include="CombatFactors.cs" />
-    <Compile Include="ComparisonCalculationElemental.cs" />
-    <Compile Include="Estimation.cs" />
+    <Compile Include="ComparisonCalculationsElemental.cs" />
     <Compile Include="Gemming.cs" />
-    <Compile Include="Rotation.cs" />
-    <Compile Include="IRotationOptions.cs" />
-    <Compile Include="RotationOptions.cs" />
-    <Compile Include="Spells\ChainLightning.cs" />
-    <Compile Include="Spells\EarthShock.cs" />
-    <Compile Include="Spells\ElementalMastery.cs" />
-    <Compile Include="Spells\FireElemental.cs" />
-    <Compile Include="Spells\FlameShock.cs" />
-    <Compile Include="Spells\FrostShock.cs" />
-    <Compile Include="Spells\ILightningOverload.cs" />
-    <Compile Include="Spells\ISpellArgs.cs" />
-    <Compile Include="Spells\LavaBurst.cs" />
-    <Compile Include="Spells\LightningBolt.cs" />
-    <Compile Include="Spells\Shock.cs" />
-    <Compile Include="Spells\Spell.cs" />
-    <Compile Include="Spells\SpellBox.cs" />
-    <Compile Include="Spells\Thunderstorm.cs" />
-    <Compile Include="Spells\Wait.cs" />
-    <Compile Include="Spells\Totem.cs" />
-    <Compile Include="Spells\SearingTotem.cs" />
-    <Compile Include="Spells\MagmaTotem.cs" />
     <Compile Include="CalculationOptionsPanelElemental.xaml.cs">
       <DependentUpon>CalculationOptionsPanelElemental.WPF.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ElementalConverters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Spells\Earthquake.cs" />
-    <Compile Include="Spells\Fulmination.cs" />
-    <Compile Include="Spells\UnleashElements.cs" />
     <AppDesigner Include="Properties\" />
     <Compile Include="StatsElemental.cs" />
   </ItemGroup>
@@ -172,6 +145,10 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Thoughts.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

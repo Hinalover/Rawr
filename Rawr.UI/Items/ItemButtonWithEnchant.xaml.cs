@@ -23,12 +23,12 @@ namespace Rawr.UI
             InitializeComponent();
             PopupUtilities.RegisterPopup(this, ListPopup, EnchantPopup, Close);
             ComparisonListEnchant.IsEnchantList = true;
-            ComparisonListReforge.IsReforgeList = true;
+            ComparisonListUpgrade.IsUpgradeList = true;
             ComparisonListTinker.IsTinkeringList = true;
             PopupUtilities.RegisterPopup(this, ListPopupGem1, Close);
             PopupUtilities.RegisterPopup(this, ListPopupGem2, Close);
             PopupUtilities.RegisterPopup(this, ListPopupGem3, Close);
-            PopupUtilities.RegisterPopup(this, ReforgePopup, Close);
+            PopupUtilities.RegisterPopup(this, UpgradePopup, Close);
             PopupUtilities.RegisterPopup(this, TinkerPopup, Close);
             UpdateButtonOptions();
         }
@@ -44,7 +44,7 @@ namespace Rawr.UI
                 ComparisonItemListGem1.Slot = slot;
                 ComparisonItemListGem2.Slot = slot;
                 ComparisonItemListGem3.Slot = slot;
-                ComparisonListReforge.Slot = slot;
+                ComparisonListUpgrade.Slot = slot;
                 ComparisonListEnchant.Slot = slot;
                 ComparisonListTinker.Slot = slot;
             }
@@ -64,7 +64,7 @@ namespace Rawr.UI
                 ComparisonItemListGem1.Character = character;
                 ComparisonItemListGem2.Character = character;
                 ComparisonItemListGem3.Character = character;
-                ComparisonListReforge.Character = character;
+                ComparisonListUpgrade.Character = character;
                 ComparisonListEnchant.Character = character;
                 ComparisonListTinker.Character = character;
                 if (character != null)
@@ -77,7 +77,7 @@ namespace Rawr.UI
 
         private ItemInstance gear;
         private Item enchant;
-        private Item reforge;
+        private Item upgrade;
         private Item tinkering;
         public void character_CalculationsInvalidated(object sender, EventArgs e)
         {
@@ -95,7 +95,14 @@ namespace Rawr.UI
                 } else {
                     IconImage.Source = Icons.AnIcon(TheItem.Item.IconPath);
                     EnchantButton.Content = TheItem.Enchant.ShortName;
-                    ReforgeButton.Content = TheItem.Reforging != null ? TheItem.Reforging.VeryShortName : "NR";
+					if (TheItem.UpgradeLevel > 0)
+					{
+						UpgradeButton.Content = (1 + TheItem.Item.UpgradeLevels.IndexOf(TheItem.UpgradeLevel)) + "/" + TheItem.Item.UpgradeLevels.Count;
+					}
+					else
+					{
+						UpgradeButton.Content = "0/" + (TheItem.Item.UpgradeLevels != null ? TheItem.Item.UpgradeLevels.Count : 0);
+					}
                     TinkerButton.Content = TheItem.Tinkering.ShortName;
                     gear = TheItem;
 
@@ -116,12 +123,12 @@ namespace Rawr.UI
                     }
                     tinkering = tItem;
 
-                    Item rItem = new Item();
-                    if (TheItem.Reforging != null) {
-                        rItem.Name = TheItem.Reforging.ToString();
-                        rItem.Quality = ItemQuality.Temp;
+                    Item uItem = new Item();
+                    if (TheItem.UpgradeLevel > 0) {
+						uItem.Name = TheItem.UpgradeLevel.ToString();
+                        uItem.Quality = ItemQuality.Temp;
                     }
-                    reforge = rItem;
+                    upgrade = uItem;
 
                     // There are several special sockets, we need to account for them
                     int nonBSSocketCount = (TheItem.Item.SocketColor1 != ItemSlot.None ? 1 : 0)
@@ -223,7 +230,7 @@ namespace Rawr.UI
             if (ListPopupGem1.IsOpen) { ListPopupGem1.IsOpen = false; }
             if (ListPopupGem2.IsOpen) { ListPopupGem2.IsOpen = false; }
             if (ListPopupGem3.IsOpen) { ListPopupGem3.IsOpen = false; }
-            if (ReforgePopup.IsOpen) { ReforgePopup.IsOpen = false; }
+            if (UpgradePopup.IsOpen) { UpgradePopup.IsOpen = false; }
             if (TinkerPopup.IsOpen) { TinkerPopup.IsOpen = false; }
         }
 
@@ -267,13 +274,13 @@ namespace Rawr.UI
                 ListPopupGem3.VerticalOffset = distBetweenBottomOfPopupAndBottomOfWindow;
             }
         }
-        private void EnsureReforgePopupsVisible()
+        private void EnsureUpgradePopupsVisible()
         {
             GeneralTransform transform = TransformToVisual(App.Current.RootVisual);
-            double distBetweenBottomOfPopupAndBottomOfWindow = App.Current.RootVisual.RenderSize.Height - transform.Transform(new Point(0, ComparisonListReforge.Height)).Y;
+            double distBetweenBottomOfPopupAndBottomOfWindow = App.Current.RootVisual.RenderSize.Height - transform.Transform(new Point(0, ComparisonListUpgrade.Height)).Y;
             if (distBetweenBottomOfPopupAndBottomOfWindow < 0)
             {
-                ReforgePopup.VerticalOffset = distBetweenBottomOfPopupAndBottomOfWindow;
+                UpgradePopup.VerticalOffset = distBetweenBottomOfPopupAndBottomOfWindow;
             }
         }
         private void EnsureTinkerPopupsVisible()
@@ -396,18 +403,18 @@ namespace Rawr.UI
             EnchantPopup.IsOpen = true;
             ComparisonListEnchant.Focus();
         }
-        private void ReforgeButton_Click(object sender, RoutedEventArgs e)
+        private void UpgradeButton_Click(object sender, RoutedEventArgs e)
         {
             MainPage.Tooltip.Hide();
 #if SILVERLIGHT
-            EnsureReforgePopupsVisible();
+            EnsurUpgradePopupsVisible();
 #else
-            ReforgePopup.PlacementTarget = ReforgeButton;
-            ReforgePopup.Placement = PlacementMode.RelativePoint;
+            UpgradePopup.PlacementTarget = UpgradeButton;
+            UpgradePopup.Placement = PlacementMode.RelativePoint;
 #endif
-            ComparisonListReforge.IsShown = true;
-            ReforgePopup.IsOpen = true;
-            ComparisonListReforge.Focus();
+            ComparisonListUpgrade.IsShown = true;
+            UpgradePopup.IsOpen = true;
+            ComparisonListUpgrade.Focus();
         }
         private void TinkerButton_Clicked(object sender, RoutedEventArgs e)
         {
@@ -492,12 +499,12 @@ namespace Rawr.UI
                 MainPage.Tooltip.Show(EnchantButton, 72, 0);
             }
         }
-        private void ReforgeButton_MouseEnter(object sender, MouseEventArgs e)
+        private void UpgradeButton_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (!ListPopup.IsOpen && !ListPopupGem1.IsOpen && !ListPopupGem2.IsOpen && !ListPopupGem3.IsOpen && !ReforgePopup.IsOpen)
+            if (!ListPopup.IsOpen && !ListPopupGem1.IsOpen && !ListPopupGem2.IsOpen && !ListPopupGem3.IsOpen && !UpgradePopup.IsOpen)
             {
-                MainPage.Tooltip.Item = reforge;
-                MainPage.Tooltip.Show(ReforgeButton, 22, 0);
+                MainPage.Tooltip.Item = upgrade;
+                MainPage.Tooltip.Show(UpgradeButton, 22, 0);
             }
         }
         private void TinkerButton_MouseEnter(object sender, MouseEventArgs e)
@@ -521,7 +528,7 @@ namespace Rawr.UI
         private bool _ShowGems = true; public bool ShowGems { get { return _ShowGems; } set { _ShowGems = value; UpdateButtonOptions(); } }
         private bool _ShowGem3 = true; public bool ShowGem3 { get { return _ShowGem3; } set { _ShowGem3 = value; UpdateButtonOptions(); } }
         private bool _ShowEnchant = true; public bool ShowEnchant { get { return _ShowEnchant; } set { _ShowEnchant = value; UpdateButtonOptions(); } }
-        private bool _ShowReforge = true; public bool ShowReforge { get { return _ShowReforge; } set { _ShowReforge = value; UpdateButtonOptions(); } }
+        private bool _ShowUpgrade = true; public bool ShowUpgrade { get { return _ShowUpgrade; } set { _ShowUpgrade = value; UpdateButtonOptions(); } }
         private bool _ShowTinker = false; public bool ShowTinker { get { return _ShowTinker; } set { _ShowTinker = value; UpdateButtonOptions(); } }
         private bool _ShowBSSocket = false; public bool ShowBSSocket { get { return _ShowBSSocket; } set { _ShowBSSocket = value; UpdateButtonOptions(); } }
         private bool _EnableBSSocket = true; public bool EnableBSSocket { get { return _EnableBSSocket; } set { _EnableBSSocket = value; UpdateButtonOptions(); } }
@@ -542,12 +549,12 @@ namespace Rawr.UI
         public static readonly DependencyProperty BSSocketProperty = DependencyProperty.Register(
             "BSSocketIsChecked", typeof(Boolean), typeof(ItemButtonWithEnchant), new PropertyMetadata(false));
 
-        public void SetButtonOptions(bool showReforge, bool showEnchant, bool showGems, bool showGem3, bool showBSSocket, bool enableBSSocket, bool showTinker)
+        public void SetButtonOptions(bool showUpgrade, bool showEnchant, bool showGems, bool showGem3, bool showBSSocket, bool enableBSSocket, bool showTinker)
         {
             _ShowGems = showGems;
             _ShowGem3 = showGem3;
             _ShowEnchant = showEnchant;
-            _ShowReforge = showReforge;
+            _ShowUpgrade = showUpgrade;
             _ShowTinker = showTinker;
             _ShowBSSocket = showBSSocket;
             _EnableBSSocket = enableBSSocket;
@@ -559,7 +566,7 @@ namespace Rawr.UI
             GemButton2.Visibility = ShowGems ? Visibility.Visible : Visibility.Collapsed;
             GemButton3.Visibility = (ShowGems && ShowGem3) ? Visibility.Visible : Visibility.Collapsed;
             EnchantButton.Visibility = ShowEnchant ? Visibility.Visible : Visibility.Collapsed;
-            ReforgeButton.Visibility = ShowReforge ? Visibility.Visible : Visibility.Collapsed;
+            UpgradeButton.Visibility = ShowUpgrade ? Visibility.Visible : Visibility.Collapsed;
             TinkerButton.Visibility = ShowTinker ? Visibility.Visible : Visibility.Collapsed;
             CK_BSSocket.Visibility = ShowBSSocket ? Visibility.Visible : Visibility.Collapsed;
             CK_BSSocket.IsEnabled = EnableBSSocket;

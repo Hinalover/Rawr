@@ -201,7 +201,7 @@ namespace Rawr.DK
         {
             get
             {
-                if (m_CT.m_CState.m_Talents.RunicEmpowerment == 0)
+                if (!m_CT.m_CState.m_Talents.RunicEmpowerment)
                     return ((float)m_CountREAbilities / .45f);
                 else
                     return 0;
@@ -1716,12 +1716,12 @@ namespace Rawr.DK
             // For each death coil, improve the Rune Regen by 50% per point for 3 sec.
             uint RCRegenDur = 0;
             float RCHaste = 0;
-            if (m_CT.m_CState.m_Talents.RunicCorruption > 0)
+            if (m_CT.m_CState.m_Talents.RunicCorruption)
             {
                 RCRegenDur = Count(DKability.DeathCoil) * 3 * 1000;
                 if (RCRegenDur > 0)
                 {
-                    RCHaste = (m_CT.m_CState.m_Talents.RunicCorruption * .5f);
+                    RCHaste = (m_CT.m_CState.m_Talents.RunicCorruption ? .5f : 0f);
                     float RCPpct = RCRegenDur / (GCDTime > 0 ? (Math.Min(GCDTime, RCRegenDur)) : RCRegenDur);
                     RCHaste *= RCPpct * m_CT.m_Opts.EffectiveRE;
                     m_BonusRunicCorruptionHaste = RCHaste;

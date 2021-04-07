@@ -16,8 +16,8 @@
             <RowDefinition Height="64"/>
             <RowDefinition Height="64"/>
             <RowDefinition Height="64"/>
-            <!--<RowDefinition Height="64"/>
             <RowDefinition Height="64"/>
+            <!--<RowDefinition Height="64"/>
             <RowDefinition Height="64"/>
             <RowDefinition Height="64"/>
             <RowDefinition Height="64"/>-->
@@ -56,11 +56,11 @@
         <local:TalentItem x:Name="Talent_6_1" Grid.Column="1" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <local:TalentItem x:Name="Talent_6_2" Grid.Column="2" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <local:TalentItem x:Name="Talent_6_3" Grid.Column="3" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        <!--<local:TalentItem x:Name="Talent_6_4" Grid.Column="4" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <!--<local:TalentItem x:Name="Talent_6_4" Grid.Column="4" Grid.Row="6" VerticalAlignment="Center" HorizontalAlignment="Center"/>-->
         <local:TalentItem x:Name="Talent_7_1" Grid.Column="1" Grid.Row="7" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <local:TalentItem x:Name="Talent_7_2" Grid.Column="2" Grid.Row="7" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <local:TalentItem x:Name="Talent_7_3" Grid.Column="3" Grid.Row="7" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        <local:TalentItem x:Name="Talent_7_4" Grid.Column="4" Grid.Row="7" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <!--<local:TalentItem x:Name="Talent_7_4" Grid.Column="4" Grid.Row="7" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <local:TalentItem x:Name="Talent_8_1" Grid.Column="1" Grid.Row="8" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <local:TalentItem x:Name="Talent_8_2" Grid.Column="2" Grid.Row="8" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <local:TalentItem x:Name="Talent_8_3" Grid.Column="3" Grid.Row="8" VerticalAlignment="Center" HorizontalAlignment="Center"/>

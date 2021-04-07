@@ -87,7 +87,7 @@ namespace Rawr.Bear
         {
             get
             {
-                if (guardianCombatState.Talents.NaturesSwiftness > 0)
+                if (true)
                     return h_Formula();
                 else
                     return 0f;

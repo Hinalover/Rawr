@@ -25,8 +25,8 @@ namespace Rawr.Mage
         public float Ticks;
         public float CastProcs;
         public float CastProcs2;
-        public float BaseMinDamage;
-        public float BaseMaxDamage;
+        public float BaseAverageDamage;
+        public float BaseDelta;
         public float SpellDamageCoefficient;
         public float BasePeriodicDamage;
         public float DotDamageCoefficient;
@@ -96,22 +96,18 @@ namespace Rawr.Mage
             InitializeDamage(solver, areaEffect, range, magicSchool, spellData, 1, 1, 0);
         }
 
-        public void InitializeScaledDamage(Solver solver, bool areaEffect, int range, MagicSchool magicSchool, float baseCost, float baseAverage, float spread, float basePeriodic, float spellDamageCoefficient, float dotDamageCoefficient, float hitProcs, float castProcs, float dotDuration)
+        public void InitializeScaledDamage(Solver solver, bool areaEffect, int range, MagicSchool magicSchool, float baseCost, float baseAverage, float delta, float basePeriodic, float spellDamageCoefficient, float dotDamageCoefficient, float hitProcs, float castProcs, float dotDuration)
         {
             var options = solver.CalculationOptions;
-            var average = options.GetSpellValue(baseAverage);
-            //var halfSpread = average * spread / 2f;
-            var halfSpread = (float)Math.Floor(average * spread / 2f);
-            average = (float)Math.Round(average);
-            InitializeDamage(solver, areaEffect, range, magicSchool, (int)(baseCost * options.BaseMana), average - halfSpread, average + halfSpread, spellDamageCoefficient, options.GetSpellValue(basePeriodic), dotDamageCoefficient, hitProcs, castProcs, dotDuration);
+			InitializeDamage(solver, areaEffect, range, magicSchool, (int)(baseCost * options.BaseMana), baseAverage, delta, spellDamageCoefficient, options.GetSpellValue(basePeriodic), dotDamageCoefficient, hitProcs, castProcs, dotDuration);
         }
 
         public void InitializeDamage(Solver solver, bool areaEffect, int range, MagicSchool magicSchool, SpellData spellData, float hitProcs, float castProcs, float dotDuration)
         {
-            InitializeDamage(solver, areaEffect, range, magicSchool, spellData.Cost, spellData.MinDamage, spellData.MaxDamage, spellData.SpellDamageCoefficient, spellData.PeriodicDamage, spellData.DotDamageCoefficient, hitProcs, castProcs, dotDuration);
+            InitializeDamage(solver, areaEffect, range, magicSchool, spellData.Cost, spellData.AverageDamage, spellData.Delta, spellData.SpellDamageCoefficient, spellData.PeriodicDamage, spellData.DotDamageCoefficient, hitProcs, castProcs, dotDuration);
         }
 
-        public void InitializeDamage(Solver solver, bool areaEffect, int range, MagicSchool magicSchool, int cost, float minDamage, float maxDamage, float spellDamageCoefficient, float periodicDamage, float dotDamageCoefficient, float hitProcs, float castProcs, float dotDuration)
+        public void InitializeDamage(Solver solver, bool areaEffect, int range, MagicSchool magicSchool, int cost, float averageDamage, float delta, float spellDamageCoefficient, float periodicDamage, float dotDamageCoefficient, float hitProcs, float castProcs, float dotDuration)
         {
             Stats baseStats = solver.BaseStats;
             MageTalents mageTalents = solver.MageTalents;
@@ -122,18 +118,13 @@ namespace Rawr.Mage
             MaximumAOETargets = 10;
             AOEMultiplier = 1;
             int manaReduction = (int)baseStats.SpellsManaCostReduction;
-            if (manaReduction == 405)
-            {
-                // Shard of Woe hax
-                manaReduction = 205;
-            }
             BaseCost = Math.Max(cost - manaReduction, 0);
             MagicSchool = magicSchool;
             Ticks = hitProcs;
             CastProcs = castProcs;
             CastProcs2 = castProcs;
-            BaseMinDamage = minDamage;
-            BaseMaxDamage = maxDamage;
+            BaseAverageDamage = averageDamage;
+            BaseDelta = delta;
             SpellDamageCoefficient = spellDamageCoefficient;
             BasePeriodicDamage = periodicDamage;
             DotDamageCoefficient = dotDamageCoefficient;
@@ -259,7 +250,7 @@ namespace Rawr.Mage
             PartialResistFactor = (realResistance == -1) ? 0 : (1 - StatConversion.GetAverageResistance(playerLevel, targetLevel, realResistance, baseStats.SpellPenetration));
         }
 
-        public void InitializeEffectDamage(Solver solver, MagicSchool magicSchool, float minDamage, float maxDamage)
+        public void InitializeEffectDamage(Solver solver, MagicSchool magicSchool, float averageDamage, float delta)
         {
             Stats baseStats = solver.BaseStats;
             MageTalents mageTalents = solver.MageTalents;
@@ -268,8 +259,8 @@ namespace Rawr.Mage
             //AreaEffect = areaEffect;
             //BaseCost = cost - (int)baseStats.SpellsManaReduction;
             MagicSchool = magicSchool;
-            BaseMinDamage = minDamage;
-            BaseMaxDamage = maxDamage;
+            BaseAverageDamage = averageDamage;
+            BaseDelta = delta;
             //BasePeriodicDamage = periodicDamage;
             //SpellDamageCoefficient = spellDamageCoefficient;
             //Ticks = 1;

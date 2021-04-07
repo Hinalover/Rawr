@@ -27,6 +27,12 @@ namespace Rawr.Hunter.Skills
             ReqRangedWeap = true;
             ReqSkillsRange = true;
             DamageType = ItemDamageType.Physical;
+
+            //WoD: Kill shot is not available to Survival hunters
+            ReqTalent = true;
+            Talent2ChksValue = (c.HunterTalents.Specialization != (int)Specialization.Survival);
+            
+            
             // TODO: Implement new CD reset once every 6 seconds
             Cd = Cooldown;
 

@@ -172,6 +172,7 @@
     <Compile Include="Character\RawrAddonSaveDialog.xaml.cs">
       <DependentUpon>RawrAddonSaveDialog.WPF.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ComparisionGraphBarElement.cs" />
     <Compile Include="Converters\EnchantConverter.cs" />
     <Compile Include="Converters\EnumConverter.cs" />
     <Compile Include="Converters\FactionConverter.cs" />
@@ -348,61 +349,9 @@
     <Compile Include="UIUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Rawr.Brewmaster\Rawr.Brewmaster.WPF.csproj">
-      <Project>{641E9256-698D-4FB4-9A0C-8EB4FE462ED8}</Project>
-      <Name>Rawr.Brewmaster.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.DPSWarr\Rawr.DPSWarr.WPF.csproj">
-      <Project>{5DB213F4-2B0A-46DC-ABF3-4868E73D99EE}</Project>
-      <Name>Rawr.DPSWarr.WPF</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Rawr.Base\Rawr.Base.WPF.csproj">
       <Project>{542537D3-F86B-4022-A161-B2FC6F0218B7}</Project>
       <Name>Rawr.Base.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.Enhance\Rawr.Enhance.WPF.csproj">
-      <Project>{09E75950-51AB-4248-A4F7-FE928959BFC8}</Project>
-      <Name>Rawr.Enhance.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.Feral\Rawr.Feral.WPF.csproj">
-      <Project>{A5B3AAD4-0B20-42E8-AA12-9D3B1FA0507D}</Project>
-      <Name>Rawr.Feral.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.Mistweaver\Rawr.Mistweaver.WPF.csproj">
-      <Project>{E7F36510-1020-4A3B-A51D-57CFFD94D065}</Project>
-      <Name>Rawr.Mistweaver.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.ShadowPriest\Rawr.ShadowPriest.WPF.csproj">
-      <Project>{5895FA29-3131-4C64-9C81-93F1EA139F6A}</Project>
-      <Name>Rawr.ShadowPriest.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.Bear\Rawr.Bear.WPF.csproj">
-      <Project>{E0A8CF5D-FB5B-49EB-8666-44255E87AF27}</Project>
-      <Name>Rawr.Bear.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.Cat\Rawr.Cat.WPF.csproj">
-      <Project>{E91F260E-4B5E-482B-91C8-7E69B3E4B463}</Project>
-      <Name>Rawr.Cat.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.DPSDK\Rawr.DPSDK.WPF.csproj">
-      <Project>{F39559FE-191D-47AA-B1CB-FBECD11E0C20}</Project>
-      <Name>Rawr.DPSDK.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.Elemental\Rawr.Elemental.WPF.csproj">
-      <Project>{5B112624-1FEA-4E39-8295-325F8374A285}</Project>
-      <Name>Rawr.Elemental.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.Healadin\Rawr.Healadin.WPF.csproj">
-      <Project>{9ED4A022-7BC2-4518-9CBD-42FFC8F32411}</Project>
-      <Name>Rawr.Healadin.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.HealPriest\Rawr.HealPriest.WPF.csproj">
-      <Project>{30589E43-A2D3-45B1-9128-4EC04B922597}</Project>
-      <Name>Rawr.HealPriest.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.Hunter\Rawr.Hunter.WPF.csproj">
-      <Project>{1575AB11-89C8-4587-806B-92032E0C5472}</Project>
-      <Name>Rawr.Hunter.WPF</Name>
     </ProjectReference>
     <ProjectReference Include="..\Rawr.Mage\Rawr.Mage.WPF.csproj">
       <Project>{C61A1D1A-21F8-4234-9085-5ECD33978DEF}</Project>
@@ -411,42 +360,6 @@
     <ProjectReference Include="..\Rawr.Moonkin\Rawr.Moonkin.WPF.csproj">
       <Project>{29946D37-91C4-4D46-9625-D11C8CEE8AFC}</Project>
       <Name>Rawr.Moonkin.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.ProtPaladin\Rawr.ProtPaladin.WPF.csproj">
-      <Project>{086E2C96-2540-414A-8E35-82D286147593}</Project>
-      <Name>Rawr.ProtPaladin.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.ProtWarr\Rawr.ProtWarr.WPF.csproj">
-      <Project>{62FFF04E-DE66-4953-AAD2-0F71988D5F6E}</Project>
-      <Name>Rawr.ProtWarr.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.RestoSham\Rawr.RestoSham.WPF.csproj">
-      <Project>{0AD5FD48-77A8-4220-B27C-282A79E6C534}</Project>
-      <Name>Rawr.RestoSham.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.Retribution\Rawr.Retribution.WPF.csproj">
-      <Project>{6D64814C-3944-41C1-BB89-3FEC1B139D74}</Project>
-      <Name>Rawr.Retribution.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.Rogue\Rawr.Rogue.WPF.csproj">
-      <Project>{78370B5B-0DF9-43D2-8F67-CA4D319EA000}</Project>
-      <Name>Rawr.Rogue.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.TankDK\Rawr.TankDK.WPF.csproj">
-      <Project>{5C7D2251-55E7-4A90-8A97-B5DCC9D35807}</Project>
-      <Name>Rawr.TankDK.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.Tree\Rawr.Tree.WPF.csproj">
-      <Project>{1B85DA42-90D5-46FA-99AC-9E21785B3AC8}</Project>
-      <Name>Rawr.Tree.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.Warlock\Rawr.Warlock.WPF.csproj">
-      <Project>{320CAEFB-813C-487C-8EA0-2B3D347865FC}</Project>
-      <Name>Rawr.Warlock.WPF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Rawr.Windwalker\Rawr.Windwalker.WPF.csproj">
-      <Project>{4B210BB3-FFF7-4EA7-8C14-917E82B39194}</Project>
-      <Name>Rawr.Windwalker.WPF</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

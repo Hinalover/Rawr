@@ -938,7 +938,7 @@ namespace Rawr.Tree {
             // Talented bonus multipliers
             Stats statsTalents = new Stats()
             {
-                BonusIntellectMultiplier = (1 + 0.02f * character.DruidTalents.HeartOfTheWild) * (Character.ValidateArmorSpecialization(character, ItemType.Leather) ? 1.05f : 1f) - 1f,
+                BonusIntellectMultiplier = (1 + (character.DruidTalents.HeartOfTheWild ? 0.06f : 0f)) * (Character.ValidateArmorSpecialization(character, ItemType.Leather) ? 1.05f : 1f) - 1f,
 //                BonusManaMultiplier = 0.05f * character.DruidTalents.Furor,
 //                ManaCostReductionMultiplier = character.DruidTalents.Moonglow * 0.03f,
 //                SpellCrit = 0.02f * character.DruidTalents.NaturesMajesty
@@ -969,7 +969,7 @@ namespace Rawr.Tree {
 //            if (character.DruidTalents.NaturesGrace > 0)
 //                stats.AddSpecialEffect(NaturesGrace[character.DruidTalents.NaturesGrace]);
 
-            if (character.DruidTalents.Incarnation > 0)
+            if (character.DruidTalents.Incarnation)
                 stats.AddSpecialEffect(TreeOfLife);
 
             if (T13Count >= 2)

@@ -37,7 +37,7 @@ namespace Rawr.Hunter.Skills
             
 
             ReqTalent = true; // Reqiures MM spec.
-            Talent2ChksValue = (c.HunterTalents.Specialization == (int)Specialization.Marksmanship ? 1 : 0);
+            Talent2ChksValue = (c.HunterTalents.Specialization == (int)Specialization.Marksmanship );
             ReqRangedWeap = true;
             ReqSkillsRange = false;
             DamageType = ItemDamageType.Physical;
