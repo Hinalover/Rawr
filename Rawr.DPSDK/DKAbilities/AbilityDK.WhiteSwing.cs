@@ -24,7 +24,6 @@ namespace Rawr.DK
         public override void UpdateCombatState(CombatState CS)
         {
             base.UpdateCombatState(CS);
-            this.RunicPower = -1 * ((int)((10f * CS.m_Talents.MightOfTheFrozenWastes * .15f) + ((CS.m_Talents.ScentOfBlood * .15f) * (CS.m_Stats.Parry + CS.m_Stats.Dodge)))); // Should be 1.5 per point.
             this.wMH = CS.MH;
             this.wOH = null;
         }
@@ -32,7 +31,6 @@ namespace Rawr.DK
         public void UpdateCombatState(CombatState CS, bool IsOffHand)
         {
             base.UpdateCombatState(CS);
-            this.RunicPower = -1 * ((int)((10f * CS.m_Talents.MightOfTheFrozenWastes * .15f) + ((CS.m_Talents.ScentOfBlood * .15f) * (CS.m_Stats.Parry + CS.m_Stats.Dodge)))); // Should be 1.5 per point.
             m_bIsOffHand = IsOffHand;
             if (m_bIsOffHand)
             {
@@ -47,9 +45,7 @@ namespace Rawr.DK
         {
             get
             {
-                float BCBChance = (CState.m_Talents.BloodCakedBlade * .1f);
-                float BCBDamMult = .25f + (.125f * CState.m_uDiseaseCount);
-                float DMM = ((1 + BCBChance * BCBDamMult) * (1 + CState.m_Stats.BonusWhiteDamageMultiplier) * (1 + CState.m_Stats.BonusFrostWeaponDamage)  - 1);
+                float DMM = ((1 + CState.m_Stats.BonusWhiteDamageMultiplier) * (1 + CState.m_Stats.BonusFrostWeaponDamage) - 1);
                 return base.DamageMultiplierModifer + DMM;
             }
             set
@@ -76,7 +72,7 @@ namespace Rawr.DK
             float hitdamage = iDamage * reducedHitChance;
             iDamage = critdamage + hitdamage + glancedamage;
             if (wMH.twohander)
-                iDamage *= (1f + .04f * CState.m_Talents.MightOfTheFrozenWastes);
+                iDamage *= (1.1f);
             return iDamage;
         }
 

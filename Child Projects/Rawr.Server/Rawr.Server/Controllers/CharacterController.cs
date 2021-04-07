@@ -200,7 +200,7 @@ namespace Rawr.Server.Controllers
                     apiserver = "us.battle.net";
                     break;
             }
-            string url = string.Format("http://{1}/api/wow/character/{2}/{0}?fields=talents,items,professions,pets", characterName, apiserver, realm);
+            string url = string.Format("http://{1}/api/wow/character/{2}/{0}?fields=talents,items,professions,hunterPets", characterName, apiserver, realm);
 
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
 
@@ -288,8 +288,7 @@ namespace Rawr.Server.Controllers
                     object selected;
                     return ((Dictionary<string, object>)t).TryGetValue("selected", out selected) && (bool)selected;
                 });
-                string spec = character.Class.ToString() + "." + talent["name"];
-                string talents = (string)talent["build"];
+                object[] talents = (object[])talent["talents"];
                 var glyphs = (Dictionary<string, object>)talent["glyphs"];
                 List<int> glyphIds = new List<int>();
                 foreach (var group in glyphs)
@@ -303,80 +302,55 @@ namespace Rawr.Server.Controllers
                 switch (character.Class)
                 {
                     case CharacterClass.Warrior:
-                        character.WarriorTalents = new WarriorTalents(talents);
-                        character.CurrentModel = "DPSWarr";
+                        character.WarriorTalents = new WarriorTalents();
                         break;
                     case CharacterClass.Paladin:
-                        character.PaladinTalents = new PaladinTalents(talents);
-                        character.CurrentModel = "ProtPaladin";
+                        character.PaladinTalents = new PaladinTalents();
                         break;
                     case CharacterClass.Hunter:
-                        character.HunterTalents = new HunterTalents(talents);
-                        character.CurrentModel = "Hunter";
+                        character.HunterTalents = new HunterTalents();
                         break;
                     case CharacterClass.Rogue:
-                        character.RogueTalents = new RogueTalents(talents);
-                        character.CurrentModel = "Rogue";
+                        character.RogueTalents = new RogueTalents();
                         break;
                     case CharacterClass.Priest:
-                        character.PriestTalents = new PriestTalents(talents);
-                        character.CurrentModel = "ShadowPriest";
+                        character.PriestTalents = new PriestTalents();
                         break;
                     case CharacterClass.DeathKnight:
-                        character.DeathKnightTalents = new DeathKnightTalents(talents);
-                        character.CurrentModel = "DPSDK";
+                        character.DeathKnightTalents = new DeathKnightTalents();
                         break;
                     case CharacterClass.Shaman:
-                        character.ShamanTalents = new ShamanTalents(talents);
-                        character.CurrentModel = "Elemental";
+                        character.ShamanTalents = new ShamanTalents();
                         break;
                     case CharacterClass.Mage:
-                        character.MageTalents = new MageTalents(talents);
-                        character.CurrentModel = "Mage";
+                        character.MageTalents = new MageTalents();
                         break;
                     case CharacterClass.Warlock:
-                        character.WarlockTalents = new WarlockTalents(talents);
-                        character.CurrentModel = "Warlock";
+                        character.WarlockTalents = new WarlockTalents();
                         break;
                     case CharacterClass.Druid:
-                        character.DruidTalents = new DruidTalents(talents);
-                        character.CurrentModel = "Bear";
+                        character.DruidTalents = new DruidTalents();
+                        break;
+                    case CharacterClass.Monk:
+                        character.MonkTalents = new MonkTalents();
                         break;
                 }
 
-                switch (spec)
+                var tal = character.CurrentTalents;
+                if (talent.ContainsKey("spec")) // not present if they haven't selected specialization
                 {
-                    case "Warrior.Arms":			character.CurrentModel = "DPSWarr"; break;
-                    case "Warrior.Fury":			character.CurrentModel = "DPSWarr"; break;
-                    case "Warrior.Protection":		character.CurrentModel = "ProtWarr"; break;
-                    case "Paladin.Holy":			character.CurrentModel = "Healadin"; break;
-                    case "Paladin.Protection":		character.CurrentModel = "ProtPaladin"; break;
-                    case "Paladin.Retribution":		character.CurrentModel = "Retribution"; break;
-                    case "Hunter.Beast Mastery":	character.CurrentModel = "Hunter"; break;
-                    case "Hunter.Marksmanship":		character.CurrentModel = "Hunter"; break;
-                    case "Hunter.Survival":			character.CurrentModel = "Hunter"; break;
-                    case "Rogue.Assassination":		character.CurrentModel = "Rogue"; break;
-                    case "Rogue.Combat":			character.CurrentModel = "Rogue"; break;
-                    case "Rogue.Subtlety":			character.CurrentModel = "Rogue"; break;
-                    case "Priest.Discipline":		character.CurrentModel = "HealPriest"; break;
-                    case "Priest.Holy":				character.CurrentModel = "HealPriest"; break;
-                    case "Priest.Shadow":			character.CurrentModel = "ShadowPriest"; break;
-                    case "DeathKnight.Blood":		character.CurrentModel = "TankDK"; break;
-                    case "DeathKnight.Frost":		character.CurrentModel = "DPSDK"; break;
-                    case "DeathKnight.Unholy":		character.CurrentModel = "DPSDK"; break;
-                    case "Shaman.Elemental":		character.CurrentModel = "Elemental"; break;
-                    case "Shaman.Enhancement":		character.CurrentModel = "Enhance"; break;
-                    case "Shaman.Restoration":		character.CurrentModel = "RestoSham"; break;
-                    case "Mage.Arcane":				character.CurrentModel = "Mage"; break;
-                    case "Mage.Fire":				character.CurrentModel = "Mage"; break;
-                    case "Mage.Frost":				character.CurrentModel = "Mage"; break;
-                    case "Warlock.Affliction":		character.CurrentModel = "Warlock"; break;
-                    case "Warlock.Demonology":		character.CurrentModel = "Warlock"; break;
-                    case "Warlock.Destruction":		character.CurrentModel = "Warlock"; break;
-                    case "Druid.Balance":			character.CurrentModel = "Moonkin"; break;
-                    case "Druid.Feral Combat":		character.CurrentModel = character.DruidTalents.ThickHide > 0 ? "Bear" : "Cat"; break;
-                    case "Druid.Restoration":		character.CurrentModel = "Tree"; break;
+                    tal.Specialization = (int)((Dictionary<string, object>)talent["spec"])["order"];
                 }
+                character.UpdateCurrentModel();
+
+                try // invalid talents get parsed as an array of nulls
+                {
+                    foreach (Dictionary<string, object> t in talents)
+                    {
+                        tal.Data[(int)t["tier"] * 3 + (int)t["column"]] = 1;
+                    }
+                }
+                catch { }
 
                 Dictionary<int, PropertyInfo> glyphProperty = new Dictionary<int, PropertyInfo>();
                 foreach (PropertyInfo pi in character.CurrentTalents.GetType().GetProperties())
@@ -405,16 +379,10 @@ namespace Rawr.Server.Controllers
             {
                 var professions = (object[])((Dictionary<string, object>)dict["professions"])["primary"];
 
-                string profession1 = professions.Length >= 1 ? (string)((Dictionary<string, object>)professions[0])["name"] : null;
-                string profession2 = professions.Length >= 2 ? (string)((Dictionary<string, object>)professions[1])["name"]: null;
-                if (profession1 != null)
-                {
-                    character.PrimaryProfession = (Profession)Enum.Parse(typeof(Profession), profession1);
-                }
-                if (profession2 != null)
-                {
-                    character.SecondaryProfession = (Profession)Enum.Parse(typeof(Profession), profession2);
-                }
+                int profession1 = professions.Length >= 1 ? (int)((Dictionary<string, object>)professions[0])["id"] : 0;
+                int profession2 = professions.Length >= 2 ? (int)((Dictionary<string, object>)professions[1])["id"] : 0;
+                character.PrimaryProfession = (Profession)profession1;
+                character.SecondaryProfession = (Profession)profession2;
             }
             catch { }
             
@@ -440,7 +408,6 @@ namespace Rawr.Server.Controllers
                 if (items.ContainsKey("trinket2")) character._trinket2 = ParseItemJson(items["trinket2"]);
                 if (items.ContainsKey("mainHand")) character._mainHand = ParseItemJson(items["mainHand"]);
                 if (items.ContainsKey("offHand")) character._offHand = ParseItemJson(items["offHand"]);
-                if (items.ContainsKey("ranged")) character._ranged = ParseItemJson(items["ranged"]);
 
                 var i = ((Dictionary<string, object>)((Dictionary<string, object>)items["wrist"])["tooltipParams"]);
                 if (i.ContainsKey("extraSocket"))
@@ -463,7 +430,7 @@ namespace Rawr.Server.Controllers
             try
             {
                 object opets;
-                if (dict.TryGetValue("pets", out opets))
+                if (dict.TryGetValue("hunterPets", out opets))
                 {
                     var pets = (object[])opets;
                     character.ArmoryPets = new List<ArmoryPet>();
@@ -473,6 +440,7 @@ namespace Rawr.Server.Controllers
                         p.Name = (string)pet["name"];
                         p.CreatureID = (int)pet["creature"];
                         p.SlotID = (int)pet["slot"];
+                        p.FamilyID = (PETFAMILY)(int)pet["familyId"];                        
                         if (pet.ContainsKey("selected")) p.Selected = true;
                         character.ArmoryPets.Add(p);
                     }
@@ -496,6 +464,7 @@ namespace Rawr.Server.Controllers
             int gem1Id = 0;
             int gem2Id = 0;
             int gem3Id = 0;
+            int upgradeLvl = 0;
 
             if (item.ContainsKey("id"))
             {
@@ -511,9 +480,14 @@ namespace Rawr.Server.Controllers
                 if (param.ContainsKey("gem0")) gem1Id = (int)param["gem0"];
                 if (param.ContainsKey("gem1")) gem2Id = (int)param["gem1"];
                 if (param.ContainsKey("gem2")) gem3Id = (int)param["gem2"];
+                if (param.ContainsKey("upgrade"))
+                {
+                    var upgradeParam = (Dictionary<string, object>)param["upgrade"];
+                    if (upgradeParam.ContainsKey("itemLevelIncrement")) upgradeLvl = (int)upgradeParam["itemLevelIncrement"];
+                }
             }
 
-            string retVal = string.Format("{0}.{1}.{2}.{3}.{4}.{5}.{6}.{7}",
+            string retVal = string.Format("{0}.{1}.{2}.{3}.{4}.{5}.{6}.{7}.{8}",
                 itemId,
                 suffixId,
                 gem1Id,
@@ -521,7 +495,8 @@ namespace Rawr.Server.Controllers
                 gem3Id,
                 enchantId,
                 reforgeId,
-                tinkeringId);
+                tinkeringId,
+                upgradeLvl);
             return retVal;
         }
 

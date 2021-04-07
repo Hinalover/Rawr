@@ -46,6 +46,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -115,9 +116,6 @@
     <Compile Include="StatsTest.cs" />
     <Compile Include="Stats_SpecialEffectEnumeratorTest.cs" />
     <Compile Include="BasicCharacterTest.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Shadow Include="Test References\Rawr.Base.accessor" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
@@ -272,6 +270,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Hunter\" />
+    <Folder Include="Test References\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

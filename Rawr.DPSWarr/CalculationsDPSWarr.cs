@@ -498,8 +498,8 @@ a GCD's length, you will use this while running back into place",
 
         public override bool EnchantFitsInSlot(Enchant enchant, Character character, ItemSlot slot) {
             if (enchant == null) { return false; }
-            // Hide the ranged weapon enchants. None of them apply to melee damage at all.
-            if (enchant.Slot == ItemSlot.Ranged) { return false; }
+            // No ranged enchants allowed
+            if (enchant.Slot == ItemSlot.Ranged) return false;
             // Disallow Shield enchants, all shield enchants are ItemSlot.OffHand and nothing else is according to Astry
             if (enchant.Slot == ItemSlot.OffHand) { return false; }
             // Allow offhand Enchants for two-handers if toon has Titan's Grip
@@ -666,6 +666,7 @@ a GCD's length, you will use this while running back into place",
                 HitRating = stats.HitRating,
                 HasteRating = stats.HasteRating,
                 ExpertiseRating = stats.ExpertiseRating,
+                Mastery = stats.Mastery,
                 MasteryRating = stats.MasteryRating,
                 // Bonuses
                 WeaponDamage = stats.WeaponDamage,
@@ -756,6 +757,7 @@ a GCD's length, you will use this while running back into place",
             if (stats.HitRating != 0) { return true; }
             if (stats.HasteRating != 0) { return true; }
             if (stats.ExpertiseRating != 0) { return true; }
+            if (stats.Mastery != 0) { return true; }
             if (stats.MasteryRating != 0) { return true; }
             // Bonuses
             if (stats.WeaponDamage != 0) { return true; }
@@ -1540,7 +1542,8 @@ a GCD's length, you will use this while running back into place",
                 //calc.ArmorPenetration = Math.Min(1f, calc.ArmorPenetrationRating2Perc);
                 calc.HasteRating = stats.HasteRating;
                 calc.HastePercent = stats.PhysicalHaste;
-                calc.MasteryVal = StatConversion.GetMasteryFromRating(stats.MasteryRating, CharacterClass.Warrior);
+                stats.Mastery += StatConversion.GetMasteryFromRating(stats.MasteryRating, CharacterClass.Warrior);
+                calc.MasteryVal = stats.Mastery;
                 
                 // DPS
                 Rot.Initialize(calc);
@@ -1864,7 +1867,7 @@ a GCD's length, you will use this while running back into place",
             statsTotal.Accumulate(statsOptionsPanel);
             statsTotal = UpdateStatsAndAdd(statsTotal, null, dpswarchar.Char);
             float multiplier = 0.0560f;
-            float masteryBonusVal = (2f*0.056f + multiplier * StatConversion.GetMasteryFromRating(statsTotal.MasteryRating, CharacterClass.Warrior));
+            float masteryBonusVal = (multiplier * statsTotal.Mastery);
             if (talents.DeathWish > 0 && dpswarchar.CalcOpts.M_DeathWish && dpswarchar.CombatFactors.FuryStance) {
                 statsTotal.AddSpecialEffect(TalentsAsSpecialEffects.GetDeathWishWithMastery(masteryBonusVal, dpswarchar));
             }
@@ -1968,18 +1971,18 @@ a GCD's length, you will use this while running back into place",
             Base.StatsWarrior bersStats = new Base.StatsWarrior();
             foreach (SpecialEffect e in bersMainHand) {
                 if (e.Duration == 0) {
-                    bersStats.ShadowDamage = e.GetAverageProcsPerSecond(fightDuration / Rot.AttemptedAtksOverDurMH, Rot.LandedAtksOverDurMH / Rot.AttemptedAtksOverDurMH, combatFactors.CMHItemSpeed, calcOpts.SE_UseDur ? fightDuration : 0);
+                    bersStats.ShadowDamage = e.GetAverageProcsPerSecond(fightDuration / Rot.AttemptedAtksOverDurMH, Rot.LandedAtksOverDurMH / Rot.AttemptedAtksOverDurMH, combatFactors.CMHItemSpeed, 1f, calcOpts.SE_UseDur ? fightDuration : 0); // FIXME: Pass haste for Real PPM effects
                 } else {
                     // berserker enchant id
-                    float f = e.GetAverageUptime(fightDuration / Rot.AttemptedAtksOverDurMH, Rot.LandedAtksOverDurMH / Rot.AttemptedAtksOverDurMH, combatFactors.CMHItemSpeed, calcOpts.SE_UseDur ? fightDuration : 0);
+                    float f = e.GetAverageUptime(fightDuration / Rot.AttemptedAtksOverDurMH, Rot.LandedAtksOverDurMH / Rot.AttemptedAtksOverDurMH, combatFactors.CMHItemSpeed, 1f, calcOpts.SE_UseDur ? fightDuration : 0);
                     bersStats.Accumulate(e.Stats, f);
                 }
             }
             foreach (SpecialEffect e in bersOffHand) {
                 if (e.Duration == 0) {
-                    bersStats.ShadowDamage += e.GetAverageProcsPerSecond(fightDuration / Rot.AttemptedAtksOverDurOH, Rot.LandedAtksOverDurOH / Rot.AttemptedAtksOverDurOH, combatFactors.COHItemSpeed, calcOpts.SE_UseDur ? fightDuration : 0);
+                    bersStats.ShadowDamage += e.GetAverageProcsPerSecond(fightDuration / Rot.AttemptedAtksOverDurOH, Rot.LandedAtksOverDurOH / Rot.AttemptedAtksOverDurOH, combatFactors.COHItemSpeed, 1f, calcOpts.SE_UseDur ? fightDuration : 0); // FIXME: Pass haste for Real PPM effects
                 } else {
-                    float f = e.GetAverageUptime(fightDuration / Rot.AttemptedAtksOverDurOH, Rot.LandedAtksOverDurOH / Rot.AttemptedAtksOverDurOH, combatFactors.COHItemSpeed, calcOpts.SE_UseDur ? fightDuration : 0);
+                    float f = e.GetAverageUptime(fightDuration / Rot.AttemptedAtksOverDurOH, Rot.LandedAtksOverDurOH / Rot.AttemptedAtksOverDurOH, combatFactors.COHItemSpeed, 1f, calcOpts.SE_UseDur ? fightDuration : 0);
                     bersStats.Accumulate(e.Stats, f);
                 }
             }
@@ -2408,7 +2411,7 @@ a GCD's length, you will use this while running back into place",
                         float value1 = effect.Stats.ManaorEquivRestore;
                         float value2 = effect.Stats.HealthRestoreFromMaxHealth;
                         SpecialEffect dummy = new SpecialEffect(effect.Trigger, new Stats() { ManaorEquivRestore = value1, HealthRestoreFromMaxHealth = value2 }, effect.Duration, effect.Cooldown, effect.Chance) { BypassCache = true };
-                        numProcs = dummy.GetAverageProcsPerSecond(dmgTakenInterval, originalStats.Dodge + originalStats.Parry, 0f, 0f) * fightDuration;
+                        numProcs = dummy.GetAverageProcsPerSecond(dmgTakenInterval, originalStats.Dodge + originalStats.Parry, 0f, 1f, 0f) * fightDuration; // FIXME: Pass haste for Real PPM effects
                         statsProcs.ManaorEquivRestore += dummy.Stats.ManaorEquivRestore * numProcs;
                         dummy.Stats.ManaorEquivRestore = 0f;
                         //numProcs = effect.GetAverageProcsPerSecond(triggerIntervals[Trigger.PhysicalCrit], triggerChances[Trigger.PhysicalCrit], 0f, 0f) * fightDuration;
@@ -2416,11 +2419,11 @@ a GCD's length, you will use this while running back into place",
                         ApplySpecialEffect(dummy, charStruct, triggerIntervals, triggerChances, ref statsProcs);
                     } else if (effect.Stats.ManaorEquivRestore > 0f) {
                         // effect.Duration = 0, so GetAverageStats won't work
-                        numProcs = effect.GetAverageProcsPerSecond(dmgTakenInterval, originalStats.Dodge + originalStats.Parry, 0f, 0f) * fightDuration;
+                        numProcs = effect.GetAverageProcsPerSecond(dmgTakenInterval, originalStats.Dodge + originalStats.Parry, 0f, 1f, 0f) * fightDuration; // FIXME: Pass haste for Real PPM effects
                         statsProcs.ManaorEquivRestore += effect.Stats.ManaorEquivRestore * numProcs;
                     } else if (effect.Stats.HealthRestoreFromMaxHealth > 0f) {
                         // effect.Duration = 0, so GetAverageStats won't work
-                        numProcs = effect.GetAverageProcsPerSecond(dmgTakenInterval, originalStats.Dodge + originalStats.Parry, 0f, 0f) * fightDuration;
+                        numProcs = effect.GetAverageProcsPerSecond(dmgTakenInterval, originalStats.Dodge + originalStats.Parry, 0f, 1f, 0f) * fightDuration; // FIXME: Pass haste for Real PPM effects
                         statsProcs.HealthRestoreFromMaxHealth += effect.Stats.HealthRestoreFromMaxHealth * numProcs;
                     } else {
                         ApplySpecialEffect(effect, charStruct, triggerIntervals, triggerChances, ref statsProcs);
@@ -2433,8 +2436,8 @@ a GCD's length, you will use this while running back into place",
                 } else if (critEffects.Count == 1) {
                     float interval = triggerIntervals[critEffects[0].Trigger];
                     float chance = triggerChances[critEffects[0].Trigger];
-                    float upTime = critEffects[0].GetAverageStackSize(interval, chance, charStruct.CombatFactors.CMHItemSpeed,
-                        (charStruct.CalcOpts.SE_UseDur ? charStruct.BossOpts.BerserkTimer : 0f));
+                    float upTime = critEffects[0].GetAverageStackSize(interval, chance, charStruct.CombatFactors.CMHItemSpeed, 1f,
+                        (charStruct.CalcOpts.SE_UseDur ? charStruct.BossOpts.BerserkTimer : 0f)); // FIXME: Pass haste for Real PPM effects
                     upTime *= critWeights[0];
                     critProcs = new WeightedStat[] { new WeightedStat() { Value = critEffects[0].Stats.CritRating, Chance = upTime },
                                                      new WeightedStat() { Value = 0f, Chance = 1f - upTime } };
@@ -2447,8 +2450,8 @@ a GCD's length, you will use this while running back into place",
                         chances[i] = triggerChances[critEffects[i].Trigger];
                     }
 
-                    critProcs = SpecialEffect.GetAverageCombinedUptimeCombinations(critEffects.ToArray(), intervals, chances, offset, critWeights.ToArray(), charStruct.CombatFactors.CMHItemSpeed,
-                        charStruct.BossOpts.BerserkTimer, AdditiveStat.CritRating);
+                    critProcs = SpecialEffect.GetAverageCombinedUptimeCombinations(critEffects.ToArray(), intervals, chances, offset, critWeights.ToArray(), charStruct.CombatFactors.CMHItemSpeed, 1f,
+                        charStruct.BossOpts.BerserkTimer, AdditiveStat.CritRating); // FIXME: Pass haste for Real PPM effects
                 }
                 charStruct.CombatFactors.CritProcs = critProcs;
                 float flurryUptime = 0f;
@@ -2545,7 +2548,7 @@ a GCD's length, you will use this while running back into place",
             }*/
             if (effect.Trigger == Trigger.Use) {
                 if (effect.Stats._rawSpecialEffectDataSize == 1) {
-                    upTime = effect.GetAverageUptime(0f, 1f, charStruct.CombatFactors.CMHItemSpeed, fightDuration2Pass);
+                    upTime = effect.GetAverageUptime(0f, 1f, charStruct.CombatFactors.CMHItemSpeed, 1f, fightDuration2Pass);
                     //float uptime =  (effect.Cooldown / fightDuration);
                     List<SpecialEffect> nestedEffect = new List<SpecialEffect>();
                     nestedEffect.Add(effect.Stats._rawSpecialEffectData[0]);
@@ -2553,23 +2556,23 @@ a GCD's length, you will use this while running back into place",
                     ApplySpecialEffect(effect.Stats._rawSpecialEffectData[0], charStruct, triggerIntervals, triggerChances, ref _stats2);
                     effectStats = _stats2;
                 } else {
-                    upTime = effect.GetAverageStackSize(0f, 1f, charStruct.CombatFactors.CMHItemSpeed, fightDuration2Pass); 
+                    upTime = effect.GetAverageStackSize(0f, 1f, charStruct.CombatFactors.CMHItemSpeed, 1f, fightDuration2Pass);  // FIXME: Pass haste for Real PPM effects
                 }
             } else if (effect.Duration == 0f && triggerIntervals.ContainsKey(effect.Trigger) && !float.IsInfinity(triggerIntervals[effect.Trigger])) {
                 upTime = effect.GetAverageProcsPerSecond(triggerIntervals[effect.Trigger], 
                                                          triggerChances[effect.Trigger],
-                                                         charStruct.CombatFactors.CMHItemSpeed,
-                                                         fightDuration2Pass);
+                                                         charStruct.CombatFactors.CMHItemSpeed, 1f,
+                                                         fightDuration2Pass); // FIXME: Pass haste for Real PPM effects
             } else if (effect.Trigger == Trigger.ExecuteHit) {
                 upTime = effect.GetAverageStackSize(triggerIntervals[effect.Trigger], 
                                                          triggerChances[effect.Trigger],
-                                                         charStruct.CombatFactors.CMHItemSpeed,
-                                                         fightDuration2Pass * (float)charStruct.BossOpts.Under20Perc);
+                                                         charStruct.CombatFactors.CMHItemSpeed, 1f,
+                                                         fightDuration2Pass * (float)charStruct.BossOpts.Under20Perc); // FIXME: Pass haste for Real PPM effects
             } else if (triggerIntervals.ContainsKey(effect.Trigger) && !float.IsInfinity(triggerIntervals[effect.Trigger])) {
                 upTime = effect.GetAverageStackSize(triggerIntervals[effect.Trigger], 
                                                          triggerChances[effect.Trigger],
-                                                         charStruct.CombatFactors.CMHItemSpeed,
-                                                         fightDuration2Pass);
+                                                         charStruct.CombatFactors.CMHItemSpeed, 1f,
+                                                         fightDuration2Pass); // FIXME: Pass haste for Real PPM effects
             }
 
             if (upTime > 0f) {

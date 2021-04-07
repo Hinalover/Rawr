@@ -63,15 +63,6 @@ namespace Rawr.DPSDK
         }
         private bool _HideBadItems_PvP = false;
 
-        [DefaultValue(RotationType.Default)]
-        public RotationType RotType
-        {
-            get { return _RotType; }
-            set { _RotType = value; OnPropertyChanged("RotType"); }
-        }
-        private RotationType _RotType = RotationType.Default;
-
-
         [DefaultValue(.9f)]
         public float KMConsumeRate
         {

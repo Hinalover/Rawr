@@ -7,6 +7,8 @@ namespace Rawr.Hunter.Skills
     public class BlackArrow : DoT
     {
         private float _basefocuscost = 35f;
+        static public int Cooldown = 30;
+
         /// <summary>
         /// TODO Zhok: Thrill of the Hunt, Toxicology, Trap Mastery
         /// <b>Black Arrow</b>, 35 Focus, 5-40yd, Instant, 30 sec Cd
@@ -26,21 +28,30 @@ namespace Rawr.Hunter.Skills
             Char = c; StatS = s; combatFactors = cf; Whiteattacks = wa; CalcOpts = co;
 
             Name = "Black Arrow";
+            shortName = "BA";
 
+            SpellId = 3674;
             ReqTalent = true;
-            Talent2ChksValue = Talents.BlackArrow;
+
+            Talent2ChksValue = (c.HunterTalents.Specialization == (int)Specialization.Survival ? 1 : 0);
+            
             ReqRangedWeap = true;
             ReqSkillsRange = true;
+            DamageType = ItemDamageType.Shadow;
 
-            Cd = 30f - (Talents.Resourcefulness * 2f);
-            Duration = 15f;
-            TimeBtwnTicks = 1f; // TODO Zhok: Haste?
+            if (c.HunterTalents.Specialization == (int)Specialization.Survival)
+                Cd = Cooldown * .8f;
+            else
+                Cd =  Cooldown;
+            
+            Duration = 20f;
+            TimeBtwnTicks = 2f; // TODO Zhok: Haste?
             FocusCost = _basefocuscost;
             // 47.35% RAP + 2035 (total damage)
             // 4.2 Increased the damage by 40%
-            DamageBase = /*(StatS.RangedAttackPower * 0.4735f) +*/ 2850f;
-            DamageBonus = 1f + (Talents.TrapMastery * 0.10f);
-
+            DamageBase = (s.RangedAttackPower*1.5f) + 1870f;
+            DamageBonus = 1f + (Talents.TrapMastery * 0.30f);
+            
             eShot = Shots.BlackArrow;
 
             Initialize();

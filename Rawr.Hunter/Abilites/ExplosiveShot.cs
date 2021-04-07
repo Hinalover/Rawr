@@ -6,7 +6,8 @@ namespace Rawr.Hunter.Skills
 {
     public class ExplosiveShot : DoT
     {
-        protected float _basefocuscost = 50f;
+        protected int _basefocuscost = 25;
+        static public int Cooldown = 6;
         /// <summary>
         /// TODO Zhok: Add Efficiency, Lock and Load, Thrill of the Hunt
         /// <b>Explosive Shot</b>, 50 Focus, 5-40yd, Instant, 6 sec Cd
@@ -25,16 +26,21 @@ namespace Rawr.Hunter.Skills
             Char = c; StatS = s; combatFactors = cf; Whiteattacks = wa; CalcOpts = co;
 
             Name = "Explosive Shot";
+            shortName = "ES";
+
             ReqTalent = true;
-            Talent2ChksValue = ((Specialization)Talents.HighestTree == Specialization.Survival ? 1 : 0);
+            Talent2ChksValue = ((Specialization)Talents.Specialization == Specialization.Survival ? 1 : 0);
             ReqRangedWeap = true;
             ReqSkillsRange = true;
-            Cd = 6f; // In Seconds
+            Cd = Cooldown; // In Seconds
             Duration = 2f;
             TimeBtwnTicks = 1f;
-            FocusCost = _basefocuscost - (Talents.Efficiency * 2f + Talents.ThrillOfTheHunt * .4f * .05f);
+            FocusCost = _basefocuscost;
+            DamageType = ItemDamageType.Fire;
             // 23.2% RAP + (320 + 386)/2 (Per tick) for 2 seconds
-            DamageBase = ((StatS.RangedAttackPower * 0.232f) + (320 + 386) / 2f);
+            //TODO: Add ability to calc based on level
+            DamageBase = ((StatS.RangedAttackPower * 234f / 1000f) + 291.5f) * 3;
+
             BonusCritChance = Talents.GlyphOfExplosiveShot ? 0.06f : 0f;
 
             eShot = Shots.ExplosiveShot;
@@ -77,7 +83,7 @@ namespace Rawr.Hunter.Skills
             TimeBtwnTicks = 1f;
             FocusCost = 0;
             // 23.2% RAP + (320 + 386)/2 (Per tick) for 2 seconds
-            DamageBase = ((StatS.RangedAttackPower * 0.232f) + (320 + 386) / 2f);
+            DamageBase = ((StatS.RangedAttackPower * 260f / 1000f) + (162 + 486) / 2f) * 3;
             BonusCritChance = Talents.GlyphOfExplosiveShot ? 0.06f : 0f;
             Initialize();
         }

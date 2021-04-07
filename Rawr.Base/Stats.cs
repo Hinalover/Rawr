@@ -69,6 +69,8 @@ namespace Rawr
         CritBonusDamage,
         BonusTargets,
         BonusCritChance,
+        PvPResilience,
+        PvPPower,
         #endregion
         #region ===== Defensive Stats =====
         // Rating
@@ -102,6 +104,8 @@ namespace Rawr
         DarkmoonCardDeathProc,
         PVPTrinket,
         MoteOfAnger,
+        SecondaryStatMultiplier,
+        MultistrikeProc,
         #endregion
         #region ===== Other Stats =====
         BonusRageGen,
@@ -115,6 +119,7 @@ namespace Rawr
         FrostDamage,
         HolySummonedDamage,
         FireSummonedDamage,
+        StormlashTotem,
         SpellArcaneDamageRating,
         SpellFireDamageRating,
         SpellFrostDamageRating,
@@ -187,6 +192,11 @@ namespace Rawr
         BonusArmorMultiplier,
         BonusBlockValueMultiplier,
         DefensiveCooldownDurationMultiplier,
+        ArcaneDamageReductionMultiplier,
+        FireDamageReductionMultiplier,
+        FrostDamageReductionMultiplier,
+        NatureDamageReductionMultiplier,
+        ShadowDamageReductionMultiplier,
         #endregion
         #region ===== Item Proc Stats =====
         MaxHealthDamageProc,
@@ -896,6 +906,24 @@ namespace Rawr
             get { return _rawAdditiveData[(int)AdditiveStat.BonusCritChance]; }
             set { _rawAdditiveData[(int)AdditiveStat.BonusCritChance] = value; }
         }
+        [DefaultValueAttribute(0f)]
+        [DisplayName("PvP Resilience")]
+        [Category("Base Stats")]
+        [CommonStat]
+        public float PvPResilience
+        {
+            get { return _rawAdditiveData[(int)AdditiveStat.PvPResilience]; }
+            set { _rawAdditiveData[(int)AdditiveStat.PvPResilience] = value; }
+        }
+        [DefaultValueAttribute(0f)]
+        [DisplayName("PvP Power")]
+        [Category("Base Stats")]
+        [CommonStat]
+        public float PvPPower
+        {
+            get { return _rawAdditiveData[(int)AdditiveStat.PvPPower]; }
+            set { _rawAdditiveData[(int)AdditiveStat.PvPPower] = value; }
+        }
         #endregion
         #region ===== Defensive Stats =====
         // Rating
@@ -1109,6 +1137,24 @@ namespace Rawr
             get { return _rawAdditiveData[(int)AdditiveStat.MoteOfAnger]; }
             set { _rawAdditiveData[(int)AdditiveStat.MoteOfAnger] = value; }
         }
+        [DefaultValueAttribute(0f)]
+        [Percentage]
+        [DisplayName("% Secondary Stat Multiplier")]
+        [Category("Equipment Effects")]
+        public float SecondaryStatMultiplier
+        {
+            get { return _rawAdditiveData[(int)AdditiveStat.SecondaryStatMultiplier]; }
+            set { _rawAdditiveData[(int)AdditiveStat.SecondaryStatMultiplier] = value; }
+        }
+        [DefaultValueAttribute(0f)]
+        [Percentage]
+        [DisplayName("% Multistrike Proc")]
+        [Category("Equipment Effects")]
+        public float MultistrikeProc
+        {
+            get { return _rawAdditiveData[(int)AdditiveStat.MultistrikeProc]; }
+            set { _rawAdditiveData[(int)AdditiveStat.MultistrikeProc] = value; }
+        }
         #endregion
         #region ===== Other Stats =====
         [DefaultValueAttribute(0f)]
@@ -1197,6 +1243,14 @@ namespace Rawr
         {
             get { return _rawAdditiveData[(int)AdditiveStat.FireSummonedDamage]; }
             set { _rawAdditiveData[(int)AdditiveStat.FireSummonedDamage] = value; }
+        }
+        [DefaultValueAttribute(0f)]
+        [DisplayName("Stormlash Totem")]
+        [Category("Equipment Effects")]
+        public float StormlashTotem
+        {
+            get { return _rawAdditiveData[(int)AdditiveStat.StormlashTotem]; }
+            set { _rawAdditiveData[(int)AdditiveStat.StormlashTotem] = value; }
         }
         [DefaultValueAttribute(0f)]
         [Category("Spell Combat Ratings")]
@@ -1380,10 +1434,10 @@ namespace Rawr
             get { return _rawAdditiveData[(int)AdditiveStat.BonusManaGem]; }
             set { _rawAdditiveData[(int)AdditiveStat.BonusManaGem] = value; }
         }
-        [DisplayName("Ice Armor")]
+        [DisplayName("Frost Armor")]
         [Category("Mage")]
         [DefaultValueAttribute(0f)]
-        public float MageIceArmor
+        public float MageFrostArmor
         {
             get { return _rawAdditiveData[(int)AdditiveStat.MageIceArmor]; }
             set { _rawAdditiveData[(int)AdditiveStat.MageIceArmor] = value; }
@@ -1673,6 +1727,51 @@ namespace Rawr
         {
             get { return _rawMultiplicativeData[(int)MultiplicativeStat.DefensiveCooldownDurationMultiplier]; }
             set { _rawMultiplicativeData[(int)MultiplicativeStat.DefensiveCooldownDurationMultiplier] = value; }
+        }
+        [DefaultValueAttribute(0f)]
+        [DisplayName("Arcane Damage Reduction Multiplier")]
+        [Percentage]
+        [Category("Buffs / Debuffs")]
+        public float ArcaneDamageReductionMultiplier
+        {
+            get { return _rawMultiplicativeData[(int)MultiplicativeStat.ArcaneDamageReductionMultiplier]; }
+            set { _rawMultiplicativeData[(int)MultiplicativeStat.ArcaneDamageReductionMultiplier] = value; }
+        }
+        [DefaultValueAttribute(0f)]
+        [DisplayName("Fire Damage Reduction Multiplier")]
+        [Percentage]
+        [Category("Buffs / Debuffs")]
+        public float FireDamageReductionMultiplier
+        {
+            get { return _rawMultiplicativeData[(int)MultiplicativeStat.FireDamageReductionMultiplier]; }
+            set { _rawMultiplicativeData[(int)MultiplicativeStat.FireDamageReductionMultiplier] = value; }
+        }
+        [DefaultValueAttribute(0f)]
+        [DisplayName("Frost Damage Reduction Multiplier")]
+        [Percentage]
+        [Category("Buffs / Debuffs")]
+        public float FrostDamageReductionMultiplier
+        {
+            get { return _rawMultiplicativeData[(int)MultiplicativeStat.FrostDamageReductionMultiplier]; }
+            set { _rawMultiplicativeData[(int)MultiplicativeStat.FrostDamageReductionMultiplier] = value; }
+        }
+        [DefaultValueAttribute(0f)]
+        [DisplayName("Nature Damage Reduction Multiplier")]
+        [Percentage]
+        [Category("Buffs / Debuffs")]
+        public float NatureDamageReductionMultiplier
+        {
+            get { return _rawMultiplicativeData[(int)MultiplicativeStat.NatureDamageReductionMultiplier]; }
+            set { _rawMultiplicativeData[(int)MultiplicativeStat.NatureDamageReductionMultiplier] = value; }
+        }
+        [DefaultValueAttribute(0f)]
+        [DisplayName("Shadow Damage Reduction Multiplier")]
+        [Percentage]
+        [Category("Buffs / Debuffs")]
+        public float ShadowDamageReductionMultiplier
+        {
+            get { return _rawMultiplicativeData[(int)MultiplicativeStat.ShadowDamageReductionMultiplier]; }
+            set { _rawMultiplicativeData[(int)MultiplicativeStat.ShadowDamageReductionMultiplier] = value; }
         }
         [DefaultValueAttribute(0f)]
         [DisplayName("% Damage Taken Reduction")]
@@ -2473,7 +2572,19 @@ namespace Rawr
             {
                 c._rawNoStackData[i] = a._rawNoStackData[i] * b;
             }
-            // undefined for special effects
+            // For now, just copy the special effects
+            // TODO: Figure out how to make this properly multiply the special effects
+            // (may require some case-by-case, as some multiply proc rate and some multiply stats)
+            int specialEffectCount = a._rawSpecialEffectDataSize;
+            if (specialEffectCount > 0)
+            {
+                c._rawSpecialEffectData = new SpecialEffect[specialEffectCount];
+                c._rawSpecialEffectDataSize = specialEffectCount;
+                if (a._rawSpecialEffectDataSize > 0)
+                {
+                    Array.Copy(a._rawSpecialEffectData, c._rawSpecialEffectData, a._rawSpecialEffectDataSize);
+                }
+            }
             return c;
         }
         public static bool operator ==(Stats x, Stats y)
@@ -2772,6 +2883,26 @@ namespace Rawr
                 && ArrayUtils.AllCompare(x._rawInverseMultiplicativeData, y._rawInverseMultiplicativeData, comparison)
                 && ArrayUtils.AllCompare(x._rawNoStackData, y._rawNoStackData, comparison);
         }
+        #endregion
+
+        #region Rounds values down (for use with item upgrades)
+
+        /// <summary>
+        /// Rounds every stat down to the nearest integer.
+        /// </summary>
+        /// <param name="a">The Stats object to round.</param>
+        /// <returns>The new Stats object.</returns>
+        public void RoundDown()
+        {
+            int i = _rawAdditiveData.Length;
+            while (--i >= 0)
+            {
+                _rawAdditiveData[i] = (float)Math.Floor(_rawAdditiveData[i]);
+            }
+            // Anything except additive stats does not get rounded
+            return;
+        }
+
         #endregion
 
         public void Accumulate(Stats data)

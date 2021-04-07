@@ -12,7 +12,6 @@ namespace Rawr.Elemental.Spells
         EarthShock,
         FrostShock,
         Thunderstorm,
-        FireNova,
         SearingTotem,
         MagmaTotem,
         FireElemental
@@ -38,7 +37,6 @@ namespace Rawr.Elemental.Spells
             spells[(int)SpellIndex.EarthShock] = new EarthShock(args);
             spells[(int)SpellIndex.FrostShock] = new FrostShock(args);
             spells[(int)SpellIndex.Thunderstorm] = new Thunderstorm(args);
-            spells[(int)SpellIndex.FireNova] = new FireNova(args);
             spells[(int)SpellIndex.SearingTotem] = new SearingTotem(args);
             spells[(int)SpellIndex.MagmaTotem] = new MagmaTotem(args);
             spells[(int)SpellIndex.FireElemental] = new FireElemental(args);
@@ -120,11 +118,6 @@ namespace Rawr.Elemental.Spells
         public Thunderstorm TS
         {
             get { return (Thunderstorm)spells[(int)SpellIndex.Thunderstorm]; }
-        }
-
-        public FireNova FN
-        {
-            get { return (FireNova)spells[(int)SpellIndex.FireNova]; }
         }
 
         public SearingTotem ST

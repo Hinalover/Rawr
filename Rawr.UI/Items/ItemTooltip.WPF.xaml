@@ -64,6 +64,7 @@
                 <TextBlock x:Name="SetLabel" TextWrapping="Wrap"/>
                 <TextBlock x:Name="EnchantLabel" Foreground="#FF3A7414" Visibility="Collapsed" TextWrapping="Wrap"/>
                 <TextBlock x:Name="ReforgingLabel" Visibility="Collapsed" TextWrapping="Wrap"/>
+                <TextBlock x:Name="UpgradeLabel" Visibility="Collapsed" TextWrapping="Wrap"/>
                 <TextBlock x:Name="LocationLabel" TextWrapping="Wrap"/>
                 <Grid x:Name="ItemsGrid">
                     <Grid.ColumnDefinitions>

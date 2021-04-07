@@ -572,13 +572,6 @@
 							</Anchor>
 						</Anchors>
 					</Button>
-					<Button name="Rawr_PaperDoll_ItemRangedSlot" inherits="Rawr_PaperDollItemButtonTemplate">
-						<Anchors>
-							<Anchor point="LEFT" relativeTo="Rawr_PaperDoll_ItemSecondaryHandSlot" relativePoint="RIGHT">
-								<Offset x="5" y="0"/>
-							</Anchor>
-						</Anchors>
-					</Button>
 					
 					<!-- CheckButtons Left" -->
 					<CheckButton name="Rawr_PaperDoll_ItemHeadSlotCheck" inherits="Rawr_UpgradesCheckboxTemplate" frameStrata="HIGH" >
@@ -709,13 +702,6 @@
 					<CheckButton name="Rawr_PaperDoll_ItemSecondaryHandSlotCheck" inherits="Rawr_UpgradesCheckboxTemplate" frameStrata="HIGH" >
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativeTo="Rawr_PaperDoll_ItemSecondaryHandSlot" relativePoint="BOTTOMRIGHT">
-								<Offset x="4" y="-4"/>
-							</Anchor>
-						</Anchors>
-					</CheckButton>
-					<CheckButton name="Rawr_PaperDoll_ItemRangedSlotCheck" inherits="Rawr_UpgradesCheckboxTemplate" frameStrata="HIGH" >
-						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="Rawr_PaperDoll_ItemRangedSlot" relativePoint="BOTTOMRIGHT">
 								<Offset x="4" y="-4"/>
 							</Anchor>
 						</Anchors>

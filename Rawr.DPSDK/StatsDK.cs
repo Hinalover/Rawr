@@ -7,27 +7,31 @@ namespace Rawr.DK
 {
     public enum StatType { Unbuffed, Buffed, Average, Maximum };
     
+    /*
     public enum RotationType
     {
         Default,
         MasterFrost,
     }
+    */
 
     public class StatsDK : Stats
     {
         public readonly float BaseMastery = 8;
-        public float Mastery { 
+        public new float Mastery { 
             get { return BaseMastery + StatConversion.GetMasteryFromRating(MasteryRating); }
 //            set {_Mastery = value;} 
         }
 
-        private float _BaseBonusFrostDamageMultiplierFromMastery = 0;
+        // TODO: Update Mastery based Damage Bonus
+        // Going to assume it's 2% per point for now.
+        private float _BaseBonusFrostDamageMultiplierFromMastery = .02f;
         public float BonusFrostDamageMultiplierFromMastery
         {
             get { return _BaseBonusFrostDamageMultiplierFromMastery * Mastery; }
             set { _BaseBonusFrostDamageMultiplierFromMastery = value; }
         }
-        private float _BonusShadowDamageMultiplierFromMastery = 0;
+        private float _BonusShadowDamageMultiplierFromMastery = .02f; 
         public float BonusShadowDamageMultiplierFromMastery
         {
             get { return _BonusShadowDamageMultiplierFromMastery * Mastery; }
@@ -60,7 +64,8 @@ namespace Rawr.DK
         /// </summary>
         public float BonusMaxRunicPower { get; set; }
         
-        public bool b2T11_Tank { get; set; }
+/*
+ *      public bool b2T11_Tank { get; set; }
         public bool b4T11_Tank { get; set; }
         public bool b2T11_DPS { get; set; }
         public bool b4T11_DPS { get; set; }
@@ -69,11 +74,19 @@ namespace Rawr.DK
         public bool b4T12_Tank { get; set; }
         public bool b2T12_DPS { get; set; }
         public bool b4T12_DPS { get; set; }
+        */
 
         public bool b2T13_Tank { get; set; }
         public bool b4T13_Tank { get; set; }
         public bool b2T13_DPS { get; set; }
         public bool b4T13_DPS { get; set; }
+
+        public bool b2T14_Tank { get; set; }
+        public bool b4T14_Tank { get; set; }
+        public bool b2T14_DPS { get; set; }
+        public bool b4T14_DPS { get; set; }
+
+
 
         public bool bDW { get; set; }
     }

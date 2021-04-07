@@ -42,7 +42,7 @@ namespace Rawr.ProtPaladin
             float reducedDamagePerHit = BossOpts.DefaultMeleeAttack.DamagePerHit * totalReductionMultiplier;
             DamagePerHit = Math.Max(reducedDamagePerHit - absorbed, 0);
             DamagePerCrit   = Math.Max(2.0f * reducedDamagePerHit - absorbed, 0);
-            DamagePerBlock  = Math.Max(reducedDamagePerHit * (1f - Lookup.ActiveBlockReduction(Stats.BonusBlockValueMultiplier, Character.PaladinTalents.HolyShield)) - absorbed, 0);
+            DamagePerBlock  = Math.Max(reducedDamagePerHit * (1f - Lookup.ActiveBlockReduction(Stats.BonusBlockValueMultiplier)) - absorbed, 0);
 
             AverageDamagePerHit =
                 DamagePerHit * (DefendTable.Hit / DefendTable.AnyHit) +

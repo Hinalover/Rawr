@@ -53,7 +53,6 @@ namespace Rawr.DPSDK
             triggerChances.Add(Trigger.PhysicalHit, fPhysicalHitChance);
             triggerChances.Add(Trigger.MeleeAttack, fPhysicalHitChance);
             triggerChances.Add(Trigger.PhysicalAttack, fPhysicalHitChance);
-            // TODO: interval would be quicker since it should include DOTTick interval.
             triggerIntervals.Add(Trigger.DamageDone, fMeleeHitTriggerInterval);
             triggerChances.Add(Trigger.DamageDone, fPhysicalHitChance);
             triggerIntervals.Add(Trigger.DamageOrHealingDone, fMeleeHitTriggerInterval);
@@ -172,9 +171,9 @@ namespace Rawr.DPSDK
             #region Misc Offensive
             triggerIntervals.Add(Trigger.DeathRuneGained, (m_Rot.m_DeathRunes > 0) ? m_Rot.CurRotationDuration / (m_Rot.m_DeathRunes) : 0);
             triggerChances.Add(Trigger.DeathRuneGained, 1);
-            triggerIntervals.Add(Trigger.KillingMachine, (combatTable.m_CState.m_Talents.KillingMachine > 0) ? ( 60 / (5 * combatTable.m_CState.m_Talents.KillingMachine / 3 ) ) : 0); // KM is a PPM
+            triggerIntervals.Add(Trigger.KillingMachine, (combatTable.m_CState.m_Spec == Rotation.Type.Frost) ? ( 60 / 5 ) : 0); // KM is a PPM
             triggerChances.Add(Trigger.KillingMachine, 1);
-            triggerIntervals.Add(Trigger.DoTTick, 1); // TODO: assumes 2 diseases.  but w/ Blood & unholy's chance for a 3rd plus UB could also tick.... should be dynamic.
+            triggerIntervals.Add(Trigger.DoTTick, 1); 
             triggerChances.Add(Trigger.DoTTick, 1);
             #endregion
 
@@ -236,7 +235,7 @@ namespace Rawr.DPSDK
             triggerIntervals[Trigger.Use] = effect.Cooldown;
             if (float.IsInfinity(effect.Cooldown)) triggerIntervals[Trigger.Use] = m_bo.BerserkTimer;
 
-            effect.AccumulateAverageStats(statsAverage, triggerIntervals, triggerChances, unhastedAttackSpeed, m_bo.BerserkTimer);
+            effect.AccumulateAverageStats(statsAverage, triggerIntervals, triggerChances, unhastedAttackSpeed, 1f, m_bo.BerserkTimer);
             return statsAverage;
         }
     }

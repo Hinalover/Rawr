@@ -4,6 +4,102 @@ using System.Text;
 
 namespace Rawr.Mage
 {
+    public static class FrostBombCycle
+    {
+        public static Cycle GetCycle(bool needsDisplayCalculations, CastingState castingState, Cycle baseCycle)
+        {
+            Cycle cycle = Cycle.New(needsDisplayCalculations, castingState);
+            if (needsDisplayCalculations)
+            {
+                cycle.Name = "Frost Bomb+" + baseCycle.Name;
+            }
+            else
+            {
+                cycle.Name = baseCycle.Name;
+            }
+
+            Spell FB;
+            if (baseCycle.AreaEffect)
+            {
+                FB = castingState.GetSpell(SpellId.FrostBombAOE);
+            }
+            else
+            {
+                FB = castingState.GetSpell(SpellId.FrostBomb);
+            }
+
+            double wait = 2f / castingState.CastingSpeed * 0.5f;
+
+            cycle.AreaEffect = baseCycle.AreaEffect;
+            cycle.AddSpell(needsDisplayCalculations, FB, 1);
+            cycle.AddCycle(needsDisplayCalculations, baseCycle, (FB.Cooldown / castingState.CastingSpeed + wait) / baseCycle.CastTime);
+            cycle.Calculate();
+
+            cycle.Note = baseCycle.Note;
+
+            return cycle;
+        }
+    }
+
+    public static class FFBILFrOFrB
+    {
+        public static Cycle GetCycle(bool needsDisplayCalculations, CastingState castingState)
+        {
+            Cycle cycle = Cycle.New(needsDisplayCalculations, castingState);
+            cycle.Name = "FFBILFrOFrB";
+
+            Spell FrB, FFBS, ILS, FO;
+            float KFrB, KFFBS, KILS, KFO;
+
+            FrB = castingState.GetSpell(SpellId.Frostbolt);
+            FFBS = castingState.FrozenState.GetSpell(SpellId.FrostfireBoltBF);
+            ILS = castingState.FrozenState.GetSpell(SpellId.IceLance);
+            FO = castingState.GetSpell(SpellId.FrozenOrb);
+
+            // 1 Frozen Orb per minute, average FoF procs into regular casts
+            // 1 guaranteed proc per 25 sec from pet freeze
+
+            // since FOF has 2 charges and we use immediately just treat it as no delay registration
+            // BF comes from bomb proc, which is modeled as a mix in, just do a rough model based on Frost Bomb which has a guaranteed proc (the others are supposed to average very close)
+            // this is 1 / FrostBomb cooldown
+            // mixin formula is (FB.Cooldown / castingState.CastingSpeed + wait) / baseCycle.CastTime of cycle time per 1 frost bomb
+
+            // rough averaged model, compute distribution factors on a 1 minute basis
+
+            float wait = 2f / castingState.CastingSpeed * 0.5f;
+            float fof_ffb = 0.15f;
+            float fof_frb = 0.15f;
+            if (castingState.Solver.Mage4T15)
+            {
+                fof_frb += 0.06f;
+            }
+
+            // KILS = 1.2 + 60 / 25 + KFrB * fof + KFFBS * fof
+            // KFO = 1
+            // KFFBS = 60 / (10 / castingState.CastingSpeed + wait)
+            // Kbomb = 60 / (10 / castingState.CastingSpeed + wait)
+
+            // solve KFrB on time = 60 (bomb cast time = FFBS cast time)
+
+            // (1.2 + 60 / 25 + KFrB * fof + KFFBS * fof) * ILS.CastTime + FO.CastTime + KFFBS * 2 * FFBS.CastTime + KFrB * FrB.CastTime = 60
+            // (1.2 + 60 / 25 + KFrB * fof) * ILS.CastTime + FO.CastTime + KFFBS * (fof * ILS.CastTime + 2 * FFBS.CastTime) + KFrB * FrB.CastTime = 60
+            // (1.2 + 60 / 25) * ILS.CastTime + KFrB * (fof * ILS.CastTime + FrB.CastTime) + FO.CastTime + KFFBS * (fof * ILS.CastTime + 2 * FFBS.CastTime) = 60
+            // KFrB = (60 - (1.2 + 60 / 25) * ILS.CastTime - FO.CastTime - KFFBS * (fof * ILS.CastTime + 2 * FFBS.CastTime)) / (fof * ILS.CastTime + FrB.CastTime)
+
+            KFFBS = 60 / (10 / castingState.CastingSpeed + wait);
+            KFrB = (60f - (1.2f + 60f / 25f) * ILS.CastTime - FO.CastTime - KFFBS * (fof_ffb * ILS.CastTime + 2f * FFBS.CastTime)) / (fof_frb * ILS.CastTime + FrB.CastTime);
+            KILS = 1.2f + 60f / 25f + KFrB * fof_frb + KFFBS * fof_ffb;
+            KFO = 1;
+
+            cycle.AddSpell(needsDisplayCalculations, FrB, KFrB);
+            cycle.AddSpell(needsDisplayCalculations, ILS, KILS);
+            cycle.AddSpell(needsDisplayCalculations, FFBS, KFFBS);
+            cycle.AddSpell(needsDisplayCalculations, FO, KFO);
+            cycle.Calculate();
+            return cycle;
+        }
+    }
+
     public static class FrBFB
     {
         public static Cycle GetCycle(bool needsDisplayCalculations, CastingState castingState)
@@ -21,7 +117,7 @@ namespace Rawr.Mage
 
             float T8 = 0;
 
-            K = 0.05f * castingState.MageTalents.BrainFreeze / (1 - T8);
+            K = 0.25f / (1 - T8);
 
             cycle.AddSpell(needsDisplayCalculations, FrB, 1);
             cycle.AddSpell(needsDisplayCalculations, FB, K);
@@ -92,8 +188,8 @@ namespace Rawr.Mage
 
             // solved symbolically
 
-            float bf = 0.05f * castingState.MageTalents.BrainFreeze;
-            float fof = (castingState.MageTalents.FingersOfFrost == 2 ? 0.15f : 0.07f * castingState.MageTalents.FingersOfFrost);
+            float bf = 0.25f;
+            float fof = 0.15f;
 
             //float div = ((bf * bf * bf - bf) * fof * fof * fof * fof + (3 * bf - bf * bf * bf) * fof * fof * fof + (bf * bf * bf - 4 * bf + 1) * fof * fof * fof + (-bf * bf * bf - 2 * bf * bf + 2 * bf) * fof - 2 * bf - 1);
             //float S00 = ((bf * bf - bf) * fof * fof * fof + (-bf * bf + 3 * bf - 1) * fof * fof + (2 - 2 * bf) * fof - 1) / div;
@@ -274,21 +370,20 @@ namespace Rawr.Mage
 
         public static void SolveCycle(CastingState castingState, bool useFFO, out float KFrB, out float KFFB, out float KFFBS, out float KILS, out float KDFS)
         {
-            Spell FrB, FFB, FFBS, ILS, DFS;
-            float RFrB = 0, RFFB = 0, RFFBS = 0, RILS = 0, RDFS = 0;
-            int CFrB = 0, CFFB = 0, CFFBS = 0, CILS = 0, CDFS = 0;
+            Spell FrB, FFBS, ILS;
+            float RFrB = 0, RFFBS = 0, RILS = 0;
+            int CFrB = 0, CFFBS = 0, CILS = 0;
 
             FrB = castingState.GetSpell(SpellId.Frostbolt);
-            FFB = castingState.GetSpell(SpellId.FrostfireBoltBF);
             FFBS = castingState.FrozenState.GetSpell(SpellId.FrostfireBoltBF);
             ILS = castingState.FrozenState.GetSpell(SpellId.IceLance);
-            DFS = castingState.FrozenState.GetSpell(SpellId.DeepFreeze);
 
-            // FFB on FOF only, if Freeze is off cooldown only use it if FOF is off
-            // IL on FOF if Freeze is off cooldown, otherwise on FOF2 only
+            // FFB on BF
+            // IL on FOF
+            // FrB otherwise
 
-            float bf = 0.05f * castingState.MageTalents.BrainFreeze;
-            float fof = (castingState.MageTalents.FingersOfFrost == 3 ? 0.2f : 0.07f * castingState.MageTalents.FingersOfFrost);
+            float bf = 0.25f;
+            float fof = 0.15f;
 
             // override this so we don't have to store so many variations (means talent graphs won't show value for this talent)
             bf = 0.3f; // testing possible 4T12 value
@@ -304,12 +399,12 @@ namespace Rawr.Mage
 
             Random rnd = new Random();
 
-            bool stable;
+            bool stable = true;
             float errorMargin = 0.000001f;
 
             do
             {
-                for (int c = 0; c < 1000000; c++)
+                /*for (int c = 0; c < 1000000; c++)
                 {
                     if (dfCooldown == 0.0f && (fofRegistered > 0 || freezeCooldown == 0))
                     {
@@ -488,8 +583,14 @@ namespace Rawr.Mage
                 RFFB = KFFB;
                 RFFBS = KFFBS;
                 RFrB = KFrB;
-                RILS = KILS;
+                RILS = KILS;*/
             } while (!stable);
+
+            KDFS = 0;
+            KFFB = 0;
+            KFFBS = 0;
+            KFrB = 0;
+            KILS = 0;
         }
 
 
@@ -560,30 +661,11 @@ namespace Rawr.Mage
                 Console.WriteLine();
             }*/
 
-            if (castingState.CalculationOptions.FlameOrb == 0 || (castingState.CalculationOptions.FlameOrb == 2 && !castingState.FlameOrb))
-            {
-                KFrB = castDistribution[i, 0] + r * (castDistribution[i + 1, 0] - castDistribution[i, 0]);
-                KFFB = castDistribution[i, 1] + r * (castDistribution[i + 1, 1] - castDistribution[i, 1]);
-                KFFBS = castDistribution[i, 2] + r * (castDistribution[i + 1, 2] - castDistribution[i, 2]);
-                KILS = castDistribution[i, 3] + r * (castDistribution[i + 1, 3] - castDistribution[i, 3]);
-                KDFS = castDistribution[i, 4] + r * (castDistribution[i + 1, 4] - castDistribution[i, 4]);
-            }
-            else if (castingState.CalculationOptions.FlameOrb == 1)
-            {
-                KFrB = 0.75f * (castDistribution[i, 0] + r * (castDistribution[i + 1, 0] - castDistribution[i, 0])) + 0.25f * (castDistributionFFO[i, 0] + r * (castDistributionFFO[i + 1, 0] - castDistributionFFO[i, 0]));
-                KFFB = 0.75f * (castDistribution[i, 1] + r * (castDistribution[i + 1, 1] - castDistribution[i, 1])) + 0.25f * (castDistributionFFO[i, 1] + r * (castDistributionFFO[i + 1, 1] - castDistributionFFO[i, 1]));
-                KFFBS = 0.75f * (castDistribution[i, 2] + r * (castDistribution[i + 1, 2] - castDistribution[i, 2])) + 0.25f * (castDistributionFFO[i, 2] + r * (castDistributionFFO[i + 1, 2] - castDistributionFFO[i, 2]));
-                KILS = 0.75f * (castDistribution[i, 3] + r * (castDistribution[i + 1, 3] - castDistribution[i, 3])) + 0.25f * (castDistributionFFO[i, 3] + r * (castDistributionFFO[i + 1, 3] - castDistributionFFO[i, 3]));
-                KDFS = 0.75f * (castDistribution[i, 4] + r * (castDistribution[i + 1, 4] - castDistribution[i, 4])) + 0.25f * (castDistributionFFO[i, 4] + r * (castDistributionFFO[i + 1, 4] - castDistributionFFO[i, 4]));
-            }
-            else //if (castingState.CalculationOptions.FlameOrb == 2 && castingState.FlameOrb)
-            {
-                KFrB = castDistributionFFO[i, 0] + r * (castDistributionFFO[i + 1, 0] - castDistributionFFO[i, 0]);
-                KFFB = castDistributionFFO[i, 1] + r * (castDistributionFFO[i + 1, 1] - castDistributionFFO[i, 1]);
-                KFFBS = castDistributionFFO[i, 2] + r * (castDistributionFFO[i + 1, 2] - castDistributionFFO[i, 2]);
-                KILS = castDistributionFFO[i, 3] + r * (castDistributionFFO[i + 1, 3] - castDistributionFFO[i, 3]);
-                KDFS = castDistributionFFO[i, 4] + r * (castDistributionFFO[i + 1, 4] - castDistributionFFO[i, 4]);
-            }
+            KFrB = castDistribution[i, 0] + r * (castDistribution[i + 1, 0] - castDistribution[i, 0]);
+            KFFB = castDistribution[i, 1] + r * (castDistribution[i + 1, 1] - castDistribution[i, 1]);
+            KFFBS = castDistribution[i, 2] + r * (castDistribution[i + 1, 2] - castDistribution[i, 2]);
+            KILS = castDistribution[i, 3] + r * (castDistribution[i + 1, 3] - castDistribution[i, 3]);
+            KDFS = castDistribution[i, 4] + r * (castDistribution[i + 1, 4] - castDistribution[i, 4]);
 
             cycle.AddSpell(needsDisplayCalculations, FrB, KFrB);
             cycle.AddSpell(needsDisplayCalculations, FFB, KFFB);
@@ -721,8 +803,8 @@ namespace Rawr.Mage
             ILS = castingState.FrozenState.GetSpell(SpellId.IceLance);
             DFS = castingState.FrozenState.GetSpell(SpellId.DeepFreeze);
 
-            float bf = 0.05f * castingState.MageTalents.BrainFreeze;
-            float fof = (castingState.MageTalents.FingersOfFrost == 3 ? 0.2f : 0.07f * castingState.MageTalents.FingersOfFrost);
+            float bf = 0.25f;
+            float fof = 0.15f;
             float fof2 = fof * fof;
             float fof3 = fof2 * fof;
             float fof4 = fof3 * fof;
@@ -742,14 +824,7 @@ namespace Rawr.Mage
 
             // heruistic tuning parameters
             float R = 1.05f; // overestimate because we don't have IL to eat down FOF when freeze is coming off cooldown in the model
-            if (castingState.CalculationOptions.FlameOrb == 1)
-            {
-                fof *= 1.8f;
-            }
-            else if (castingState.CalculationOptions.FlameOrb == 2 && castingState.FlameOrb)
-            {
-                fof *= 5;
-            }
+            //fof *= 1.8f; // frozen orb?
             float K = 0.95f;
 
             // crude initial guess (fof=0.9,nonfof=0.1)
@@ -906,8 +981,8 @@ namespace Rawr.Mage
             ILS = castingState.FrozenState.GetSpell(SpellId.IceLance);
             DFS = castingState.FrozenState.GetSpell(SpellId.DeepFreeze);
 
-            float bf = 0.05f * castingState.MageTalents.BrainFreeze;
-            float fof = (castingState.MageTalents.FingersOfFrost == 2 ? 0.15f : 0.07f * castingState.MageTalents.FingersOfFrost);
+            float bf = 0.25f;
+            float fof = 0.15f;
             float fof2 = fof * fof;
             float fof3 = fof2 * fof;
             float fof4 = fof3 * fof;
@@ -1090,8 +1165,8 @@ namespace Rawr.Mage
             FFBS = castingState.FrozenState.GetSpell(SpellId.FrostfireBoltBF);
             DFS = castingState.FrozenState.GetSpell(SpellId.DeepFreeze);
 
-            float bf = 0.05f * castingState.MageTalents.BrainFreeze;
-            float fof = (castingState.MageTalents.FingersOfFrost == 2 ? 0.15f : 0.07f * castingState.MageTalents.FingersOfFrost);
+            float bf = 0.25f;
+            float fof = 0.15f;
             float fof2 = fof * fof;
             float fof3 = fof2 * fof;
             float fof4 = fof3 * fof;
@@ -1250,8 +1325,8 @@ namespace Rawr.Mage
 
             // solved symbolically
 
-            float bf = 0.05f * castingState.MageTalents.BrainFreeze;
-            float fof = (castingState.MageTalents.FingersOfFrost == 2 ? 0.15f : 0.07f * castingState.MageTalents.FingersOfFrost);
+            float bf = 0.25f;
+            float fof = 0.15f;
 
             //S00=(((bf^2-2*bf+1)*fof^3+(-bf^2+4*bf-3)*fof^2+(3-2*bf)*fof-1)*T8+(-bf^2+2*bf-1)*fof^3+(bf^2-4*bf+3)*fof^2+(2*bf-3)*fof+1)
             //S01=-(((bf^3-2*bf^2+bf)*fof^4+(-2*bf^3+6*bf^2-4*bf)*fof^3+(bf^3-6*bf^2+6*bf)*fof^2+(2*bf^2-4*bf)*fof+bf)*T8+(-bf^3+2*bf^2-bf)*fof^4+(2*bf^3-6*bf^2+4*bf)*fof^3+(-bf^3+6*bf^2-6*bf)*fof^2+(4*bf-2*bf^2)*fof-bf)
@@ -1319,7 +1394,7 @@ namespace Rawr.Mage
             // S20 = fof * S00 + fof * S20
             // S00 + S10 + S20 = 1
 
-            float fof = (castingState.MageTalents.FingersOfFrost == 2 ? 0.15f : 0.07f * castingState.MageTalents.FingersOfFrost);
+            float fof = 0.15f;
 
             float S00 = (1 - fof) / (1 + fof);
             float S10 = fof / (1 + fof);
@@ -1374,8 +1449,8 @@ namespace Rawr.Mage
             ILS = castingState.FrozenState.GetSpell(SpellId.IceLance);
             DFS = castingState.FrozenState.GetSpell(SpellId.DeepFreeze);
 
-            BF = 0.05f * castingState.MageTalents.BrainFreeze;
-            FOF = (castingState.MageTalents.FingersOfFrost == 2 ? 0.15f : 0.07f * castingState.MageTalents.FingersOfFrost);
+            BF = 0.25f;
+            FOF = 0.15f;
             T8 = 0;
             deepFreeze = useDeepFreeze;
 
@@ -1638,11 +1713,6 @@ z = actual count on Fingers of Frost
                 {
                     CastingState cstate = castingState;
                     string label = "";
-                    if (t10 == 1)
-                    {
-                        cstate = cstate.Tier10TwoPieceState;
-                        label = "2T10";
-                    }
                     if (fof == 1)
                     {
                         cstate = cstate.FrozenState;
@@ -1671,8 +1741,8 @@ z = actual count on Fingers of Frost
                 }
             }
 
-            BF = 0.05f * castingState.MageTalents.BrainFreeze;
-            FOF = (castingState.MageTalents.FingersOfFrost == 2 ? 0.15f : 0.07f * castingState.MageTalents.FingersOfFrost);
+            BF = 0.25f;
+            FOF = 0.15f;
             T8 = 0;
             T10 = castingState.Solver.Mage2T10;
 
@@ -1983,8 +2053,8 @@ z = remaining duration on 2T10";
             DF = castingState.FrozenState.GetSpell(SpellId.DeepFreeze);
             DF.Label = "Frozen+DeepFreeze";
 
-            BF = 0.05f * castingState.MageTalents.BrainFreeze;
-            FOF = (castingState.MageTalents.FingersOfFrost == 3 ? 0.2f : 0.07f * castingState.MageTalents.FingersOfFrost);
+            BF = 0.25f;
+            FOF = 0.15f;
 
             GenerateStateDescription();
         }

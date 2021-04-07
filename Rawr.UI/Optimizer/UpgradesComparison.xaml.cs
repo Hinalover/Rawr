@@ -192,7 +192,7 @@ namespace Rawr.UI
             {
                 try
                 {
-                    using (StreamWriter writer = File.CreateText(dialog.SafeFileName)) // no path data and no way to get it? wtf?
+                    using (StreamWriter writer = new StreamWriter(dialog.OpenFile()))
                     {
                         writer.Write(GetChartDataCSV());
                         writer.Flush();
@@ -209,7 +209,7 @@ namespace Rawr.UI
 
         private string GetChartDataCSV()
         {
-            StringBuilder sb = new StringBuilder("\"Name\",\"Equipped\",\"Slot\",\"Gem1\",\"Gem2\",\"Gem3\",\"Enchant\",\"Source\",\"ItemId\",\"GemmedId\",\"Overall\"");
+            StringBuilder sb = new StringBuilder("\"Name\",\"ItemLevel\",\"Equipped\",\"Slot\",\"Gem1\",\"Gem2\",\"Gem3\",\"Enchant\",\"Source\",\"ItemId\",\"GemmedId\",\"Overall\"");
             foreach (string subPointName in Calculations.SubPointNameColors.Keys)
             {
                 sb.AppendFormat(",\"{0}\"", subPointName);
@@ -218,7 +218,10 @@ namespace Rawr.UI
             List<ComparisonCalculationUpgrades> calcsToExport = new List<ComparisonCalculationUpgrades>();
             foreach (string key in itemCalculations.Keys)
             {
-                calcsToExport.AddRange(itemCalculations[key].ToList());
+                if (key != "Gear.All" || itemCalculations.Count == 1)
+                {
+                    calcsToExport.AddRange(itemCalculations[key].ToList());
+                }
             }
             if (calcsToExport == null || calcsToExport.Count <= 0) { return "The chart selected is either not Exportable or is of an Empty List."; }
             foreach (ComparisonCalculationUpgrades comparisonCalculation in calcsToExport)
@@ -227,8 +230,9 @@ namespace Rawr.UI
                 Item item = comparisonCalculation.Item;
                 if (itemInstance != null)
                 {
-                    sb.AppendFormat("\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\"",
+                    sb.AppendFormat("\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\"",
                         itemInstance.Item.Name.Replace(',', ';'),
+                        itemInstance.Item.ItemLevel,
                         comparisonCalculation.Equipped,
                         itemInstance.Slot,
                         itemInstance.Gem1 != null ? itemInstance.Gem1.Name : null,
@@ -252,8 +256,9 @@ namespace Rawr.UI
                 }
                 else if (item != null)
                 {
-                    sb.AppendFormat("\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\"",
+                    sb.AppendFormat("\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\"",
                         item.Name.Replace(',', ';'),
+                        item.ItemLevel,
                         comparisonCalculation.Equipped,
                         item.Slot,
                         null,
@@ -272,8 +277,9 @@ namespace Rawr.UI
                 }
                 else
                 {
-                    sb.AppendFormat("\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\"",
+                    sb.AppendFormat("\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\",\"{5}\",\"{6}\",\"{7}\",\"{8}\",\"{9}\",\"{10}\",\"{11}\"",
                         comparisonCalculation.Name.Replace(',', ';'),
+                        null,
                         comparisonCalculation.Equipped,
                         null,
                         null,

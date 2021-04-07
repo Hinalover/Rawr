@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.ComponentModel;
 using System.Xml.Serialization;
@@ -11,66 +12,134 @@ namespace Rawr.Feral
 #endif
     public class CalculationOptionsFeral : ICalculationOptionBase, INotifyPropertyChanged
     {
-        public string GetXml()
+        [DefaultValue(false)]
+        public bool UseBossHandler
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(CalculationOptionsFeral));
-            StringBuilder xml = new StringBuilder();
-            System.IO.StringWriter writer = new System.IO.StringWriter(xml);
-            serializer.Serialize(writer, this);
-            return xml.ToString();
+            get
+            {
+                return _useBossHandler;
+            }
+            set
+            {
+                _useBossHandler = (bool)value;
+                OnPropertyChanged("ckbUseBossHandler");
+            }
         }
+        private bool _useBossHandler = false;
 
-        private bool _customUseShred = false;
-        public bool CustomUseShred
+        [DefaultValue(90)]
+        public int CharacterLevel
         {
-            get { return _customUseShred; }
-            set { if (_customUseShred != value) { _customUseShred = value; OnPropertyChanged("CustomUseShred"); } }
+            get
+            {
+                return _characterLevel;
+            }
+            set
+            {
+                _characterLevel = value;
+                OnPropertyChanged("nudCharacterLevel");
+            }
         }
-        private bool _customUseRip = false;
-        public bool CustomUseRip
+        private int _characterLevel = 90;
+
+        [DefaultValue(93)]
+        public int TargetLevel
         {
-            get { return _customUseRip; }
-            set { if (_customUseRip != value) { _customUseRip = value; OnPropertyChanged("CustomUseRip"); } }
+            get
+            {
+                return _targetLevel;
+            }
+            set
+            {
+                _targetLevel = value;
+                OnPropertyChanged("nudTargetLevel");
+            }
         }
-        private bool _customUseRake = false;
-        public bool CustomUseRake
+        private int _targetLevel = 93;
+
+        public int TargetDifferance
         {
-            get { return _customUseRake; }
-            set { if (_customUseRake != value) { _customUseRake = value; OnPropertyChanged("CustomUseRake"); } }
+            get
+            {
+                return _targetLevel - _characterLevel;
+            }
         }
-        private bool _customUseMangle = false;
-        public bool CustomUseMangle
+        
+        [DefaultValue(600f)]
+        public float FightLength
         {
-            get { return _customUseMangle; }
-            set { if (_customUseMangle != value) { _customUseMangle = value; OnPropertyChanged("CustomUseMangle"); } }
+            get
+            {
+                return _fightLength;
+            }
+            set
+            {
+                _fightLength = value;
+                OnPropertyChanged("nudLengthofFight");
+            }
         }
-        private int _customCPFerociousBite = 0;
-        public int CustomCPFerociousBite
+        private float _fightLength = 600;
+
+        /// <summary>
+        /// Percent of time spent behind the boss
+        /// </summary>
+        [DefaultValue(1f)]
+        public float PercentBehindBoss
         {
-            get { return _customCPFerociousBite; }
-            set { if (_customCPFerociousBite != value) { _customCPFerociousBite = value; OnPropertyChanged("CustomCPFerociousBite"); } }
+            get
+            {
+                return _percentBehindBoss;
+            }
+            set
+            {
+                _percentBehindBoss = value;
+                OnPropertyChanged("nudPercentBehindBoss");
+            }
         }
-        private int _customCPSavageRoar = 5;
-        public int CustomCPSavageRoar
-        {
-            get { return _customCPSavageRoar; }
-            set { if (_customCPSavageRoar != value) { _customCPSavageRoar = value; OnPropertyChanged("CustomCPSavageRoar"); } }
-        }
-        private float _trinketOffset = 0f;
-        public float TrinketOffset
-        {
-            get { return _trinketOffset; }
-            set { if (_trinketOffset != value) { _trinketOffset = value; OnPropertyChanged("TrinketOffset"); } }
-        }
-        private int _lagVariance = 200;
+        private float _percentBehindBoss = 1f;
+
         public int LagVariance
         {
             get { return _lagVariance; }
             set { if (_lagVariance != value) { _lagVariance = value; OnPropertyChanged("LagVariance"); } }
         }
+        private int _lagVariance = 200;
+
+        [DefaultValue(false)]
+        public bool PTRMode { get { return _ptrMode; } set { _ptrMode = value; OnPropertyChanged("ckbPTRMode"); } }
+        private bool _ptrMode = false;
+
+        public CalculationOptionsFeral Clone()
+        {
+            CalculationOptionsFeral clone = new CalculationOptionsFeral
+            {
+                UseBossHandler = UseBossHandler,
+                CharacterLevel = CharacterLevel,
+                TargetLevel = TargetLevel,
+                FightLength = FightLength,
+                PercentBehindBoss = PercentBehindBoss,
+                LagVariance = LagVariance
+            };
+            // Tab - Fight Parameters
+            return clone;
+        }
+
+        #region ICalculationOptionBase Members
+        /// <summary>
+        /// Gets the XML serialization of the calculation options for use in the character file.
+        /// </summary>
+        /// <returns></returns>
+        public string GetXml()
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(CalculationOptionsFeral));
+            StringBuilder xml = new StringBuilder();
+            StringWriter writer = new StringWriter(xml);
+            serializer.Serialize(writer, this);
+            return xml.ToString();
+        }
+        #endregion
 
         #region INotifyPropertyChanged Members
-
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName)
         {
@@ -79,7 +148,6 @@ namespace Rawr.Feral
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-
         #endregion
     }
 }

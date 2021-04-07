@@ -37,7 +37,7 @@ namespace Rawr.Bear
 			set { _overallPoints = value; }
 		}
 
-		private float[] _subPoints = new float[] { 0f, 0f, 0f };
+		private float[] _subPoints = new float[] { 0f, 0f, 0f, 0f };
 		public override float[] SubPoints
 		{
 			get { return _subPoints; }
@@ -55,10 +55,15 @@ namespace Rawr.Bear
 			get { return _subPoints[1]; }
 			set { _subPoints[1] = value; }
 		}
-		public float ThreatPoints
+        public float RecoveryPoints
+        {
+            get { return _subPoints[2]; }
+            set { _subPoints[2] = value; }
+        }
+        public float ThreatPoints
 		{
-			get { return _subPoints[2]; }
-			set { _subPoints[2] = value; }
+			get { return _subPoints[3]; }
+			set { _subPoints[3] = value; }
 		}
 
 		private Item _item = null;
@@ -85,7 +90,7 @@ namespace Rawr.Bear
 
 		public override string ToString()
 		{
-			return string.Format("{0}: ({1}O {2}M {3}S {4}T)", Name, Math.Round(OverallPoints), Math.Round(MitigationPoints), Math.Round(SurvivalPoints), Math.Round(ThreatPoints));
+			return string.Format("{0}: ({1}O {2}M {3}S {4}R {5}T)", Name, Math.Round(OverallPoints), Math.Round(MitigationPoints), Math.Round(SurvivalPoints), Math.Round(RecoveryPoints), Math.Round(ThreatPoints));
 		}
 	}
 }

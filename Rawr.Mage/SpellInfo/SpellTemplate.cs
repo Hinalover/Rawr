@@ -42,7 +42,7 @@ namespace Rawr.Mage
         public float BaseAdditiveSpellModifier;
         public float BaseCritRate;
         public float NonHSCritRate; // crit rate that doesn't apply to hot streak
-        public float IgniteFactor;
+        public float CritRateMultiplier; // used for critical mass
         public float CritBonus;
         public float HitRate;
         public float ThreatMultiplier;
@@ -51,6 +51,8 @@ namespace Rawr.Mage
         public float RealResistance;
         public float PartialResistFactor;
 
+        public bool CausesIgnite;
+
         // not initialized, but never changed
         public float DotTickInterval;
         public float NukeProcs;
@@ -58,27 +60,6 @@ namespace Rawr.Mage
         public bool UseMaxT13;
 
         public bool Dirty = true;
-
-        public static Dictionary<int, int> BaseMana = new Dictionary<int, int>();
-        static SpellTemplate()
-        {
-            BaseMana[70] = 2241;
-            BaseMana[71] = 2343;
-            BaseMana[72] = 2446;
-            BaseMana[73] = 2549;
-            BaseMana[74] = 2652;
-            BaseMana[75] = 2754;
-            BaseMana[76] = 2857;
-            BaseMana[77] = 2960;
-            BaseMana[78] = 3063;
-            BaseMana[79] = 3166;
-            BaseMana[80] = 3268;
-            BaseMana[81] = 4567;
-            BaseMana[82] = 6382;
-            BaseMana[83] = 6382;
-            BaseMana[84] = 6382;
-            BaseMana[85] = 17418;            
-        }
 
         public virtual Spell GetSpell(CastingState castingState)
         {
@@ -107,6 +88,7 @@ namespace Rawr.Mage
             BaseCooldown = cooldown;
             Cooldown = cooldown;
             GlobalCooldown = 1.5f;
+            CausesIgnite = false;
         }
 
         public void InitializeDamage(Solver solver, bool areaEffect, int range, MagicSchool magicSchool, SpellData spellData) 
@@ -160,16 +142,16 @@ namespace Rawr.Mage
             BaseDirectDamageModifier = 1.0f;
             BaseDotDamageModifier = 1.0f;
             BaseCostModifier = 1.0f;
+            CritRateMultiplier = 1.0f;
 
             float baseCostAmplifier = calculationOptions.EffectCostMultiplier;
-            if (mageTalents.EnduringWinter > 0)
-            {
-                BaseCostModifier -= 0.03f * mageTalents.EnduringWinter + (mageTalents.EnduringWinter == 3 ? 0.01f : 0.00f);
-            }
             BaseCostAmplifier = baseCostAmplifier;
 
             float baseInterruptProtection = baseStats.InterruptProtection;
-            baseInterruptProtection += 0.23f * mageTalents.BurningSoul + (mageTalents.BurningSoul == 3 ? 0.01f : 0.0f);
+            if (calculationOptions.PlayerLevel >= 82)
+            {
+                baseInterruptProtection += 0.7f;
+            }
             BaseInterruptProtection = baseInterruptProtection;
 
             float realResistance;
@@ -183,7 +165,6 @@ namespace Rawr.Mage
                     HitRate = solver.BaseArcaneHitRate;
                     ThreatMultiplier = solver.ArcaneThreatMultiplier;
                     realResistance = calculationOptions.ArcaneResist;
-                    IgniteFactor = 0;
                     break;
                 case MagicSchool.Fire:
                     BaseSpellModifier = solver.BaseFireSpellModifier;
@@ -193,7 +174,6 @@ namespace Rawr.Mage
                     HitRate = solver.BaseFireHitRate;
                     ThreatMultiplier = solver.FireThreatMultiplier;
                     realResistance = calculationOptions.FireResist;
-                    IgniteFactor = solver.IgniteFactor;
                     break;
                 case MagicSchool.FrostFire:
                     BaseSpellModifier = solver.BaseFrostFireSpellModifier;
@@ -215,7 +195,6 @@ namespace Rawr.Mage
                         realResistance = Math.Min(calculationOptions.FireResist, calculationOptions.FrostResist);
                     }
                     Range = range;
-                    IgniteFactor = solver.IgniteFactor;
                     break;
                 case MagicSchool.Frost:
                     BaseSpellModifier = solver.BaseFrostSpellModifier;
@@ -225,7 +204,6 @@ namespace Rawr.Mage
                     HitRate = solver.BaseFrostHitRate;
                     ThreatMultiplier = solver.FrostThreatMultiplier;
                     realResistance = calculationOptions.FrostResist;
-                    IgniteFactor = 0;
                     break;
                 case MagicSchool.Nature:
                     BaseSpellModifier = solver.BaseNatureSpellModifier;
@@ -236,7 +214,6 @@ namespace Rawr.Mage
                     ThreatMultiplier = solver.NatureThreatMultiplier;
                     realResistance = calculationOptions.NatureResist;
                     Range = range;
-                    IgniteFactor = 0;
                     break;
                 case MagicSchool.Shadow:
                     BaseSpellModifier = solver.BaseShadowSpellModifier;
@@ -247,7 +224,6 @@ namespace Rawr.Mage
                     ThreatMultiplier = solver.ShadowThreatMultiplier;
                     realResistance = calculationOptions.ShadowResist;
                     Range = range;
-                    IgniteFactor = 0;
                     break;
                 case MagicSchool.Holy:
                 default:
@@ -259,7 +235,6 @@ namespace Rawr.Mage
                     ThreatMultiplier = solver.HolyThreatMultiplier;
                     realResistance = calculationOptions.HolyResist;
                     Range = range;
-                    IgniteFactor = 0;
                     break;
             }
 
@@ -343,7 +318,6 @@ namespace Rawr.Mage
                     HitRate = solver.BaseFireHitRate;
                     ThreatMultiplier = solver.FireThreatMultiplier;
                     realResistance = calculationOptions.FireResist;
-                    BaseDotDamageModifier = 1.0f + solver.FlashburnBonus;
                     break;
                 case MagicSchool.FrostFire:
                     BaseSpellModifier = solver.BaseFrostFireSpellModifier;
@@ -364,7 +338,6 @@ namespace Rawr.Mage
                     {
                         realResistance = Math.Min(calculationOptions.FireResist, calculationOptions.FrostResist);
                     }
-                    BaseDotDamageModifier = 1.0f + solver.FlashburnBonus;
                     break;
                 case MagicSchool.Frost:
                     BaseSpellModifier = solver.BaseFrostSpellModifier;
@@ -406,7 +379,6 @@ namespace Rawr.Mage
             }
 
             NonHSCritRate = baseStats.SpellCritOnTarget;
-            IgniteFactor = 0;
 
             int playerLevel = calculationOptions.PlayerLevel;
             int targetLevel = calculationOptions.TargetLevel;
@@ -441,8 +413,7 @@ namespace Rawr.Mage
             CalculationOptionsMage calculationOptions = castingState.CalculationOptions;
             castingSpeed = castingState.CastingSpeed;
             float spellHasteRating = castingState.SpellHasteRating;
-            float levelScalingFactor = calculationOptions.LevelScalingFactor;
-            float hasteFactor = levelScalingFactor / 1000f;
+            float hasteFactor = 0.01f / calculationOptions.HasteRatingMultiplier;
             float rootCastingSpeed = castingSpeed / (1 + spellHasteRating * hasteFactor);
 
             float InterruptFactor = 0f;
@@ -562,12 +533,14 @@ namespace Rawr.Mage
                             triggers = (int)procs;
                             break;
                         case Trigger.DamageSpellCrit:
+                        case Trigger.DamageSpellOrDoTCrit:
                         case Trigger.SpellCrit:
                             procs = critRate * averageTicks;
                             triggers = (int)averageTicks;
                             break;
                         case Trigger.DamageSpellHit:
                         case Trigger.SpellHit:
+                        case Trigger.DamageSpellHitorDoTTick: // FIXME: add dots in
                             procs = HitRate * averageTicks;
                             triggers = (int)averageTicks;
                             break;
@@ -608,7 +581,7 @@ namespace Rawr.Mage
                         float effectiveDuration = castsAffected * cast;
                         // this isn't completely accurate, we should have made a separate SpecialEffect and change the actual duration
                         // but performance would hurt so this'll have to do
-                        spellHasteRating += procHaste * (effectiveDuration / effect.Duration) * effect.GetAverageUptime(castTime / triggers, procs / triggers, 3.0f, calculationOptions.FightDuration);
+                        spellHasteRating += procHaste * (effectiveDuration / effect.Duration) * effect.GetAverageUptime(castTime / triggers, procs / triggers, 3.0f, castingSpeed, calculationOptions.FightDuration);
                         //spellHasteRating += procHaste * castsAffected * cast / (effect.Cooldown + castTime / procs / effect.Chance);
                         //Haste += castingState.BasicStats.SpellHasteFor6SecOnCast_15_45 * 6f / (45f + CastTime / CastProcs / 0.15f);
                         castingSpeed = rootCastingSpeed * (1 + spellHasteRating * hasteFactor);
@@ -629,12 +602,18 @@ namespace Rawr.Mage
                         gcdcap = globalCooldown + calculationOptions.LatencyGCD;
                         if (castTime < gcdcap) castTime = gcdcap;
                     }
-                    else if (effect.Cooldown == 0 && (effect.Trigger == Trigger.SpellCrit || effect.Trigger == Trigger.DamageSpellCrit))
+                    else if (effect.Cooldown <= 1 && (effect.Trigger == Trigger.SpellCrit || effect.Trigger == Trigger.DamageSpellCrit || effect.Trigger == Trigger.DamageSpellOrDoTCrit || effect.Trigger == Trigger.SpellHit || effect.Trigger == Trigger.DamageSpellHit))
                     {
+                        float rate = 1;
+                        if (effect.Trigger == Trigger.SpellCrit || effect.Trigger == Trigger.DamageSpellCrit || effect.Trigger == Trigger.DamageSpellOrDoTCrit)
+                        {
+                            rate = critRate;
+                        }
+
                         float rawHaste = spellHasteRating;
 
-                        castingSpeed /= (1 + spellHasteRating / 1000f * levelScalingFactor);
-                        float proccedSpeed = castingSpeed * (1 + (rawHaste + procHaste) / 1000f * levelScalingFactor);
+                        castingSpeed /= (1 + spellHasteRating * hasteFactor);
+                        float proccedSpeed = castingSpeed * (1 + (rawHaste + procHaste) * hasteFactor);
                         float proccedGcd = Math.Max(Spell.GlobalCooldownLimit, GlobalCooldown / proccedSpeed);
                         float proccedCastTime = baseCastTime / proccedSpeed;
                         float proccedTicks = averageTicks;
@@ -653,9 +632,10 @@ namespace Rawr.Mage
                         int chancesToProc = (int)(((int)Math.Floor(effect.Duration / proccedCastTime) + 1) * proccedTicks);
                         if (!(Instant || pom)) chancesToProc -= 1;
                         if (AreaEffect) chancesToProc *= calculationOptions.AoeTargets;
-                        spellHasteRating = rawHaste + procHaste * (1 - (float)Math.Pow(1 - effect.Chance * critRate, chancesToProc));
+                        float chance = effect.GetChance(baseCastTime / proccedSpeed, proccedCastTime, castingSpeed);
+                        spellHasteRating = rawHaste + procHaste * (1 - (float)Math.Pow(1 - chance * rate, chancesToProc));
                         //Haste = rawHaste + castingState.BasicStats.SpellHasteFor5SecOnCrit_50 * ProcBuffUp(1 - (float)Math.Pow(1 - 0.5f * CritRate, HitProcs), 5, CastTime);
-                        castingSpeed *= (1 + spellHasteRating / 1000f * levelScalingFactor);
+                        castingSpeed *= (1 + spellHasteRating * hasteFactor);
                         globalCooldown = Math.Max(Spell.GlobalCooldownLimit, GlobalCooldown / castingSpeed);
                         castTime = baseCastTime / castingSpeed;
                         /*if (calculationOptions.Beta && Channeled)
@@ -693,6 +673,7 @@ namespace Rawr.Mage
                                         procs = CastProcs;
                                         break;
                                     case Trigger.DamageSpellCrit:
+                                    case Trigger.DamageSpellOrDoTCrit:
                                     case Trigger.SpellCrit:
                                         procs = critRate * averageTicks;
                                         break;
@@ -713,16 +694,16 @@ namespace Rawr.Mage
                                 if (procs > averageTicks)
                                 {
                                     // some 100% on cast procs, happens because AM has 6 cast procs and only 5 ticks
-                                    effectHasteRating = effect.GetAverageStackSize(castTime / procs, 1.0f, 3.0f, effectCooldown.SpecialEffect.Duration) * procHaste;
+                                    effectHasteRating = effect.GetAverageStackSize(castTime / procs, 1.0f, 3.0f, castingSpeed, effectCooldown.SpecialEffect.Duration) * procHaste;
                                 }
                                 else
                                 {
-                                    effectHasteRating = effect.GetAverageStackSize(castTime / averageTicks, procs / averageTicks, 3.0f, effectCooldown.SpecialEffect.Duration) * procHaste;
+                                    effectHasteRating = effect.GetAverageStackSize(castTime / averageTicks, procs / averageTicks, 3.0f, castingSpeed, effectCooldown.SpecialEffect.Duration) * procHaste;
                                 }
 
-                                castingSpeed /= (1 + spellHasteRating / 1000f * levelScalingFactor);
+                                castingSpeed /= (1 + spellHasteRating * hasteFactor);
                                 spellHasteRating += effectHasteRating;
-                                castingSpeed *= (1 + spellHasteRating / 1000f * levelScalingFactor);
+                                castingSpeed *= (1 + spellHasteRating * hasteFactor);
 
                                 globalCooldown = Math.Max(Spell.GlobalCooldownLimit, GlobalCooldown / castingSpeed);
                                 castTime = baseCastTime / castingSpeed;

@@ -18,9 +18,11 @@ namespace Rawr.Hunter.Skills
             Char = c; StatS = s; combatFactors = cf; Whiteattacks = wa; CalcOpts = co;
             //
             Name = "Piercing Shots";
+            shortName = "Pierce";
+
             //AbilIterater = (int)CalculationOptionsHunter.Maintenances.MortalStrike_;
             ReqTalent = true;
-            Talent2ChksValue = Talents.PiercingShots;
+            Talent2ChksValue = (c.HunterTalents.Specialization == (int)Specialization.Marksmanship ? 1 : 0);
             ReqRangedWeap = true;
             ReqSkillsRange = true;
             //Targets += StatS.BonusTargets;

@@ -34,12 +34,11 @@ namespace Rawr.Mage
         Character character;
         CycleGenerator generator;
         CastingState castingState;
-        Cycle wand;
         BackgroundWorker backgroundWorker;
 
         private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            e.Result = generator.Analyze(castingState, wand, backgroundWorker);
+            e.Result = generator.Analyze(castingState, backgroundWorker);
         }
 
         private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -92,20 +91,21 @@ namespace Rawr.Mage
             try
             {
                 GenericCycle generic = new GenericCycle(name, castingState, generator.StateList, true);
+                Cycle cycle = generator.WrapCycle(generic, castingState);
 
                 StringBuilder sb = new StringBuilder();
 
-                sb.AppendLine(generic.DamagePerSecond + " Dps");
-                sb.AppendLine(generic.ManaPerSecond + " Mps");
-                sb.AppendLine(generic.ThreatPerSecond + " Tps");
-                sb.AppendLine(generic.DpsPerSpellPower + " Dps per Spell Power");
-                sb.AppendLine(generic.DpsPerMastery + " Dps per Mastery");
-                sb.AppendLine((generic.DpsPerCrit / 100) + " Dps per Crit");
-                sb.AppendLine((generic.CastProcs / generic.CastTime) + " Cast Procs / Sec");
-                sb.AppendLine((generic.HitProcs / generic.CastTime) + " Hit Procs / Sec");
-                sb.AppendLine((generic.CritProcs / generic.CastTime) + " Crit Procs / Sec");
-                sb.AppendLine((generic.DamageProcs / generic.CastTime) + " Damage Procs / Sec");
-                sb.AppendLine((generic.DotProcs / generic.CastTime) + " Dot Procs / Sec");
+                sb.AppendLine(cycle.DamagePerSecond + " Dps");
+                sb.AppendLine(cycle.ManaPerSecond + " Mps");
+                //sb.AppendLine(cycle.ThreatPerSecond + " Tps");
+                sb.AppendLine(cycle.DpsPerSpellPower + " Dps per Spell Power");
+                sb.AppendLine(cycle.DpsPerMastery + " Dps per Mastery");
+                sb.AppendLine((cycle.DpsPerCrit / 100) + " Dps per Crit");
+                sb.AppendLine((cycle.CastProcs / cycle.CastTime) + " Cast Procs / Sec");
+                sb.AppendLine((cycle.HitProcs / cycle.CastTime) + " Hit Procs / Sec");
+                sb.AppendLine((cycle.CritProcs / cycle.CastTime) + " Crit Procs / Sec");
+                sb.AppendLine((cycle.DamageProcs / cycle.CastTime) + " Damage Procs / Sec");
+                sb.AppendLine((cycle.DotProcs / cycle.CastTime) + " Dot Procs / Sec");
 
                 sb.AppendLine();
 
@@ -162,37 +162,9 @@ namespace Rawr.Mage
                     solver = new Solver(character, calculationOptions, false, false, false, 0, armor, false, false, false, false, true, false, false);
                     solver.Initialize(null);
                     castingState = new CastingState(solver, 0, false, 0);
-                    generator = new ArcaneCycleGeneratorBeta(castingState, true, false, false, false);
-                    break;
-                case "Arcane Dragonwrath":
-                    armor = "Mage Armor";
-                    solver = new Solver(character, calculationOptions, false, false, false, 0, armor, false, false, false, false, true, false, false);
-                    solver.Initialize(null);
-                    castingState = new CastingState(solver, 0, false, 0);
-                    generator = new ArcaneCycleGeneratorLegendary(castingState, true, false, false, false);
-                    break;
-                case "Arcane Hyper Regen":
-                    armor = "Mage Armor";
-                    solver = new Solver(character, calculationOptions, false, false, false, 0, armor, false, false, false, false, true, false, false);
-                    solver.Initialize(null);
-                    castingState = new CastingState(solver, 0, false, 0);
-                    generator = new ArcaneCycleGeneratorBeta(castingState, true, false, false, true);
-                    break;
-                case "Arcane AOE":
-                    armor = "Mage Armor";
-                    solver = new Solver(character, calculationOptions, false, false, false, 0, armor, false, false, false, false, true, false, false);
-                    solver.Initialize(null);
-                    castingState = new CastingState(solver, 0, false, 0);
-                    generator = new ArcaneAOECycleGenerator(castingState, true, false, false);
-                    break;
-                case "Arcane MOP":
-                    armor = "Mage Armor";
-                    solver = new Solver(character, calculationOptions, false, false, false, 0, armor, false, false, false, false, true, false, false);
-                    solver.Initialize(null);
-                    castingState = new CastingState(solver, 0, false, 0);
                     generator = new ArcaneCycleGeneratorMOP(castingState, true, false, false);
                     break;
-                case "Arcane MOP AOE":
+                case "Arcane AOE":
                     armor = "Mage Armor";
                     solver = new Solver(character, calculationOptions, false, false, false, 0, armor, false, false, false, false, true, false, false);
                     solver.Initialize(null);
@@ -232,11 +204,6 @@ namespace Rawr.Mage
             if (castingState == null || generator == null)
             {
                 return;
-            }
-
-            if (character.Ranged != null)
-            {
-                wand = new WandTemplate(solver, (MagicSchool)character.Ranged.Item.DamageType, character.Ranged.Item.MinDamage, character.Ranged.Item.MaxDamage, character.Ranged.Item.Speed).GetSpell(castingState);
             }
 
             StringBuilder sb = new StringBuilder();

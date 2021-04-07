@@ -96,6 +96,10 @@ namespace Rawr
         [XmlElement("AllowedRandomSuffix")]
         public List<int> AllowedRandomSuffixes { get; set; }
 
+        [DefaultValueAttribute(0)]
+        [XmlElement("UpgradeLevels")]
+        public List<int> UpgradeLevels { get; set; }
+
         #region Location Infos
         [XmlIgnore]
         private bool LocaListPurged = false;
@@ -315,9 +319,9 @@ namespace Rawr
                     case ItemSlot.Back: return 15;
                     case ItemSlot.TwoHand:
                     case ItemSlot.OneHand:
+                    case ItemSlot.Ranged:
                     case ItemSlot.MainHand: return 16;
                     case ItemSlot.OffHand: return 17;
-                    case ItemSlot.Ranged: return 18;
                     case ItemSlot.Tabard: return 19;
                     default: return 0;
                 }
@@ -327,7 +331,7 @@ namespace Rawr
         public string IconPath
         {
             get { return (_iconPath == null ? null : _iconPath.ToLower(System.Globalization.CultureInfo.InvariantCulture)); }
-            set { _iconPath = value.ToLower(System.Globalization.CultureInfo.InvariantCulture); }
+            set { _iconPath = value == null ? null : value.ToLower(System.Globalization.CultureInfo.InvariantCulture); }
         }
 
         private ItemSlot _slot;
@@ -405,6 +409,7 @@ namespace Rawr
                     case CharacterRace.Human:
                     case CharacterRace.NightElf:
                     case CharacterRace.Worgen:
+                    case CharacterRace.PandarenAlliance:
                         fitsFaction &= Faction == ItemFaction.Alliance;
                         break;
 
@@ -565,7 +570,7 @@ namespace Rawr
                 case CharacterSlot.Back: return 15;
                 case CharacterSlot.MainHand: return 16;
                 case CharacterSlot.OffHand: return 17;
-                case CharacterSlot.Ranged: return 18;
+                //case CharacterSlot.Ranged: return 18;
                 case CharacterSlot.Tabard: return 19;
                 default: return 0;
             }
@@ -575,7 +580,7 @@ namespace Rawr
         {
             switch (slot)
             {
-                case CharacterSlot.Projectile: return ItemSlot.Projectile;
+                //case CharacterSlot.Projectile: return ItemSlot.Projectile;
                 case CharacterSlot.Head: return ItemSlot.Head;
                 case CharacterSlot.Neck: return ItemSlot.Neck;
                 case CharacterSlot.Shoulders: return ItemSlot.Shoulders;
@@ -592,8 +597,8 @@ namespace Rawr
                 case CharacterSlot.Back: return ItemSlot.Back;
                 case CharacterSlot.MainHand: return ItemSlot.MainHand;
                 case CharacterSlot.OffHand: return ItemSlot.OffHand;
-                case CharacterSlot.Ranged: return ItemSlot.Ranged;
-                case CharacterSlot.ProjectileBag: return ItemSlot.ProjectileBag;
+                //case CharacterSlot.Ranged: return ItemSlot.Ranged;
+                //case CharacterSlot.ProjectileBag: return ItemSlot.ProjectileBag;
                 //case CharacterSlot.ExtraWristSocket: return ItemSlot.Prismatic;
                 //case CharacterSlot.ExtraHandsSocket: return ItemSlot.Prismatic;
                 //case CharacterSlot.ExtraWaistSocket: return ItemSlot.Prismatic;
@@ -658,6 +663,15 @@ namespace Rawr
             }
         }
 
+        private bool _isJewelersFacet;
+        public bool IsJewelersFacet
+        {
+            get
+            {
+                return _isJewelersFacet;
+            }
+        }
+
         public bool IsLimitedGem
         {
             get
@@ -668,7 +682,90 @@ namespace Rawr
 
         internal static bool IsJewelersGemId(int id)
         {
-            return (id == 52255 || id == 52257 || id == 52258 || id == 52259 || id == 52269 || id == 52267 || id == 52260 || id == 52268 || id == 52264 || id == 52266 || id == 52261 || id == 52262 || id == 52263 || id == 52265 || id == 42142 || id == 36766 || id == 42148 || id == 42143 || id == 42152 || id == 42153 || id == 42146 || id == 42158 || id == 42154 || id == 42150 || id == 42156 || id == 42144 || id == 42149 || id == 36767 || id == 42145 || id == 42155 || id == 42151 || id == 42157);
+            return (
+            #region Blue
+            #region Cataclysm
+            id == 52264 || // Rigid Chimera's Eye
+            id == 52261 || // Solid Chimera's Eye
+            id == 52262 || // Sparkling Chimera's Eye
+            id == 52263 || // Stormy Chimera's Eye
+            #endregion
+            #region Wrath
+            id == 42156 || // Rigid Dragon's Eye
+            id == 36767 || // Solid Dragon's Eye
+            id == 42145 || // Sparkling Dragon's Eye
+            id == 42146 || // Sparkling Dragon's Eye
+            id == 42155 || // Stormy Dragon's Eye
+            #endregion
+            #endregion
+            #region Red
+            #region Cataclysm
+            id == 52255 || // Bold Chimera's Eye
+            id == 52257 || // Brilliant Chimera's Eye
+            id == 52258 || // Delicate Chimera's Eye
+            id == 52259 || // Flashing Chimera's Eye
+            id == 52260 || // Precise Chimera's Eye
+            #endregion
+            #region Wrath
+            id == 42142 || // Bold Dragon's Eye
+            id == 42144 || // Brilliant Dragon's Eye
+            id == 42148 || // Brilliant Dragon's Eye
+            id == 36766 || // Delicate Dragon's Eye
+            id == 42143 || // Delicate Dragon's Eye
+            id == 42152 || // Flashing Dragon's Eye
+            id == 42154 || // Precise Dragon's Eye
+            #endregion
+            #endregion
+            #region Yellow
+            #region Cataclysm
+            id == 52269 || // Fractured Chimera's Eye
+            id == 52267 || // Mystic Chimera's Eye
+            id == 52268 || // Quick Chimera's Eye
+            id == 52266 || // Smooth Chimera's Eye
+            id == 52265 || // Subtle Chimera's Eye
+            #endregion
+            #region Wrath
+            id == 42158 || // Mystic Dragon's Eye
+            id == 42150 || // Quick Dragon's Eye
+            id == 42149 || // Smooth Dragon's Eye
+            id == 42153 || // Smooth Dragon's Eye
+            id == 42151 || // Subtle Dragon's Eye
+            id == 42157    // Subtle Dragon's Eye
+            #endregion
+            #endregion
+            );
+        }
+
+        internal static bool IsJewelersFacetId(int id)
+        {
+            return (
+            #region Blue
+            #region MoP
+            id == 83144 || // Rigid Serpent's EyeStormy
+            id == 83148 || // Solid Serpent's Eye
+            id == 83149 || // Sparkling Serpent's Eye
+                //id == 52263 || // Stormy Serpent's Eye
+            #endregion
+            #endregion
+            #region Red
+            #region MoP
+            id == 83141 || // Bold Serpent's Eye
+            id == 83150 || // Brilliant Serpent's Eye
+            id == 83151 || // Delicate Serpent's Eye
+            id == 83152 || // Flashing Serpent's Eye
+            id == 83147 || // Precise Serpent's Eye
+            #endregion
+            #endregion
+            #region Yellow
+            #region MoP
+            id == 83143 || // Fractured Serpent's Eye
+                //id == 52267 || // Mystic Serpent's Eye
+            id == 83142 || // Quick Serpent's Eye
+            id == 83146 || // Smooth Serpent's Eye
+            id == 83145  // Subtle Serpent's Eye
+            #endregion
+            #endregion
+            );
         }
 
         private void UpdateGemInformation()
@@ -679,6 +776,7 @@ namespace Rawr
                 || Slot == ItemSlot.Prismatic
                 || Slot == ItemSlot.Cogwheel || Slot == ItemSlot.Hydraulic;
             _isJewelersGem = IsJewelersGemId(Id);
+            _isJewelersFacet = IsJewelersFacetId(Id);
             _isRedGem = _isGem && Item.GemMatchesSlot(this, ItemSlot.Red);
             _isYellowGem = _isGem && Item.GemMatchesSlot(this, ItemSlot.Yellow);
             _isBlueGem = _isGem && Item.GemMatchesSlot(this, ItemSlot.Blue);
@@ -686,7 +784,10 @@ namespace Rawr
             _isHydraulic = _isGem && Item.GemMatchesSlot(this, ItemSlot.Hydraulic);
         }
 
-        public Item() { }
+        public Item()
+        {
+            UpgradeLevels = new List<int>();
+        }
         public Item(string name, ItemQuality quality, ItemType type, int id, string iconPath, ItemSlot slot, string setName, bool unique, Stats stats, Stats socketBonus, ItemSlot socketColor1, ItemSlot socketColor2, ItemSlot socketColor3, int minDamage, int maxDamage, ItemDamageType damageType, float speed, string requiredClasses)
         {
             _name = name;
@@ -707,6 +808,7 @@ namespace Rawr
             _speed = speed;
             _requiredClasses = requiredClasses;
             _unique = unique;
+            UpgradeLevels = new List<int>();
             UpdateGemInformation();
         }
 
@@ -717,6 +819,7 @@ namespace Rawr
                 Name = this.Name,
                 Quality = this.Quality,
                 Id = this.Id,
+                ItemLevel = this.ItemLevel,
                 IconPath = this.IconPath,
                 Slot = this.Slot,
                 Stats = this.Stats.Clone(),
@@ -733,7 +836,8 @@ namespace Rawr
                 RequiredClasses = this.RequiredClasses,
                 Unique = this.Unique,
                 UniqueId = new List<int>(this.UniqueId ?? (this.UniqueId = new List<int>() { })),
-                LocalizedName = this.LocalizedName
+                LocalizedName = this.LocalizedName,
+                UpgradeLevels = new List<int>(this.UpgradeLevels ?? (this.UpgradeLevels = new List<int>() { }))
             };
         }
 
@@ -790,10 +894,8 @@ namespace Rawr
             list[ItemSlot.OneHand] = CharacterSlot.MainHand;
             list[ItemSlot.TwoHand] = CharacterSlot.MainHand;
             list[ItemSlot.MainHand] = CharacterSlot.MainHand;
+            list[ItemSlot.Ranged] = CharacterSlot.MainHand;
             list[ItemSlot.OffHand] = CharacterSlot.OffHand;
-            list[ItemSlot.Ranged] = CharacterSlot.Ranged;
-            list[ItemSlot.Projectile] = CharacterSlot.Projectile;
-            list[ItemSlot.ProjectileBag] = CharacterSlot.ProjectileBag;
             list.OrderBy(kvp => (int)kvp.Key);
             DefaultSlotMap = list;
         }
@@ -834,18 +936,9 @@ namespace Rawr
                 case CharacterSlot.Trinket2:
                     return this.Slot == ItemSlot.Trinket;
                 case CharacterSlot.MainHand:
-                    return this.Slot == ItemSlot.TwoHand || this.Slot == ItemSlot.OneHand || this.Slot == ItemSlot.MainHand;
+                    return this.Slot == ItemSlot.TwoHand || this.Slot == ItemSlot.OneHand || this.Slot == ItemSlot.MainHand || this.Slot == ItemSlot.Ranged;
                 case CharacterSlot.OffHand:
                     return this.Slot == ItemSlot.OneHand || this.Slot == ItemSlot.OffHand;
-                case CharacterSlot.Ranged:
-                    return this.Slot == ItemSlot.Ranged;
-                case CharacterSlot.Projectile:
-                    return this.Slot == ItemSlot.Projectile;
-                case CharacterSlot.ProjectileBag:
-                    return this.Slot == ItemSlot.ProjectileBag;
-                //case CharacterSlot.ExtraWristSocket:
-                //case CharacterSlot.ExtraHandsSocket:
-                //case CharacterSlot.ExtraWaistSocket:
                 case CharacterSlot.Cogwheels:
                     return this.Slot == ItemSlot.Cogwheel;
                 case CharacterSlot.Hydraulics:
@@ -1064,6 +1157,15 @@ namespace Rawr
                     ) { return true; }
                     meetsRequirements = character.JewelersGemCount <= 3;
                 }
+                else if (IsJewelersFacet)
+                {
+                    volatileRequirements = true;
+                    if (character == null
+                    || !Rawr.Properties.GeneralSettings.Default.EnforceGemRequirements
+                    || !Rawr.Properties.GeneralSettings.Default.EnforceGemRequirements_JC
+                    ) { return true; }
+                    meetsRequirements = character.JewelersFacetCount <= 2;
+                }
                 else if (Unique || IsCogwheel || IsHydraulic)
                 {
                     volatileRequirements = true;
@@ -1120,7 +1222,7 @@ namespace Rawr
             }
             else
             {
-                ElitistArmoryService armoryService = new ElitistArmoryService();
+                Rawr4ArmoryService armoryService = new Rawr4ArmoryService();
                 armoryService.GetItemCompleted += new EventHandler<EventArgs<Item>>(armoryService_GetItemCompleted);
                 armoryService.GetItemAsync(id);
                 
@@ -1140,7 +1242,7 @@ namespace Rawr
         {
             if (e.Value != null)
                 ItemCache.AddItem(e.Value, true);
-            ((ElitistArmoryService)sender).GetItemCompleted -= new EventHandler<EventArgs<Item>>(armoryService_GetItemCompleted);
+            ((Rawr4ArmoryService)sender).GetItemCompleted -= new EventHandler<EventArgs<Item>>(armoryService_GetItemCompleted);
         }
 
         private static void wowheadService_GetItemCompleted(object sender, EventArgs<Item> e)
@@ -1192,6 +1294,9 @@ namespace Rawr
         [DefaultValueAttribute(0)]
         [XmlElement("RandomSuffixId")]
         public int _randomSuffixId;
+        [DefaultValueAttribute(0)]
+        [XmlElement("UpgradeLevel")]
+        public int _upgradeLevel;
 
         // Used by optimizer
         [XmlIgnore]
@@ -1261,12 +1366,22 @@ namespace Rawr
             set { _randomSuffixId = value; OnIdsChanged(); }
         }
 
+        [XmlIgnore]
+        public int UpgradeLevel
+        {
+            get { return _upgradeLevel; }
+            set { _upgradeLevel = value; OnIdsChanged(); }
+        }
+
         private void UpdateJewelerCount()
         {
             int jewelerCount = 0;
             if (Item.IsJewelersGemId(_gem1Id)) jewelerCount++;
             if (Item.IsJewelersGemId(_gem2Id)) jewelerCount++;
             if (Item.IsJewelersGemId(_gem3Id)) jewelerCount++;
+            if (Item.IsJewelersFacetId(_gem1Id)) jewelerCount++;
+            if (Item.IsJewelersFacetId(_gem2Id)) jewelerCount++;
+            if (Item.IsJewelersFacetId(_gem3Id)) jewelerCount++;
             JewelerCount = jewelerCount;
         }
 
@@ -1284,7 +1399,7 @@ namespace Rawr
             UpdateJewelerCount();
             if (Reforging != null)
             {
-                Reforging.ApplyReforging(Item, RandomSuffixId);
+                Reforging.ApplyReforging(Item, RandomSuffixId, UpgradeLevel);
             }
             
             if (IdsChanged != null) IdsChanged(this, null);
@@ -1309,7 +1424,7 @@ namespace Rawr
                     InvalidateCachedData();
                     if (Reforging != null)
                     {
-                        Reforging.ApplyReforging(_itemCached, RandomSuffixId);
+                        Reforging.ApplyReforging(_itemCached, RandomSuffixId, UpgradeLevel);
                     }
                 }
                 return _itemCached;
@@ -1499,8 +1614,8 @@ namespace Rawr
             {
                 if (_gemmedId.Length == 0) // _gemmedId is never null
                 {
-                    _gemmedId = string.Format("{0}.{1}.{2}.{3}.{4}.{5}.{6}.{7}",
-                        Id, RandomSuffixId, Gem1Id, Gem2Id, Gem3Id, EnchantId, ReforgeId, TinkeringId);
+                    _gemmedId = string.Format("{0}.{1}.{2}.{3}.{4}.{5}.{6}.{7}.{8}",
+                        Id, RandomSuffixId, Gem1Id, Gem2Id, Gem3Id, EnchantId, ReforgeId, TinkeringId, UpgradeLevel);
                 }
                 return _gemmedId;
             }
@@ -1511,8 +1626,13 @@ namespace Rawr
                 string[] ids = _gemmedId.Split('.');
                 if (ids.Length == 7)
                 {
-                    // gemmed id without random suffix
-                    ids = new string[] { ids[0], "0", ids[1], ids[2], ids[3], ids[4], ids[5], ids[6] };
+                    // gemmed id without random suffix or upgrade level
+                    ids = new string[] { ids[0], "0", ids[1], ids[2], ids[3], ids[4], ids[5], ids[6], "0" };
+                }
+                if (ids.Length == 8)
+                {
+                    // gemmed id without upgrade level
+                    ids = new string[] { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5], ids[6], ids[7], "0" };
                 }
                 _id = int.Parse(ids[0]);
                 _randomSuffixId = ids.Length > 1 ? int.Parse(ids[1]) : 0;
@@ -1522,6 +1642,7 @@ namespace Rawr
                 _enchantId = ids.Length > 5 ? int.Parse(ids[5]) : 0;
                 _tinkeringId = ids.Length > 7 ? int.Parse(ids[7]) : 0;
                 ReforgeId = ids.Length > 6 ? int.Parse(ids[6]) : 0;
+                UpgradeLevel = ids.Length > 8 ? int.Parse(ids[8]) : 0;
                 OnIdsChanged();
             }
         }
@@ -1541,8 +1662,13 @@ namespace Rawr
             string[] ids = gemmedId.Split('.');
             if (ids.Length == 7)
             {
-                // gemmed id without random suffix
-                ids = new string[] { ids[0], "0", ids[1], ids[2], ids[3], ids[4], ids[5], ids[6] };
+                // gemmed id without random suffix or upgrade level
+                ids = new string[] { ids[0], "0", ids[1], ids[2], ids[3], ids[4], ids[5], ids[6], "0" };
+            }
+            if (ids.Length == 8)
+            {
+                // gemmed id without upgrade level
+                ids = new string[] { ids[0], ids[1], ids[2], ids[3], ids[4], ids[5], ids[6], ids[7], "0" };
             }
             _id = int.Parse(ids[0]);
             _randomSuffixId = ids.Length > 1 ? int.Parse(ids[1]) : 0;
@@ -1552,13 +1678,14 @@ namespace Rawr
             _enchantId = ids.Length > 5 ? int.Parse(ids[5]) : 0;
             _tinkeringId = ids.Length > 7 ? int.Parse(ids[7]) : 0;
             UpdateJewelerCount();
+            UpgradeLevel = ids.Length > 8 ? int.Parse(ids[8]) : 0;
             ReforgeId = ids.Length > 6 ? int.Parse(ids[6]) : 0;
             if (Reforging != null)
             {
-                Reforging.ApplyReforging(Item, RandomSuffixId);
+                Reforging.ApplyReforging(Item, RandomSuffixId, UpgradeLevel);
             }
         }
-        public ItemInstance(int id, int randomSuffixId, int gem1Id, int gem2Id, int gem3Id, int enchantId, int reforgeId, int tinkeringId)
+        public ItemInstance(int id, int randomSuffixId, int gem1Id, int gem2Id, int gem3Id, int enchantId, int reforgeId, int tinkeringId, int upgradeLevel = 0)
         {
             _id = id;
             _gem1Id = gem1Id;
@@ -1568,9 +1695,10 @@ namespace Rawr
             _tinkeringId = tinkeringId;
             _randomSuffixId = randomSuffixId;
             UpdateJewelerCount();
-            _reforging = new Reforging(Item, randomSuffixId, reforgeId);
+            _upgradeLevel = upgradeLevel;
+            _reforging = new Reforging(Item, randomSuffixId, _upgradeLevel, reforgeId);
         }
-        public ItemInstance(Item item, int randomSuffixId, Item gem1, Item gem2, Item gem3, Enchant enchant, Reforging reforging, Tinkering tinkering)
+        public ItemInstance(Item item, int randomSuffixId, Item gem1, Item gem2, Item gem3, Enchant enchant, Reforging reforging, Tinkering tinkering, int upgradeLevel = 0)
         {
             // this code path is used a lot, optimize for performance
             _itemCached = item;
@@ -1585,6 +1713,7 @@ namespace Rawr
             _enchantId = enchant != null ? enchant.Id : 0;
             _tinkeringId = tinkering != null ? tinkering.Id : 0;
             _randomSuffixId = randomSuffixId;
+            _upgradeLevel = upgradeLevel;
             _reforging = reforging;
             OnIdsChanged();
         }
@@ -1601,7 +1730,8 @@ namespace Rawr
                 Reforging = this.Reforging == null ? null : this.Reforging.Clone(),
                 Tinkering = this.Tinkering,
                 RandomSuffixId = this.RandomSuffixId,
-                ItemAvailabilityInformation = this.ItemAvailabilityInformation // batch tools relies on this
+                ItemAvailabilityInformation = this.ItemAvailabilityInformation, // batch tools relies on this
+                UpgradeLevel = this.UpgradeLevel
             };
         }
 
@@ -1675,6 +1805,144 @@ namespace Rawr
             }
         }
 
+        // This function applies upgrading to the item instance's stats.
+        public static void AccumulateUpgradeStats(Stats stats, Item item, int randomSuffixId, int upgradeItemLevel)
+        {
+            float adjustment = (float)Math.Pow(1.15, upgradeItemLevel / 15.0);
+            // Apply upgrade formula based on socket count
+            // Calculate the "socket count" (meta counts as 2)
+            int socketCount = 0;
+            for (int index = 1; index <= 3; ++index)
+            {
+                ItemSlot socket = item.GetSocketColor(index);
+                if (socket != ItemSlot.None)
+                    ++socketCount;
+                if (socket == ItemSlot.Meta)
+                    ++socketCount;
+            }
+            // Primary stats get a base adjustment of socket * 80, secondary stats half that
+            int primaryBaseAdjustment = socketCount * 80;
+            int secondaryBaseAdjustment = socketCount * 40;
+            // Stam, SP, Amplifier, Multistrike: Not affected by base adjustments
+            List<AdditiveStat> NoMultiplierRoundedStats = new List<AdditiveStat>()
+            {
+                AdditiveStat.Stamina,
+                AdditiveStat.SpellPower
+            };
+            List<AdditiveStat> NoMultiplierNoRoundingStats = new List<AdditiveStat>()
+            {
+                AdditiveStat.SecondaryStatMultiplier
+            };
+            // Agi, Int, Str: Primary base adjustment
+            List<AdditiveStat> PrimaryStats = new List<AdditiveStat>()
+            {
+                AdditiveStat.Agility,
+                AdditiveStat.Intellect,
+                AdditiveStat.Strength
+            };
+            // Everything else: Secondary base adjustment
+            List<AdditiveStat> SecondaryStats = new List<AdditiveStat>()
+            {
+                AdditiveStat.HasteRating,
+                AdditiveStat.CritRating,
+                AdditiveStat.MasteryRating,
+                AdditiveStat.Spirit,
+                AdditiveStat.HitRating,
+                AdditiveStat.DodgeRating,
+                AdditiveStat.ParryRating,
+                AdditiveStat.ExpertiseRating
+            };
+            // Perform stat accumulation
+            foreach (AdditiveStat stat in NoMultiplierRoundedStats)
+            {
+                if (item.Stats._rawAdditiveData[(int)stat] > 0)
+                    stats._rawAdditiveData[(int)stat] += (float)Math.Floor(item.Stats._rawAdditiveData[(int)stat] * adjustment) - item.Stats._rawAdditiveData[(int)stat];
+            }
+            foreach (AdditiveStat stat in NoMultiplierNoRoundingStats)
+            {
+                if (item.Stats._rawAdditiveData[(int)stat] > 0)
+                    stats._rawAdditiveData[(int)stat] += item.Stats._rawAdditiveData[(int)stat] * adjustment - item.Stats._rawAdditiveData[(int)stat];
+            }
+            foreach (AdditiveStat stat in PrimaryStats)
+            {
+                float currentVal = item.Stats._rawAdditiveData[(int)stat];
+                if (currentVal > 0)
+                    stats._rawAdditiveData[(int)stat] += (float)Math.Round((currentVal + primaryBaseAdjustment) * adjustment) - primaryBaseAdjustment - currentVal;
+            }
+            foreach (AdditiveStat stat in SecondaryStats)
+            {
+                float currentVal = item.Stats._rawAdditiveData[(int)stat];
+                if (randomSuffixId != 0)
+                {
+                    currentVal = RandomSuffix.GetStatValue(item, randomSuffixId, stat);
+                }
+                if (currentVal > 0)
+                    stats._rawAdditiveData[(int)stat] += (float)Math.Round((currentVal + secondaryBaseAdjustment) * adjustment) - secondaryBaseAdjustment - currentVal;
+            }
+            // Armor has its own adjustment
+            if (item.Stats._rawAdditiveData[(int)AdditiveStat.Armor] > 0)
+            {
+                float currentVal = item.Stats._rawAdditiveData[(int)AdditiveStat.Armor];
+                stats._rawAdditiveData[(int)AdditiveStat.Armor] += (float)Math.Round(currentVal * (float)Math.Pow(1.042, upgradeItemLevel / 15.0)) - currentVal;
+            }
+            // Trinket procs
+            if (item.Slot == ItemSlot.Trinket && item.Stats._rawSpecialEffectData != null)
+            {
+                foreach (SpecialEffect effect in item.Stats._rawSpecialEffectData)
+                {
+                    if (effect == null) continue;
+                    if (!string.IsNullOrEmpty(effect.ModifiedBy) && effect.ModifiedBy.Contains("Budget"))
+                    {
+                        float currentVal = effect.Chance;
+                        SpecialEffect newEffect = stats.SpecialEffects(se => se.Equals(effect)).First();
+                        stats.RemoveSpecialEffect(newEffect);
+                        newEffect = new SpecialEffect(newEffect);
+                        newEffect.Chance += effect.Chance * adjustment - currentVal;
+                        stats.AddSpecialEffect(newEffect);
+                    }
+                    foreach (AdditiveStat stat in NoMultiplierNoRoundingStats)
+                    {
+                        float currentVal = effect.Stats._rawAdditiveData[(int)stat];
+                        if (currentVal > 0)
+                        {
+                            SpecialEffect newEffect = stats.SpecialEffects(se => se.Equals(effect)).First();
+                            stats.RemoveSpecialEffect(newEffect);
+                            newEffect = new SpecialEffect(newEffect);
+                            newEffect.Stats._rawAdditiveData[(int)stat] +=
+                                (float)Math.Floor(effect.Stats._rawAdditiveData[(int)stat] * adjustment) - currentVal;
+                            stats.AddSpecialEffect(newEffect);
+                        }
+                    }
+                    foreach (AdditiveStat stat in PrimaryStats)
+                    {
+                        float currentVal = effect.Stats._rawAdditiveData[(int)stat];
+                        if (currentVal > 0)
+                        {
+                            SpecialEffect newEffect = stats.SpecialEffects(se => se.Equals(effect)).First();
+                            stats.RemoveSpecialEffect(newEffect);
+                            newEffect = new SpecialEffect(newEffect);
+                            newEffect.Stats._rawAdditiveData[(int)stat] +=
+                                (float)Math.Floor(effect.Stats._rawAdditiveData[(int)stat] * adjustment) - currentVal;
+                            stats.AddSpecialEffect(newEffect);
+                        }
+                    }
+                    foreach (AdditiveStat stat in SecondaryStats)
+                    {
+                        float currentVal = effect.Stats._rawAdditiveData[(int)stat];
+                        if (currentVal > 0)
+                        {
+                            SpecialEffect newEffect = stats.SpecialEffects(se => se.Equals(effect)).First();
+                            stats.RemoveSpecialEffect(newEffect);
+                            newEffect = new SpecialEffect(newEffect);
+                            newEffect.Stats._rawAdditiveData[(int)stat] +=
+                                (float)Math.Floor(effect.Stats._rawAdditiveData[(int)stat] * adjustment) - currentVal;
+                            stats.AddSpecialEffect(newEffect);
+                        }
+                    }
+                }
+            }
+        }
+
         // caching policy: cache total stats only for items that don't have global requirements
         // value should not change if it relies on data other than from this item
         // assume there is no stat editing happening in code other than in item editor
@@ -1730,14 +1998,18 @@ namespace Rawr
             if (volatileItem && unsafeStatsAccumulator != null)
             {
                 unsafeStatsAccumulator.AccumulateUnsafe(item.Stats, true);
+                if (RandomSuffixId != 0)
+                {
+                    RandomSuffix.AccumulateStats(unsafeStatsAccumulator, item, RandomSuffixId);
+                }
+                if (UpgradeLevel > 0)
+                {
+                    AccumulateUpgradeStats(unsafeStatsAccumulator, item, RandomSuffixId, UpgradeLevel);
+                }
                 if (Reforging != null && Reforging.Validate)
                 {
                     unsafeStatsAccumulator._rawAdditiveData[(int)Reforging.ReforgeFrom] -= Reforging.ReforgeAmount;
                     unsafeStatsAccumulator._rawAdditiveData[(int)Reforging.ReforgeTo] += Reforging.ReforgeAmount;
-                }
-                if (RandomSuffixId != 0)
-                {
-                    RandomSuffix.AccumulateStats(unsafeStatsAccumulator, item, RandomSuffixId);
                 }
                 if (gem1) unsafeStatsAccumulator.AccumulateUnsafe(g1.Stats, true);
                 if (gem2) unsafeStatsAccumulator.AccumulateUnsafe(g2.Stats, true);
@@ -1758,14 +2030,18 @@ namespace Rawr
                     totalItemStats.BeginUnsafe(pRawAdditiveData, pRawMultiplicativeData, pRawNoStackData);
 #endif
                     totalItemStats.AccumulateUnsafe(item.Stats, true);
+                    if (RandomSuffixId != 0)
+                    {
+                        RandomSuffix.AccumulateStats(totalItemStats, item, RandomSuffixId);
+                    }
+                    if (UpgradeLevel > 0)
+                    {
+                        AccumulateUpgradeStats(totalItemStats, item, RandomSuffixId, UpgradeLevel);
+                    }
                     if (Reforging != null && Reforging.Validate)
                     {
                         totalItemStats._rawAdditiveData[(int)Reforging.ReforgeFrom] -= Reforging.ReforgeAmount;
                         totalItemStats._rawAdditiveData[(int)Reforging.ReforgeTo] += Reforging.ReforgeAmount;
-                    }
-                    if (RandomSuffixId != 0)
-                    {
-                        RandomSuffix.AccumulateStats(totalItemStats, item, RandomSuffixId);
                     }
                     if (gem1) totalItemStats.AccumulateUnsafe(g1.Stats, true);
                     if (gem2) totalItemStats.AccumulateUnsafe(g2.Stats, true);
@@ -1842,7 +2118,7 @@ namespace Rawr
             get
             {
                 if (Item == null) return 0;
-                return Item.MinDamage;
+                return (int)Math.Floor(Item.MinDamage * Math.Pow(1.15, UpgradeLevel / 15.0));
             }
         }
 
@@ -1852,7 +2128,7 @@ namespace Rawr
             get
             {
                 if (Item == null) return 0;
-                return Item.MaxDamage;
+                return (int)Math.Floor(Item.MaxDamage * Math.Pow(1.15, UpgradeLevel / 15.0));
             }
         }
 
@@ -1873,6 +2149,15 @@ namespace Rawr
             {
                 if (Item == null) return 0;
                 return Item.Speed;
+            }
+        }
+        [XmlIgnore]
+        public float DPS
+        {
+            get
+            {
+                if (Speed == 0f) return 0f;
+                else return ((float)(MinDamage + MaxDamage) * 0.5f) / Speed;
             }
         }
 
@@ -1965,6 +2250,7 @@ namespace Rawr
             get {
                 if (this.Count <= 0) { return null; }
                 if (this.Count < (int)cs + 1) { return null; }
+                if ((int)cs < 0) { return null; }
                 return this[(int)cs];
             }
             set { this[(int)cs] = value; }

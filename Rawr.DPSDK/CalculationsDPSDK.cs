@@ -452,9 +452,9 @@ namespace Rawr.DPSDK
             // TODO: Fix this so we're not using pre-set rotations/priorities.
             if (RotT == Rotation.Type.Frost)
             {
-                if (calcOpts.RotType == RotationType.MasterFrost)
-                    rot.PRE_MasterFrost();
-                else
+//                if (calcOpts.RotType == RotationType.MasterFrost)
+//                  rot.PRE_MasterFrost();
+//                else
                     rot.PRE_Frost();
             }
             else if (RotT == Rotation.Type.Unholy)
@@ -493,9 +493,9 @@ namespace Rawr.DPSDK
 
             // TODO: Fix this so we're not using pre-set rotations.
             if (RotT == Rotation.Type.Frost)
-                if (calcOpts.RotType == RotationType.MasterFrost)
-                    rot.PRE_MasterFrost();
-                else
+//                if (calcOpts.RotType == RotationType.MasterFrost)
+//                    rot.PRE_MasterFrost();
+//                else
                     rot.PRE_Frost();
             else if (RotT == Rotation.Type.Unholy)
                 rot.PRE_Unholy();
@@ -513,7 +513,7 @@ namespace Rawr.DPSDK
             else 
             {
                 // Unholy will also have gargoyles.
-                if (talents.SummonGargoyle > 1)
+                if (RotT == Rotation.Type.Unholy)
                 {
                     Pet Gar = new Gargoyle(stats, talents, hBossOptions, calcOpts.presence);
                     float garuptime = .5f / 3f;
@@ -637,51 +637,39 @@ namespace Rawr.DPSDK
 
         public static void AccumulatePresenceStats(StatsDK PresenceStats, Presence p, DeathKnightTalents t)
         {
+            Rotation.Type r = (Rotation.Type)(t.Specialization + 1);
             switch(p)
             {
                 case Presence.Blood:
                 {
-                    if (t.ImprovedBloodPresence > 0)
+                    if (r == Rotation.Type.Blood)
                     {
-                        PresenceStats.CritChanceReduction += 0.03f * t.ImprovedBloodPresence;
-                        PresenceStats.BonusRuneRegeneration += .1f * t.ImprovedBloodPresence;
+                        PresenceStats.CritChanceReduction += 0.06f;
+                        PresenceStats.BonusRuneRegeneration += .2f;
                     }
-                    else if (t.ImprovedFrostPresence > 0)
-                        PresenceStats.BonusRPMultiplier += .02f * t.ImprovedFrostPresence;
-                    else if (t.ImprovedUnholyPresence == 1)
-                        PresenceStats.MovementSpeed += .08f;
-                    else if (t.ImprovedUnholyPresence == 2)
-                        PresenceStats.MovementSpeed += .15f;
-                    PresenceStats.BonusStaminaMultiplier += .08125f; 
+                    PresenceStats.BonusStaminaMultiplier += .25f; 
                     PresenceStats.BaseArmorMultiplier += 0.55f;
-                    PresenceStats.DamageTakenReductionMultiplier = 1f - (1f - PresenceStats.DamageTakenReductionMultiplier) * (1f - 0.08f);
+                    PresenceStats.DamageTakenReductionMultiplier = 1f - (1f - PresenceStats.DamageTakenReductionMultiplier) * (1f - 0.1f);
                     // Threat bonus.
                     PresenceStats.ThreatIncreaseMultiplier += 1f; 
                     break;
                 }
                 case Presence.Frost:
                 {
-                    if (t.ImprovedBloodPresence > 0)
-                        PresenceStats.DamageTakenReductionMultiplier = 1f - (1f - PresenceStats.DamageTakenReductionMultiplier) * (1f - 0.02f * t.ImprovedBloodPresence);
-                    else if (t.ImprovedUnholyPresence == 1)
-                        PresenceStats.MovementSpeed += .08f;
-                    else if (t.ImprovedUnholyPresence == 2)
-                        PresenceStats.MovementSpeed += .15f;
                     PresenceStats.BonusDamageMultiplier += 0.1f;
-                    PresenceStats.BonusRPMultiplier += 0.1f;  
+                    PresenceStats.BonusRPMultiplier += 0.2f;  
                     PresenceStats.ThreatReductionMultiplier += .20f; // Wowhead has this as effect #3
+                    PresenceStats.StunDurReduc += .20f;
+                    PresenceStats.FearDurReduc += .20f;
+                    PresenceStats.SnareRootDurReduc += .20f;
+                    PresenceStats.SilenceDurReduc += .20f;
                     break;
                 }
                 case Presence.Unholy:
                 {
-                    if (t.ImprovedBloodPresence > 0)
-                        PresenceStats.DamageTakenReductionMultiplier = 1f - (1f - PresenceStats.DamageTakenReductionMultiplier) * (1f - 0.02f * t.ImprovedBloodPresence);
-                    else if (t.ImprovedFrostPresence > 0)
-                        PresenceStats.BonusRPMultiplier += .02f * t.ImprovedFrostPresence;
-                    else if (t.ImprovedUnholyPresence > 0)
-                        PresenceStats.PhysicalHaste = AddStatMultiplierStat(PresenceStats.PhysicalHaste, (.025f * t.ImprovedUnholyPresence));
+                    if (r == Rotation.Type.Unholy)
+                        PresenceStats.PhysicalHaste = AddStatMultiplierStat(PresenceStats.PhysicalHaste, (.10f));
                     PresenceStats.PhysicalHaste = AddStatMultiplierStat(PresenceStats.PhysicalHaste, .1f);
-                    //PresenceStats.BonusRuneRegeneration += .1f;
                     PresenceStats.MovementSpeed += .15f;
                     PresenceStats.ThreatReductionMultiplier += .20f; // Wowhead has this as effect #3
                     break;
@@ -727,40 +715,7 @@ namespace Rawr.DPSDK
             AccumulateBuffsStats(statsTotal, character.ActiveBuffs);
 
             #region Tank
-            #region T11
-            int tierCount;
-            if (character.SetBonusCount.TryGetValue("Magma Plated Battlearmor", out tierCount))
-            {
-                if (tierCount >= 2) { statsTotal.b2T11_Tank = true; }
-                if (tierCount >= 4) { statsTotal.b4T11_Tank = true; }
-            }
-            if (statsTotal.b4T11_Tank)
-                statsTotal.AddSpecialEffect(_SE_IBF[1]);
-            else
-                statsTotal.AddSpecialEffect(_SE_IBF[0]);
-            #endregion
-            #region T12
-            if (character.SetBonusCount.TryGetValue("Elementium Deathplate Battlearmor", out tierCount))
-            {
-                if (tierCount >= 2) { statsTotal.b2T12_Tank = true; }
-                if (tierCount >= 4) { statsTotal.b4T12_Tank = true; }
-            }
-            if (statsTotal.b2T12_Tank)
-            {
-                // Your melee attacks cause Burning Blood on your target, 
-                // which deals 800 Fire damage every 2 for 6 sec and 
-                // causes your abilities to behave as if you had 2 diseases 
-                // present on the target.
-
-                // Implemented in CombatState DiseaseCount
-                statsTotal.FireDamage = 800 / 2;
-            }
-            if (statsTotal.b4T12_Tank)
-            {
-                // Your Dancing Rune Weapon grants 15% additional parry chance.
-                // Implemented in DRW talent Static Special Effect.
-            }
-            #endregion
+            int tierCount = 0;
             #region T13
             if (character.SetBonusCount.TryGetValue("Necrotic Boneplate Armor", out tierCount))
             {
@@ -779,59 +734,23 @@ namespace Rawr.DPSDK
                 // for 50% of the effect it has on you.
             }
             #endregion
+            #region T14
+            if (character.SetBonusCount.TryGetValue("Plate of the Lost Catacomb", out tierCount))
+            {
+                if (tierCount >= 2) { statsTotal.b2T14_Tank = true; }
+                if (tierCount >= 4) { statsTotal.b4T14_Tank = true; }
+            }
+            if (statsTotal.b2T14_Tank)
+            {
+                // Reduces the cooldown of your Vampiric Blood ability by 20 sec.
+            }
+            if (statsTotal.b2T14_Tank)
+            {
+                // Increases the healing received from your Death Strike by 10%.
+            }
+            #endregion
             #endregion
             #region DPS
-            #region T11
-            if (character.SetBonusCount.TryGetValue("Magma Plated Battlegear", out tierCount))
-            {
-                if (tierCount >= 2)
-                {
-                    statsTotal.b2T11_DPS = true;
-                    if (tierCount >= 4) { statsTotal.b4T11_DPS = true; }
-                }
-                if (statsTotal.b2T11_DPS)
-                {
-                    // increase the crit chance of your DeathCoil & FS by 5%
-                    statsTotal.BonusCritChanceDeathCoil += .05f;
-                    statsTotal.BonusCritChanceFrostStrike += .05f;
-                }
-                if (statsTotal.b4T11_DPS)
-                {
-                    // Each time you gain a Death Rune or trigger your Killing Machine talent, 
-                    // you also gain 1% increased attack power for 30 sec. Stacks up to 3 times.
-                    statsTotal.AddSpecialEffect(new SpecialEffect(Trigger.DeathRuneGained,
-                        new Stats() { BonusAttackPowerMultiplier = 0.01f, },
-                        30, 0, 1f, 3));
-                    statsTotal.AddSpecialEffect(new SpecialEffect(Trigger.KillingMachine,
-                        new Stats() { BonusAttackPowerMultiplier = 0.01f, },
-                        30, 0, 1f, 3));
-                }
-            }
-            #endregion
-            #region T12
-            if (character.SetBonusCount.TryGetValue("Elementium Deathplate Battlegear", out tierCount))
-            {
-                if (tierCount >= 2)
-                {
-                    statsTotal.b2T12_DPS = true;
-                    if (tierCount >= 4)
-                    {
-                        
-                        statsTotal.b4T12_DPS = true;
-                    }
-                }
-            }
-            if (statsTotal.b2T12_DPS)
-            {
-                // Horn of Winter also grats 3 RPp5
-                statsTotal.RPp5 += 3;
-            }
-            if (statsTotal.b4T12_DPS)
-            {
-                // Your Obliterate and Scourge Strike abilities instantly deal 6% additional damage as Fire damage.
-                // Implemented in Oblit and SS classes.
-            }
-            #endregion
             #region T13
             if (character.SetBonusCount.TryGetValue("Necrotic Boneplate Battlegear", out tierCount))
             {
@@ -850,6 +769,21 @@ namespace Rawr.DPSDK
                 // grant 710 mastery rating for 12 sec when activated.
                 statsTotal.AddSpecialEffect(_SE_4T13_RC);
                 statsTotal.AddSpecialEffect(_SE_4T13_RE);
+            }
+            #endregion
+            #region T14
+            if (character.SetBonusCount.TryGetValue("Battlegear of the Lost Catacomb", out tierCount))
+            {
+                if (tierCount >= 2) { statsTotal.b2T14_DPS = true; }
+                if (tierCount >= 4) { statsTotal.b4T14_DPS = true; }
+            }
+            if (statsTotal.b2T14_DPS)
+            {
+                // Your Obliterate, Frost Strike, and Scourge Strike deal 10% increased damage.
+            }
+            if (statsTotal.b4T14_DPS)
+            {
+                // Your Pillar of Frost ability grants 5% additional Strength, and your Unholy Frenzy ability grants 10% additional haste.
             }
             #endregion
             #endregion
@@ -930,11 +864,6 @@ namespace Rawr.DPSDK
                 s.MovementSpeed = (float)Math.Max(s.MovementSpeed, 1.15f);
         }
 
-        public static Rotation.Type GetSpec(DeathKnightTalents t)
-        {
-            return (Rotation.Type)t.HighestTree + 1;
-        }
-
         /// <summary>
         /// Local version of GetItemStats()
         /// Includes the Armor style bonus.
@@ -982,504 +911,248 @@ namespace Rawr.DPSDK
         /// <summary>Build the talent effects.</summary>
         public static void AccumulateTalents(StatsDK FullCharacterStats, Character character)
         {
-            Stats newStats = new Stats();
-            // Runic Focus:
-            FullCharacterStats.SpellHit += 0.09f;
-
             // Which talent tree focus?
-            #region Talent Speciality
-            Rotation.Type r = GetSpec(character.DeathKnightTalents);
+            // Specs have a whole stack of things that come with them now.
+            // Things that used to be in talents.
+
+            DeathKnightTalents t = character.DeathKnightTalents;
+
+            #region Spec Abilities:
+            Rotation.Type r = (Rotation.Type)(t.Specialization + 1);
             switch (r)
             {
                 case Rotation.Type.Blood:
                     {
-                        // Special abilities for being blood
-                        // Heart Strike
-                        // Veteran of the third war
-                        // Stamina +9%
+                        #region Special abilities for being blood
+                        // Blood Rites (Passive)
+                        // Whenever you hit w/ DS, Frost & Unholy Runes will become Death Runes. 3 min CD.
+                        // TODO: Implement in Rotation
+
+                        // Vengeance (Passive)
+                        // Every time you take damage 2% of the unmitigated damage becomes AP for 20 secs.
+                        // TODO: Verify in Rotation/TankDK.
+
+                        // Veteran of the Third War (Passive)
+                        // Increase Stam by 9%
+                        // Increase Dodge by 2%
                         FullCharacterStats.BonusStaminaMultiplier += .09f;
-                        // Expertise +6
-                        FullCharacterStats.Expertise += 6;
-                        // Blood Rites
-                        // Whenever you hit with Death Strike or Obliterate, the Frost and Unholy Runes 
-                        // will become Death Runes when they activate.  Death Runes count as a Blood, Frost or Unholy Rune.
-                        // Vengence
-                        // Each time you take damage, you gain 5% of the damage taken as attack power, up to a maximum of 10% of your health.
-                        // Mastery: Blood Shield
-                        // Each Time you heal yourself w/ DS you gain a shield worth 50% of the amount healed
-                        // Each Point of Mastery increases the shield by 6.25%
+                        FullCharacterStats.Dodge += .02f;
+
+                        // Dark Command
+                        // Heart Strike
+
+                        // Scent of Blood (Passive)
+                        // Successful Mainhand AutoAttacks have a chance to increase healing & min healing 
+                        // done by your next DS w/i 20 sec by 20% & generate 10 RP. Stacks up to 5 times.
+                        // TODO: Implement in DS?
+
+                        // Improved Blood Presence (Passive)
+                        // Increases Rune Regen by 20%
+                        // reduces chance to be crit by 6% 
+                        // when in Blood presence
+                        // Implemented in AccumulatePresence
+
+                        // Rune Tap
+                        FullCharacterStats.AddSpecialEffect(_SE_RuneTap);
+                        // Rune Strike
+
+                        // Blood Parasite (Passive)
+                        // Melee attacks have a 10% chance to spawn a blood worm which attack until the burst
+                        // healing nearby allies.  Lasts for 20 sec.
+                        // TODO: Implement
+
+                        // Scarlet Fever (Passive)                        
+                        // BB refreshes disease
+                        // BP afflicts enemies with Weakened Blows
+                        // TODO: Implement in BB/BP/Rotation
+
+                        // Will of the Necropolis (Passive)
+                        // When a damaging attack brings you below 30% health:
+                        // CD on Rune tap is refreshed
+                        // Next Rune Tap has no cost
+                        // All damage taken is reduced by 25% for 8 Secs
+                        // Cannot occur more than once every 45 secs.
+                        FullCharacterStats.AddSpecialEffect(_SE_WillOfTheNecropolis);
+
+                        // Sanguine Fortitude (Passive)
+                        // IBF reduces damage by additional 30%
+                        // And Costs no RP.
+                        FullCharacterStats.AddSpecialEffect(_SE_IBF[1]);
+
+                        // Dancing Rune Weapon
+                        if (t.GlyphofDancingRuneWeapon)
+                            FullCharacterStats.AddSpecialEffect(_SE_DRW[1]);
+                        else
+                            FullCharacterStats.AddSpecialEffect(_SE_DRW[0]);
+
+                        // Vampiric Blood
+                        // Bone Shield
+
+                        // Mastery: Blood Shield (Passive)
+                        // Everytime you heal yourself with DS in Blood Presence
+                        // You gain X% ammount healed as a physical damage absorbsion shield 
+                        // TODO: Verify in TankDK
+
+                        // Crimson Scourge (Passive)
+                        // Increases BB damage by 40%
+                        // And when you land a melee attack on a target infected by BP 
+                        // there is a 10% chance that your next BB or DnD will cost no runes.
+                        // TODO: Implement in BB & Rotation.
+
+                        // Soul Reaper
+                        #endregion
                         break;
                     }
                 case Rotation.Type.Frost:
                     {
-                        // Special abilities for being Frost
+                        // All other specs have normal IBF.
+                        FullCharacterStats.AddSpecialEffect(_SE_IBF[0]);
+
+                        #region Special abilities for being Frost
+                        // TODO: Frost Spec abilities
+                        // Blood of the North (Passive)
                         // Frost Strike
-                        // Icy Talons
-                        // Melee Attack speed +20%
-                        FullCharacterStats.PhysicalHaste = AddStatMultiplierStat(FullCharacterStats.PhysicalHaste, .2f);
-                        FullCharacterStats.BonusRuneRegeneration -= .2f; // Only this haste doesn't affect Rune Regen.  
-
-                        // Blood of the North
-                        // Blood runes are death runes.
-                        // Mastery: Frozen Heart
-                        // Increases all frost damage by 16%.  
-                        // Each point of mastery increases frost damage by an additional 2.0%
-                        FullCharacterStats.BonusFrostDamageMultiplier += .16f;
-                        FullCharacterStats.BonusFrostDamageMultiplierFromMastery = .02f;
-
+                        // Howling Blast
+                        // Icy Talons (Passive)
+                        // Obliterate
+                        // Unholy Aura (Passive)
+                        // Killing Machine (Passive)
+                        // Improved Frost Presence (Passive)
+                        // Brittle Bones (Passive)
+                        // Pillar of Frost
+                        // Rime (Passive)
+                        // Might of the Frozen Wastes (Passive)
+                        // Threat of Thassarian (Passive)
+                        // Mastery: Mastery: Frozen Heart (Passive)
+                        // Soul Reaper
+                        #endregion
                         break;
                     }
                 case Rotation.Type.Unholy:
                     {
-                        // Special abilities for being Unholy
+                        // All other specs have normal IBF.
+                        FullCharacterStats.AddSpecialEffect(_SE_IBF[0]);
+
+                        #region Special abilities for being Unholy
+                        // TODO: Unholy Spec abilities
+                        // Master of Ghouls (Passive)
+                        // Reaping (Passive)
+                        // Unholy Might (Passive)
                         // Scourge Strike
-                        // Master of Ghouls
-                        // Reduces the CD on Raise dead by 60 sec.
-                        // The ghoul summoned is considered your pet w/o a limited duration.
-                        // Reaping
-                        // Whenever you hit with Blood strike, pestilence, or Festering strike, the runes spent will 
-                        // become death runes when they activate.
-                        // Unholy Might
-                        // Str +25%
-                        FullCharacterStats.BonusStrengthMultiplier += .25f;
-                        // Mastery: Dreadblade.
-                        // Increases shadow damage by 20% + 
-                        // Each point of mastery increases shadow damage by an additional 2.5%
-                        FullCharacterStats.BonusShadowDamageMultiplier += .2f ;
-                        FullCharacterStats.BonusShadowDamageMultiplierFromMastery = .025f;
+                        // Shadow Infusion (Passive)
+                        // Festering Strike
+                        // Sudden Doom (Passive)
+                        // Unholy Frenzy
+                        // Ebon Plaguebringer (Passive)
+                        // Dark Transformation
+                        // Summon Gargoyle
+                        // Improved Unholy Presence (Passive)
+                        // Mastery: Mastery: Dreadblade (Passive)
+                        // Soul Reaper
+                        #endregion 
                         break;
                     }
             }
             #endregion
 
-            #region Blood Talents
-            // Butchery
-            // 1RPp5 per Point
-            if (character.DeathKnightTalents.Butchery > 0)
-            {
-                FullCharacterStats.RPp5 += 1 * character.DeathKnightTalents.Butchery;
-            }
+            #region Talents
+            #region Level 15
+            // Roiling Blood
+            // Your Blood Boil ability now also triggers Pestilence if it strikes a diseased target.
+            // Implemented in BB.
 
-            // Blade Barrier
-            // Reduce damage by 2% per point for 10 sec.
-            if (character.DeathKnightTalents.BladeBarrier > 0)
-            {
-                // If you don't have your Blood Runes on CD, you're doing it wrong. 
-                FullCharacterStats.DamageTakenReductionMultiplier = 1f - (1f - FullCharacterStats.DamageTakenReductionMultiplier) * (1f - .02f * character.DeathKnightTalents.BladeBarrier);
-            }
+            // Plague Leech
+            // Plague Leech
+            // 30 yd range
+            // Instant	25 sec cooldown
+            // Draw forth the infection from an enemy, consuming your Blood Plague and Frost Fever diseases on the target to activate a random fully-depleted rune as a Death Rune.
+            // TODO: Implement in Rotation.
 
-            // Bladed Armor
-            // 2 AP per point per 180 Armor
-            if (character.DeathKnightTalents.BladedArmor > 0)
-            {
-                // If you don't have your Blood Runes on CD, you're doing it wrong. 
-                FullCharacterStats.AttackPower += (2 * character.DeathKnightTalents.BladedArmor) * (FullCharacterStats.Armor / 180);
-            }
-
-            // Improved Blood Tap
-            // Reduces Blood tap CD by 15 sec * pts.
-           
-            // Scent of Blood
-            // 15% after Dodge, Parry or damage received causing 1 melee hit per point to generate 10 runic power.
-            // Implemented in WhiteSwing.
-
-            // Scarlet Fever
-            // Those hit by BB do have a 50/100% chance to reduce damage dealt by 10% for 30 sec.
-            if (character.DeathKnightTalents.ScarletFever > 0)
-            {
-                // Like Blade Barrier, this should always be up.
-                // Be sure to put this in the rotation solver for Tanking Rotations.
-                // JOTHAY TODO: Isn't this conflicting with the Buffs pane?
-                FullCharacterStats.DamageTakenReductionMultiplier = 1f - (1f - FullCharacterStats.DamageTakenReductionMultiplier) * (1f - .05f * character.DeathKnightTalents.ScarletFever);
-            }
-
-            // Hand of Doom
-            // Reduces the CD for Strangulate by 30/60 sec.
-
-            if (r == Rotation.Type.Blood)
-            {
-                // Blood-Caked Blade
-                // 10% chance per point to cause Blood-Caked strike
-                // Implmented in WhiteDamage ability file.
-                
-                // Bone Shield
-                // 6 Bones 
-                // Takes 20% less damage from all sources
-                // Does 2% more damage to target
-                // Each damaging attack consumes a bone.
-                // Lasts 5 mins
-
-                // Toughness
-                // Increases Armor Value from items by 3% per point.
-                if (character.DeathKnightTalents.Toughness > 0)
-                {
-                    FullCharacterStats.BaseArmorMultiplier = AddStatMultiplierStat(FullCharacterStats.BaseArmorMultiplier, (.03f * character.DeathKnightTalents.Toughness));
-                }
-
-                // Abominations Might
-                // increase AP by 5%/10% of raid.
-                // 1% per point increase to str.
-                if (character.DeathKnightTalents.AbominationsMight > 0)
-                {
-                    // This happens no matter what:
-                    FullCharacterStats.BonusStrengthMultiplier += (0.01f * character.DeathKnightTalents.AbominationsMight);
-                    // This happens only if there isn't Trueshot Aura/Unleashed Rage/Abom's might  available:
-                    if (!(character.ActiveBuffsContains("Trueshot Aura") || character.ActiveBuffsContains("Unleashed Rage") || character.ActiveBuffsContains("Abomination's Might")))
-                    {
-                        FullCharacterStats.BonusAttackPowerMultiplier += (.05f * character.DeathKnightTalents.AbominationsMight);
-                    }
-                }
-
-                // Sanguine Fortitude
-                // Buff's IBF:
-                // While Active, your IBF reduces Dam taken by 15/30% and costs 50/100% less RP to activate.
-                // CD duration? 3min suggested on pwnwear.
-                // Cost?  This is a CD stacker.
-                // TODO: look into CD stacking code./max v average values.
-
-                // Blood Parasite
-                // Melee Attacks have 5% * PTS chance of spawning a blood worm.
-                // Blood worm attacks your enemies, gorging itself on blood
-                // until it bursts to heal nearby allies. Lasts 20 sec.
-                if (character.DeathKnightTalents.BloodParasite > 0)
-                {
-                    float fDamageDone = 200f; // TODO: Put this in a way to increase DPS.
-                    float fBWAttackSpeed = 1.4f; // TODO: Validate this speed.
-                    float fBWDuration = 20f;
-                    float avgstacks = 5; // TODO: Figure out the best way to determine avg Stacks of BloodGorged
-                    float WormHealth = (FullCharacterStats.Health * 0.35f);
-                    _SE_Bloodworms = new SpecialEffect[] {
-                        null,
-                        new SpecialEffect(Trigger.MeleeAttack, new Stats() { Healed = ((avgstacks * WormHealth * .05f) / fBWDuration), PhysicalDamage = (fDamageDone/fBWAttackSpeed) }, fBWDuration, 0, .05f * 1),
-                        new SpecialEffect(Trigger.MeleeAttack, new Stats() { Healed = ((avgstacks * WormHealth * .05f) / fBWDuration), PhysicalDamage = (fDamageDone/fBWAttackSpeed) }, fBWDuration, 0, .05f * 2),
-                    };
-                    FullCharacterStats.AddSpecialEffect(_SE_Bloodworms[character.DeathKnightTalents.BloodParasite]);
-                }
-
-                // Improved Blood Presence
-                // Reduces chance to be critically hit while in blood presence by 3/6%
-                // In addition while in Frost or Unholy, retain the 2/4% Dam reduction. 
-                // Implemented in AccumulatePresenceStats()
-
-                // Will of the Necropolis
-                // Dam that takes you below 35% health or while at less than 35% is reduced by 5% per point.  
-                if (character.DeathKnightTalents.WillOfTheNecropolis > 0)
-                {
-                    // Need to factor in the damage taken aspect of the trigger.
-                    // Using the assumption that the tank will be at < 35% health about that % of the time.
-                    FullCharacterStats.AddSpecialEffect(_SE_WillOfTheNecropolis[character.DeathKnightTalents.WillOfTheNecropolis]);
-                }
-
-                // Rune Tap
-                // Convert 1 BR to 10% health.
-                if (character.DeathKnightTalents.RuneTap > 0)
-                {
-                    FullCharacterStats.AddSpecialEffect(_SE_RuneTap);
-                }
-
-                // Vampiric Blood
-                // temp 15% of max health and
-                // increases health generated by 25% for 10 sec.
-                // 1 min CD. 
-                if (character.DeathKnightTalents.VampiricBlood > 0)
-                {
-                    FullCharacterStats.AddSpecialEffect(_SE_VampiricBlood[character.DeathKnightTalents.GlyphofVampiricBlood ? 1 : 0]);
-                }
-
-                // Improved Death Strike
-                if (character.DeathKnightTalents.ImprovedDeathStrike > 0)
-                {
-                    FullCharacterStats.BonusDamageDeathStrike += (.40f * character.DeathKnightTalents.ImprovedDeathStrike);
-                    // Also improves DS Healing.  Implemented in TankDK heals section.
-                }
-
-                // Crimson Scourge 
-                // Increases the damage dealt by your Blood Boil by 20/40%, and when you Plague Strike a target that is already
-                // infected with your Blood Plague, there is a 50/100% chance that your next Blood Boil will consume no runes.
-                if (character.DeathKnightTalents.CrimsonScourge > 0)
-                {
-                    // Part 1 implmented in BB Ability
-                    // TODO: Part 2 implement in rotation.
-                }
-
-                // Dancing Rune Weapon
-                if (character.DeathKnightTalents.DancingRuneWeapon > 0)
-                {
-                    uint u4T12 = FullCharacterStats.b4T12_Tank ? 1u : 0u;
-                    uint uGDRW = character.DeathKnightTalents.GlyphofDancingRuneWeapon ? 1u : 0u;
-                    FullCharacterStats.AddSpecialEffect(_SE_DRW[u4T12][uGDRW]);
-                }
-            }
+            // Unholy Blight
+            // Surrounds the Death Knight with a vile swarm of unholy insects for 10 sec, stinging all enemies within 10 yards every 1 sec, infecting them with Blood Plague and Frost Fever.
+            // Implemented in as new Ability.
             #endregion
-
-            #region Frost Talents
-
-            // Runic Power Mastery
-            // Increases Max RP by 10 per point
-            if (character.DeathKnightTalents.RunicPowerMastery > 0)
-            {
-                FullCharacterStats.BonusMaxRunicPower += 10 * character.DeathKnightTalents.RunicPowerMastery;
-            }
-
-            // Icy Reach
-            // Increases range of IT & CoI and HB by 5 yards per point.
-
-            // Nerves of Cold Steel
-            // Increase hit w/ 1H weapons by 1% per point
-            // Increase damage done by off hand weapons by 8/16/25% per point
-            // Implement off-hand weapon buff in combat shot roation
-            if (character.MainHand != null && 
-                (character.MainHand.Slot == ItemSlot.MainHand
-                || character.MainHand.Slot == ItemSlot.OneHand))
-            {
-                FullCharacterStats.PhysicalHit += (character.DeathKnightTalents.NervesOfColdSteel * .01f);
-            }
-
+            #region Level 30
             // Lichborne
-            // for 10 sec, immune to charm, fear, sleep
-            // CD 2 Mins
+            // Draw upon unholy energy to become undead for 10 sec.  
+            /// While undead, you are immune to Charm, Fear, and Sleep effects, and Death Coil will heal you.
+            // TODO: Implement in TankDK only.
 
-            // On a Pale Horse
-            // Reduce duration of Movement slowing effects by 15% per point
-            // increase mount speed by 10% per point
-            if (character.DeathKnightTalents.OnAPaleHorse > 0)
-            {
-                // Now w/ boss handler, reduce the duration of the movement slowing effects. 
-            }
+            // Anti-Magic Zone
+            // Places a large, stationary Anti-Magic Zone that reduces spell damage done to party or raid members 
+            // inside it by 75%.  The Anti-Magic Zone lasts for 10 sec or until it absorbs at least 136800+(($STR * 4)) spell damage.
+            // TODO: Implement in TankDK only - another CD.
 
-            // Endless Winter
-            // Mind Freeze RP cost is reduced by 50% per point.
-            if (character.DeathKnightTalents.EndlessWinter > 0)
-            {  }
+            // Purgatory
+            // An unholy pacts grants you the ability to fight on through damage that would kill mere mortals. 
+            // When you would sustain fatal damage, you instead are wrapped in a Shroud of Purgatory, absorbing 
+            // incoming healing equal to the amount of damage prevented, lasting 3 sec.
+            // If any healing absorption remains when Shroud of Purgatory expires, you die. Otherwise, you survive.  
+            // This effect may only occur every 3 min.
+            // TODO: Implement in TankDK - OMG this is sick!
+            #endregion 
+            #region Level 45
+            // Death's Advance
+            // You passively move 10% faster, and movement-impairing effects may not reduce you below 70% of normal movement speed.
+            // When activated, you gain 30% movement speed and may not be slowed below 100% of normal movement speed for 6 seconds.
+            FullCharacterStats.MovementSpeed += .1f;
+            FullCharacterStats.AddSpecialEffect(_SE_DA);
 
-            if (r == Rotation.Type.Frost)
-            {
-                // Merciless Combat
-                // addtional 6% per point damage for IT, HB, Oblit, and FS
-                // on targets of less than 35% health.
-                if (character.DeathKnightTalents.MercilessCombat > 0)
-                {
-                    // implemented in the abilities section (increase the damage done by 15% * 35%)
-                }
+            // Chilblains
+            // Victims of your Frost Fever disease are Chilled, reducing movement speed by 50% for 10 sec, and your Chains of Ice immobilizes targets for 3 sec.
+            // Implemented in FF & Chains of Ice
 
-                // Chill of the Grave
-                // CoI, HB, IT and Oblit generate 5 RP per point.
-                if (character.DeathKnightTalents.ChillOfTheGrave > 0)
-                {
-                    // Implemented in the abilities.
-                }
-
-                // Killing Machine
-                // Melee attacks have a chance to make OB, or FS a crit.
-                // increased proc per point.
-                // Research Suggests 5 PPM at 3/3
-                if (character.DeathKnightTalents.KillingMachine > 0)
-                {
-//                    FullCharacterStats.AddSpecialEffect(_KM[character.DeathKnightTalents.KillingMachine]);
-                    // Implemented in Frost Rotation
-                }
-
-
-                // Rime
-                // Oblit has a 15% per point your next IT or HB consumes no runes
-                if (character.DeathKnightTalents.Rime > 0)
-                {
-                    // Implemented in FrostRotation.
-                }
-
-                // Pillar of Frost
-                // 1 min CD, 20 sec dur
-                // Str +20%
-                if (character.DeathKnightTalents.PillarOfFrost > 0)
-                {
-                    FullCharacterStats.AddSpecialEffect(_SE_PillarOfFrost);
-                }
-
-                // Improved Icy Talons
-                // increases the melee haste of the group/raid by 10%
-                // increases your haste by 5% all the time.
-                if (character.DeathKnightTalents.ImprovedIcyTalons > 0)
-                {
-                    FullCharacterStats.PhysicalHaste = AddStatMultiplierStat(FullCharacterStats.PhysicalHaste, 0.05f);
-                    if (!character.ActiveBuffsContains("Improved Icy Talons")
-                        && !character.ActiveBuffsContains("Windfury Totem"))
-                    {
-                        FullCharacterStats.PhysicalHaste = AddStatMultiplierStat(FullCharacterStats.PhysicalHaste, .1f);
-                        FullCharacterStats.RangedHaste += .1f;
-                    }
-                }
-
-                // Brittle Bones:
-                // Str +2% per point
-                // FF chills the bones of its victims increasing damage taken by 2% per point.
-                if (character.DeathKnightTalents.BrittleBones > 0)
-                {
-                    FullCharacterStats.BonusStrengthMultiplier += .02f * character.DeathKnightTalents.BrittleBones;
-                    FullCharacterStats.BonusDamageMultiplier += .02f * character.DeathKnightTalents.BrittleBones;
-                }
-
-                // Chilblains
-                // FF victimes are movement reduced 25% per point
-
-                // Hungering Cold
-                // Spell that freezes all enemies w/ 10 yards.
-
-
-                // Improved Frost Presence
-                // Increases your bonus damage while in Frost Presence by an additional 2% per point.  
-                // In addition, while in Blood Presence or Unholy Presence, you retain 2% per point increased runic power generation from Frost Presence.
-                if (character.DeathKnightTalents.ImprovedFrostPresence > 0)
-                {
-                    FullCharacterStats.BonusDamageMultiplier += (0.02f * character.DeathKnightTalents.ImprovedFrostPresence);
-                }
-
-                // Threat of Thassarian: 
-                // When dual-wielding, your Death Strikes, Obliterates, Plague Strikes, 
-                // Blood Strikes and Frost Strikes and Rune Strike (as of 3.2.2) have a 30/60/100% chance 
-                // to also deal damage with your off-hand weapon. 
-                if (character.DeathKnightTalents.ThreatOfThassarian > 0)
-                { 
-                    // implemented in the abilities
-                }
-
-                // Might of the Frozen Wastes
-                // When wielding a two-handed weapon, your autoattacks have a 15% chance to generate 10 Runic Power.
-                if (character.DeathKnightTalents.MightOfTheFrozenWastes > 0)
-                {
-                    // WhiteDamage Bonus in WhiteDamage Ability.
-                    if (character.MainHand != null && character.MainHand.Slot == ItemSlot.TwoHand)
-                        FullCharacterStats.BonusPhysicalDamageMultiplier += (.1f/3) * character.DeathKnightTalents.MightOfTheFrozenWastes;
-                }
-
-                // Howling Blast.
-            }
+            // Asphyxiate
+            // Lifts an enemy target off the ground and crushes their throat with dark energy, stunning them for 5 sec.  Functions as a silence if the target is immune to stuns.
+            // Replaces Strangulate.
+            // Currently no modeling planned.
             #endregion
+            #region Level 60
+            // Death Pact
+            // Drain vitality from an undead minion, healing the Death Knight for 50% of his maximum health and causing the minion to suffer damage equal to 50% of its maximum health.
+            // TODO: Implement in TankDK
 
-            #region UnHoly Talents
-            // Unholy Command
-            // reduces CD of DG by 5 sec per point
+            // Death Siphon
+            // Deal 4612 to 5359 Shadowfrost damage to an enemy, healing the Death Knight for 100% of damage dealt.
+            // TODO: Implement new ability.
 
-            // Virulence
-            // 
-            if (character.DeathKnightTalents.Virulence > 0)
-            {
-                FullCharacterStats.BonusDiseaseDamageMultiplier += (.1f * character.DeathKnightTalents.Virulence);
-            }
+            // Conversion
+            // Continuously converts Runic Power to health, restoring 3% of maximum health every 1 sec. 
+            // Only base Runic Power generation from spending runes may occur while Conversion is active. 
+            // This effect lasts until canceled, or Runic Power is exhausted.
+            // TODO: Implement in TankDK
+            #endregion
+            #region Level 75
+            // Blood Tap
+            // Each damaging Death Coil, Frost Strike, or Rune Strike generates 2 Blood Charges, 
+            // up to a maximum of 12 charges.  Blood Tap consumes 5 Blood Charges to activate a random fully-depleted rune as a Death Rune.
+            // TODO: Implement in Rotation.
 
-            // Epidemic
-            // Increases Duration of BP and FF by 4 sec per point
-            // Implemented in the abilities page.
+            // Runic Empowerment
+            // When you land a damaging Death Coil, Frost Strike, or Rune Strike, you have a 45% chance to activate a random fully-depleted rune.
+            // Implemented in Rotation
+	
+            // Runic Corruption
+            // When you land a damaging Death Coil, Frost Strike, or Rune Strike, you have a 45% chance to activate Runic Corruption, increasing your rune regeneration rate by 100% for 3 sec.
+            // Implemented in Rotation
+            #endregion
+            #region Level 90
+            // Gorefiend's Grasp
+            // Shadowy tendrils coil around all enemies within 20 yards of a target (hostile or friendly), pulling them to the target's location.
+	        // Will not model currently.
 
-            // Desecration
-            // PS and SS cause Desecrated Ground effect.
-            // Targets are slowed by 25% per point
-            // Not Implemented.
-            
-            // Resilient Infection
-            // When your diseases are dispelled you have a 50/100% to activate a 
-            // Frost rune if FF was dispelled
-            // Unholy rune if BP was dispelled
-            // Not Implemented
-
-            // Morbidity
-            // increases dam & healing of DC by 5% per point
-            // increases dam of DnD by 10% sec per point
-            if (character.DeathKnightTalents.Morbidity > 0)
-            {
-                // implemented in abilities.
-            }
-
-            if (r == Rotation.Type.Unholy)
-            {
-                // Runic Corruption
-                // Reduces the cost of your Death Coil by 3 per point, and causes 
-                // your Runic Empowerment ability to no longer refresh a depleted 
-                // rune, but instead to increase your rune regeneration rate by 50/100% for 3 sec.
-                if (character.DeathKnightTalents.RunicCorruption > 0)
-                {
-                    // Implmented in rotation.
-                }
-
-                // Unholy Frenzy
-                // Induces a friendly unit into a killing frenzy for 30 sec.  
-                // The target is Enraged, which increases their melee and ranged haste by 20%, 
-                // but causes them to lose health equal to 2% of their maximum health every 3 sec.
-                if (character.DeathKnightTalents.UnholyFrenzy > 0)
-                {
-                    FullCharacterStats.AddSpecialEffect(_SE_UnholyFrenzy);
-                }
-
-                // Contagion
-                // Increases the damage of your diseases spread via Pestilence by 50/100%.
-                if (character.DeathKnightTalents.Contagion > 0)
-                    FullCharacterStats.BonusDiseaseDamageMultiplier += .5f * character.DeathKnightTalents.Contagion;
-
-                // Shadow Infusion
-                // When you cast Death Coil, you have a 33% per point chance to empower your active Ghoul, 
-                // increasing its damage dealt by 10% for 30 sec.  Stacks up to 5 times.
-                // TODO: Implement in Rotation & Ghoul
-
-                // Magic Suppression
-                // AMS absorbs additional 8, 16, 25% of spell damage.
-
-                // Rage of Rivendare
-                // Increases the damage of your Plague Strike, Scourge Strike, and Festering Strike abilities by 15% per point.
-                if (character.DeathKnightTalents.RageOfRivendare > 0)
-                {
-                    // Implemented in the abilities.
-                }
-
-                // Unholy Blight
-                // Causes the victims of your Death Coil to be surrounded by a vile swarm of unholy insects, 
-                // taking 10% of the damage done by the Death Coil over 10 sec, and preventing any diseases on the victim from being dispelled.
-                // Implemented in the DeathCoil ability.
-
-                // AntiMagic Zone
-                // Creates a zone where party/raid members take 75% less spell damage
-                // Lasts 10 secs or X damage.  
-                if (character.DeathKnightTalents.AntiMagicZone > 0)
-                {
-                    FullCharacterStats.AddSpecialEffect(_SE_AntiMagicZone);
-                }
-
-                // Improved Unholy Presence
-                // Grants you an additional 2% haste while in Unholy Presence.  
-                // In addition, while in Blood Presence or Frost Presence, you retain 8% increased movement speed from Unholy Presence.
-                // Implemented in Presence Stats.
-
-                // Dark Transformation
-                // Consume 5 charges of Shadow Infusion on your Ghoul to transform it into a powerful 
-                // undead monstrosity for 30 sec.  The Ghoul's abilities are empowered and take on new 
-                // functions while the transformation is active.
-                // TODO: implement in Ghoul
-
-                // Ebon Plaguebringer
-                // Your Plague Strike, Icy Touch, Chains of Ice, and Outbreak abilities also infect 
-                // their target with Ebon Plague, which increases damage taken from your diseases 
-                // by 15/30% and all magic damage taken by an additional 8%.
-                if (character.DeathKnightTalents.EbonPlaguebringer > 0)
-                {
-                    if (!character.ActiveBuffsContains("Earth and Moon")
-                        && !character.ActiveBuffsContains("Curse of the Elements")
-                        && !character.ActiveBuffsContains("Ebon Plaguebringer"))
-                    {
-                        float fBonus = .08f;
-                        FullCharacterStats.BonusArcaneDamageMultiplier += fBonus;
-                        FullCharacterStats.BonusFireDamageMultiplier += fBonus;
-                        FullCharacterStats.BonusFrostDamageMultiplier += fBonus;
-                        FullCharacterStats.BonusHolyDamageMultiplier += fBonus;
-                        FullCharacterStats.BonusNatureDamageMultiplier += fBonus;
-                        FullCharacterStats.BonusShadowDamageMultiplier += fBonus;
-                    }
-                    FullCharacterStats.BonusDiseaseDamageMultiplier += (.15f * character.DeathKnightTalents.EbonPlaguebringer);
-                }
-
-                // Sudden Doom
-                // Your auto attacks have a 5% per point chance to make your next Death Coil cost no runic power.
-                // TODO: To Implment in DeathCoil
-
-                // Summon Gargoyle
-            }
+            // Remorseless Winter
+            // Surrounds the Death Knight with a swirling tempest of frigid air for 8 sec, chilling enemies within 8 yards every 
+            // 1 sec. Each pulse reduces targets' movement speed by 15% for 3 sec, stacking up to 5 times. Upon receiving a 
+            // fifth application, an enemy will be stunned for 6 sec.
+            // Will not model currently.
+	
+            // Desecrated Ground
+            // Corrupts the ground in a 8 yard radius beneath the Death Knight for 10 sec. While standing in 
+            // this corruption, the Death Knight is immune to effects that cause loss of control. This ability instantly 
+            // removes such effects when activated.
+            // Will not model currently.  
+            #endregion
             #endregion
         }
 
@@ -1635,8 +1308,7 @@ namespace Rawr.DPSDK
         #region Relevant Stats?
         public override bool IsItemRelevant(Item item)
         {
-            if (item.Slot == ItemSlot.OffHand /*  ||
-                (item.Slot == ItemSlot.Ranged && item.Type != ItemType.Sigil) */)
+            if (item.Slot == ItemSlot.OffHand)
                 return false;
             return base.IsItemRelevant(item);
         }
@@ -1832,7 +1504,7 @@ namespace Rawr.DPSDK
             bResults |= (stats.Strength != 0);
             bResults |= (stats.ExpertiseRating != 0);
             bResults |= (stats.AttackPower != 0);
-            bool bHasCore = bResults; // if the above stats are 0, lets make sure we're not bringing in caster gear below.
+
             // Other Base Stats
             bResults |= (stats.Agility != 0);
             bResults |= (stats.Stamina != 0);
@@ -2038,36 +1710,25 @@ namespace Rawr.DPSDK
         public static readonly SpecialEffect _SE_CG = new SpecialEffect(Trigger.DamageDone, new Stats() { CinderglacierProc = 2f }, 0f, 0f, -1.5f);
         // Icebound Fort
         private static readonly SpecialEffect[] _SE_IBF = new SpecialEffect[] {
-            new SpecialEffect(Trigger.Use, new Stats() { StunDurReduc = 1f, DamageTakenReductionMultiplier = 0.20f }, 12 * 1.0f, 3 * 60  ), // Default IBF
-            new SpecialEffect(Trigger.Use, new Stats() { StunDurReduc = 1f, DamageTakenReductionMultiplier = 0.20f }, 12 * 1.5f, 3 * 60  ), // IBF w/ 4T11
+            new SpecialEffect(Trigger.Use, new Stats() { StunDurReduc = 1f, DamageTakenReductionMultiplier = 0.20f }, 12, 3 * 60  ), // Default IBF
+            new SpecialEffect(Trigger.Use, new Stats() { StunDurReduc = 1f, DamageTakenReductionMultiplier = 0.20f + .30f }, 12, 3 * 60  ), // IBF in Blood Spec.
         };
         public static readonly SpecialEffect[] _SE_VampiricBlood = new SpecialEffect[] {
             new SpecialEffect(Trigger.Use, new Stats() {HealingReceivedMultiplier = .25f, BonusHealthMultiplier = .15f}, 10, 60f), // No Glyph
             new SpecialEffect(Trigger.Use, new Stats() {HealingReceivedMultiplier = .25f + .15f}, 10, 60f) // Glyphed
         };
         // Talent: Rune Tap
-        public static readonly SpecialEffect _SE_RuneTap = new SpecialEffect(Trigger.Use, new Stats() { HealthRestoreFromMaxHealth = .1f }, 0, 30f);
-        // Talent: Killing Machine
-        /*
-        public static readonly SpecialEffect[] _KM = new SpecialEffect[] {
-            null,
-            new SpecialEffect(Trigger.MeleeAttack, new Stats() { BonusCritChanceObliterate = 1f, BonusCritChanceFrostStrike = 1f }, 3f, 0f, (-5f * 1/3), false),
-            new SpecialEffect(Trigger.MeleeAttack, new Stats() { BonusCritChanceObliterate = 1f, BonusCritChanceFrostStrike = 1f }, 3f, 0f, (-5f * 2/3), false),
-            new SpecialEffect(Trigger.MeleeAttack, new Stats() { BonusCritChanceObliterate = 1f, BonusCritChanceFrostStrike = 1f }, 3f, 0f, (-5f * 3/3), false),
-        };
-         * */
-        public static SpecialEffect[] _SE_Bloodworms = new SpecialEffect[3];
+        public static readonly SpecialEffect _SE_RuneTap = 
+            new SpecialEffect(Trigger.Use, new Stats() { HealthRestoreFromMaxHealth = .1f }, 0, 30f);
+
         /// <summary>
         /// When a damaging attack brings you below 30% of your maximum health, the cooldown on your Rune Tap
         /// ability is refreshed and your next Rune Tap has no cost, and all damage taken is reduced by [25/3*Pts]%
         /// for 8 sec. This effect cannot occur more than once every 45 seconds.
         /// </summary>
-        public static readonly SpecialEffect[] _SE_WillOfTheNecropolis = new SpecialEffect[] {
-            null,
-            new SpecialEffect(Trigger.DamageTaken, new Stats() { DamageTakenReductionMultiplier = (0.25f / 3f * 1f) }, 8, 45, 0.30f),
-            new SpecialEffect(Trigger.DamageTaken, new Stats() { DamageTakenReductionMultiplier = (0.25f / 3f * 2f) }, 8, 45, 0.30f),
-            new SpecialEffect(Trigger.DamageTaken, new Stats() { DamageTakenReductionMultiplier = (0.25f / 3f * 3f) }, 8, 45, 0.30f),
-        };
+        public static readonly SpecialEffect _SE_WillOfTheNecropolis = 
+            new SpecialEffect(Trigger.DamageTaken, new Stats() { DamageTakenReductionMultiplier = 0.25f }, 8, 45, 0.30f);
+
         public static readonly SpecialEffect[][] _SE_UnbreakableArmor = new SpecialEffect[][] {
             new SpecialEffect[] {
                     new SpecialEffect(Trigger.Use, new Stats() { BonusStrengthMultiplier = 0.20f, BaseArmorMultiplier = .25f + (false ? .20f : 0f), BonusArmorMultiplier = .25f + (false ? .20f : 0f) }, 20f, 60f - 0 * 10f),
@@ -2081,20 +1742,16 @@ namespace Rawr.DPSDK
         public static readonly SpecialEffect _SE_AntiMagicZone = new SpecialEffect(Trigger.Use, new Stats() { SpellDamageTakenReductionMultiplier = 0.75f }, 10f, 2f * 60f);
 
         public static readonly SpecialEffect _SE_PillarOfFrost = new SpecialEffect(Trigger.Use, new Stats() { BonusStrengthMultiplier = .2f }, 20f, 60);
-        public static readonly SpecialEffect[][] _SE_DRW = new SpecialEffect[][] {
-            new SpecialEffect[] { // No 4T12 Bonus
-                new SpecialEffect(Trigger.Use, new Stats() { BonusDamageMultiplier = 0.5f, Parry = .20f }, 12f, 1.5f * 60f), // Normal
-                new SpecialEffect(Trigger.Use, new Stats() { BonusDamageMultiplier = 0.5f, Parry = .20f, ThreatIncreaseMultiplier = 0.50f }, 12f, 1.5f * 60f), // Glyphed
-            },
-            new SpecialEffect[] { // 4T12 Bonus
-                new SpecialEffect(Trigger.Use, new Stats() { BonusDamageMultiplier = 0.5f, Parry = (.20f + .15f)/2 }, 12f * 2f, 1.5f * 60f), // Normal
-                new SpecialEffect(Trigger.Use, new Stats() { BonusDamageMultiplier = 0.5f, Parry = (.20f + .15f)/2 , ThreatIncreaseMultiplier = 0.50f }, 12f * 2f, 1.5f * 60f), // Glyphed
-            }
+        public static readonly SpecialEffect[] _SE_DRW = new SpecialEffect[] {
+            new SpecialEffect(Trigger.Use, new Stats() { BonusDamageMultiplier = 1f, Parry = .20f }, 12f, 1.5f * 60f), // Normal
+            new SpecialEffect(Trigger.Use, new Stats() { BonusDamageMultiplier = 0.75f, Parry = .20f, ThreatIncreaseMultiplier = 1f }, 12f, 1.5f * 60f), // Glyphed
         };
         public static readonly SpecialEffect _SE_4T13_RC = new SpecialEffect(Trigger.RunicCorruption, new Stats() { MasteryRating = 710 }, 12f, 0, .4f);
         public static readonly SpecialEffect _SE_4T13_RE = new SpecialEffect(Trigger.RunicEmpowerment, new Stats() { MasteryRating = 710 }, 12f, 0, .25f);
 
         public static readonly SpecialEffect _SE_UnholyFrenzy = new SpecialEffect(Trigger.Use, new Stats() { PhysicalHaste = 0.2f }, 30f, 3 * 60f);
+
+        public static readonly SpecialEffect _SE_DA = new SpecialEffect(Trigger.Use, new Stats() { MovementSpeed = .3f }, 6f, 30f);
 
         #endregion
     }

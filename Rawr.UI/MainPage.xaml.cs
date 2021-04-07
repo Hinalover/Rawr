@@ -64,13 +64,13 @@ namespace Rawr.UI
             Trinket2Button.Slot = CharacterSlot.Trinket2;
             MainHandButton.Slot = CharacterSlot.MainHand;
             OffHandButton.Slot = CharacterSlot.OffHand;
-            RangedButton.Slot = CharacterSlot.Ranged;
 
-            ModelCombo.ItemsSource = Calculations.Models.Keys;
+            ModelCombo.ItemsSource = new string[] { "Death Knight:Blood", "Death Knight:Frost", "Death Knight:Unholy", "Druid:Balance", "Druid:Feral", "Druid:Guardian", "Druid:Restoration", "Hunter:Beast Mastery", "Hunter:Marksmanship", "Hunter:Survival", "Mage:Arcane", "Mage:Fire", "Mage:Frost", "Monk:Brewmaster", "Monk:Mistweaver", "Monk:Windwalker", "Paladin:Holy", "Paladin:Protection", "Paladin:Retribution", "Priest:Discipline", "Priest:Holy", "Priest:Shadow", "Rogue:Assasination", "Rogue:Combat", "Rogue:Subtlety", "Shaman:Elemental", "Shaman:Enhancement", "Shaman:Restoration", "Warlock:Affliction", "Warlock:Demonology", "Warlock:Destruction", "Warrior:Arms", "Warrior:Fury", "Warrior:Protection" };
+
             Calculations.ModelChanged += new EventHandler(Calculations_ModelChanged);
 
             Character c = new Character() { IsLoading = false };
-            c.CurrentModel = configModel;
+            //c.CurrentModel = configModel;
             c.Class = Calculations.ModelClasses[c.CurrentModel];
             c.RecalculateSetBonuses(); // otherwise you'll get null ref exception
             Character = c;
@@ -134,6 +134,25 @@ namespace Rawr.UI
                     character.IsLoading = true;
 
                     DataContext = character;
+                    // ugly, but works...                    
+                    foreach (Rawr.UI.ClassModelPicker.ClassModelPickerItem i in CMP_ClassModel.Items)
+                    {
+                        if (Character.Class == Calculations.CharacterClasses[i.Header])
+                        {
+                            foreach (Rawr.UI.ClassModelPicker.ClassModelPickerItem j in i.Items)
+                            {
+                                if (j.Header == Character.CurrentTalents.SpecializationName)
+                                {
+                                    CMP_ClassModel.PrimaryItem = i;
+                                    CMP_ClassModel.PrimaryItem.SelectedItem = j;
+                                    CMP_ClassModel.TextBlockClassModelButtonPrimary.Text = CMP_ClassModel.PrimaryItem.Header;
+                                    CMP_ClassModel.TextBlockClassModelButtonSecondary.Text = CMP_ClassModel.PrimaryItem.SelectedItem.Header;
+                                    goto CMPDONE;
+                                }
+                            }
+                        }
+                    }
+                CMPDONE:
                     Calculations.LoadModel(Calculations.Models[character.CurrentModel]);
                     Calculations.ClearCache();
                     Calculations.CalculationOptionsPanel.Character = character;
@@ -155,7 +174,6 @@ namespace Rawr.UI
                     Trinket2Button.Character = character;
                     MainHandButton.Character = character;
                     OffHandButton.Character = character;
-                    RangedButton.Character = character;
                     TalentPicker.Character = character;
 
                     BuffControl.Character = character;
@@ -196,7 +214,7 @@ namespace Rawr.UI
         private Color ModelStatusColor { get { return _ModelStatusColor; } set { _ModelStatusColor = value; LB_Models.Foreground = new SolidColorBrush(value); } }
         private string ModelStatus(string Model) {
             string retVal = "The Model Status is Unknown, please see the Model Status Page.";
-            string format = "[" + Model + " | Maintained: {0}, Cata Ready: {1}, Developer(s): {2}]";
+            string format = "[" + Model + " | Maintained: {0}, MoP Ready: {1}, Developer(s): {2}]";
             ModelStatusColor = SystemColors.WindowTextColor;
 
             string[] maint = { "Never", "New Dev", "Periodically", "Actively" };
@@ -204,44 +222,48 @@ namespace Rawr.UI
 
             switch (Model) {
                 // Druids
-                case "Bear"     : { retVal    = string.Format(format, maint[3], funct[3], "Astrylian"); break; }
-                case "Cat"      : { retVal    = string.Format(format, maint[3], funct[3], "Astrylian"); break; }
+                case "Bear"     : { retVal    = string.Format(format, maint[3], funct[3], "Hinalover"); break; }
+                case "Feral"      : { retVal    = string.Format(format, maint[3], funct[2], "Hinalover"); break; }
                 case "Moonkin"  : { retVal    = string.Format(format, maint[3], funct[3], "Dopefish"); break; }
-                case "Tree"     : { retVal    = string.Format(format, maint[3], funct[2], "Ultis,Wildebees"); break; }
+                case "Tree"     : { retVal    = string.Format(format, maint[2], funct[1], "Wildebees"); break; }
                 // Death Knights
-                case "DPSDK"    : { retVal    = string.Format(format, maint[3], funct[3], "Shazear"); break; }
-                case "TankDK"   : { retVal    = string.Format(format, maint[3], funct[3], "Shazear"); break; }
+                case "DPSDK"    : { retVal    = string.Format(format, maint[3], funct[1], "Shazear"); break; }
+                case "TankDK"   : { retVal    = string.Format(format, maint[3], funct[1], "Shazear"); break; }
                 // Hunters
-                case "Hunter"   : { retVal    = string.Format(format, maint[1], funct[1], "None"); break; }
+                case "Hunter"   : { retVal    = string.Format(format, maint[1], funct[1], "OperatorOverload"); break; }
                 // Mages
-                case "Mage"     : { retVal    = string.Format(format, maint[3], funct[3], "Kavan"); break; }
+                case "Mage"     : { retVal    = string.Format(format, maint[0], funct[2], "None"); break; }
+                // Monks
+                case "Brewmaster": { retVal = string.Format(format, maint[1], funct[0], "Hinalover"); break; }
+                case "Mistweaver": { retVal = string.Format(format, maint[0], funct[0], "None"); break; }
+                case "Windwalker": { retVal = string.Format(format, maint[1], funct[0], "Hinalover"); break; }
                 // Paladins
-                case "Healadin" : { retVal    = string.Format(format, maint[3], funct[1], "Roncli"); break; }
-                case "ProtPaladin":{retVal    = string.Format(format, maint[2], funct[2], "Roncli"); break; }
-                case "Retribution":{retVal    = string.Format(format, maint[2], funct[2], "OReubens,Caromina"); break; }
+                case "Healadin" : { retVal    = string.Format(format, maint[0], funct[0], "None"); break; }
+                case "ProtPaladin":{retVal    = string.Format(format, maint[3], funct[2], "Dopefish"); break; }
+                case "Retribution":{retVal    = string.Format(format, maint[0], funct[0], "None"); break; }
                 // Priests
-                case "HealPriest":{retVal     = string.Format(format, maint[3], funct[0], "TNSe"); break; }
-                case "ShadowPriest":{retVal   = string.Format(format, maint[3], funct[1], "Discomurray"); break; }
+                case "HealPriest":{retVal     = string.Format(format, maint[0], funct[0], "None"); break; }
+                case "ShadowPriest":{retVal   = string.Format(format, maint[0], funct[0], "None"); break; }
                 // Rogues
-                case "Rogue"    : { retVal    = string.Format(format, maint[3], funct[2], "Fes"); break; }
+                case "Rogue"    : { retVal    = string.Format(format, maint[0], funct[0], "None"); break; }
                 // Shamans
-                case "Elemental": { retVal    = string.Format(format, maint[3], funct[0], "Anaerandranax"); break; }
-                case "Enhance"  : { retVal    = string.Format(format, maint[3], funct[2], "TimeToDance"); break; }
-                case "RestoSham": { retVal    = string.Format(format, maint[3], funct[2], "Antivyris,Alpineman"); break; }
+                case "Elemental": { retVal    = string.Format(format, maint[0], funct[0], "None"); break; }
+                case "Enhance"  : { retVal    = string.Format(format, maint[2], funct[0], "TimeToDance"); break; }
+                case "RestoSham": { retVal    = string.Format(format, maint[2], funct[0], "Antivyris"); break; }
                 // Warriors
-                case "DPSWarr"  : { retVal    = string.Format(format, maint[3]+"/"+maint[1], funct[3]+"/"+funct[2], "Jothay"); break; }
-                case "ProtWarr" : { retVal    = string.Format(format, maint[2], funct[2], "EvanM"); break; }
+                case "DPSWarr"  : { retVal    = string.Format(format, maint[0], funct[0], "None"); break; }
+                case "ProtWarr" : { retVal    = string.Format(format, maint[0], funct[0], "None"); break; }
                 // Warlocks
-                case "Warlock"  : { retVal    = string.Format(format, maint[3], string.Format("Affl:{0}/Demo:{1}/Destro:{2}", funct[2],funct[1],funct[1]), "Erstyx"); break; }
+                case "Warlock"  : { retVal    = string.Format(format, maint[0], funct[0], "None"); break; }
                 default: { break; }
             }
 
             if        (retVal.Contains("Not")) {
                 ModelStatusColor = Color.FromArgb(255, 255, 000, 000);
-                retVal += " WARNING! THIS MODEL *IS NOT* CATACLYSM READY!";
+                retVal += " WARNING! THIS MODEL *IS NOT* MoP READY!";
             } else if (retVal.Contains("Partially")) {
                 ModelStatusColor = Color.FromArgb(255, 255, 000, 255);
-                retVal += " WARNING! THIS MODEL *MAY NOT* BE CATACLYSM READY!";
+                retVal += " WARNING! THIS MODEL *MAY NOT* BE MoP READY!";
             } else if (retVal.Contains("Mostly")) {
                 ModelStatusColor = Color.FromArgb(255, 000, 000, 255);
             } else if (retVal.Contains("Fully")) {
@@ -284,7 +306,7 @@ namespace Rawr.UI
                     (!String.IsNullOrEmpty(Character.Name)) ? Character.Name : "Unnamed",
                     Character.Region.ToString().Substring(0, 2),
                     (!String.IsNullOrEmpty(Character.Realm)) ? Character.Realm : "NoServer",
-                    Character.Race, Character.Class, Character.CurrentModel,
+                    Character.Race, Character.Class, Character.CurrentTalents.SpecializationName,
                     Character.PrimaryProfession, Character.SecondaryProfession);
                 //_unsavedChanges = true;
             }
@@ -385,9 +407,21 @@ namespace Rawr.UI
         {
             if (!Character.IsLoading)
             {
-                Character.CurrentModel = ModelCombo.SelectedItem as string;
-                Character.Class = Calculations.ModelClasses[Character.CurrentModel];
-                Calculations.LoadModel(Calculations.GetModel(Character.CurrentModel));
+                string key = (string)ModelCombo.SelectedItem;
+                string[] k = key.Split(':');                
+                Character.Class = Calculations.CharacterClasses[k[0]];
+                Character.CurrentTalents.SpecializationName = k[1];
+                Character.UpdateCurrentModel();
+                var newModel = Calculations.GetModel(Character.CurrentModel);
+                if (Calculations.Instance != newModel)
+                {
+                    Calculations.LoadModel(newModel);
+                }
+                else
+                {
+                    // no model change, so force graph recalc
+                    Character.OnCalculationsInvalidated();
+                }
             }
             RepopulateBasicInfosLabel();
         }
@@ -516,25 +550,26 @@ namespace Rawr.UI
                     classAllowableRaces.Add("TankDK", new List<string>() { "Draenei", "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", "Orc", "Tauren", "Troll", "Undead", "Worgen", "Goblin", /*"Pandaren",*/ });
                     classAllowableRaces.Add("Bear", new List<string>() { /*"Draenei",*/ /*"Dwarf",*/ /*"Gnome",*/ /*"Human",*/ "Night Elf", /*"Blood Elf",*/ /*"Orc",*/ "Tauren", "Troll", /*"Undead",*/ "Worgen", /*"Goblin", "Pandaren",*/ });
                     classAllowableRaces.Add("Cat", new List<string>() { /*"Draenei",*/ /*"Dwarf",*/ /*"Gnome",*/ /*"Human",*/ "Night Elf", /*"Blood Elf",*/ /*"Orc",*/ "Tauren", "Troll", /*"Undead",*/ "Worgen", /*"Goblin", "Pandaren",*/ });
+                    classAllowableRaces.Add("Feral", new List<string>() { /*"Draenei",*/ /*"Dwarf",*/ /*"Gnome",*/ /*"Human",*/ "Night Elf", /*"Blood Elf",*/ /*"Orc",*/ "Tauren", "Troll", /*"Undead",*/ "Worgen", /*"Goblin", "Pandaren",*/ });
                     classAllowableRaces.Add("Moonkin", new List<string>() { /*"Draenei",*/ /*"Dwarf",*/ /*"Gnome",*/ /*"Human",*/ "Night Elf", /*"Blood Elf",*/ /*"Orc",*/ "Tauren", "Troll", /*"Undead",*/ "Worgen", /*"Goblin", "Pandaren",*/ });
                     classAllowableRaces.Add("Tree", new List<string>() { /*"Draenei",*/ /*"Dwarf",*/ /*"Gnome",*/ /*"Human",*/ "Night Elf", /*"Blood Elf",*/ /*"Orc",*/ "Tauren", "Troll", /*"Undead",*/ "Worgen", /*"Goblin", "Pandaren",*/ });
-                    classAllowableRaces.Add("Hunter", new List<string>() { "Draenei", "Dwarf", /*"Gnome",*/ "Human", "Night Elf", "Blood Elf", "Orc", "Tauren", "Troll", "Undead", "Worgen", "Goblin", }); // "Pandaren", });
-                    classAllowableRaces.Add("Mage", new List<string>() { "Draenei", "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", "Orc", /*"Tauren",*/ "Troll", "Undead", "Worgen", "Goblin", }); // "Pandaren", });
+                    classAllowableRaces.Add("Hunter", new List<string>() { "Draenei", "Dwarf", /*"Gnome",*/ "Human", "Night Elf", "Blood Elf", "Orc", "Tauren", "Troll", "Undead", "Worgen", "Goblin", "Pandaren (Alliance)", "Pandaren (Horde)" }); // "Pandaren", });
+                    classAllowableRaces.Add("Mage", new List<string>() { "Draenei", "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", "Orc", /*"Tauren",*/ "Troll", "Undead", "Worgen", "Goblin", "Pandaren (Alliance)", "Pandaren (Horde)" }); // "Pandaren", });
                     classAllowableRaces.Add("Healadin", new List<string>() { "Draenei", "Dwarf", /*"Gnome",*/ "Human", /*"Night Elf",*/ "Blood Elf", /*"Orc",*/ "Tauren", /*"Troll",*/ /*"Undead",*/ /*"Worgen",*/ /*"Goblin", "Pandaren",*/ });
                     classAllowableRaces.Add("ProtPaladin", new List<string>() { "Draenei", "Dwarf", /*"Gnome",*/ "Human", /*"Night Elf",*/ "Blood Elf", /*"Orc",*/ "Tauren", /*"Troll",*/ /*"Undead",*/ /*"Worgen",*/ /*"Goblin", "Pandaren",*/ });
                     classAllowableRaces.Add("Retribution", new List<string>() { "Draenei", "Dwarf", /*"Gnome",*/ "Human", /*"Night Elf",*/ "Blood Elf", /*"Orc",*/ "Tauren", /*"Troll",*/ /*"Undead",*/ /*"Worgen",*/ /*"Goblin", "Pandaren",*/ });
-                    classAllowableRaces.Add("HealPriest", new List<string>() { "Draenei", "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", /*"Orc",*/ "Tauren", "Troll", "Undead", "Worgen", "Goblin", }); // "Pandaren", });
-                    classAllowableRaces.Add("ShadowPriest", new List<string>() { "Draenei", "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", /*"Orc",*/ "Tauren", "Troll", "Undead", "Worgen", "Goblin", }); // "Pandaren", });
-                    classAllowableRaces.Add("Rogue", new List<string>() { /*"Draenei",*/ "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", "Orc", /*"Tauren",*/ "Troll", "Undead", "Worgen", "Goblin", }); // "Pandaren", });
-                    classAllowableRaces.Add("Enhance", new List<string>() { "Draenei", "Dwarf", /*"Gnome",*/ /*"Human",*/ /*"Night Elf",*/ /*"Blood Elf",*/ "Orc", "Tauren", "Troll", /*"Undead",*/ /*"Worgen",*/ "Goblin", }); // "Pandaren", });
-                    classAllowableRaces.Add("Elemental", new List<string>() { "Draenei", "Dwarf", /*"Gnome",*/ /*"Human",*/ /*"Night Elf",*/ /*"Blood Elf",*/ "Orc", "Tauren", "Troll", /*"Undead",*/ /*"Worgen",*/ "Goblin", }); // "Pandaren", });
-                    classAllowableRaces.Add("RestoSham", new List<string>() { "Draenei", "Dwarf", /*"Gnome",*/ /*"Human",*/ /*"Night Elf",*/ /*"Blood Elf",*/ "Orc", "Tauren", "Troll", /*"Undead",*/ /*"Worgen",*/ "Goblin", }); // "Pandaren", });
+                    classAllowableRaces.Add("HealPriest", new List<string>() { "Draenei", "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", /*"Orc",*/ "Tauren", "Troll", "Undead", "Worgen", "Goblin", "Pandaren (Alliance)", "Pandaren (Horde)" }); // "Pandaren", });
+                    classAllowableRaces.Add("ShadowPriest", new List<string>() { "Draenei", "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", /*"Orc",*/ "Tauren", "Troll", "Undead", "Worgen", "Goblin", "Pandaren (Alliance)", "Pandaren (Horde)" }); // "Pandaren", });
+                    classAllowableRaces.Add("Rogue", new List<string>() { /*"Draenei",*/ "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", "Orc", /*"Tauren",*/ "Troll", "Undead", "Worgen", "Goblin", "Pandaren (Alliance)", "Pandaren (Horde)" }); // "Pandaren", });
+                    classAllowableRaces.Add("Enhance", new List<string>() { "Draenei", "Dwarf", /*"Gnome",*/ /*"Human",*/ /*"Night Elf",*/ /*"Blood Elf",*/ "Orc", "Tauren", "Troll", /*"Undead",*/ /*"Worgen",*/ "Goblin", "Pandaren (Alliance)", "Pandaren (Horde)" }); // "Pandaren", });
+                    classAllowableRaces.Add("Elemental", new List<string>() { "Draenei", "Dwarf", /*"Gnome",*/ /*"Human",*/ /*"Night Elf",*/ /*"Blood Elf",*/ "Orc", "Tauren", "Troll", /*"Undead",*/ /*"Worgen",*/ "Goblin", "Pandaren (Alliance)", "Pandaren (Horde)" }); // "Pandaren", });
+                    classAllowableRaces.Add("RestoSham", new List<string>() { "Draenei", "Dwarf", /*"Gnome",*/ /*"Human",*/ /*"Night Elf",*/ /*"Blood Elf",*/ "Orc", "Tauren", "Troll", /*"Undead",*/ /*"Worgen",*/ "Goblin", "Pandaren (Alliance)", "Pandaren (Horde)" }); // "Pandaren", });
                     classAllowableRaces.Add("Warlock", new List<string>() { /*"Draenei",*/ "Dwarf", "Gnome", "Human", /*"Night Elf",*/ "Blood Elf", "Orc", /*"Tauren",*/ "Troll", "Undead", "Worgen", "Goblin", /*"Pandaren",*/ });
-                    classAllowableRaces.Add("DPSWarr", new List<string>() { "Draenei", "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", "Orc", "Tauren", "Troll", "Undead", "Worgen", "Goblin", }); // "Pandaren", });
-                    classAllowableRaces.Add("ProtWarr", new List<string>() { "Draenei", "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", "Orc", "Tauren", "Troll", "Undead", "Worgen", "Goblin", }); // "Pandaren", });
-                    // classAllowableRaces.Add("Brewmaster", new List<string>() { "Draenei", "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", "Orc", "Tauren", "Troll", "Undead", /*"Worgen", "Goblin",*/ "Pandaren", });
-                    // classAllowableRaces.Add("Mistweaver", new List<string>() { "Draenei", "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", "Orc", "Tauren", "Troll", "Undead", /*"Worgen", "Goblin",*/ "Pandaren", });
-                    // classAllowableRaces.Add("Windwalker", new List<string>() { "Draenei", "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", "Orc", "Tauren", "Troll", "Undead", /*"Worgen", "Goblin",*/ "Pandaren", });
+                    classAllowableRaces.Add("DPSWarr", new List<string>() { "Draenei", "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", "Orc", "Tauren", "Troll", "Undead", "Worgen", "Goblin", "Pandaren (Alliance)", "Pandaren (Horde)" }); // "Pandaren", });
+                    classAllowableRaces.Add("ProtWarr", new List<string>() { "Draenei", "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", "Orc", "Tauren", "Troll", "Undead", "Worgen", "Goblin", "Pandaren (Alliance)", "Pandaren (Horde)" }); // "Pandaren", });
+                    classAllowableRaces.Add("Brewmaster", new List<string>() { "Draenei", "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", "Orc", "Tauren", "Troll", "Undead", /*"Worgen", "Goblin",*/ "Pandaren (Alliance)", "Pandaren (Horde)" });
+                    classAllowableRaces.Add("Mistweaver", new List<string>() { "Draenei", "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", "Orc", "Tauren", "Troll", "Undead", /*"Worgen", "Goblin",*/ "Pandaren (Alliance)", "Pandaren (Horde)" });
+                    classAllowableRaces.Add("Windwalker", new List<string>() { "Draenei", "Dwarf", "Gnome", "Human", "Night Elf", "Blood Elf", "Orc", "Tauren", "Troll", "Undead", /*"Worgen", "Goblin",*/ "Pandaren (Alliance)", "Pandaren (Horde)" });
                 }
                 return classAllowableRaces;
             }
@@ -1041,8 +1076,9 @@ If that is still not working for you, right-click anywhere within the web versio
             if (CancelToSave) { CancelToSave = false; return; }
             lastSavedPath = ""; // blank out the path
             Character c = new Character() { IsLoading = false };
-            c.CurrentModel = Character.CurrentModel;
             c.Class = Character.Class;
+            c.CurrentTalents.Specialization = c.CurrentTalents.Specialization;
+            c.UpdateCurrentModel();
             c.Race = Character.Race;
             c.RecalculateSetBonuses();
             Character = c;
@@ -1400,7 +1436,7 @@ If that is still not working for you, right-click anywhere within the web versio
             {
                 status = new Status();
             }
-            status.Show();
+            status.Owner = Application.Current.MainWindow;
             //menuStripMain.Enabled = false;
             //ItemContextualMenu.Instance.Enabled = false;
             //FormItemSelection.Enabled = false;
@@ -1414,6 +1450,10 @@ If that is still not working for you, right-click anywhere within the web versio
 
             // fire 
             this.UpdateItemCacheWowhead(slot, true/*(ModifierKeys & Keys.Shift) != 0*/ );
+        }
+        void bw_RunWowheadQuery(object sender, DoWorkEventArgs e)
+        {
+            this.ExecuteWowheadQuery();
         }
         private void bw_StatusCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -1549,11 +1589,25 @@ If that is still not working for you, right-click anywhere within the web versio
 #endif
             StatusMessaging.UpdateStatusFinished(UpdateCacheStatusKey(slot, true));
             //ItemIcons.CacheAllIcons(ItemCache.AllItems);
-            ItemCache.OnItemsChanged();
-            character.InvalidateItemInstances();
+            Dispatcher.Invoke(new Action(ItemCache.OnItemsChanged));
+            Dispatcher.Invoke(new Action(character.InvalidateItemInstances));
 
             // save stuff
             //SaveSettingsAndCaches();
+        }
+        public void ExecuteWowheadQuery()
+        {
+            CharacterSlot slot = CharacterSlot.None;
+            StatusMessaging.UpdateStatus(UpdateCacheStatusKey(slot, true), "Beginning Update");
+            StatusMessaging.UpdateStatus("Cache Item Icons", "Not Started");
+            StringBuilder sbChanges = new StringBuilder();
+
+            WowheadService service = new WowheadService();
+            service.ImportItemsFromWowhead("filter-patch=17056&filter-quality=16&filter-slot=2359278");
+
+            StatusMessaging.UpdateStatusFinished(UpdateCacheStatusKey(slot, true));
+            Dispatcher.Invoke(new Action(ItemCache.OnItemsChanged));
+            Dispatcher.Invoke(new Action(character.InvalidateItemInstances));
         }
         private bool ConfirmUpdateItemCache()
         {
@@ -1569,6 +1623,21 @@ If that is still not working for you, right-click anywhere within the web versio
                 bw.DoWork += new DoWorkEventHandler(bw_UpdateItemCacheWowhead);
                 bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_StatusCompleted);
                 bw.RunWorkerAsync(slot);
+                // WPF implementation of .Show() calls Window.ShowDialog(), which blocks (unlike Silverlight version)
+                status.Show();
+            }
+        }
+        public void RunWowheadQuery()
+        {
+            if (ConfirmUpdateItemCache())
+            {
+                status = null;
+                StartProcessing();
+                BackgroundWorker bw = new BackgroundWorker();
+                bw.DoWork += new DoWorkEventHandler(bw_RunWowheadQuery);
+                bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_StatusCompleted);
+                bw.RunWorkerAsync();
+                status.Show();
             }
         }
         #endregion
@@ -1577,6 +1646,13 @@ If that is still not working for you, right-click anywhere within the web versio
 #if DEBUG
             // Dont run in Release versions because it doesn't work yet
             RunItemCacheWowheadUpdate(CharacterSlot.None);
+#endif
+        }
+        private void LoadItemsFromWowheadFilter_Click(object sender, RoutedEventArgs e)
+        {
+            RunWowheadQuery();
+#if DEBUG
+            // Dont run in Release versions because it doesn't work yet
 #endif
         }
         private void RefreshItemsCurrentlyWorn_Click(object sender, RoutedEventArgs e)

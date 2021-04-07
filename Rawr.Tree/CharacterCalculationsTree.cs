@@ -39,7 +39,7 @@ namespace Rawr.Tree {
         TankTolLbCcHt, // the LB is on the raid, but the CCHT is on the tank
 
         ReLifebloom,
-        InsectSwarm,
+        Moonfire,
 
         Count
     };
@@ -87,20 +87,20 @@ namespace Rawr.Tree {
 
             SpellPower = (float)(stats.SpellPower + Math.Max(0f, stats.Intellect - 10));
             // TODO: does nurturing instinct actually work like this?
-            SpellPower += character.DruidTalents.NurturingInstinct * 0.5 * stats.Agility;
+            SpellPower += 0.0; //character.DruidTalents.NurturingInstinct * 0.5 * stats.Agility;
             SpellPower *= (1 + stats.BonusSpellPowerMultiplier);
 
             TreeOfLifeUptime = treeOfLifeUptime;
-            double mastery = 8.0f + StatConversion.GetMasteryFromRating(stats.MasteryRating);
+            stats.Mastery += StatConversion.GetMasteryFromRating(stats.MasteryRating);
             if(Restoration)
-                Harmony = mastery * 0.0125f;
+                Harmony = stats.Mastery * 0.0125f;
 
             SpellsManaCostReduction = stats.SpellsManaCostReduction + stats.NatureSpellsManaCostReduction;
             BonusCritHealMultiplier = stats.BonusCritHealMultiplier;
 
             PassiveDirectHealBonus = (Restoration ? 1.25f : 1.0f) + Harmony;
-            PassivePeriodicHealBonus = (Restoration ? 1.25f : 1.0f) + opts.HarmonyPeriodicRate * Harmony + 0.02f * character.DruidTalents.Genesis;
-            DirectHealMultiplier = (1 + stats.BonusHealingDoneMultiplier) * (1.0f + character.DruidTalents.MasterShapeshifter * 0.04f) * (1 + TreeOfLifeUptime * 0.15f);
+            PassivePeriodicHealBonus = (Restoration ? 1.25f : 1.0f) + opts.HarmonyPeriodicRate * Harmony; //  +0.02f * character.DruidTalents.Genesis;
+            DirectHealMultiplier = (1 + stats.BonusHealingDoneMultiplier) * (1 + TreeOfLifeUptime * 0.15f); // * (1.0f + character.DruidTalents.MasterShapeshifter * 0.04f) 
             PeriodicHealMultiplier = DirectHealMultiplier * (1 + stats.BonusPeriodicHealingMultiplier);
             SpellsManaCostMultiplier = 1 - stats.ManaCostReductionMultiplier;
 
@@ -119,7 +119,7 @@ namespace Rawr.Tree {
         public double TickMultiplier;
 
         public double ExtraDirectBonus;
-        public double ExtraTickBonus;
+//        public double ExtraTickBonus;
         public double ExtraDurationMS;
 
         public double Tick;
@@ -196,7 +196,7 @@ namespace Rawr.Tree {
             if (Data.TickHeal > 0 || Data.TickCoeff > 0)
             {
                 double tick = Data.TickHeal + Stats.SpellPower * Data.TickCoeff;
-                tick *= (Stats.PassivePeriodicHealBonus + ExtraTickBonus) * TickMultiplier;
+                tick *= (Stats.PassivePeriodicHealBonus ) * TickMultiplier;
 
                 Tick = tick;
             }
@@ -319,13 +319,13 @@ namespace Rawr.Tree {
             addSpellStatValues(retVal, "Spell Mana Cost Reduction", "{0:F0}", x => x.SpellsManaCostReduction);
             addSpellStatValues(retVal, "Spell Crit Extra Bonus", "{0:F0}%", x => 100 * x.BonusCritHealMultiplier);
             string masteryInfo = String.Format("{0:F0} Mastery Rating from Gear, {1:F2} Mastery from Gear",
-                BasicStats.MasteryRating, 8 + StatConversion.GetMasteryFromRating(BasicStats.MasteryRating));
+                BasicStats.MasteryRating, BasicStats.Mastery);
             addSpellStatValues(retVal, "Harmony", "{0:F}%", x => 100 * x.Harmony, masteryInfo);
             
             retVal.Add("Mana Regen", String.Format("{0:F0}", ManaRegen));
             retVal.Add("Base Mana Regen", String.Format("{0:F0}", BaseRegen));
             retVal.Add("Initial Mana Pool Regen", String.Format("{0:F0}", ManaPoolRegen));
-            retVal.Add("Spirit Mana Regen", String.Format("{0:F0}", SpiritRegen));
+            retVal.Add("Spirit Mana Regen", String.Format("{0:F0} * Tooltip should read {1:F0} Out of Combat Mp5 \n {2:F0} Out of Combat Mp5", SpiritRegen, 5.0f * (SpiritRegen * 2 + BaseRegen), 5.0f * (SpiritRegen + BaseRegen)));
             retVal.Add("Innervate Mana Regen", String.Format("{0:F0}", InnervateRegen));
             retVal.Add("Replenishment Mana Regen", String.Format("{0:F0}", ReplenishmentRegen));
             retVal.Add("Revitalize Mana Regen", String.Format("{0:F0}", RevitalizeRegen));

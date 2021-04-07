@@ -42,6 +42,8 @@ namespace Rawr.Hunter
         BonusFireWeaponDamage,
         /// <summary>Bonus Haste Multiplier</summary>
         BonusHasteMultiplier,
+        /// <summary>Essence of the Viper, increases all magical damage you deal by MasteryVal</summary>
+        BonusMagicDamageMultiplier
     }
     /// <summary>List of Hunter stats that are Inverse Multiplicative</summary>
     public enum InverseMultiplicativeStatHunter : int { }
@@ -642,8 +644,8 @@ namespace Rawr.Hunter
         [Category("Hunter")]
         public float BonusRangedAttackPowerMultiplier
         {
-            get { return _rawAdditiveHunterData[(int)MultiplicativeStatHunter.BonusRangedAttackPowerMultiplier]; }
-            set { _rawAdditiveHunterData[(int)MultiplicativeStatHunter.BonusRangedAttackPowerMultiplier] = value; }
+            get { return _rawMultiplicativeHunterData[(int)MultiplicativeStatHunter.BonusRangedAttackPowerMultiplier]; }
+            set { _rawMultiplicativeHunterData[(int)MultiplicativeStatHunter.BonusRangedAttackPowerMultiplier] = value; }
         }
         /// <summary>Bonus Pet Attack Power Multiplier</summary>
         [DefaultValueAttribute(0f)]
@@ -652,8 +654,8 @@ namespace Rawr.Hunter
         [Category("Hunter")]
         public float BonusPetAttackPowerMultiplier
         {
-            get { return _rawAdditiveHunterData[(int)MultiplicativeStatHunter.BonusPetAttackPowerMultiplier]; }
-            set { _rawAdditiveHunterData[(int)MultiplicativeStatHunter.BonusPetAttackPowerMultiplier] = value; }
+            get { return _rawMultiplicativeHunterData[(int)MultiplicativeStatHunter.BonusPetAttackPowerMultiplier]; }
+            set { _rawMultiplicativeHunterData[(int)MultiplicativeStatHunter.BonusPetAttackPowerMultiplier] = value; }
         }
         /// <summary>Bonus Focus Regen Multiplier</summary>
         [DefaultValueAttribute(0f)]
@@ -662,8 +664,8 @@ namespace Rawr.Hunter
         [Category("Hunter")]
         public float BonusFocusRegenMultiplier
         {
-            get { return _rawAdditiveHunterData[(int)MultiplicativeStatHunter.BonusFocusRegenMultiplier]; }
-            set { _rawAdditiveHunterData[(int)MultiplicativeStatHunter.BonusFocusRegenMultiplier] = value; }
+            get { return _rawMultiplicativeHunterData[(int)MultiplicativeStatHunter.BonusFocusRegenMultiplier]; }
+            set { _rawMultiplicativeHunterData[(int)MultiplicativeStatHunter.BonusFocusRegenMultiplier] = value; }
         }
         /// <summary>Your Steady Shot and Cobra Shot have a 10% chance to trigger a Flaming Arrow, dealing 80% instant weapon damage as Fire.</summary>
         [DefaultValueAttribute(0f)]
@@ -672,8 +674,8 @@ namespace Rawr.Hunter
         [Category("Hunter")]
         public float BonusFireWeaponDamage
         {
-            get { return _rawAdditiveHunterData[(int)MultiplicativeStatHunter.BonusFireWeaponDamage]; }
-            set { _rawAdditiveHunterData[(int)MultiplicativeStatHunter.BonusFireWeaponDamage] = value; }
+            get { return _rawMultiplicativeHunterData[(int)MultiplicativeStatHunter.BonusFireWeaponDamage]; }
+            set { _rawMultiplicativeHunterData[(int)MultiplicativeStatHunter.BonusFireWeaponDamage] = value; }
         }
         /// <summary>Bonus Haste Multiplier</summary>
         [DefaultValueAttribute(0f)]
@@ -682,8 +684,17 @@ namespace Rawr.Hunter
         [Category("Hunter")]
         public float BonusHasteMultiplier
         {
-            get { return _rawAdditiveHunterData[(int)MultiplicativeStatHunter.BonusHasteMultiplier]; }
-            set { _rawAdditiveHunterData[(int)MultiplicativeStatHunter.BonusHasteMultiplier] = value; }
+            get { return _rawMultiplicativeHunterData[(int)MultiplicativeStatHunter.BonusHasteMultiplier]; }
+            set { _rawMultiplicativeHunterData[(int)MultiplicativeStatHunter.BonusHasteMultiplier] = value; }
+        }
+        [DefaultValueAttribute(0f)]
+        [Percentage]
+        [DisplayName("% Bonus Magic Damage")]
+        [Category("Hunter")]
+        public float BonusMagicDamageMultiplier
+        {
+            get { return _rawMultiplicativeHunterData[(int)MultiplicativeStatHunter.BonusMagicDamageMultiplier]; }
+            set { _rawMultiplicativeHunterData[(int)MultiplicativeStatHunter.BonusMagicDamageMultiplier] = value; }
         }
         #endregion
     }

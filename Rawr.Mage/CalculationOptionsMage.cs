@@ -40,9 +40,13 @@ namespace Rawr.Mage
     public sealed class CalculationOptionsMage : ICalculationOptionBase, INotifyPropertyChanged, ICharacterCalculationOptions
     {
         private int playerLevel;
-        private float levelScalingFactor;
+        private float hasteRatingMultiplier;
+        private float critRatingMultiplier;
+        private float masteryRatingMultiplier;
+        private float hitRatingMultiplier;
+        private float pvpResilienceMultiplier;
+        private float pvpPowerMultiplier;
         private float spellScalingFactor;
-        private float baseMana;
 
         public int PlayerLevel
         {
@@ -53,314 +57,62 @@ namespace Rawr.Mage
             set
             {
                 playerLevel = value;
-                if (playerLevel < 80)
-                {
-                    levelScalingFactor = (float)((52f / 82f) * Math.Pow(63f / 131f, (playerLevel - 70) / 10f));
-                }
-                else
-                {
-                    //levelScalingFactor = (float)((1638f / 5371f) * Math.Pow(7f / 41f, (playerLevel - 80) / 5f));                    
-                    //levelScalingFactor = (float)((1638f / 5371f) * Math.Pow(0.2561350976370563f, (playerLevel - 80) / 5f));
-                    switch (value)
-                    {
-                        case 80:
-                            levelScalingFactor = 10f / 32.7899894714355f;
-                            break;
-                        case 81:
-                            levelScalingFactor = 10f / 43.0560150146484f;
-                            break;
-                        case 82:
-                            levelScalingFactor = 10f / 56.5397491455078f;
-                            break;
-                        case 83:
-                            levelScalingFactor = 10f / 74.2754516601563f;
-                            break;
-                        case 84:
-                            levelScalingFactor = 10f / 97.5272369384766f;
-                            break;
-                        case 85:
-                            levelScalingFactor = 10f / 128.057159423828f;
-                            break;
-                    }
-                }
-                #region Spell Scaling Data
-                switch (value)
-                {
-                    case 1:
-                        spellScalingFactor = 31.0214f;
-                        break;
-                    case 2:
-                        spellScalingFactor = 31.4306f;
-                        break;
-                    case 3:
-                        spellScalingFactor = 31.5124f;
-                        break;
-                    case 4:
-                        spellScalingFactor = 31.6433f;
-                        break;
-                    case 5:
-                        spellScalingFactor = 31.7334f;
-                        break;
-                    case 6:
-                        spellScalingFactor = 31.8217f;
-                        break;
-                    case 7:
-                        spellScalingFactor = 31.8933f;
-                        break;
-                    case 8:
-                        spellScalingFactor = 31.9606f;
-                        break;
-                    case 9:
-                        spellScalingFactor = 32.5713f;
-                        break;
-                    case 10:
-                        spellScalingFactor = 33.0673f;
-                        break;
-                    case 11:
-                        spellScalingFactor = 33.4947f;
-                        break;
-                    case 12:
-                        spellScalingFactor = 33.8535f;
-                        break;
-                    case 13:
-                        spellScalingFactor = 34.1437f;
-                        break;
-                    case 14:
-                        spellScalingFactor = 35.6445f;
-                        break;
-                    case 15:
-                        spellScalingFactor = 37.1693f;
-                        break;
-                    case 16:
-                        spellScalingFactor = 38.7032f;
-                        break;
-                    case 17:
-                        spellScalingFactor = 40.2310f;
-                        break;
-                    case 18:
-                        spellScalingFactor = 41.7376f;
-                        break;
-                    case 19:
-                        spellScalingFactor = 43.2080f;
-                        break;
-                    case 20:
-                        spellScalingFactor = 44.6273f;
-                        break;
-                    case 21:
-                        spellScalingFactor = 46.8581f;
-                        break;
-                    case 22:
-                        spellScalingFactor = 49.1244f;
-                        break;
-                    case 23:
-                        spellScalingFactor = 51.4189f;
-                        break;
-                    case 24:
-                        spellScalingFactor = 53.7345f;
-                        break;
-                    case 25:
-                        spellScalingFactor = 56.0640f;
-                        break;
-                    case 26:
-                        spellScalingFactor = 58.4003f;
-                        break;
-                    case 27:
-                        spellScalingFactor = 60.7361f;
-                        break;
-                    case 28:
-                        spellScalingFactor = 63.0644f;
-                        break;
-                    case 29:
-                        spellScalingFactor = 65.3780f;
-                        break;
-                    case 30:
-                        spellScalingFactor = 67.6698f;
-                        break;
-                    case 31:
-                        spellScalingFactor = 71.3599f;
-                        break;
-                    case 32:
-                        spellScalingFactor = 75.1661f;
-                        break;
-                    case 33:
-                        spellScalingFactor = 79.0884f;
-                        break;
-                    case 34:
-                        spellScalingFactor = 83.1267f;
-                        break;
-                    case 35:
-                        spellScalingFactor = 87.2807f;
-                        break;
-                    case 36:
-                        spellScalingFactor = 91.5504f;
-                        break;
-                    case 37:
-                        spellScalingFactor = 95.9356f;
-                        break;
-                    case 38:
-                        spellScalingFactor = 100.4360f;
-                        break;
-                    case 39:
-                        spellScalingFactor = 105.0520f;
-                        break;
-                    case 40:
-                        spellScalingFactor = 109.7830f;
-                        break;
-                    case 41:
-                        spellScalingFactor = 114.6280f;
-                        break;
-                    case 42:
-                        spellScalingFactor = 119.5890f;
-                        break;
-                    case 43:
-                        spellScalingFactor = 124.6640f;
-                        break;
-                    case 44:
-                        spellScalingFactor = 129.8530f;
-                        break;
-                    case 45:
-                        spellScalingFactor = 135.1570f;
-                        break;
-                    case 46:
-                        spellScalingFactor = 140.5750f;
-                        break;
-                    case 47:
-                        spellScalingFactor = 146.1060f;
-                        break;
-                    case 48:
-                        spellScalingFactor = 151.7520f;
-                        break;
-                    case 49:
-                        spellScalingFactor = 157.5110f;
-                        break;
-                    case 50:
-                        spellScalingFactor = 163.3840f;
-                        break;
-                    case 51:
-                        spellScalingFactor = 169.3700f;
-                        break;
-                    case 52:
-                        spellScalingFactor = 175.4690f;
-                        break;
-                    case 53:
-                        spellScalingFactor = 181.6810f;
-                        break;
-                    case 54:
-                        spellScalingFactor = 188.0050f;
-                        break;
-                    case 55:
-                        spellScalingFactor = 194.4420f;
-                        break;
-                    case 56:
-                        spellScalingFactor = 200.9920f;
-                        break;
-                    case 57:
-                        spellScalingFactor = 207.6540f;
-                        break;
-                    case 58:
-                        spellScalingFactor = 428.8540f;
-                        break;
-                    case 59:
-                        spellScalingFactor = 485.2760f;
-                        break;
-                    case 60:
-                        spellScalingFactor = 499.9380f;
-                        break;
-                    case 61:
-                        spellScalingFactor = 514.8210f;
-                        break;
-                    case 62:
-                        spellScalingFactor = 529.9250f;
-                        break;
-                    case 63:
-                        spellScalingFactor = 545.2500f;
-                        break;
-                    case 64:
-                        spellScalingFactor = 560.7950f;
-                        break;
-                    case 65:
-                        spellScalingFactor = 576.5600f;
-                        break;
-                    case 66:
-                        spellScalingFactor = 592.5450f;
-                        break;
-                    case 67:
-                        spellScalingFactor = 608.7490f;
-                        break;
-                    case 68:
-                        spellScalingFactor = 625.1710f;
-                        break;
-                    case 69:
-                        spellScalingFactor = 641.8120f;
-                        break;
-                    case 70:
-                        spellScalingFactor = 658.6700f;
-                        break;
-                    case 71:
-                        spellScalingFactor = 675.7450f;
-                        break;
-                    case 72:
-                        spellScalingFactor = 693.0370f;
-                        break;
-                    case 73:
-                        spellScalingFactor = 710.5460f;
-                        break;
-                    case 74:
-                        spellScalingFactor = 728.2700f;
-                        break;
-                    case 75:
-                        spellScalingFactor = 746.2090f;
-                        break;
-                    case 76:
-                        spellScalingFactor = 764.3630f;
-                        break;
-                    case 77:
-                        spellScalingFactor = 782.7320f;
-                        break;
-                    case 78:
-                        spellScalingFactor = 801.3140f;
-                        break;
-                    case 79:
-                        spellScalingFactor = 820.1090f;
-                        break;
-                    case 80:
-                        spellScalingFactor = 839.117248535156f;
-                        break;
-                    case 81:
-                        spellScalingFactor = 858.337585449219f;
-                        break;
-                    case 82:
-                        spellScalingFactor = 877.769592285156f;
-                        break;
-                    case 83:
-                        spellScalingFactor = 897.412719726563f;
-                        break;
-                    case 84:
-                        spellScalingFactor = 917.266418457031f;
-                        break;
-                    case 85:
-                    default:
-                        spellScalingFactor = 937.330017089844f;
-                        break;
-                }
-                #endregion
-                if (ModeMOP)
-                {
-                    baseMana = 100000;
-                }
-                else
-                {
-                    baseMana = SpellTemplate.BaseMana[playerLevel];
-                }
+                hasteRatingMultiplier = BaseCombatRating.SpellHasteRatingMultiplier(value);
+                critRatingMultiplier = BaseCombatRating.SpellCritRatingMultiplier(value);
+                masteryRatingMultiplier = BaseCombatRating.MasteryRatingMultiplier(value);
+                hitRatingMultiplier = BaseCombatRating.SpellHitRatingMultiplier(value);
+                pvpResilienceMultiplier = BaseCombatRating.PvPResilienceRatingRatingMultiplier(value);
+                pvpPowerMultiplier = BaseCombatRating.PvPPowerRatingRatingMultiplier(value);
+                spellScalingFactor = BaseCombatRating.MageSpellScaling(value);
                 OnPropertyChanged("PlayerLevel");
             }
         }
 
-        public float LevelScalingFactor
+        public float HasteRatingMultiplier
         {
             get
             {
-                return levelScalingFactor;
+                return hasteRatingMultiplier;
+            }
+        }
+
+        public float CritRatingMultiplier
+        {
+            get
+            {
+                return critRatingMultiplier;
+            }
+        }
+
+        public float MasteryRatingMultiplier
+        {
+            get
+            {
+                return masteryRatingMultiplier;
+            }
+        }
+
+        public float HitRatingMultiplier
+        {
+            get
+            {
+                return hitRatingMultiplier;
+            }
+        }
+
+        public float PvPResilienceMultiplier
+        {
+            get
+            {
+                return pvpResilienceMultiplier;
+            }
+        }
+
+        public float PvPPowerMultiplier
+        {
+            get
+            {
+                return pvpPowerMultiplier;
             }
         }
 
@@ -376,7 +128,7 @@ namespace Rawr.Mage
         {
             get
             {
-                return baseMana;
+                return BaseCombatRating.MageBaseMana(playerLevel);
             }
         }
 
@@ -399,44 +151,11 @@ namespace Rawr.Mage
             set { _ModePTR = value; OnPropertyChanged("ModePTR"); }
         }*/
 
-        private bool _ModeMOP;
-        public bool ModeMOP
-        {
-            get { return _ModeMOP; }
-            set 
-            { 
-                _ModeMOP = value;
-                if (ModeMOP)
-                {
-                    baseMana = 100000;
-                }
-                else
-                {
-                    baseMana = SpellTemplate.BaseMana[playerLevel];
-                }
-                OnPropertyChanged("ModeMOP"); 
-            }
-        }
-
         private bool _BossHandler;
         public bool BossHandler
         {
             get { return _BossHandler; }
             set { _BossHandler = value; OnPropertyChanged("BossHandler"); }
-        }
-
-        private float _IgniteMunching;
-        public float IgniteMunching
-        {
-            get { return _IgniteMunching; }
-            set { _IgniteMunching = value; OnPropertyChanged("IgniteMunching"); }
-        }
-
-        private bool _UseMageWard;
-        public bool UseMageWard
-        {
-            get { return _UseMageWard; }
-            set { _UseMageWard = value; OnPropertyChanged("UseMageWard"); }
         }
 
         private float _FrostbiteUtilization;
@@ -735,13 +454,6 @@ namespace Rawr.Mage
             }
         }
 
-        private float _TpsLimit;
-        public float TpsLimit
-        {
-            get { return _TpsLimit; }
-            set { _TpsLimit = value; OnPropertyChanged("TpsLimit"); }
-        }
-
         private bool _HeroismAvailable;
         public bool HeroismAvailable
         {
@@ -756,60 +468,11 @@ namespace Rawr.Mage
             set { _PowerInfusionAvailable = value; OnPropertyChanged("PowerInfusionAvailable"); }
         }
 
-        private int _FlameOrb; // 0 = disabled, 1 = averaged, 2 = cooldown
-        public int FlameOrb
-        {
-            get { return _FlameOrb; }
-            set { _FlameOrb = value; OnPropertyChanged("FlameOrb"); }
-        }
-
-        [XmlIgnore]
-        public string FlameOrbText
-        {
-            get 
-            {
-                switch (_FlameOrb)
-                {
-                    case 0:
-                    default:
-                        return "Disabled";
-                    case 1:
-                        return "Averaged";
-                    case 2:
-                        return "Cooldown";
-                }
-            }
-            set 
-            {
-                switch (value)
-                {
-                    case "Disabled":
-                    default:
-                        _FlameOrb = 0;
-                        break;
-                    case "Averaged":
-                        _FlameOrb = 1;
-                        break;
-                    case "Cooldown":
-                        _FlameOrb = 2;
-                        break;
-                }
-                OnPropertyChanged("FlameOrbText"); 
-            }
-        }
-
         private bool _VolcanicPotion;
         public bool VolcanicPotion
         {
             get { return _VolcanicPotion; }
             set { _VolcanicPotion = value; OnPropertyChanged("VolcanicPotion"); }
-        }
-
-        private bool _FlameCap;
-        public bool FlameCap
-        {
-            get { return _FlameCap; }
-            set { _FlameCap = value; OnPropertyChanged("FlameCap"); }
         }
 
         private bool _ArcaneLight;
@@ -925,13 +588,6 @@ namespace Rawr.Mage
         {
             get { return _DpsTime; }
             set { _DpsTime = value; OnPropertyChanged("DpsTime"); }
-        }
-
-        private bool _DrumsOfBattle;
-        public bool DrumsOfBattle
-        {
-            get { return _DrumsOfBattle; }
-            set { _DrumsOfBattle = value; OnPropertyChanged("DrumsOfBattle"); }
         }
 
         private bool _AutomaticArmor;
@@ -1139,18 +795,18 @@ namespace Rawr.Mage
             set { _CooldownRestrictions = value; OnPropertyChanged("CooldownRestrictions"); }
         }
 
+        private float _RuneOfPowerInterval;
+        public float RuneOfPowerInterval
+        {
+            get { return _RuneOfPowerInterval; }
+            set { _RuneOfPowerInterval = value; OnPropertyChanged("RuneOfPowerInterval"); }
+        }
+
         private bool _EnableHastedEvocation;
         public bool EnableHastedEvocation
         {
             get { return _EnableHastedEvocation; }
             set { _EnableHastedEvocation = value; OnPropertyChanged("EnableHastedEvocation"); }
-        }
-
-        private bool _Enable2T10Evocation;
-        public bool Enable2T10Evocation
-        {
-            get { return _Enable2T10Evocation; }
-            set { _Enable2T10Evocation = value; OnPropertyChanged("Enable2T10Evocation"); }
         }
 
         private bool _AdvancedHasteProcs;
@@ -1437,27 +1093,6 @@ namespace Rawr.Mage
         {
             get { return _FarmingMode; }
             set { _FarmingMode = value; OnPropertyChanged("FarmingMode"); }
-        }
-
-        private float _FocusMagicTargetCritRate;
-        public float FocusMagicTargetCritRate
-        {
-            get { return _FocusMagicTargetCritRate; }
-            set { _FocusMagicTargetCritRate = value; OnPropertyChanged("FocusMagicTargetCritRate"); }
-        }
-
-        private float _DarkIntentWarlockCritRate;
-        public float DarkIntentWarlockCritRate
-        {
-            get { return _DarkIntentWarlockCritRate; }
-            set { _DarkIntentWarlockCritRate = value; OnPropertyChanged("DarkIntentWarlockCritRate"); }
-        }
-
-        private float _PyromaniacUptime;
-        public float PyromaniacUptime
-        {
-            get { return _PyromaniacUptime; }
-            set { _PyromaniacUptime = value; OnPropertyChanged("PyromaniacUptime"); }
         }
 
         private bool _UnlimitedMana;
@@ -1892,8 +1527,8 @@ namespace Rawr.Mage
 
         public CalculationOptionsMage()
         {
-            CustomTargetLevel = 88;
-            AoeTargetLevel = 85;
+            CustomTargetLevel = 93;
+            AoeTargetLevel = 90;
             LatencyCast = 0.01f;
             LatencyGCD = 0.01f;
             LatencyChannel = 0.2f;
@@ -1902,20 +1537,17 @@ namespace Rawr.Mage
             HeroismAvailable = true;
             CustomMoltenFuryPercentage = 0.3f;
             VolcanicPotion = true;
-            FlameCap = false;
             DpsTime = 1;
             InterruptFrequency = 0;
             AoeDuration = 0;
             SmartOptimization = true;
-            DrumsOfBattle = false;
             AutomaticArmor = true;
-            TpsLimit = 0;
+            //TpsLimit = 0;
             IncrementalOptimizations = true;
             ReconstructSequence = false;
             Innervate = 0;
             Fragmentation = 1;
             SurvivabilityRating = 0.0001f;
-            FlameOrb = 1;
             EvocationEnabled = true;
             ManaPotionEnabled = true;
             ManaGemEnabled = true;
@@ -1925,9 +1557,7 @@ namespace Rawr.Mage
             BurstImpacts = 5f;
             MirrorImage = 1;
             //ChanceToLiveLimit = 99f;
-            PlayerLevel = 85;
-            FocusMagicTargetCritRate = 0.2f;
-            DarkIntentWarlockCritRate = 0.6f;
+            PlayerLevel = 90;
             SnaredTime = 1f;
             FixedSegmentDuration = 30;
             EffectSpiritMultiplier = 1.0f;
@@ -1938,18 +1568,19 @@ namespace Rawr.Mage
             ChanceToLiveAttenuation = 0.1f;
             MaxUseAssumption = true;
             FrostbiteUtilization = 1.0f;
-            Enable2T10Evocation = true;
             ComparisonAdvancedConstraintsLevel = 1;
             DisplayAdvancedConstraintsLevel = 1;
             ComparisonSegmentMana = true;
             DisplaySegmentMana = true;
             IncludeManaNeutralCycleMix = true;
-            IgniteMunching = 0.08f;
-            ArcaneLight = true;
+            ArcaneLight = false;
+            DisableManaRegenCycles = true;
             MaxRedecompose = 50;
             ProcCombustion = true;
             GeneticThoroughness = 200;
             AdvancedHasteProcs = true;
+            SimpleStacking = true;
+            RuneOfPowerInterval = 45;
         }
 
         public CalculationOptionsMage(Character character)

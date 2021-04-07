@@ -9,10 +9,10 @@ namespace Rawr.Hunter.Skills
         /// <summary>
         /// TODO Zhok: Careful Aim, Sniper Training, Termination
         /// <b>Cobra Shot</b>, 5-40yd, 1.5 sec cast
-        /// <para>Deals weapon damage plus (276 + (RAP * 0.017)) in the form of Nature damage 
+        /// <para>Deals 70% of weapon damage in the form of Nature damage 
         /// and increases the duration of your Serpent Sting on 
         /// the target by 6 sec.</para>
-        /// <para>Generates 9 Focus.</para>
+        /// <para>Generates 14 Focus.</para>
         /// </summary>
         /// <TalentsAffecting>
         /// Careful Aim - Increases the critical strike chance of your Steady Shot, Cobra Shot and Aimed Shot by 30/60% on targets who are above 90% health.
@@ -27,14 +27,24 @@ namespace Rawr.Hunter.Skills
             Char = c; StatS = s; combatFactors = cf; Whiteattacks = wa; CalcOpts = co;
             //
             Name = "Cobra Shot";
+            shortName = "Cob";
+
             ReqTalent = true;
-            Talent2ChksValue = ((Specialization)Talents.HighestTree == Specialization.Marksmanship ? 0 : 1);
+            Talent2ChksValue = (c.HunterTalents.Specialization == (int)Specialization.Survival ? 1 : 0);
             ReqRangedWeap = true;
             ReqSkillsRange = true;
             CastTime = 1.5f;
-            FocusCost = -9;
+            FocusCost = -14;
+            DamageType = ItemDamageType.Nature;
+            
+            //TODO: Verify that still adds 6 secs to serpent sting
+
             //Targets += StatS.BonusTargets;
-            DamageBase = combatFactors.AvgRwWeaponDmgUnhasted + (StatS.RangedAttackPower * 0.017f) + 277.21f;
+            DamageBase = combatFactors.NormalizedRwWeaponDmg * .7f;
+
+            //float DamageBaseTest = SpellEffectProcessor.calculateWeaponDamage(c.MainHand, cf.StatS.RangedAttackPower) * .7f;
+            //float DamageBaseTestNorm = SpellEffectProcessor.calculateWeaponDamage(c.MainHand, cf.StatS.RangedAttackPower, true) * .7f;
+            
             eShot = Shots.CobraShot;
 
             Initialize();

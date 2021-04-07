@@ -326,12 +326,12 @@ namespace Rawr.Healadin
 
                                 statsAverage.Accumulate(childEffect.Stats,
                                                         effect.GetAverageUptime(0.0f, 1.0f)
-                                                            * childEffect.GetAverageStackSize(childTrigger, 1f, 1.5f, effect.Duration));
+                                                            * childEffect.GetAverageStackSize(childTrigger, 1f, 1.5f, 1f, effect.Duration)); // FIXME: Pass haste for Real PPM effects
                             }
                         }
                         else continue;
                     }
-                    statsAverage.Accumulate(effect.GetAverageStats(trigger, 1f, 1.5f, fightLength));
+                    statsAverage.Accumulate(effect.GetAverageStats(trigger, 1f, 1.5f, 1f, fightLength));
                 }
                 statsAverage.ManaRestore *= fightLength;
                 statsAverage.Healed *= fightLength;
@@ -558,7 +558,7 @@ namespace Rawr.Healadin
                         ItemType.Plate,
                         ItemType.None,
                         ItemType.Shield,
-                        ItemType.Libram,ItemType.Relic,
+                        //ItemType.Libram,ItemType.Relic, Relices removed in MoP
                         ItemType.OneHandAxe,
                         ItemType.OneHandMace,
                         ItemType.OneHandSword
@@ -598,8 +598,10 @@ namespace Rawr.Healadin
 
         public override bool EnchantFitsInSlot(Enchant enchant, Character character, ItemSlot slot)
         {
+            // No ranged enchants allowed
+            if (enchant.Slot == ItemSlot.Ranged) return false;
             // Filters out Non-Shield Offhand Enchants and Ranged Enchants
-            if ((slot == ItemSlot.OffHand && enchant.Slot != ItemSlot.OffHand) || slot == ItemSlot.Ranged) return false;
+            if (slot == ItemSlot.OffHand && enchant.Slot != ItemSlot.OffHand) return false;
             // Filters out Death Knight and Two-Hander Enchants
             if (enchant.Name.StartsWith("Rune of the") || enchant.Slot == ItemSlot.TwoHand) return false;
 
@@ -642,6 +644,7 @@ namespace Rawr.Healadin
                 SpellPower = stats.SpellPower,
                 CritRating = stats.CritRating,
                 HasteRating = stats.HasteRating,
+                Mastery = stats.Mastery,
                 MasteryRating = stats.MasteryRating,
                 Mana = stats.Mana,
                 ManaRestore = stats.ManaRestore,
@@ -702,6 +705,7 @@ namespace Rawr.Healadin
                 stats.SpellPower +
                 stats.CritRating +
                 stats.HasteRating +
+                stats.Mastery + 
                 stats.MasteryRating +
                 stats.Mana +
                 stats.ManaRestore +

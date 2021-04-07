@@ -555,7 +555,7 @@ namespace Rawr.DPSWarr {
         protected float BerserkerUptime {
             get {
                 if (_berserkerUptime == -1f) {
-                    _berserkerUptime = TalentsAsSpecialEffects.BerserkerRage.GetAverageUptime(0, 1f, DPSWarrChar.CombatFactors.CMHItemSpeed, (DPSWarrChar.CalcOpts.SE_UseDur ? FightDuration : 0f));
+                    _berserkerUptime = TalentsAsSpecialEffects.BerserkerRage.GetAverageUptime(0, 1f, DPSWarrChar.CombatFactors.CMHItemSpeed, 1f, (DPSWarrChar.CalcOpts.SE_UseDur ? FightDuration : 0f));
                 }
                 return _berserkerUptime;
             }
@@ -633,7 +633,7 @@ namespace Rawr.DPSWarr {
                     aw = GetWrapper<MortalStrike>();
                 if (DPSWarrChar.Talents.BattleTrance == 0 || aw.AllNumActivates <= 0) { return 1f; }
                 float numAffectedItems = TalentsAsSpecialEffects.BattleTrance[DPSWarrChar.Talents.BattleTrance].GetAverageProcsPerSecond(
-                    FightDurationO20 / aw.NumActivatesO20, aw.Ability.MHAtkTable.AnyLand, 3.3f, FightDurationO20)
+                    FightDurationO20 / aw.NumActivatesO20, aw.Ability.MHAtkTable.AnyLand, 3.3f, 1f, FightDurationO20) // FIXME: Pass haste for Real PPM effects
                     * FightDurationO20;
                 float percAffectedVsUnAffected = numAffectedItems / (AttemptedAtksOverDurO20 * TimeOver20Perc);
                 return 1f - percAffectedVsUnAffected;

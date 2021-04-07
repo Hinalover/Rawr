@@ -22,7 +22,7 @@ namespace Rawr.Elemental
 
             Stats addedStats = baseStats.Clone();
             addedStats.Accumulate(procStats);
-            CombatFactors combatFactors = new CombatFactors(talents, addedStats, Math.Max(calcOpts.NumberOfTargets-1, 0), calcOpts.LatencyCast, calcOpts.LatencyGcd, calcOpts.UseFireNova, calcOpts.UseChainLightning, calcOpts.UseDpsTotem);
+            CombatFactors combatFactors = new CombatFactors(talents, addedStats, Math.Max(calcOpts.NumberOfTargets-1, 0), calcOpts.LatencyCast, calcOpts.LatencyGcd, calcOpts.UseChainLightning, calcOpts.UseDpsFireTotem);
             spellbox = new SpellBox(combatFactors);
         }
 
@@ -42,7 +42,7 @@ namespace Rawr.Elemental
 
             Stats addedStats = baseStats.Clone();
             addedStats.Accumulate(procStats);
-            CombatFactors combatFactors = new CombatFactors(talents, addedStats, Math.Max(calcOpts.NumberOfTargets - 1, 0), calcOpts.LatencyCast, calcOpts.LatencyGcd, calcOpts.UseFireNova, calcOpts.UseChainLightning, calcOpts.UseDpsTotem);
+            CombatFactors combatFactors = new CombatFactors(talents, addedStats, Math.Max(calcOpts.NumberOfTargets - 1, 0), calcOpts.LatencyCast, calcOpts.LatencyGcd, calcOpts.UseChainLightning, calcOpts.UseDpsFireTotem);
             spellbox.Update(combatFactors);
         }
 
@@ -56,7 +56,7 @@ namespace Rawr.Elemental
              */
             #endregion
             
-            return new Rotation(talents, spellbox, new RotationOptions(calcOpts.UseFireNova, calcOpts.UseChainLightning, calcOpts.UseDpsTotem, calcOpts.UseFireEle));
+            return new Rotation(talents, spellbox, new RotationOptions(calcOpts.UseChainLightning, calcOpts.UseDpsFireTotem, calcOpts.UseFireEle));
         }
 
         public static void solve(CharacterCalculationsElemental calculatedStats, CalculationOptionsElemental calcOpts, BossOptions bossOpts)
@@ -105,16 +105,10 @@ namespace Rawr.Elemental
             }
             #endregion
 
-            /* Regen variables: (divide by 5 for regen per second)
-             * While casting: ManaRegInFSR
-             * During regen: ManaRegOutFSR */
+            // Regen variables: (divide by 5 for regen per second)
             #region Calculate Regen
-            float spiRegen = 5 * StatConversion.GetSpiritRegenSec(stats.Spirit, stats.Intellect);
             float replenishRegen = 5 * stats.Mana * stats.ManaRestoreFromMaxManaPerSecond;
-            float judgementRegen = 0;// 5 * rot.GetBaseCastTime() / rot.Duration * stats.ManaRestoreFromBaseManaPPM / 60f * BaseStats.GetBaseStats(character).Mana;
-            float ManaRegInFSR = /*spiRegen * stats.SpellCombatManaRegeneration +*/ stats.Mp5 + replenishRegen + judgementRegen + thunderstormRegen;
-            float ManaRegOutFSR = spiRegen + stats.Mp5 + replenishRegen + thunderstormRegen;
-            float ManaRegen = ManaRegInFSR;
+            float ManaRegen = stats.Mp5 + replenishRegen + thunderstormRegen;
             #endregion
 
             // TotalDamage, CastFraction, TimeUntilOOM
@@ -138,10 +132,10 @@ namespace Rawr.Elemental
             #endregion
 
             float TotalDamage = TimeUntilOOM * rot.DPS;
-            float TimeToRegenFull = 5f * calculatedStats.BasicStats.Mana / ManaRegOutFSR;
+            float TimeToRegenFull = 5f * calculatedStats.BasicStats.Mana / ManaRegen;
             float TimeToBurnAll = calculatedStats.BasicStats.Mana / effectiveMPS;
             float CastFraction = 1f;
-            if (ManaRegOutFSR > 0 && FightDuration > TimeUntilOOM)
+            if (ManaRegen > 0 && FightDuration > TimeUntilOOM)
             {
                 float timeLeft = FightDuration - TimeUntilOOM;
                 if (TimeToRegenFull + TimeToBurnAll == 0)
@@ -159,7 +153,7 @@ namespace Rawr.Elemental
 
             calculatedStats.CombatStats = stats.Clone();
             calculatedStats.CombatStats.Accumulate(procStats);
-            calculatedStats.ManaRegenInFSR = ManaRegInFSR;
+            calculatedStats.ManaRegen = ManaRegen;
             calculatedStats.ReplenishMP5 = replenishRegen;
             calculatedStats.LightningBolt = rot.LB;
             calculatedStats.ChainLightning = rot.CL;
@@ -168,7 +162,6 @@ namespace Rawr.Elemental
             calculatedStats.EarthShock = rot.ES;
             calculatedStats.FrostShock = rot.FrS;
             // asd
-            calculatedStats.FireNova = rot.FN;
             calculatedStats.SearingTotem = rot.ST;
             calculatedStats.MagmaTotem = rot.MT;
             calculatedStats.TimeToOOM = TimeUntilOOM;
@@ -280,7 +273,7 @@ namespace Rawr.Elemental
                 {
                     if (effect.Stats._rawSpecialEffectDataSize >= 1)
                     {
-                        upTime = effect.GetAverageUptime(0f, 1f, 0, FightDuration);
+                        upTime = effect.GetAverageUptime(0f, 1f, 0, 1f, FightDuration);
                         List<SpecialEffect> nestedEffect = new List<SpecialEffect>(effect.Stats.SpecialEffects());
                         Stats _stats2 = effectStats.Clone();
                         AccumulateSpecialEffects(character, ref _stats2, effect.Duration, triggerIntervals, triggerChances, nestedEffect, upTime);
@@ -288,18 +281,18 @@ namespace Rawr.Elemental
                     }
                     else
                     {
-                        upTime = effect.GetAverageStackSize(0f, 1f, 0, FightDuration);
+                        upTime = effect.GetAverageStackSize(0f, 1f, 0, 1f, FightDuration); // FIXME: Pass haste for Real PPM effects
                     }
                 }
                 else if (effect.Duration == 0f)
                 {
                     upTime = effect.GetAverageProcsPerSecond(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger],
-                                                             0, FightDuration);
+                                                             0, 1f, FightDuration); // FIXME: Pass haste for Real PPM effects
                 }
                 else if (triggerIntervals.ContainsKey(effect.Trigger))
                 {
                     upTime = effect.GetAverageStackSize(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger],
-                                                             0, FightDuration);
+                                                             0, 1f, FightDuration); // FIXME: Pass haste for Real PPM effects
                 }
 
                 if (upTime > 0f)
@@ -369,7 +362,7 @@ namespace Rawr.Elemental
                 else
                     continue;
                 
-                effect.AccumulateAverageStats(statsAverage, trigger, procChance, 3f, FightDuration);
+                effect.AccumulateAverageStats(statsAverage, trigger, procChance, 3f, 1f, FightDuration);
             }
             return statsAverage;
         }

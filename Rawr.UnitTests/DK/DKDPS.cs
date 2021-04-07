@@ -41,7 +41,7 @@ namespace Rawr.UnitTests.DK
                 // Unholy DK
                 m_char.DeathKnightTalents = new DeathKnightTalents("203200000000000000002000000000000000000003310321231031021231.010000001010100000010010000111");
             }
-            m_char.CurrentModel = "DPSDK";
+            //m_char.CurrentModel = "DPSDK";
 
         }
 

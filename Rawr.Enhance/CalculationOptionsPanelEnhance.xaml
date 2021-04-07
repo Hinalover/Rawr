@@ -91,7 +91,7 @@
                 </Grid>
             </sdk:TabItem>
 
-            <sdk:TabItem x:Name="Priorities" Header="Priorities">
+            <sdk:TabItem x:Name="Priority" Header="Priority">
             </sdk:TabItem>
 
             <sdk:TabItem Header="EnhSim">

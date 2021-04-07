@@ -56,6 +56,8 @@ namespace Rawr.RestoSham
             Trigger.HealingSpellCast,
             Trigger.HealingSpellCrit,
             Trigger.HealingSpellHit,
+            Trigger.HoTTick,
+            Trigger.HealingSpellHitorHoTTick,
             Trigger.SpellCast,
             Trigger.SpellCrit,
             Trigger.SpellHit,

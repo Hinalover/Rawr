@@ -34,7 +34,7 @@ namespace Rawr
             public Ibeta Ibeta;
             public int I;
 
-            public Parameters(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float attackSpeed) : this(effects, triggerInterval, triggerChance, offset, attackSpeed, null, null, 0.0f, null)
+            public Parameters(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float attackSpeed, float haste) : this(effects, triggerInterval, triggerChance, offset, attackSpeed, haste, null, null, 0.0f, null)
             {
             }
 
@@ -45,7 +45,7 @@ namespace Rawr
                 return false;
             }
 
-            public Parameters(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float attackSpeed, float[] scale, float[] value, float fightDuration, float[] resets)
+            public Parameters(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float attackSpeed, float haste, float[] scale, float[] value, float fightDuration, float[] resets)
             {
                 //this.effects = effects;
                 //this.triggerInterval = triggerInterval;
@@ -90,7 +90,7 @@ namespace Rawr
                         {
                             v[j] = value[i];
                         }
-                        p[j] = triggerChance[i] * effects[i].GetChance(attackSpeed);
+                        p[j] = triggerChance[i] * effects[i].GetChance(attackSpeed, triggerInterval[i], haste);
                         if (triggerInterval[i] == 0.0f)
                         {
                             // on use effects
@@ -141,7 +141,7 @@ namespace Rawr
                         }
                         else
                         {
-                            uptime[j] = effects[i].GetAverageUptime(triggerInterval[i], triggerChance[i], attackSpeed, fightDuration);
+                            uptime[j] = effects[i].GetAverageUptime(triggerInterval[i], triggerChance[i], attackSpeed, haste, fightDuration);
                         }
                         if (scale != null)
                         {
@@ -175,12 +175,12 @@ namespace Rawr
         /// <param name="offset">Initial cooldown for each effect.</param>
         /// <param name="attackSpeed">Average unhasted attack speed, used in PPM calculations.</param>
         /// <param name="fightDuration">Duration of fight in seconds.</param>
-        public static float GetAverageCombinedUptime(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float attackSpeed, float fightDuration)
+        public static float GetAverageCombinedUptime(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float attackSpeed, float haste, float fightDuration)
         {
             // CombinedAverageUptime = integrate_0..fightDuration prod_i Uptime[i](t) dt
 
             // initialize data, translate into interval time
-            Parameters p = new Parameters(effects, triggerInterval, triggerChance, offset, attackSpeed);
+            Parameters p = new Parameters(effects, triggerInterval, triggerChance, offset, attackSpeed, haste);
 
             // integrate using adaptive Simspon's method
             double totalCombinedUptime = AdaptiveSimpsonsMethod(p, fightDuration, 0.001f, 20);
@@ -197,9 +197,9 @@ namespace Rawr
         /// <param name="offset">Initial cooldown for each effect.</param>
         /// <param name="attackSpeed">Average unhasted attack speed, used in PPM calculations.</param>
         /// <param name="fightDuration">Duration of fight in seconds.</param>
-        public static WeightedStat[] GetAverageCombinedUptimeCombinations(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float attackSpeed, float fightDuration, AdditiveStat stat, float[] resets = null)
+        public static WeightedStat[] GetAverageCombinedUptimeCombinations(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float attackSpeed, float haste, float fightDuration, AdditiveStat stat, float[] resets = null)
         {
-            return GetAverageCombinedUptimeCombinations(effects, triggerInterval, triggerChance, offset, null, attackSpeed, fightDuration, stat, resets);
+            return GetAverageCombinedUptimeCombinations(effects, triggerInterval, triggerChance, offset, null, attackSpeed, haste, fightDuration, stat, resets);
         }
 
         /// <summary>
@@ -215,14 +215,14 @@ namespace Rawr
         /// <param name="effects">The effects for which the combined uptime is to be computed.</param>
         /// <param name="stat">The stat for which we're computing the combinations.</param>
         /// <param name="resets">Number of resets for stacking effects</param>
-        public static WeightedStat[] GetAverageCombinedUptimeCombinations(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float[] scale, float attackSpeed, float fightDuration, AdditiveStat stat, float[] resets = null)
+        public static WeightedStat[] GetAverageCombinedUptimeCombinations(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float[] scale, float attackSpeed, float haste, float fightDuration, AdditiveStat stat, float[] resets = null)
         {
             float[] value = new float[effects.Length];
             for (int j = 0; j < effects.Length; j++)
             {
                 value[j] = effects[j].Stats._rawAdditiveData[(int)stat];
             }
-            return GetAverageCombinedUptimeCombinations(effects, triggerInterval, triggerChance, offset, scale, attackSpeed, fightDuration, value, resets);
+            return GetAverageCombinedUptimeCombinations(effects, triggerInterval, triggerChance, offset, scale, attackSpeed, haste, fightDuration, value, resets);
         }
 
         /// <summary>
@@ -238,12 +238,12 @@ namespace Rawr
         /// <param name="effects">The effects for which the combined uptime is to be computed.</param>
         /// <param name="value">The value of special effects when procced, used to compute the value in returned WeightedStat.</param>
         /// <param name="resets">Number of resets for stacking effects</param>
-        public static WeightedStat[] GetAverageCombinedUptimeCombinations(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float[] scale, float attackSpeed, float fightDuration, float[] value, float[] resets = null)
+        public static WeightedStat[] GetAverageCombinedUptimeCombinations(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float[] scale, float attackSpeed, float haste, float fightDuration, float[] value, float[] resets = null)
         {
             // CombinedAverageUptime = integrate_0..fightDuration prod_i Uptime[i](t) dt
 
             // initialize data, translate into interval time
-            Parameters p = new Parameters(effects, triggerInterval, triggerChance, offset, attackSpeed, scale, value, fightDuration, resets);
+            Parameters p = new Parameters(effects, triggerInterval, triggerChance, offset, attackSpeed, haste, scale, value, fightDuration, resets);
 
             // integrate using adaptive Simspon's method
             // if there's only one nonstationary use noncombination solution for efficiency
@@ -259,7 +259,7 @@ namespace Rawr
                 }
                 else
                 {
-                    p.partialIntegral[0, 1] = fightDuration * p.k[0] * p.effects[0].GetAverageUptime(triggerInterval[p.I], triggerChance[p.I], attackSpeed, fightDuration);
+                    p.partialIntegral[0, 1] = fightDuration * p.k[0] * p.effects[0].GetAverageUptime(triggerInterval[p.I], triggerChance[p.I], attackSpeed, haste, fightDuration);
                 }
                 p.partialIntegral[0, 0] = fightDuration - p.partialIntegral[0, 1];
             }
@@ -309,9 +309,9 @@ namespace Rawr
         /// <param name="offset">Initial cooldown for each effect.</param>
         /// <param name="attackSpeed">Average unhasted attack speed, used in PPM calculations.</param>
         /// <param name="fightDuration">Duration of fight in seconds.</param>
-        public static WeightedStat[] GetAverageCombinedUptimeCombinationsMultiplicative(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float attackSpeed, float fightDuration, MultiplicativeStat stat)
+        public static WeightedStat[] GetAverageCombinedUptimeCombinationsMultiplicative(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float attackSpeed, float haste, float fightDuration, MultiplicativeStat stat)
         {
-            return GetAverageCombinedUptimeCombinationsMultiplicative(effects, triggerInterval, triggerChance, offset, null, attackSpeed, fightDuration, stat);
+            return GetAverageCombinedUptimeCombinationsMultiplicative(effects, triggerInterval, triggerChance, offset, null, attackSpeed, haste, fightDuration, stat);
         }
 
         /// <summary>
@@ -326,14 +326,14 @@ namespace Rawr
         /// <param name="scale">Chance that the effect will give the desired proc.</param>
         /// <param name="effects">The effects for which the combined uptime is to be computed.</param>
         /// <param name="stat">The stat for which we're computing the combinations.</param>
-        public static WeightedStat[] GetAverageCombinedUptimeCombinationsMultiplicative(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float[] scale, float attackSpeed, float fightDuration, MultiplicativeStat stat)
+        public static WeightedStat[] GetAverageCombinedUptimeCombinationsMultiplicative(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float[] scale, float attackSpeed, float haste, float fightDuration, MultiplicativeStat stat)
         {
             float[] value = new float[effects.Length];
             for (int j = 0; j < effects.Length; j++)
             {
                 value[j] = effects[j].Stats._rawMultiplicativeData[(int)stat];
             }
-            return GetAverageCombinedUptimeCombinationsMultiplicative(effects, triggerInterval, triggerChance, offset, scale, attackSpeed, fightDuration, value);
+            return GetAverageCombinedUptimeCombinationsMultiplicative(effects, triggerInterval, triggerChance, offset, scale, attackSpeed, haste, fightDuration, value);
         }
 
         /// <summary>
@@ -349,12 +349,12 @@ namespace Rawr
         /// <param name="effects">The effects for which the combined uptime is to be computed.</param>
         /// <param name="value">The value of special effects when procced, used to compute the value in returned WeightedStat.</param>
         /// <param name="resets">Number of resets for stacking effects</param>
-        public static WeightedStat[] GetAverageCombinedUptimeCombinationsMultiplicative(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float[] scale, float attackSpeed, float fightDuration, float[] value, float[] resets = null)
+        public static WeightedStat[] GetAverageCombinedUptimeCombinationsMultiplicative(SpecialEffect[] effects, float[] triggerInterval, float[] triggerChance, float[] offset, float[] scale, float attackSpeed, float haste, float fightDuration, float[] value, float[] resets = null)
         {
             // CombinedAverageUptime = integrate_0..fightDuration prod_i Uptime[i](t) dt
 
             // initialize data, translate into interval time
-            Parameters p = new Parameters(effects, triggerInterval, triggerChance, offset, attackSpeed, scale, value, fightDuration, resets);
+            Parameters p = new Parameters(effects, triggerInterval, triggerChance, offset, attackSpeed, haste, scale, value, fightDuration, resets);
 
             // integrate using adaptive Simspon's method
             // if there's only one nonstationary use noncombination solution for efficiency
@@ -370,7 +370,7 @@ namespace Rawr
                 }
                 else
                 {
-                    p.partialIntegral[0, 1] = fightDuration * p.k[0] * p.effects[0].GetAverageUptime(triggerInterval[p.I], triggerChance[p.I], attackSpeed, fightDuration);
+                    p.partialIntegral[0, 1] = fightDuration * p.k[0] * p.effects[0].GetAverageUptime(triggerInterval[p.I], triggerChance[p.I], attackSpeed, haste, fightDuration);
                 }
                 p.partialIntegral[0, 0] = fightDuration - p.partialIntegral[0, 1];
             }

@@ -79,7 +79,7 @@
 
 				<CheckBox Grid.Row="6" IsChecked="{Binding Path=Restoration, Mode=TwoWay}" MinWidth="50" Content="Restoration specialization" Grid.ColumnSpan="3" Margin="4,2,2,2" ToolTipService.ToolTip="Whether the druid is a restoration druid as opposed to a moonkin or feral; if you unselect this, you should also unselect all deep Restoration talents and ideally fully specify the feral or balance spec." />
 
-				<CheckBox Grid.Row="7" IsChecked="{Binding Path=TriggerDamageEffects, Mode=TwoWay}" MinWidth="50" Content="Keep up Insect Swarm to trigger effects, if needed" Grid.ColumnSpan="3" Margin="4,2,2,2" ToolTipService.ToolTip="Whether to keep up Insect Swarm in case there are effects triggered by damage spells, to activate them (has no effect if no equipped trinkets or other items require damage spells to be activated)." />
+				<CheckBox Grid.Row="7" IsChecked="{Binding Path=TriggerDamageEffects, Mode=TwoWay}" MinWidth="50" Content="Keep up Moonfire to trigger effects, if needed" Grid.ColumnSpan="3" Margin="4,2,2,2" ToolTipService.ToolTip="Whether to keep up Moonfire in case there are effects triggered by damage spells, to activate them (has no effect if no equipped trinkets or other items require damage spells to be activated)." />
 				<Border Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="4" Background="AliceBlue" BorderBrush="LightSteelBlue" BorderThickness="1">
 					<TextBlock Margin="4" FontWeight="Bold" Text="Stat Graph Options" VerticalAlignment="Center" />
 				</Border>
@@ -193,8 +193,7 @@
 			<TextBlock Grid.ColumnSpan="1" Margin="4,2,2,2" Text="Tranquility cast delay:" TextWrapping="NoWrap" VerticalAlignment="Center" Grid.Row="15" ToolTipService.ToolTip="Average time interval between the time the spell comes off cooldown and the time it is cast again" />
 			<inputToolkit:NumericUpDown Margin="2" Grid.Column="1" Grid.Row="15" Value="{Binding Path=TranquilityCastDelay, Mode=TwoWay}" DecimalPlaces="2" MinWidth="50" Maximum="10000" />
 
-			<TextBlock Grid.ColumnSpan="1" Margin="4,2,2,2" Text="Glyph of Regrowth extra time:" TextWrapping="NoWrap" VerticalAlignment="Center" Grid.Row="16" ToolTipService.ToolTip="Average extra duration for Regrowth's HoT if Glyph of Regrowth is in use" />
-			<inputToolkit:NumericUpDown Margin="2" Grid.Column="1" Grid.Row="16" Value="{Binding Path=GlyphOfRegrowthExtraDuration, Mode=TwoWay}" DecimalPlaces="2" MinWidth="50" Maximum="1000" />
+		
 			</Grid>
 		</controls:TabItem>
 		<controls:TabItem Header="Tank">

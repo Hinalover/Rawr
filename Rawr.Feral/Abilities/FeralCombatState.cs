@@ -7,50 +7,66 @@ namespace Rawr.Feral
 {
     public class FeralCombatState
     {
-        public Character Char;
-        public StatsFeral Stats;
-        public DruidTalents Talents;
-        public FeralWeapon MainHand;
+        public Character Char = new Character();
+        public int CharacterLevel = 90;
+        public int TargetLevel = 93;
+        public StatsFeral Stats = new StatsFeral();
+        public DruidTalents Talents = new DruidTalents();
+        public FeralWeapon MainHand = new FeralWeapon();
         public float NumberOfTargets = 1f;
-        public int CurrentComboPoints;
-        public int CurrentRage;
-        public int CurrentEnergy;
-        public float CurrentMana;
         /// <summary>
         /// Is the player attacking from behind
         /// </summary>
-        public bool AttackingFromBehind;
+        public bool AttackingFromBehind = true;
         /// <summary>
         /// If player is Prowling
         /// </summary>
-        public bool Prowling;
+        public bool Prowling = false;
         /// <summary>
-        /// While true, White Damage Attacks are increased by 80%
+        /// Uptime for Savage Roar, which ncreases physical damage done by 30%
         /// </summary>
-        public bool SavageRoarUptime;
+        public float SavageRoarUptime = 0;
         /// <summary>
         /// While true, damage is increased by 15%
         /// </summary>
-        public bool TigersFuryUptime;
+        public float TigersFuryUptime = 0;
         /// <summary>
-        /// While true, Energy cost is reduced by 50%
+        /// Uptime for Berserk which reduces Energy cost by 50%
         /// </summary>
-        public bool BerserkUptime;
-        public float NumberOfBleeds;
+        public float BerserkUptime = 0;
+        /// <summary>
+        /// Uptime for Incarnation which allows for Ravage to be used outside stealth
+        /// </summary>
+        public float IncarnationUptime = 0;
+        /// <summary>
+        /// Uptime for Force of Nature which summons 3 treants to assist the player
+        /// </summary>
 
-        public bool Above80Percent;
-        public bool Below60Percent;
-        public bool Below25Percent;
+        public float ForceofNatureUptime = 0;
+        public float NumberOfBleeds = 0;
 
-        public FeralRotationType Spec;
-        public float BossArmor;
+        public readonly float Above80Percent = 0.17f; //TODO: Make this dynamic/customizable
+        public readonly float Below25Percent = 0.27f; //TODO: Make this dynamic/customizable
+        public readonly float Below60Percent = 0.675f; //TODO: Make this dynamic/customizable
+
+
+        public FeralRotationType Spec = FeralRotationType.Feral;
+        public float BossArmor = BaseCombatRating.Get_BossArmor(93);
+        /// <summary>
+        /// If the player wises to use PTR numbers instead of live numbers.
+        /// </summary>
+        public bool PTR = false;
 
         public void ResetCombatState()
         {
-            CurrentRage = 100;
-            CurrentEnergy = 100;
-            CurrentMana = Stats.Mana;
-            CurrentComboPoints = 0;
+            AttackingFromBehind = true;
+            Prowling = false;
+            SavageRoarUptime = 0;
+            TigersFuryUptime = 0;
+            BerserkUptime = 0;
+            Spec = FeralRotationType.Feral;
+            BossArmor = BaseCombatRating.Get_BossArmor(93);
+            PTR = false;
         }
     }
 }

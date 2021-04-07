@@ -110,15 +110,15 @@ namespace Rawr.Warlock
         }
 
         public float CalcStamina() { return StatUtils.CalcStamina(Stats); }
-        public float CalcIntellect() { return StatUtils.CalcIntellect(Stats, BaseIntellect, CalcOpts.PlayerLevel); }
+        public float CalcIntellect() { return StatUtils.CalcIntellect(Stats, BaseIntellect, Character.Level); }
         public float CalcHealth() { return StatUtils.CalcHealth(Stats); }
-        public float CalcMana() { return StatUtils.CalcMana(Stats, BaseIntellect, CalcOpts.PlayerLevel); }
-        public float CalcUsableMana(float fightLen) { return StatUtils.CalcUsableMana(Stats, fightLen, BaseIntellect, CalcOpts.PlayerLevel); }
-        public float CalcSpellCrit() { return StatUtils.CalcSpellCrit(Stats, BaseIntellect, CalcOpts.PlayerLevel); }
-        public float CalcSpellHit() { return StatUtils.CalcSpellHit(Stats, CalcOpts.PlayerLevel); }
-        public float CalcSpellPower() { return StatUtils.CalcSpellPower(Stats, BaseIntellect, CalcOpts.PlayerLevel); }
-        public float CalcSpellHaste() { return StatUtils.CalcSpellHaste(Stats, CalcOpts.PlayerLevel); }
-        public float CalcMastery() { return StatUtils.CalcMastery(Stats, CalcOpts.PlayerLevel); }
+        public float CalcMana() { return StatUtils.CalcMana(Stats, BaseIntellect, Character.Level); }
+        public float CalcUsableMana(float fightLen) { return StatUtils.CalcUsableMana(Stats, fightLen, BaseIntellect, Character.Level); }
+        public float CalcSpellCrit() { return StatUtils.CalcSpellCrit(Stats, BaseIntellect, Character.Level); }
+        public float CalcSpellHit() { return StatUtils.CalcSpellHit(Stats, Character.Level); }
+        public float CalcSpellPower() { return StatUtils.CalcSpellPower(Stats, BaseIntellect, Character.Level); }
+        public float CalcSpellHaste() { return StatUtils.CalcSpellHaste(Stats, Character.Level); }
+        public float CalcMastery() { return StatUtils.CalcMastery(Stats, Character.Level); }
 
         /// <summary>
         /// Builds a dictionary containing the values to display for each of the
@@ -144,11 +144,11 @@ namespace Rawr.Warlock
             dictValues.Add("Health", string.Format("{0:0}*{1:0} stamina", CalcHealth(), CalcStamina()));
             dictValues.Add("Mana", string.Format("{0:0}*{1:0} intellect", CalcMana(), CalcIntellect()));
 
-            dictValues.Add("Spell Power", string.Format("{0:0.0}*{1:0.0}\tBefore Procs", CalcSpellPower(), StatUtils.CalcSpellPower(PreProcStats, BaseIntellect, CalcOpts.PlayerLevel)));
+            dictValues.Add("Spell Power", string.Format("{0:0.0}*{1:0.0}\tBefore Procs", CalcSpellPower(), StatUtils.CalcSpellPower(PreProcStats, BaseIntellect, Character.Level)));
 
             #region Hit Rating
-            float onePercentOfHitRating = (1 / StatUtils.GetSpellHitFromRating(1, CalcOpts.PlayerLevel));
-            float hitFromRating = StatUtils.GetSpellHitFromRating(Stats.HitRating, CalcOpts.PlayerLevel);
+            float onePercentOfHitRating = (1 / StatUtils.GetSpellHitFromRating(1, Character.Level));
+            float hitFromRating = StatUtils.GetSpellHitFromRating(Stats.HitRating, Character.Level);
             float hitFromBuffs = (CalcSpellHit() - hitFromRating);
             float targetHit = CalcOpts.GetBaseHitRate() / 100f;
             float totalHit = targetHit + CalcSpellHit();
@@ -165,7 +165,7 @@ namespace Rawr.Warlock
                     totalHit,
                     missChance,
                     targetHit,
-                    CalcOpts.TargetLevel,
+                    BossOpts.Level,
                     hitFromRating,
                     Stats.HitRating,
                     hitFromBuffs,
@@ -173,7 +173,7 @@ namespace Rawr.Warlock
                     (totalHit > 1) ? "above" : "below"));
             #endregion
 
-            dictValues.Add("Crit Chance", string.Format("{0:0.00%}*{1:0.00%}\tBefore Procs", CalcSpellCrit(), StatUtils.CalcSpellCrit(PreProcStats, BaseIntellect, CalcOpts.PlayerLevel)));
+            dictValues.Add("Crit Chance", string.Format("{0:0.00%}*{1:0.00%}\tBefore Procs", CalcSpellCrit(), StatUtils.CalcSpellCrit(PreProcStats, BaseIntellect, Character.Level)));
             dictValues.Add("Average Haste", 
                 string.Format(
                     "{0:0.00}%*"
@@ -183,10 +183,10 @@ namespace Rawr.Warlock
                         + "\r\n"
                         + "{5:0.00}s\tGlobal Cooldown\r\n",
                     (AvgHaste - 1f) * 100f,
-                    StatUtils.GetSpellHasteFromRating(Stats.HasteRating, CalcOpts.PlayerLevel) * 100f,
+                    StatUtils.GetSpellHasteFromRating(Stats.HasteRating, Character.Level) * 100f,
                     Stats.HasteRating,
                     Stats.SpellHaste * 100f,
-                    (AvgHaste - StatUtils.CalcSpellHaste(PreProcStats, CalcOpts.PlayerLevel)) * 100f,
+                    (AvgHaste - StatUtils.CalcSpellHaste(PreProcStats, Character.Level)) * 100f,
                     Math.Max(1.0f, 1.5f / AvgHaste)));
             dictValues.Add("Mastery", string.Format("{0:0.0}*from {1:0.0} Mastery Rating", CalcMastery(), Stats.MasteryRating));
 
@@ -276,7 +276,7 @@ namespace Rawr.Warlock
 
             float timeRemaining = BossOpts.BerserkTimer;
             float totalMana = CalcUsableMana(timeRemaining);
-            float maxMana = StatUtils.CalcMana(PreProcStats, BaseIntellect, CalcOpts.PlayerLevel);
+            float maxMana = StatUtils.CalcMana(PreProcStats, BaseIntellect, Character.Level);
             float manaFromEffects = totalMana - maxMana;
             float manaUsed = 0f;
 
@@ -515,7 +515,7 @@ namespace Rawr.Warlock
         }
         private void CalcHasteAndManaProcs()
         {
-            float nonProcHaste = StatUtils.CalcSpellHaste(PreProcStats, CalcOpts.PlayerLevel);
+            float nonProcHaste = StatUtils.CalcSpellHaste(PreProcStats, Character.Level);
             if (CalcOpts.NoProcs)
             {
                 WeightedStat staticHaste = new WeightedStat();
@@ -541,9 +541,9 @@ namespace Rawr.Warlock
             // calculate the haste procs
             Haste = new List<WeightedStat>();
             WeightedStat[] percentages = GetUptimes(Stats, periods, chances, s => s.SpellHaste,
-                    (a, b, c, d, e, f, g, h) => SpecialEffect.GetAverageCombinedUptimeCombinationsMultiplicative(a, b, c, d, e, f, g, h));
+                    (a, b, c, d, e, f, g, h, i) => SpecialEffect.GetAverageCombinedUptimeCombinationsMultiplicative(a, b, c, d, e, f, g, h, i));
             WeightedStat[] ratings = GetUptimes(Stats, periods, chances, s => s.HasteRating,
-                    (a, b, c, d, e, f, g, h) => SpecialEffect.GetAverageCombinedUptimeCombinations(a, b, c, d, e, f, g, h));
+                    (a, b, c, d, e, f, g, h, i) => SpecialEffect.GetAverageCombinedUptimeCombinations(a, b, c, d, e, f, g, h, i));
             for (int p = percentages.Length, f = 0; --p >= 0; )
             {
                 if (percentages[p].Chance == 0)
@@ -559,8 +559,8 @@ namespace Rawr.Warlock
                     }
                     WeightedStat s = new WeightedStat();
                     s.Chance = percentages[p].Chance * ratings[r].Chance;
-                    s.Value =   (1 + percentages[p].Value) 
-                              * (1 + StatUtils.GetSpellHasteFromRating(ratings[r].Value + Stats.HasteRating, CalcOpts.PlayerLevel))
+                    s.Value =   (1 + percentages[p].Value)
+                              * (1 + StatUtils.GetSpellHasteFromRating(ratings[r].Value + Stats.HasteRating, Character.Level))
                               * (1 + Stats.SpellHaste);
                     Haste.Add(s);
                     AvgHaste += s.Chance * s.Value;
@@ -576,7 +576,7 @@ namespace Rawr.Warlock
                     continue;
                 }
 
-                Stats proc = effect.GetAverageStats(periods[(int)effect.Trigger], chances[(int)effect.Trigger], CalculationsWarlock.AVG_UNHASTED_CAST_TIME, BossOpts.BerserkTimer);
+                Stats proc = effect.GetAverageStats(periods[(int)effect.Trigger], chances[(int)effect.Trigger], CalculationsWarlock.AVG_UNHASTED_CAST_TIME, 1f, BossOpts.BerserkTimer);
                 if (proc.ManaRestore > 0)
                 {
                     proc.ManaRestore *= BossOpts.BerserkTimer;
@@ -621,6 +621,7 @@ namespace Rawr.Warlock
                     hasteOffsets.ToArray(),
                     hasteScales.ToArray(),
                     CalculationsWarlock.AVG_UNHASTED_CAST_TIME,
+                    1.0f, // FIXME: Pass haste for Real PPM effects
                     BossOpts.BerserkTimer,
                     hasteValues.ToArray());
         }
@@ -647,8 +648,8 @@ namespace Rawr.Warlock
                 procStats.Accumulate(proc);
                 if (effect.Trigger == Trigger.Use && !IsDoublePot(effect))
                 {
-                    ExtraCritAtMax += StatUtils.CalcSpellCrit(effect.Stats, BaseIntellect, CalcOpts.PlayerLevel)
-                                    - StatUtils.CalcSpellCrit(proc, BaseIntellect, CalcOpts.PlayerLevel);
+                    ExtraCritAtMax += StatUtils.CalcSpellCrit(effect.Stats, BaseIntellect, Character.Level)
+                                    - StatUtils.CalcSpellCrit(proc, BaseIntellect, Character.Level);
                 }
             }
             return procStats;
@@ -734,15 +735,15 @@ namespace Rawr.Warlock
         private Stats CalcNormalProc(SpecialEffect effect, Dictionary<int, float> periods, Dictionary<int, float> chances)
         {
             Stats effectStats = effect.Stats;
-            Stats proc = effect.GetAverageStats(periods[(int)effect.Trigger], chances[(int)effect.Trigger], CalculationsWarlock.AVG_UNHASTED_CAST_TIME, BossOpts.BerserkTimer);
+            Stats proc = effect.GetAverageStats(periods[(int)effect.Trigger], chances[(int)effect.Trigger], CalculationsWarlock.AVG_UNHASTED_CAST_TIME, 1f, BossOpts.BerserkTimer);
 
             // Handle "recursive effects" - i.e. those that *enable* a
             // proc during a short window.
             if (effect.Stats._rawSpecialEffectDataSize == 1 && periods.ContainsKey((int)effect.Stats._rawSpecialEffectData[0].Trigger))
             {
                 SpecialEffect inner = effect.Stats._rawSpecialEffectData[0];
-                Stats innerStats = inner.GetAverageStats(periods[(int)inner.Trigger], chances[(int)inner.Trigger], 1f, effect.Duration);
-                float upTime = effect.GetAverageUptime(periods[(int)effect.Trigger], chances[(int)effect.Trigger], 1f, BossOpts.BerserkTimer);
+                Stats innerStats = inner.GetAverageStats(periods[(int)inner.Trigger], chances[(int)inner.Trigger], 1f, 1f, effect.Duration);
+                float upTime = effect.GetAverageUptime(periods[(int)effect.Trigger], chances[(int)effect.Trigger], 1f, 1f, BossOpts.BerserkTimer);
                 proc.Accumulate(innerStats, upTime);
             }
 
@@ -759,14 +760,15 @@ namespace Rawr.Warlock
             damagePerProc *=
                   modifiers.GetFinalDirectMultiplier()
                 * (1 + (modifiers.GetFinalCritMultiplier() - 1) * modifiers.CritChance)
-                * (1 - StatConversion.GetAverageResistance(CalcOpts.PlayerLevel, CalcOpts.TargetLevel, 0f, 0f));
+                * (1 - StatConversion.GetAverageResistance(Character.Level, BossOpts.Level, 0f, 0f));
             float numProcs
                 = BossOpts.BerserkTimer
                     * effect.GetAverageProcsPerSecond(
                         periods[(int)effect.Trigger],
                         chances[(int)effect.Trigger],
                         CalculationsWarlock.AVG_UNHASTED_CAST_TIME,
-                        BossOpts.BerserkTimer);
+                        1f,
+                        BossOpts.BerserkTimer); // FIXME: Pass haste for Real PPM effects
             return numProcs * damagePerProc;
         }
         private bool IsDoublePot(SpecialEffect effect)

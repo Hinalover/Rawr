@@ -30,13 +30,6 @@ namespace Rawr.DK
             // Moving SD procs to be extra DCs in the rotation rather than reduced cost.
             // This makes it more like Rime.
             this.AbilityCost[(int)DKCostTypes.RunicPower] = (int)Math.Floor(RPCost);
-            if (CS.m_Talents.UnholyBlight > 0)
-            {
-                ml_TriggeredAbility = new AbilityDK_Base[1];
-                ml_TriggeredAbility[0] = new AbilityDK_UnholyBlight(CS);
-                ml_TriggeredAbility[0].uBaseDamage = (uint)((this.TotalDamage / 10) /10);
-            }
-
         }
 
         private int _DamageAdditiveModifer = 0;
@@ -61,7 +54,6 @@ namespace Rawr.DK
             get
             {
                 float DMM = base.DamageMultiplierModifer;
-                DMM += CState.m_Talents.Morbidity * .05f;
                 if (CState.m_Talents.GlyphofDeathCoil)
                     DMM += .15f;
                 return DMM;
@@ -76,21 +68,8 @@ namespace Rawr.DK
         {
             get
             {
-                return Math.Min(1, base.CritChance + CState.m_Stats.BonusCritChanceDeathCoil + (CState.m_Stats.b2T11_DPS ? .05f : 0));
+                return Math.Min(1, base.CritChance + CState.m_Stats.BonusCritChanceDeathCoil);
             }
-        }
-    }
-
-    class AbilityDK_UnholyBlight : AbilityDK_Base
-    {
-        public AbilityDK_UnholyBlight(CombatState CS)
-        {
-            this.CState = CS;
-            this.szName = "Unholy Blight";
-            this.bWeaponRequired = false;
-            this.tDamageType = ItemDamageType.Shadow;
-            this.uDuration = 10 * 1000;
-            this.uTickRate = 1000;
         }
     }
 }

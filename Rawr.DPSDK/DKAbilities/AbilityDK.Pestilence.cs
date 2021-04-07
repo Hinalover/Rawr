@@ -24,7 +24,6 @@ namespace Rawr.DK
             this.bTriggersGCD = true;
             this.uRange = 0;
             this.bAOE = true;
-            // TODO: Glyph - Refreshes disease
             UpdateCombatState(CS);
         }
 

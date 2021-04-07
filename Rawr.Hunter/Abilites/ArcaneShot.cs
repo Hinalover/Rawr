@@ -7,7 +7,6 @@ namespace Rawr.Hunter.Skills
     public class ArcaneShot : Ability
     {
 
-        private float _basefocuscost = 25f;
         /// <summary>
         /// TODO Zhok: Cobra Strike, Lock and Load, Sic 'Em, 
         /// 
@@ -28,13 +27,17 @@ namespace Rawr.Hunter.Skills
             Char = c; StatS = s; combatFactors = cf; Whiteattacks = wa; CalcOpts = co;
 
             Name = "Arcane Shot";
+            shortName = "AS";
 
+            SpellId = 3044;
             ReqRangedWeap = true;
             ReqSkillsRange = true;
 
-            FocusCost = _basefocuscost - (Talents.Efficiency * 2f + Talents.ThrillOfTheHunt * .4f * .05f);
+            FocusCost = 20f;
 
-            DamageBase = cf.AvgRwWeaponDmgUnhasted + (StatS.RangedAttackPower * 0.0483f) + 289f;
+            DamageType = ItemDamageType.Arcane;
+
+            DamageBase = cf.NormalizedRwWeaponDmg * .65f + 3239f;
             DamageBonus = 1 + (Talents.GlyphOfArcaneShot ? 0.12f : 0f);
 
             Consumes_Tier12_4pc = true;

@@ -25,6 +25,7 @@ namespace Rawr.DK
             this.CastTime = 0;
             this.Cooldown = 0;
             this.AbilityIndex = (int)DKability.BloodPlague;
+            this.uDuration = (30 * 1000);
             uRange = 0;
             UpdateCombatState(CS);
         }
@@ -32,14 +33,6 @@ namespace Rawr.DK
         public override void UpdateCombatState(CombatState CS)
         {
             base.UpdateCombatState(CS);
-            if (CState.m_Talents.Epidemic > 3)
-                // error
-                this.uDuration = 21000;
-            else
-                this.uDuration = (21 * 1000) + ((uint)CState.m_Talents.Epidemic * 4000);
-            if (CState.m_uDiseaseCount < (2 + CS.m_Talents.EbonPlaguebringer))
-                CState.m_uDiseaseCount++;
-
         }
 
         /// <summary>

@@ -65,6 +65,11 @@ namespace Rawr.RestoSham
         public float MailSpecialization { get; set; }
         public float RSTankHit { get; set; }
         public float RSTankTick { get; set; }
+        public float _HealPerSec { get; set; }
+        public float _HealHitPerSec { get; set; }
+        public float _CritPerSec { get; set; }
+        public float _FightSeconds { get; set; }
+        public float _CastingActivity { get; set; }
 
         #endregion
 

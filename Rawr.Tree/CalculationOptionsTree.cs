@@ -147,13 +147,13 @@ namespace Rawr.Tree
             set { tranquilityCastDelay = value; OnPropertyChanged("TranquilityCastDelay"); }
         }
 
-        private float glyphOfRegrowthExtraDuration = 2.0f;
-        [DefaultValue(2.0f)]
-        public float GlyphOfRegrowthExtraDuration
-        {
-            get { return glyphOfRegrowthExtraDuration; }
-            set { glyphOfRegrowthExtraDuration = value; OnPropertyChanged("GlyphOfRegrowthExtraDuration"); }
-        }
+//        private float glyphOfRegrowthExtraDuration = 2.0f;
+//        [DefaultValue(2.0f)]
+//        public float GlyphOfRegrowthExtraDuration
+//        {
+//            get { return glyphOfRegrowthExtraDuration; }
+//            set { glyphOfRegrowthExtraDuration = value; OnPropertyChanged("GlyphOfRegrowthExtraDuration"); }
+//        }
 
         private bool tankSwiftmend = true;
         [DefaultValue(true)]

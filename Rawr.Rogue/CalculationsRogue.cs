@@ -239,6 +239,7 @@ namespace Rawr.Rogue
             
             #region Basic Chances and Constants
             #region Constants from talents
+            stats.Mastery += StatConversion.GetMasteryFromRating(stats.MasteryRating);
             float dmgBonusOnGarrRuptTickChance = RV.Talents.VenomousWoundsProcChance * talents.VenomousWounds;
             float cPGCritDmgMult = RV.Talents.LethalityCritMult * talents.Lethality;
             float ambushBSCostReduc = RV.Talents.SlaughterFTShadowsBSAmbushCostReduc[talents.SlaughterFromTheShadows];
@@ -249,15 +250,15 @@ namespace Rawr.Rogue
             float bSCritBonus = talents.PuncturingWounds * RV.Talents.PuncturingWoundsBSCritMult + (stats.Rogue_T11_2P > 0 ? RV.Set.T112CritBonus : 0f);
             float evisCritBonus = (talents.GlyphOfEviscerate ? RV.Glyph.EvisCritMult : 0f);
             float mutiCritBonus = talents.PuncturingWounds * RV.Talents.PuncturingWoundsMutiCritMult + (stats.Rogue_T11_2P > 0 ? RV.Set.T112CritBonus : 0f);
-            float ruptDmgMult = (spec == 2 ? RV.Mastery.Executioner + RV.Mastery.ExecutionerPerMast * StatConversion.GetMasteryFromRating(stats.MasteryRating) : 0f);
+            float ruptDmgMult = (spec == 2 ? (RV.Mastery.ExecutionerPerMast * stats.Mastery ) : 0f);
             float ruptDurationBonus = talents.GlyphOfRupture ? RV.Glyph.RuptBonusDuration : 0;
             float snDDurationBonus = talents.GlyphOfSliceandDice ? RV.Glyph.SnDBonusDuration : 0;
             float exposeDurationBonus = talents.GlyphOfExposeArmor ? RV.Glyph.ExposeBonusDuration : 0;
             float snDDurationMult = RV.Talents.ImpSliceAndDice * talents.ImprovedSliceAndDice;
             float sStrikeCritBonus = (stats.Rogue_T11_2P > 0 ? RV.Set.T112CritBonus : 0f);
             float cPonCPGCritChance = RV.Talents.SealFateChance * talents.SealFate;
-            float evisDmgMult = (1f + RV.Talents.AggressionDmgMult[talents.Aggression] + RV.Talents.CoupDeGraceMult[talents.CoupDeGrace]) * (1f + (spec == 2 ? RV.Mastery.Executioner + RV.Mastery.ExecutionerPerMast * StatConversion.GetMasteryFromRating(stats.MasteryRating) : 0f)) - 1f;
-            float envenomDmgMult = (1f + RV.Talents.CoupDeGraceMult[talents.CoupDeGrace]) * (1f + (spec == 2 ? RV.Mastery.Executioner + RV.Mastery.ExecutionerPerMast * StatConversion.GetMasteryFromRating(stats.MasteryRating) : 0f)) - 1f;
+            float evisDmgMult = (1f + RV.Talents.AggressionDmgMult[talents.Aggression] + RV.Talents.CoupDeGraceMult[talents.CoupDeGrace]) * (1f + (spec == 2 ? (RV.Mastery.ExecutionerPerMast * stats.Mastery ) : 0f)) - 1f;
+            float envenomDmgMult = (1f + RV.Talents.CoupDeGraceMult[talents.CoupDeGrace]) * (1f + (spec == 2 ? (RV.Mastery.ExecutionerPerMast * stats.Mastery) : 0f)) - 1f;
             float hemoCostReduc = RV.Talents.SlaughterFTShadowsHemoCostReduc * talents.SlaughterFromTheShadows;
             float hemoDmgMult = (spec == 2 ? RV.Mastery.SinisterCallingMult : 0f);
             float meleeDmgMult = spec == 0 && mainHand.Type == ItemType.Dagger && offHand.Type == ItemType.Dagger ? RV.Mastery.AssassinsResolveMeleeDmgBonus : 0f;
@@ -265,7 +266,7 @@ namespace Rawr.Rogue
             float mutiCostReduc = talents.GlyphOfMutilate ? RV.Glyph.MutiCostReduc : 0;
             float mutiDmgMult = RV.Talents.OpportunityDmgMult * talents.Opportunity;
             float oHDmgMult = (1f + RV.OHDmgReduc) * (1f + (spec == 1 ? RV.Mastery.AmbidexterityDmgMult : 0f)) - 1f;
-            float potentPoisonsMult = (spec == 0 ? RV.Mastery.PotentPoisonsDmgMult + RV.Mastery.PotentPoisonsDmgMultPerMast * StatConversion.GetMasteryFromRating(stats.MasteryRating) : 0f);
+            float potentPoisonsMult = (spec == 0 ? (RV.Mastery.PotentPoisonsDmgMultPerMast * stats.Mastery) : 0f);
             float spellDmgMult = character.ActiveBuffs.Contains(Buff.GetBuffByName("Lightning Breath")) || character.ActiveBuffs.Contains(Buff.GetBuffByName("Fire Breath")) || character.ActiveBuffs.Contains(Buff.GetBuffByName("Master Poisoner")) || character.ActiveBuffs.Contains(Buff.GetBuffByName("Ebon Plaguebringer")) || character.ActiveBuffs.Contains(Buff.GetBuffByName("Earth and Moon")) || character.ActiveBuffs.Contains(Buff.GetBuffByName("Curse of the Elements")) ? 0f : (calcOpts.TargetPoisonable ? RV.Talents.MasterPoisonerSpellDmgMult * talents.MasterPoisoner : 0f);
             float natureDmgMult = (1f + spellDmgMult) * (1f + stats.BonusNatureDamageMultiplier) * (1f + stats.BonusDamageMultiplier) * (1f + potentPoisonsMult) - 1f;
             float poisonDmgMult = (1f + spellDmgMult) * (1f + stats.BonusNatureDamageMultiplier) * (1f + stats.BonusDamageMultiplier) * (1f + potentPoisonsMult + RV.Talents.VilePoisonsDmgMult[talents.VilePoisons]) - 1f;
@@ -1009,7 +1010,7 @@ namespace Rawr.Rogue
             statsTotal.ArcaneResistance += statsTotal.ArcaneResistanceBuff;
 
             float hasteBonus = (1f + StatConversion.GetPhysicalHasteFromRating(statsTotal.HasteRating, CharacterClass.Rogue)) * (1f + statsTotal.PhysicalHaste) - 1f;
-            float speedBonus = (1f + hasteBonus) * (1f + RV.SnD.SpeedBonus) * (1f + (spec == 2 ? RV.Mastery.Executioner + RV.Mastery.ExecutionerPerMast * StatConversion.GetMasteryFromRating(statsTotal.MasteryRating) : 0f)) - 1f;
+            float speedBonus = (1f + hasteBonus) * (1f + RV.SnD.SpeedBonus) * (1f + (spec == 2 ? (RV.Mastery.ExecutionerPerMast * statsTotal.Mastery) : 0f)) - 1f;
             float mHSpeed = (character.MainHand == null ? 2 : character.MainHand.Speed);
             float oHSpeed = (character.OffHand == null ? 2 : character.OffHand.Speed);
             float meleeHitInterval = 1f / ((mHSpeed + oHSpeed) / speedBonus);
@@ -1070,10 +1071,10 @@ namespace Rawr.Rogue
                     && triggerIntervals.ContainsKey(effect.Stats._rawSpecialEffectData[0].Trigger))
                 {
                     float upTime = effect.GetAverageUptime(triggerIntervals[effect.Trigger],
-                        triggerChances[effect.Trigger], 1f, bossOpts.BerserkTimer);
+                        triggerChances[effect.Trigger], 1f, 1f, bossOpts.BerserkTimer);
                     statsProcs.Accumulate(effect.Stats._rawSpecialEffectData[0].GetAverageStats(
                         triggerIntervals[effect.Stats._rawSpecialEffectData[0].Trigger],
-                        triggerChances[effect.Stats._rawSpecialEffectData[0].Trigger], 1f, bossOpts.BerserkTimer),
+                        triggerChances[effect.Stats._rawSpecialEffectData[0].Trigger], 1f, 1f, bossOpts.BerserkTimer),
                         upTime);
                 }
                 else if (effect.Stats.MoteOfAnger > 0)
@@ -1081,12 +1082,12 @@ namespace Rawr.Rogue
                     // When in effect stats, MoteOfAnger is % of melee hits
                     // When in character stats, MoteOfAnger is average procs per second
                     statsProcs.MoteOfAnger = effect.Stats.MoteOfAnger * effect.GetAverageProcsPerSecond(triggerIntervals[effect.Trigger],
-                        triggerChances[effect.Trigger], 1f, bossOpts.BerserkTimer) / effect.MaxStack;
+                        triggerChances[effect.Trigger], 1f, 1f, bossOpts.BerserkTimer) / effect.MaxStack; // FIXME: Pass haste for Real PPM effects
                 }
                 else
                 {
                     statsProcs.Accumulate(effect.GetAverageStats(triggerIntervals[effect.Trigger],
-                        triggerChances[effect.Trigger], 1f, bossOpts.BerserkTimer),
+                        triggerChances[effect.Trigger], 1f, 1f, bossOpts.BerserkTimer),
                         1f);
                 }
             }
@@ -1137,7 +1138,7 @@ namespace Rawr.Rogue
             else if (tempCritEffects.Count == 1)
             { //Only one, add it to
                 SpecialEffect effect = tempCritEffects[0];
-                float uptime = effect.GetAverageUptime(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger], 1f, bossOpts.BerserkTimer) * tempCritEffectScales[0];
+                float uptime = effect.GetAverageUptime(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger], 1f, 1f, bossOpts.BerserkTimer) * tempCritEffectScales[0];
                 float totalAgi = (effect.Stats.Agility + effect.Stats.HighestStat + effect.Stats.Paragon) * (1f + statsTotal.BonusAgilityMultiplier);
                 critRatingUptimes = new WeightedStat[] { new WeightedStat() { Chance = uptime, Value = 
                         effect.Stats.CritRating + StatConversion.GetCritFromAgility(totalAgi - 10,
@@ -1167,7 +1168,7 @@ namespace Rawr.Rogue
                 {
                     offset[0] = calcOpts.TrinketOffset;
                 }
-                WeightedStat[] critWeights = SpecialEffect.GetAverageCombinedUptimeCombinations(tempCritEffects.ToArray(), intervals, chances, offset, tempCritEffectScales.ToArray(), 1f, bossOpts.BerserkTimer, tempCritEffectsValues.ToArray());
+                WeightedStat[] critWeights = SpecialEffect.GetAverageCombinedUptimeCombinations(tempCritEffects.ToArray(), intervals, chances, offset, tempCritEffectScales.ToArray(), 1f, 1f, bossOpts.BerserkTimer, tempCritEffectsValues.ToArray()); // FIXME: Pass haste for real PPM effects
                 critRatingUptimes = critWeights;
             }
             return statsTotal;
@@ -1227,6 +1228,7 @@ namespace Rawr.Rogue
                Stamina = stats.Stamina,
                HasteRating = stats.HasteRating,
                ExpertiseRating = stats.ExpertiseRating,
+               Mastery = stats.Mastery,
                MasteryRating = stats.MasteryRating,
                TargetArmorReduction = stats.TargetArmorReduction,
                WeaponDamage = stats.WeaponDamage,
@@ -1299,6 +1301,7 @@ namespace Rawr.Rogue
                     stats.HitRating +
                     stats.HasteRating +
                     stats.ExpertiseRating +
+                    stats.Mastery +
                     stats.MasteryRating +
                     stats.TargetArmorReduction +
                     stats.WeaponDamage +

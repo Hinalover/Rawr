@@ -111,6 +111,8 @@
     <Compile Include="DKAbilities\AbilityDK.PlagueStrike.cs" />
     <Compile Include="DKAbilities\AbilityDK.RuneStrike.cs" />
     <Compile Include="DKAbilities\AbilityDK.ScourgeStrike.cs" />
+    <Compile Include="DKAbilities\AbilityDK.SoulReaper.cs" />
+    <Compile Include="DKAbilities\AbilityDK.UnholyBlight.cs" />
     <Compile Include="DKAbilities\AbilityDK.WhiteSwing.cs" />
     <Compile Include="DKAbilities\AbilityDK.ChainsOfIce.cs" />
     <Compile Include="DKAbilities\CombatState.cs" />

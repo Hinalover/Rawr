@@ -19,17 +19,19 @@ namespace Rawr.Mage
                 if (_defaultGemmingTemplates == null)
                 {
                     _defaultGemmingTemplates = new List<GemmingTemplate>();
-                    AddGemmingTemplateGroup(_defaultGemmingTemplates, "Rare", true, 52207, 52239, 52208, 52205, 52217, 68780);
-                    AddGemmingTemplateGroup(_defaultGemmingTemplates, "Rare (Jewelcrafter)", false, 52257, 52239, 52208, 52205, 52217, 68780);
-                    AddGemmingTemplateGroup(_defaultGemmingTemplates, "Epic", false, 71881, 71842, 71850, 71854, 71864, 68780);
-                    AddGemmingTemplateGroup(_defaultGemmingTemplates, "Epic (Jewelcrafter)", false, 52257, 71842, 71850, 71854, 71864, 68780);
+                    AddGemmingTemplateGroup(_defaultGemmingTemplates, "Uncommon", false, 76562, 76528, 76536, 76540, 76550, 76885);
+                    AddGemmingTemplateGroup(_defaultGemmingTemplates, "Uncommon (Jewelcrafter)", false, 83150, 76528, 76536, 76540, 76550, 76885);
+                    AddGemmingTemplateGroup(_defaultGemmingTemplates, "Rare", true, 76694, 76660, 76668, 76672, 76682, 76885);
+                    AddGemmingTemplateGroup(_defaultGemmingTemplates, "Rare (Jewelcrafter)", false, 83150, 76660, 76668, 76672, 76682, 76885);
+                    AddGemmingTemplateGroup(_defaultGemmingTemplates, "Epic", false, 76694, 88942, 88943, 88931, 88963, 76885);
+                    AddGemmingTemplateGroup(_defaultGemmingTemplates, "Epic (Jewelcrafter)", false, 83150, 88942, 88943, 88931, 88963, 76885);
                     // cogwheels
-                    int[] cog = new int[] { 59480, 59479, 59493, 59478 };
+                    int[] cog = new int[] { 77545, 77542, 77541, 77547 };
                     for (int i = 0; i < cog.Length; i++)
                     {
                         for (int j = i + 1; j < cog.Length; j++)
                         {
-                            _defaultGemmingTemplates.Add(new GemmingTemplate() { Model = "Mage", Group = "Engineer", CogwheelId = cog[i], Cogwheel2Id = cog[j], MetaId = 68780, Enabled = false });
+                            _defaultGemmingTemplates.Add(new GemmingTemplate() { Model = "Mage", Group = "Engineer", CogwheelId = cog[i], Cogwheel2Id = cog[j], MetaId = 76885, Enabled = false });
                         }
                     }
                 }
@@ -39,12 +41,12 @@ namespace Rawr.Mage
 
         private void AddGemmingTemplateGroup(List<GemmingTemplate> list, string name, bool enabled, int brilliant, int potent, int reckless, int artful, int blue, int meta)
         {
-            list.Add(new GemmingTemplate() { Model = "Mage", Group = name, RedId = brilliant, YellowId = brilliant, BlueId = brilliant, PrismaticId = brilliant, MetaId = meta, Enabled = enabled });
-            list.Add(new GemmingTemplate() { Model = "Mage", Group = name, RedId = brilliant, YellowId = potent, BlueId = blue, PrismaticId = brilliant, MetaId = meta, Enabled = enabled });
-            list.Add(new GemmingTemplate() { Model = "Mage", Group = name, RedId = brilliant, YellowId = reckless, BlueId = blue, PrismaticId = brilliant, MetaId = meta, Enabled = enabled });
+            list.Add(new GemmingTemplate() { Model = "Mage", Group = name, RedId = brilliant, YellowId = brilliant, BlueId = brilliant, PrismaticId = brilliant, MetaId = meta, HydraulicId = 89882, Enabled = enabled });
+            list.Add(new GemmingTemplate() { Model = "Mage", Group = name, RedId = brilliant, YellowId = potent, BlueId = blue, PrismaticId = brilliant, MetaId = meta, HydraulicId = 89882, Enabled = enabled });
+            list.Add(new GemmingTemplate() { Model = "Mage", Group = name, RedId = brilliant, YellowId = reckless, BlueId = blue, PrismaticId = brilliant, MetaId = meta, HydraulicId = 89882, Enabled = enabled });
             if (artful != 0)
             {
-                list.Add(new GemmingTemplate() { Model = "Mage", Group = name, RedId = brilliant, YellowId = artful, BlueId = blue, PrismaticId = brilliant, MetaId = meta, Enabled = enabled });
+                list.Add(new GemmingTemplate() { Model = "Mage", Group = name, RedId = brilliant, YellowId = artful, BlueId = blue, PrismaticId = brilliant, MetaId = meta, HydraulicId = 89882, Enabled = enabled });
             }
         }
 
@@ -113,61 +115,39 @@ namespace Rawr.Mage
                     "Solution:Total Damage",
                     "Solution:Score",
                     "Solution:Dps",
-                    "Solution:Tps*Threat per second",
                     "Solution:Spell Cycles",
                     "Solution:By Spell",
                     "Solution:Sequence*Cycle sequence reconstruction based on optimum cycles",
-                    "Solution:Minimum Range",
-                    "Solution:Threat Reduction",
-                    "Spell Info:Wand",
                     "Spell Info:Arcane Missiles",
-                    "Spell Info:Arcane Blast(4)*Full debuff stack",
+                    "Spell Info:Arcane Blast(6)*Full debuff stack",
                     "Spell Info:Arcane Blast(0)*Non-debuffed",
                     "Spell Info:Arcane Barrage",
+                    "Spell Info:Nether Tempest",
                     "Spell Info:Scorch",
                     "Spell Info:Fire Blast",
+                    "Spell Info:Inferno Blast",
                     "Spell Info:Pyroblast*Spammed with refreshed dot (not accounting for Pyroblast! procs)",
                     "Spell Info:Pyroblast!*Including full dot duration",
                     "Spell Info:Fireball",
                     "Spell Info:Living Bomb",
                     "Spell Info:Frostfire Bolt",
-                    "Spell Info:Flame Orb",
                     "Spell Info:Combustion",
-                    "Spell Info:FBPyro*Pyroblast on Hot Streak",
-                    "Spell Info:FBLBPyro*Pyroblast on Hot Streak, maintain Living Bomb dot",
-                    "Spell Info:ScLBPyro*Pyroblast on Hot Streak, maintain Living Bomb dot",
-                    //"Spell Info:FBScPyro*Maintain Scorch and Pyroblast on Hot Streak",
-                    //"Spell Info:FBScLBPyro*Maintain Scorch, maintain Living Bomb dot and Pyroblast on Hot Streak",
-                    //"Spell Info:FFBPyro*Pyroblast on Hot Streak",
-                    "Spell Info:FFBLBPyro*Pyroblast on Hot Streak, maintain Living Bomb dot",
-                    //"Spell Info:FFBScPyro*Maintain Scorch and Pyroblast on Hot Streak",
-                    //"Spell Info:FFBScLBPyro*Maintain Scorch, maintain Living Bomb dot and Pyroblast on Hot Streak",
+                    "Spell Info:FBIBPyro*Pyroblast on Hot Streak, Inferno Blast on Heating Up",
+                    "Spell Info:ScIBPyro*Pyroblast on Hot Streak, Inferno Blast on Heating Up",
+                    "Spell Info:FFBIBPyro*Pyroblast on Hot Streak, Inferno Blast on Heating Up",
                     "Spell Info:Frostbolt",
-                    "Spell Info:Deep Freeze*Displayed values include Fingers of Frost benefit",
                     "Spell Info:Ice Lance",
-                    //"Spell Info:FrBFB*Fireball on Brain Freeze",
-                    //"Spell Info:FrBIL*Ice Lance on shatter combo",
-                    //"Spell Info:FrBDFFBIL*Fireball on non-FOF Brain Freeze, on shatter combo Deep Freeze > BF Fireball > Ice Lance",
-                    //"Spell Info:FrBFBIL*Fireball on Brain Freeze, Ice Lance on shatter combo, use Brain Freeze on shatter combo when available",
-                    //"Spell Info:FrBILFB*Fireball on Brain Freeze, always Ice Lance on shatter combo",
-                    //"Spell Info:FrBDFFFB*Frostfire Bolt on non-FOF Brain Freeze, on shatter combo Deep Freeze > BF Frostfire Bolt",
-                    "Spell Info:FrBDFFFBIL*Freeze when FOF off, on FOF Deep Freeze > BF Frostfire Bolt > Ice Lance (IL on 2 charges only or if Freeze coming off cooldown)",
+                    "Spell Info:Frozen Orb",
+                    "Spell Info:Frost Bomb",
+                    "Spell Info:FFBILFrOFrB*Freeze when FOF off, FFB on BF, IL on FOF",
                     "Spell Info:ArcaneManaNeutral*Mana neutral mix of arcane cycles",
-                    "Spell Info:ABABar1AM*AB-ABar, wait on ABar cooldown if needed, AM on 1 stack",
-                    "Spell Info:AB2ABar12AMABABar*AB-AB-ABar, wait on ABar cooldown if needed, AM-AB-ABar on 1 or 2 stack",
-                    "Spell Info:AB2ABar02AMABABar*AB-AB-ABar, wait on ABar cooldown if needed, AM-AB-ABar on 0 or 2 stack",
-                    "Spell Info:AB23ABar023AM*AB-AB-(AB-)-ABar, ABar on 2 stack if off cooldown, AM on 0, 2 or 3 stack",
-                    "Spell Info:AB3ABar023AM*AB-AB-AB-ABar, AM on 0, 2 or 3 stack",
-                    "Spell Info:AB2ABar2AMABar0AMABABar*AB-AB-ABar, AM-ABar if proc at 2 stack, AM-AB-ABar if proc at 0 stack",
-                    "Spell Info:ABSpam0234AM[AB]ABar*Spam AB, AM-[AB]-ABar on 0, 2, 3 or 4 stack, AB inserted if ABar cooldown is not ready after AM, ABar only if not on cooldown",
-                    "Spell Info:ABSpam0234AMABar*Spam AB, AM-ABar on 0, 2, 3 or 4 stack, ABar only if not on cooldown",
-                    "Spell Info:AB3ABar123AM*AB-AB-AB-ABar, AM on 1, 2 or 3 stack",
-                    "Spell Info:AB4ABar1234AM*AB-AB-AB-AB-ABar, AM on 1, 2, 3 or 4 stack",
-                    "Spell Info:AB4ABar34AM*AB-AB-AB-AB-ABar, AM on 3 or 4 stack",
-                    "Spell Info:AB4ABar4AM*AB-AB-AB-AB-ABar, AM on 4 stack",
-                    "Spell Info:ABSpam234AM*Spam AB, AM on 2, 3 or 4 stack",
-                    "Spell Info:ABSpam34AM*Spam AB, AM on 3 or 4 stack",
-                    "Spell Info:ABSpam4AM*Spam AB, AM on 4 stack",
+                    "Spell Info:AB2ABar0AM",
+                    "Spell Info:AB234ABar34AM",
+                    "Spell Info:AB24ABar34AM",
+                    "Spell Info:AB34ABar34AM",
+                    "Spell Info:AB4ABar34AM",
+                    "Spell Info:AB4ABar4AM*1 proc AM at 4 charges, 2 proc AM at 2 or more charges, reset with ABar at 4 charges with no procs",
+                    "Spell Info:AB4AM*1 proc AM at 4 charges",
                     "Spell Info:Arcane Explosion",
                     "Spell Info:AERampAB*Cast AB, then AE until you need to refresh, finally at max stack AE until AB debuff runs out (i.e. AB-AEx4-AB-AEx4-AB-AEx4-AB-AEx6)",
                     "Spell Info:AE4AB*Cast AE with 4 stacks of AB, keep refreshing AB (i.e. AEx4-AB)",
@@ -178,29 +158,24 @@ namespace Rawr.Mage
                     "Spell Info:FFBLB3Pyro*Pyroblast on Hot Streak, maintain Living Bomb on up to 3 targets",
                     "Spell Info:Flamestrike*With full dot",
                     "Spell Info:FlamestrikeSpam",
-                    "Spell Info:Blast Wave*Requires talent points",
                     "Spell Info:Dragon's Breath*Requires talent points",
-                    "Spell Info:Mage Ward*Set incoming fire/frost/arcane damage under survivability settings",
-                    "Survivability:Armor",
-                    "Survivability:Arcane Resist",
-                    "Survivability:Fire Resist",
-                    "Survivability:Nature Resist",
-                    "Survivability:Frost Resist",
-                    "Survivability:Shadow Resist",
-                    "Survivability:Physical Mitigation",
-                    "Survivability:Resilience",
-                    "Survivability:Defense",
-                    "Survivability:Crit Reduction",
-                    "Survivability:Dodge",
-                    "Survivability:Mean Incoming Dps",
-                    "Survivability:Chance to Die",
+                    "Spell Info:Incanter's Ward*Set incoming damage under survivability settings",
+                    "Defense:Armor",
+                    "Defense:Physical Mitigation",
+                    "Defense:PVP Resilience",
+                    "Defense:PVP Power",
+                    //"Defense:Defense",
+                    "Defense:Crit Reduction",
+                    "Defense:Dodge",
+                    "Defense:Mean Incoming Dps",
+                    "Defense:Chance to Die",
                 };
                 return _characterDisplayCalculationLabels;
             }
         }
 
-        private AdditiveStat[] _reforgeFrom = new AdditiveStat[] { AdditiveStat.CritRating, AdditiveStat.HasteRating, AdditiveStat.Spirit, AdditiveStat.HitRating, AdditiveStat.MasteryRating };
-        private AdditiveStat[] _reforgeTo = new AdditiveStat[] { AdditiveStat.CritRating, AdditiveStat.HasteRating, AdditiveStat.HitRating, AdditiveStat.MasteryRating };
+        private AdditiveStat[] _reforgeFrom = new AdditiveStat[] { AdditiveStat.CritRating, AdditiveStat.HasteRating, AdditiveStat.Spirit, AdditiveStat.HitRating, AdditiveStat.MasteryRating, AdditiveStat.ExpertiseRating };
+        private AdditiveStat[] _reforgeTo = new AdditiveStat[] { AdditiveStat.CritRating, AdditiveStat.HasteRating, AdditiveStat.HitRating, AdditiveStat.MasteryRating, AdditiveStat.ExpertiseRating };
 
         public override AdditiveStat[] GetStatsToReforgeFrom()
         {
@@ -318,21 +293,13 @@ namespace Rawr.Mage
 
         public override void SetDefaults(Character character)
         {
-            character.ActiveBuffsAdd("Arcane Tactics");
-            character.ActiveBuffsAdd("Power Word: Fortitude");
-            character.ActiveBuffsAdd("Swift Retribution");
-            character.ActiveBuffsAdd("Arcane Brilliance (Mana)");
-            character.ActiveBuffsAdd("Blessing of Might (Mp5)");
-            character.ActiveBuffsAdd("Totemic Wrath");
-            character.ActiveBuffsAdd("Elemental Oath");
-            character.ActiveBuffsAdd("Vampiric Touch");
-            //if (character.MageTalents.FocusMagic == 1) { character.ActiveBuffsAdd("Focus Magic"); }
-            character.ActiveBuffsAdd("Wrath of Air Totem");
             character.ActiveBuffsAdd("Blessing of Kings");
-            character.ActiveBuffsAdd("Concentration Aura");
-            character.ActiveBuffsAdd("Ebon Plaguebringer");
-            character.ActiveBuffsAdd("Critical Mass");
-            character.ActiveBuffsAdd("Flask of the Draconic Mind");
+            character.ActiveBuffsAdd("Arcane Brilliance (Spell Power)");
+            character.ActiveBuffsAdd("Elemental Oath");
+            character.ActiveBuffsAdd("Arcane Brilliance (Critical Strike)");
+            character.ActiveBuffsAdd("Blessing of Might");
+            character.ActiveBuffsAdd("Master Poisoner");
+            character.ActiveBuffsAdd("Flask of the Warm Sun");
             character.ActiveBuffsAdd("Intellect Food");
         }
 
@@ -478,11 +445,8 @@ namespace Rawr.Mage
                 CharacterCalculationsMage mage = GetCharacterCalculations(character, additionalItem, calcOpts, "Mage Armor", useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, computeIncrementalSet, solveCycles);
                 CharacterCalculationsMage molten = GetCharacterCalculations(character, additionalItem, calcOpts, "Molten Armor", useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, computeIncrementalSet, solveCycles);
                 CharacterCalculationsMage calc = (mage.OverallPoints > molten.OverallPoints) ? mage : molten;
-                if (calcOpts.MeleeDps + calcOpts.MeleeDot + calcOpts.PhysicalDps + calcOpts.PhysicalDot > 0)
-                {
-                    CharacterCalculationsMage ice = GetCharacterCalculations(character, additionalItem, calcOpts, "Ice Armor", useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, computeIncrementalSet, solveCycles);
-                    if (ice.OverallPoints > calc.OverallPoints) calc = ice;
-                }
+                CharacterCalculationsMage ice = GetCharacterCalculations(character, additionalItem, calcOpts, "Frost Armor", useIncrementalOptimizations, useGlobalOptimizations, needsDisplayCalculations, computeIncrementalSet, solveCycles);
+                if (ice.OverallPoints > calc.OverallPoints) calc = ice;
                 if (computeIncrementalSet) StoreIncrementalSet(character, calc.DisplayCalculations);
                 if (referenceCalculation) StoreCycleSolutions(character, calc.DisplayCalculations);
                 return calc;
@@ -600,7 +564,7 @@ namespace Rawr.Mage
         //public static readonly Buff ArcaneTacticsBuff = Buff.GetBuffByName("Arcane Tactics");
         public static readonly Buff MoltenArmorBuff = Buff.GetBuffByName("Molten Armor");
         public static readonly Buff MageArmorBuff = Buff.GetBuffByName("Mage Armor");
-        public static readonly Buff IceArmorBuff = Buff.GetBuffByName("Ice Armor");
+        public static readonly Buff FrostArmorBuff = Buff.GetBuffByName("Frost Armor");
 
         public void AccumulateRawStats(Stats stats, Character character, Item additionalItem, CalculationOptionsMage calculationOptions, out List<Buff> autoActivatedBuffs, string armor, out List<Buff> activeBuffs)
         {
@@ -639,8 +603,8 @@ namespace Rawr.Mage
                         case "Mage Armor":
                             armorBuff = MageArmorBuff;
                             break;
-                        case "Ice Armor":
-                            armorBuff = IceArmorBuff;
+                        case "Frost Armor":
+                            armorBuff = FrostArmorBuff;
                             break;
                     }
                     if (!character.ActiveBuffs.Contains(armorBuff))
@@ -692,323 +656,36 @@ namespace Rawr.Mage
             float statsRaceStamina;
             float statsRaceIntellect;
             float statsRaceSpirit;
-            switch (calculationOptions.PlayerLevel)
+
+            statsRaceHealth = BaseCombatRating.BaseHP(calculationOptions.PlayerLevel);
+            statsRaceMana = BaseCombatRating.MageBaseMana(calculationOptions.PlayerLevel);
+            /*switch (character.Race)
             {
-                case 70:
-                    statsRaceHealth = 3213f;
-                    statsRaceMana = 1961f;
-                    switch (character.Race)
-                    {
-                        case CharacterRace.BloodElf:
-                            statsRaceStrength = 28f;
-                            statsRaceAgility = 42f;
-                            statsRaceStamina = 49f;
-                            statsRaceIntellect = 149f;
-                            statsRaceSpirit = 144;
-                            break;
-                        case CharacterRace.Draenei:
-                            statsRaceStrength = 28f;
-                            statsRaceAgility = 42f;
-                            statsRaceStamina = 50f;
-                            statsRaceIntellect = 152f;
-                            statsRaceSpirit = 147;
-                            break;
-                        case CharacterRace.Human:
-                            statsRaceStrength = 28f;
-                            statsRaceAgility = 42f;
-                            statsRaceStamina = 51f;
-                            statsRaceIntellect = 151f;
-                            statsRaceSpirit = 145;
-                            break;
-                        case CharacterRace.Troll:
-                            statsRaceStrength = 28f;
-                            statsRaceAgility = 42f;
-                            statsRaceStamina = 52f;
-                            statsRaceIntellect = 147f;
-                            statsRaceSpirit = 146;
-                            break;
-                        case CharacterRace.Undead:
-                            statsRaceStrength = 28f;
-                            statsRaceAgility = 42f;
-                            statsRaceStamina = 52f;
-                            statsRaceIntellect = 149f;
-                            statsRaceSpirit = 150;
-                            break;
-                        case CharacterRace.Gnome:
-                        default:
-                            statsRaceStrength = 28f;
-                            statsRaceAgility = 42f;
-                            statsRaceStamina = 50f;
-                            statsRaceIntellect = 154f;
-                            statsRaceSpirit = 145;
-                            break;
-                    }
-                    break;
-                case 71:
-                    statsRaceHealth = 3308f;
-                    statsRaceMana = 2063f;
-                    statsRaceStrength = 28f;
-                    statsRaceAgility = 42f;
-                    statsRaceStamina = 51f;
-                    statsRaceIntellect = 157f;
-                    statsRaceSpirit = 148f;
-                    break;
-                case 72:
-                    statsRaceHealth = 3406f;
-                    statsRaceMana = 2166f;
-                    statsRaceStrength = 28f;
-                    statsRaceAgility = 43f;
-                    statsRaceStamina = 52f;
-                    statsRaceIntellect = 160f;
-                    statsRaceSpirit = 151f;
-                    break;
-                case 73:
-                    statsRaceHealth = 3505f;
-                    statsRaceMana = 2269f;
-                    statsRaceStrength = 28f;
-                    statsRaceAgility = 43f;
-                    statsRaceStamina = 53f;
-                    statsRaceIntellect = 163f;
-                    statsRaceSpirit = 154f;
-                    break;
-                case 74:
-                    statsRaceHealth = 3623f;
-                    statsRaceMana = 2372f;
-                    statsRaceStrength = 29f;
-                    statsRaceAgility = 44f;
-                    statsRaceStamina = 53f;
-                    statsRaceIntellect = 166f;
-                    statsRaceSpirit = 156f;
-                    break;
-                case 75:
-                    statsRaceHealth = 3726f;
-                    statsRaceMana = 2474f;
-                    statsRaceStrength = 29f;
-                    statsRaceAgility = 44f;
-                    statsRaceStamina = 54f;
-                    statsRaceIntellect = 169f;
-                    statsRaceSpirit = 159f;
-                    break;
-                case 76:
-                    statsRaceHealth = 3830f;
-                    statsRaceMana = 2577f;
-                    statsRaceStrength = 29f;
-                    statsRaceAgility = 44f;
-                    statsRaceStamina = 55f;
-                    statsRaceIntellect = 172f;
-                    statsRaceSpirit = 162f;
-                    break;
-                case 77:
-                    statsRaceHealth = 3937f;
-                    statsRaceMana = 2680f;
-                    statsRaceStrength = 30f;
-                    statsRaceAgility = 45f;
-                    statsRaceStamina = 56f;
-                    statsRaceIntellect = 175f;
-                    statsRaceSpirit = 165f;
-                    break;
-                case 78:
-                    statsRaceHealth = 4063f;
-                    statsRaceMana = 2783f;
-                    statsRaceStrength = 30f;
-                    statsRaceAgility = 45f;
-                    statsRaceStamina = 56f;
-                    statsRaceIntellect = 178f;
-                    statsRaceSpirit = 168f;
-                    break;
-                case 79:
-                    statsRaceHealth = 4172f;
-                    statsRaceMana = 2885f;
-                    statsRaceStrength = 30f;
-                    statsRaceAgility = 46f;
-                    statsRaceStamina = 57f;
-                    statsRaceIntellect = 181f;
-                    statsRaceSpirit = 171f;
-                    break;
-                case 80:
-                default:
-                    statsRaceHealth = 6783f;
-                    statsRaceMana = 2988f;
-                    switch (character.Race)
-                    {
-                        case CharacterRace.BloodElf:
-                            statsRaceStrength = 33f;
-                            statsRaceAgility = 45f;
-                            statsRaceStamina = 57f;
-                            statsRaceIntellect = 185f;
-                            statsRaceSpirit = 173f;
-                            break;
-                        case CharacterRace.Draenei:
-                            statsRaceStrength = 37f;
-                            statsRaceAgility = 40f;
-                            statsRaceStamina = 58f;
-                            statsRaceIntellect = 182f;
-                            statsRaceSpirit = 176f;
-                            break;
-                        case CharacterRace.Human:
-                            statsRaceStrength = 36f;
-                            statsRaceAgility = 43f;
-                            statsRaceStamina = 59f;
-                            statsRaceIntellect = 181f;
-                            statsRaceSpirit = 174f;
-                            break;
-                        case CharacterRace.Troll:
-                            statsRaceStrength = 37f;
-                            statsRaceAgility = 45f;
-                            statsRaceStamina = 60f;
-                            statsRaceIntellect = 177f;
-                            statsRaceSpirit = 175f;
-                            break;
-                        case CharacterRace.Undead:
-                            statsRaceStrength = 35f;
-                            statsRaceAgility = 41f;
-                            statsRaceStamina = 60f;
-                            statsRaceIntellect = 179f;
-                            statsRaceSpirit = 179f;
-                            break;
-                        case CharacterRace.Gnome:
-                        default:
-                            statsRaceStrength = 31f;
-                            statsRaceAgility = 45f;
-                            statsRaceStamina = 59f;
-                            statsRaceIntellect = 184f;
-                            statsRaceSpirit = 174f;
-                            break;
-                    }
-                    break;
-                case 81:
-                    statsRaceHealth = 9551f;
-                    statsRaceMana = 4287f;
-                    statsRaceStrength = 31f;
-                    statsRaceAgility = 46f;
-                    statsRaceStamina = 60f;
-                    statsRaceIntellect = 188f;
-                    statsRaceSpirit = 177f;
-                    break;
-                case 82:
-                    statsRaceHealth = 13418f;
-                    statsRaceMana = 6102f;
-                    statsRaceStrength = 31f;
-                    statsRaceAgility = 46f;
-                    statsRaceStamina = 60f;
-                    statsRaceIntellect = 191f;
-                    statsRaceSpirit = 180f;
-                    break;
-                case 83:
-                    statsRaceHealth = 13418f;
-                    statsRaceMana = 6102f;
-                    statsRaceStrength = 31f;
-                    statsRaceAgility = 46f;
-                    statsRaceStamina = 60f;
-                    statsRaceIntellect = 191f;
-                    statsRaceSpirit = 180f;
-                    break;
-                case 84:
-                    statsRaceHealth = 13418f;
-                    statsRaceMana = 6102f;
-                    statsRaceStrength = 31f;
-                    statsRaceAgility = 46f;
-                    statsRaceStamina = 60f;
-                    statsRaceIntellect = 191f;
-                    statsRaceSpirit = 180f;
-                    break;
-                case 85:
-                    statsRaceHealth = 36853f;
-                    statsRaceMana = 17138f;
-                    if (calculationOptions.ModeMOP)
-                    {
-                        statsRaceMana = 100000f;
-                    }
-                    switch (character.Race)
-                    {
-                        case CharacterRace.NightElf:
-                            statsRaceStrength = 33f;
-                            statsRaceAgility = 50f;
-                            statsRaceStamina = 63f;
-                            statsRaceIntellect = 198f;
-                            statsRaceSpirit = 190f;
-                            break;
-                        case CharacterRace.BloodElf:
-                            statsRaceStrength = 34f;
-                            statsRaceAgility = 48f;
-                            statsRaceStamina = 63f;
-                            statsRaceIntellect = 201f;
-                            statsRaceSpirit = 188f;
-                            break;
-                        case CharacterRace.Draenei:
-                            statsRaceStrength = 38f;
-                            statsRaceAgility = 43f;
-                            statsRaceStamina = 63f;
-                            statsRaceIntellect = 198f;
-                            statsRaceSpirit = 192f;
-                            break;
-                        case CharacterRace.Dwarf:
-                            statsRaceStrength = 42f;
-                            statsRaceAgility = 42f;
-                            statsRaceStamina = 64f;
-                            statsRaceIntellect = 197f;
-                            statsRaceSpirit = 189f;
-                            break;
-                        case CharacterRace.Goblin:
-                            statsRaceStrength = 34f;
-                            statsRaceAgility = 48f;
-                            statsRaceStamina = 63f;
-                            statsRaceIntellect = 201f;
-                            statsRaceSpirit = 188f;
-                            break;
-                        case CharacterRace.Human:
-                            statsRaceStrength = 37f;
-                            statsRaceAgility = 46f;
-                            statsRaceStamina = 63f;
-                            statsRaceIntellect = 198f;
-                            statsRaceSpirit = 190f;
-                            break;
-                        case CharacterRace.Orc:
-                            statsRaceStrength = 40f;
-                            statsRaceAgility = 43f;
-                            statsRaceStamina = 64f;
-                            statsRaceIntellect = 195f;
-                            statsRaceSpirit = 192f;
-                            break;
-                        case CharacterRace.Tauren:
-                            statsRaceStrength = 42f;
-                            statsRaceAgility = 42f;
-                            statsRaceStamina = 64f;
-                            statsRaceIntellect = 194f;
-                            statsRaceSpirit = 192f;
-                            break;
-                        case CharacterRace.Troll:
-                            statsRaceStrength = 38f;
-                            statsRaceAgility = 48f;
-                            statsRaceStamina = 63f;
-                            statsRaceIntellect = 194f;
-                            statsRaceSpirit = 191f;
-                            break;
-                        case CharacterRace.Undead:
-                            statsRaceStrength = 36f;
-                            statsRaceAgility = 44f;
-                            statsRaceStamina = 63f;
-                            statsRaceIntellect = 196f;
-                            statsRaceSpirit = 195f;
-                            break;
-                        case CharacterRace.Worgen:
-                            statsRaceStrength = 40f;
-                            statsRaceAgility = 48f;
-                            statsRaceStamina = 63f;
-                            statsRaceIntellect = 194f;
-                            statsRaceSpirit = 189f;
-                            break;
-                        case CharacterRace.Gnome:
-                        default:
-                            statsRaceStrength = 32f;
-                            statsRaceAgility = 48f;
-                            statsRaceStamina = 63f;
-                            statsRaceIntellect = 201f;
-                            statsRaceSpirit = 190f;
-                            break;
-                    }
-                    break;
-            }
+                // Alliance
+                case CharacterRace.Human: default: statsRaceStrength = 20; statsRaceAgility = 20; statsRaceStamina = 20; statsRaceIntellect = 20; statsRaceSpirit = 20; break;
+                case CharacterRace.Dwarf: statsRaceStrength = 25; statsRaceAgility = 16; statsRaceStamina = 21; statsRaceIntellect = 19; statsRaceSpirit = 19; break;
+                case CharacterRace.NightElf: statsRaceStrength = 16; statsRaceAgility = 24; statsRaceStamina = 20; statsRaceIntellect = 20; statsRaceSpirit = 20; break;
+                case CharacterRace.Gnome: statsRaceStrength = 15; statsRaceAgility = 22; statsRaceStamina = 20; statsRaceIntellect = 24; statsRaceSpirit = 20; break;
+                case CharacterRace.Draenei: statsRaceStrength = 21; statsRaceAgility = 17; statsRaceStamina = 20; statsRaceIntellect = 20; statsRaceSpirit = 22; break;
+                case CharacterRace.Worgen: statsRaceStrength = 23; statsRaceAgility = 22; statsRaceStamina = 20; statsRaceIntellect = 16; statsRaceSpirit = 19; break;
+                case CharacterRace.PandarenAlliance: statsRaceStrength = 21; statsRaceAgility = 19; statsRaceStamina = 22; statsRaceIntellect = 21; statsRaceSpirit = 22; break;
+                // Horde
+                case CharacterRace.Orc: statsRaceStrength = 23; statsRaceAgility = 17; statsRaceStamina = 21; statsRaceIntellect = 17; statsRaceSpirit = 22; break;
+                case CharacterRace.Undead: statsRaceStrength = 19; statsRaceAgility = 18; statsRaceStamina = 20; statsRaceIntellect = 18; statsRaceSpirit = 25; break;
+                case CharacterRace.Tauren: statsRaceStrength = 25; statsRaceAgility = 16; statsRaceStamina = 21; statsRaceIntellect = 16; statsRaceSpirit = 22; break;
+                case CharacterRace.Troll: statsRaceStrength = 21; statsRaceAgility = 22; statsRaceStamina = 20; statsRaceIntellect = 16; statsRaceSpirit = 21; break;
+                case CharacterRace.BloodElf: statsRaceStrength = 17; statsRaceAgility = 22; statsRaceStamina = 20; statsRaceIntellect = 23; statsRaceSpirit = 18; break;
+                case CharacterRace.Goblin: statsRaceStrength = 17; statsRaceAgility = 22; statsRaceStamina = 20; statsRaceIntellect = 23; statsRaceSpirit = 20; break;
+                case CharacterRace.PandarenHorde: statsRaceStrength = 21; statsRaceAgility = 19; statsRaceStamina = 22; statsRaceIntellect = 21; statsRaceSpirit = 22; break;
+            };
+            statsRaceStrength += 17; statsRaceAgility += 26; statsRaceStamina += 43; statsRaceIntellect += 187; statsRaceSpirit += 170;*/
+            BaseCombatStatInfo statsRace = BaseCombatRating.TotalBaseStats(character.Race, character.Class, calculationOptions.PlayerLevel);
+            statsRaceStrength = statsRace.Strength;
+            statsRaceAgility = statsRace.Agility;
+            statsRaceStamina = statsRace.Stamina;
+            statsRaceIntellect = statsRace.Intellect;
+            statsRaceSpirit = statsRace.Spirit;
+
             MageTalents talents = character.MageTalents;
 
             float statsRaceBonusIntellectMultiplier = 0.0f;
@@ -1037,21 +714,14 @@ namespace Rawr.Mage
             {
                 statsTotal.BonusSpiritMultiplier = (1 + statsTotal.BonusSpiritMultiplier) * calculationOptions.EffectSpiritMultiplier - 1;
             }
-            statsTotal.Strength = (float)Math.Round((statsRaceStrength + statsTotal.Strength) * (1 + statsTotal.BonusStrengthMultiplier) - 0.00001);
-            statsTotal.Agility = (float)Math.Round((statsRaceAgility + statsTotal.Agility) * (1 + statsTotal.BonusAgilityMultiplier) - 0.00001);
-            statsTotal.Intellect = (float)Math.Round((Math.Floor(0.00001 + statsRaceIntellect * (1 + statsRaceBonusIntellectMultiplier) * (1 + statsWizardryBonusIntellectMultiplier) * (1 + statsTalentBonusIntellectMultiplier)) + Math.Floor(0.00001 + statsTotal.Intellect * (1 + statsRaceBonusIntellectMultiplier) * (1 + statsWizardryBonusIntellectMultiplier) * (1 + statsTalentBonusIntellectMultiplier))) * (1 + statsTotal.BonusIntellectMultiplier) - 0.00001);
-            statsTotal.Stamina = (float)Math.Round((statsRaceStamina + statsTotal.Stamina) * (1 + statsTotal.BonusStaminaMultiplier) - 0.00001);
-            statsTotal.Spirit = (float)Math.Round((Math.Floor(0.00001 + statsRaceSpirit * (1 + statsRaceBonusSpiritMultiplier) * (1 + statsTalentBonusSpiritMultiplier)) + Math.Floor(0.00001 + statsTotal.Spirit * (1 + statsRaceBonusSpiritMultiplier) * (1 + statsTalentBonusSpiritMultiplier))) * (1 + statsTotal.BonusSpiritMultiplier) - 0.00001);
+            statsTotal.Strength = (float)Math.Floor((statsRaceStrength + statsTotal.Strength) * (1 + statsTotal.BonusStrengthMultiplier));
+            statsTotal.Agility = (float)Math.Floor((statsRaceAgility + statsTotal.Agility) * (1 + statsTotal.BonusAgilityMultiplier));
+            statsTotal.Intellect = (float)Math.Floor((statsRaceIntellect + statsTotal.Intellect) * (1 + statsRaceBonusIntellectMultiplier) * (1 + statsTalentBonusIntellectMultiplier) * (1 + statsWizardryBonusIntellectMultiplier) * (1 + statsTotal.BonusIntellectMultiplier));
+            statsTotal.Stamina = (float)Math.Floor((statsRaceStamina + statsTotal.Stamina) * (1 + statsTotal.BonusStaminaMultiplier));
+            statsTotal.Spirit = (float)Math.Floor((statsRaceSpirit + statsTotal.Spirit) * (1 + statsRaceBonusSpiritMultiplier) * (1 + statsTalentBonusSpiritMultiplier) * (1 + statsTotal.BonusSpiritMultiplier));
 
-            statsTotal.Health = (float)Math.Round((statsTotal.Health + statsRaceHealth + (statsTotal.Stamina * 14f)) * (character.Race == CharacterRace.Tauren ? 1.05f : 1f) * (1 + statsTotal.BonusHealthMultiplier));
-            if (calculationOptions.ModeMOP)
-            {
-                statsTotal.Mana = (float)Math.Round((statsTotal.Mana) * statsRaceBonusManaMultiplier);
-            }
-            else
-            {
-                statsTotal.Mana = (float)Math.Round((statsTotal.Mana + statsRaceMana + 15f * statsTotal.Intellect) * statsRaceBonusManaMultiplier);
-            }
+            statsTotal.Health = (float)Math.Round((statsTotal.Health + statsRaceHealth + 20 + ((statsTotal.Stamina - 20) * BaseCombatRating.HPPerStamina(calculationOptions.PlayerLevel))) * (character.Race == CharacterRace.Tauren ? 1.05f : 1f) * (1 + statsTotal.BonusHealthMultiplier));
+            statsTotal.Mana = (float)Math.Round((statsTotal.Mana + statsRaceMana) * statsRaceBonusManaMultiplier);
             statsTotal.Armor = (float)Math.Round(statsTotal.Armor);
 
             statsTotal.BonusIntellectMultiplier = (1 + statsRaceBonusIntellectMultiplier) * (1 + statsWizardryBonusIntellectMultiplier) * (1 + statsTalentBonusIntellectMultiplier) * (1 + statsTotal.BonusIntellectMultiplier) - 1;
@@ -1065,18 +735,36 @@ namespace Rawr.Mage
             {
                 statsTotal.SpellHit += 0.01f;
             }
+            if (character.Race == CharacterRace.Human)
+            {
+                if (character.MainHand != null && character.MainHand.Item != null && character.MainHand.Item.Type == ItemType.OneHandSword)
+                {
+                    statsTotal.SpellHit += 0.01f;
+                }
+            }
+            if (character.Race == CharacterRace.Gnome)
+            {
+                if (character.MainHand != null && character.MainHand.Item != null && (character.MainHand.Item.Type == ItemType.OneHandSword || character.MainHand.Item.Type == ItemType.Dagger))
+                {
+                    statsTotal.SpellHit += 0.01f;
+                }
+            }
+
 
             float allResist = 0;
             if (includeArmor)
             {
                 if (statsTotal.MageMageArmor > 0)
                 {
-                    statsTotal.ManaRestoreFromMaxManaPerSecond += 0.006f * (talents.GlyphOfMageArmor ? 1.2f : 1.0f);
-                    allResist += calculationOptions.GetSpellValueRound(0.048f);
+                    statsTotal.MasteryRating += (float)Math.Round(BaseCombatRating.ConstantSpellScaling(calculationOptions.PlayerLevel) * 1.7545000315f);
                 }
                 if (statsTotal.MageMoltenArmor > 0)
                 {
-                    statsTotal.SpellCrit += 0.03f + (talents.GlyphOfMoltenArmor ? 0.02f : 0.0f);
+                    statsTotal.SpellCrit += 0.05f;
+                }
+                if (statsTotal.MageFrostArmor > 0)
+                {
+                    statsTotal.SpellHaste = (1 + statsTotal.SpellHaste) * 1.07f - 1;
                 }
             }
             if (calculationOptions.EffectCritBonus > 0)
@@ -1400,6 +1088,7 @@ namespace Rawr.Mage
                                     switch (effectList[i].Trigger)
                                     {
                                         case Trigger.DamageSpellCrit:
+                                        case Trigger.DamageSpellOrDoTCrit:
                                         case Trigger.SpellCrit:
                                             triggers += (float)calculations.Solution[j] * c.Ticks / c.CastTime;
                                             procs += (float)calculations.Solution[j] * c.CritProcs / c.CastTime;
@@ -1778,7 +1467,9 @@ namespace Rawr.Mage
                 case Trigger.DamageOrHealingDone:
                 case Trigger.DamageSpellCast:
                 case Trigger.DamageSpellCrit:
+                case Trigger.DamageSpellOrDoTCrit:
                 case Trigger.DamageSpellHit:
+                case Trigger.DamageSpellHitorDoTTick:
                 case Trigger.DoTTick:
                 case Trigger.MageNukeCast:
                 case Trigger.SpellCast:
@@ -1817,7 +1508,7 @@ namespace Rawr.Mage
                             break;
                         }
                     }
-                    if (e.Chance == 1f && e.Cooldown == 0f && (e.Trigger == Trigger.DamageSpellCrit || e.Trigger == Trigger.SpellCrit))
+                    if (e.Chance == 1f && e.Cooldown == 0f && (e.Trigger == Trigger.DamageSpellCrit || e.Trigger == Trigger.DamageSpellOrDoTCrit || e.Trigger == Trigger.SpellCrit))
                     {
                         if (e.Stats.CritRating < 0 && effect.Stats.CritRating > 0)
                         {
@@ -1834,7 +1525,7 @@ namespace Rawr.Mage
                 {
                     hasteEffect = true;
                 }
-                return effect.Stats.SpellPower + effect.Stats.HasteRating + effect.Stats.Intellect + effect.Stats.HighestStat + effect.Stats.MasteryRating > 0;
+                return effect.Stats.SpellPower + effect.Stats.HasteRating + effect.Stats.Intellect + effect.Stats.HighestStat + effect.Stats.MasteryRating + effect.Stats.CritRating > 0;
             }
             return false;
         }
@@ -1847,6 +1538,11 @@ namespace Rawr.Mage
         public static bool IsSupportedMasteryProc(SpecialEffect effect)
         {
             return ((effect.MaxStack == 1 || effect.Cooldown == 0f) && effect.Stats.MasteryRating > 0 && IsSupportedProc(effect.Trigger));
+        }
+
+        public static bool IsSupportedCritProc(SpecialEffect effect)
+        {
+            return ((effect.MaxStack == 1 || effect.Cooldown == 0f) && (effect.Stats.CritRating > 0 || effect.Stats.SpellCrit > 0) && IsSupportedProc(effect.Trigger));
         }
 
         public static bool IsSupportedIntellectProc(SpecialEffect effect)
@@ -1868,11 +1564,11 @@ namespace Rawr.Mage
         {
             if (effect.MaxStack == 1 && effect.Stats.HasteRating > 0)
             {
-                if (effect.Cooldown >= effect.Duration && (effect.Trigger == Trigger.DamageSpellCrit || effect.Trigger == Trigger.SpellCrit || effect.Trigger == Trigger.DamageSpellHit || effect.Trigger == Trigger.SpellHit || effect.Trigger == Trigger.SpellCast || effect.Trigger == Trigger.DamageSpellCast))
+                if (effect.Cooldown >= effect.Duration && (effect.Trigger == Trigger.DamageSpellCrit || effect.Trigger == Trigger.DamageSpellOrDoTCrit || effect.Trigger == Trigger.SpellCrit || effect.Trigger == Trigger.DamageSpellHit || effect.Trigger == Trigger.SpellHit || effect.Trigger == Trigger.SpellCast || effect.Trigger == Trigger.DamageSpellCast))
                 {
                     return true;
                 }
-                if (effect.Cooldown == 0 && (effect.Trigger == Trigger.SpellCrit || effect.Trigger == Trigger.DamageSpellCrit))
+                if (effect.Cooldown <= 1 && (effect.Trigger == Trigger.SpellCrit || effect.Trigger == Trigger.DamageSpellCrit || effect.Trigger == Trigger.DamageSpellOrDoTCrit || effect.Trigger == Trigger.DamageSpellHit || effect.Trigger == Trigger.SpellHit || effect.Trigger == Trigger.DamageSpellHitorDoTTick))
                 {
                     return true;
                 }
@@ -1929,6 +1625,7 @@ namespace Rawr.Mage
             return IsSupportedUseEffect(effect) ||
                 IsSupportedSpellPowerProc(effect) ||
                 IsSupportedMasteryProc(effect) ||
+                IsSupportedCritProc(effect) ||
                 IsSupportedIntellectProc(effect) ||
                 IsSupportedStackingIntellectProc(effect) ||
                 IsSupportedDamageProc(effect) ||
@@ -1955,7 +1652,8 @@ namespace Rawr.Mage
                 DodgeRating = stats.DodgeRating,
                 Health = stats.Health,
                 Mp5 = stats.Mp5,
-                Resilience = stats.Resilience,
+                PvPResilience = stats.PvPResilience,
+                PvPPower = stats.PvPPower,
                 CritRating = stats.CritRating,
                 SpellPower = stats.SpellPower,
                 SpellFireDamageRating = stats.SpellFireDamageRating,
@@ -2007,7 +1705,7 @@ namespace Rawr.Mage
                 NatureResistanceBuff = stats.NatureResistanceBuff,
                 PVPTrinket = stats.PVPTrinket,
                 MovementSpeed = stats.MovementSpeed,
-                MageIceArmor = stats.MageIceArmor,
+                MageFrostArmor = stats.MageFrostArmor,
                 MageMageArmor = stats.MageMageArmor,
                 MageMoltenArmor = stats.MageMoltenArmor,
                 ManaRestoreFromMaxManaPerSecond = stats.ManaRestoreFromMaxManaPerSecond,
@@ -2031,6 +1729,8 @@ namespace Rawr.Mage
                 BonusSpellPowerMultiplier = stats.BonusSpellPowerMultiplier,
                 BonusManaMultiplier = stats.BonusManaMultiplier,
                 DragonwrathProc = stats.DragonwrathProc,
+                Expertise = stats.Expertise,
+                ExpertiseRating = stats.ExpertiseRating
             };
             foreach (SpecialEffect effect in stats.SpecialEffects())
             {
@@ -2050,22 +1750,22 @@ namespace Rawr.Mage
 
         private static bool HasMageStats(Stats stats)
         {
-            float mageStats = stats.Intellect + stats.Mp5 + stats.SpellPower + stats.SpellFireDamageRating + stats.BonusIntellectMultiplier + stats.BonusSpellCritDamageMultiplier + stats.BonusSpiritMultiplier + stats.SpellFrostDamageRating + stats.SpellArcaneDamageRating + stats.SpellPenetration + stats.Mana + stats.SpellCombatManaRegeneration + stats.BonusArcaneDamageMultiplier + stats.BonusFireDamageMultiplier + stats.BonusFrostDamageMultiplier + /*stats.EvocationExtension + stats.BonusMageNukeMultiplier + stats.LightningCapacitorProc + stats.ManaRestoreFromBaseManaPPM +*/ stats.BonusManaGem + stats.BonusManaPotionEffectMultiplier + stats.ThreatReductionMultiplier + stats.ArcaneResistance + stats.FireResistance + stats.FrostResistance + stats.NatureResistance + stats.ShadowResistance + stats.InterruptProtection + stats.ArcaneResistanceBuff + stats.FrostResistanceBuff + stats.FireResistanceBuff + stats.NatureResistanceBuff + stats.ShadowResistanceBuff + stats.MageIceArmor + stats.MageMageArmor + stats.MageMoltenArmor + stats.ManaRestoreFromMaxManaPerSecond + stats.SpellCrit + stats.SpellCritOnTarget + stats.SpellHit + stats.SpellHaste + /*stats.PendulumOfTelluricCurrentsProc + stats.ThunderCapacitorProc + */stats.CritBonusDamage + stats.BonusDamageMultiplier + stats.SpellsManaCostReduction + stats.BonusSpellPowerMultiplier + stats.BonusManaMultiplier + stats.DragonwrathProc;
+            float mageStats = stats.Intellect + stats.Mp5 + stats.SpellPower + stats.SpellFireDamageRating + stats.BonusIntellectMultiplier + stats.BonusSpellCritDamageMultiplier + stats.BonusSpiritMultiplier + stats.SpellFrostDamageRating + stats.SpellArcaneDamageRating + stats.SpellPenetration + stats.Mana + stats.SpellCombatManaRegeneration + stats.BonusArcaneDamageMultiplier + stats.BonusFireDamageMultiplier + stats.BonusFrostDamageMultiplier + /*stats.EvocationExtension + stats.BonusMageNukeMultiplier + stats.LightningCapacitorProc + stats.ManaRestoreFromBaseManaPPM +*/ stats.BonusManaGem + stats.BonusManaPotionEffectMultiplier + stats.ThreatReductionMultiplier + stats.ArcaneResistance + stats.FireResistance + stats.FrostResistance + stats.NatureResistance + stats.ShadowResistance + stats.InterruptProtection + stats.ArcaneResistanceBuff + stats.FrostResistanceBuff + stats.FireResistanceBuff + stats.NatureResistanceBuff + stats.ShadowResistanceBuff + stats.MageFrostArmor + stats.MageMageArmor + stats.MageMoltenArmor + stats.ManaRestoreFromMaxManaPerSecond + stats.SpellCrit + stats.SpellCritOnTarget + stats.SpellHit + stats.SpellHaste + /*stats.PendulumOfTelluricCurrentsProc + stats.ThunderCapacitorProc + */stats.CritBonusDamage + stats.BonusDamageMultiplier + stats.SpellsManaCostReduction + stats.BonusSpellPowerMultiplier + stats.BonusManaMultiplier + stats.DragonwrathProc;
             return mageStats > 0;
         }
 
         public override bool HasRelevantStats(Stats stats)
         {
             bool mageStats = HasMageStats(stats);
-            float commonStats = stats.CritRating + stats.HasteRating + stats.HitRating + stats.Health + stats.Stamina + stats.Armor + stats.PVPTrinket + stats.MovementSpeed + stats.SnareRootDurReduc + stats.FearDurReduc + stats.StunDurReduc + stats.Resilience + stats.BonusHealthMultiplier + stats.MasteryRating;
-            float ignoreStats = stats.Agility + stats.Strength + stats.AttackPower + stats.Dodge + stats.Parry + stats.DodgeRating + stats.ParryRating + stats.ExpertiseRating + stats.Block + stats.BlockRating + stats.SpellShadowDamageRating + stats.SpellNatureDamageRating + stats.ArmorPenetration + stats.TargetArmorReduction;
+            float commonStats = stats.CritRating + stats.HasteRating + stats.HitRating + stats.Health + stats.Stamina + stats.Armor + stats.PVPTrinket + stats.MovementSpeed + stats.SnareRootDurReduc + stats.FearDurReduc + stats.StunDurReduc + stats.PvPResilience + stats.PvPPower + stats.BonusHealthMultiplier + stats.MasteryRating + stats.Expertise + stats.ExpertiseRating;
+            float ignoreStats = stats.Agility + stats.Strength + stats.AttackPower + stats.Dodge + stats.Parry + stats.DodgeRating + stats.ParryRating + stats.Block + stats.BlockRating + stats.SpellShadowDamageRating + stats.SpellNatureDamageRating + stats.ArmorPenetration + stats.TargetArmorReduction;
             foreach (SpecialEffect effect in stats.SpecialEffects())
             {
                 if (IsSupportedEffect(effect))
                 {
                     return true;
                 }
-                ignoreStats += effect.Stats.Agility + effect.Stats.Strength + effect.Stats.AttackPower + effect.Stats.Dodge + effect.Stats.Parry + effect.Stats.DodgeRating + effect.Stats.ParryRating + effect.Stats.ExpertiseRating + effect.Stats.Block + effect.Stats.BlockRating + effect.Stats.SpellShadowDamageRating + effect.Stats.SpellNatureDamageRating + effect.Stats.ArmorPenetration + effect.Stats.TargetArmorReduction;
+                ignoreStats += effect.Stats.Agility + effect.Stats.Strength + effect.Stats.AttackPower + effect.Stats.Dodge + effect.Stats.Parry + effect.Stats.DodgeRating + effect.Stats.ParryRating + effect.Stats.Block + effect.Stats.BlockRating + effect.Stats.SpellShadowDamageRating + effect.Stats.SpellNatureDamageRating + effect.Stats.ArmorPenetration + effect.Stats.TargetArmorReduction;
             }
             return (mageStats || (commonStats > 0 && ignoreStats == 0.0f));
         }
@@ -2081,8 +1781,8 @@ namespace Rawr.Mage
 
         public override bool EnchantFitsInSlot(Enchant enchant, Character character, ItemSlot slot)
         {
-            if (slot == ItemSlot.Ranged) return false;
-            if (slot == ItemSlot.OffHand) return (enchant.Id == 4091);
+            if (enchant.Slot == ItemSlot.Ranged) return false;
+            if (slot == ItemSlot.OffHand) return (enchant.Id == 4091 || enchant.Id == 4434);
             return base.EnchantFitsInSlot(enchant, character, slot);
         }
 
@@ -2090,6 +1790,26 @@ namespace Rawr.Mage
         {
             if (slot == CharacterSlot.OffHand && item.Slot == ItemSlot.OneHand) return false;
             return base.ItemFitsInSlot(item, character, slot, ignoreUnique);
+        }
+
+        public override List<Reforging> GetReforgingOptions(Item baseItem, int randomSuffixId, int upgradeItemLevel)
+        {
+            List<Reforging> retval = base.GetReforgingOptions(baseItem, randomSuffixId, upgradeItemLevel);
+
+            if (baseItem.Stats.ExpertiseRating > 0)
+            {
+                retval.RemoveAll(rf => rf != null && rf.ReforgeFrom == AdditiveStat.ExpertiseRating && rf.ReforgeTo == AdditiveStat.HitRating);
+            }
+            else if (baseItem.Stats.HitRating > 0)
+            {
+                retval.RemoveAll(rf => rf != null && rf.ReforgeFrom == AdditiveStat.HitRating && rf.ReforgeTo == AdditiveStat.ExpertiseRating);
+            }
+            else
+            {
+                retval.RemoveAll(rf => rf != null && rf.ReforgeTo == AdditiveStat.ExpertiseRating);
+            }
+
+            return retval;
         }
     }
 }

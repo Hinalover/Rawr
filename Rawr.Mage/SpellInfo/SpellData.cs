@@ -18,6 +18,10 @@ namespace Rawr.Mage
         ArcaneBarrage3,
         [Description("Arcane Barrage (4)")]
         ArcaneBarrage4,
+        [Description("Arcane Barrage (5)")]
+        ArcaneBarrage5,
+        [Description("Arcane Barrage (6)")]
+        ArcaneBarrage6,
         [Description("Arcane Missiles (0)")]
         ArcaneMissiles,
         [Description("Arcane Missiles (1)")]
@@ -28,22 +32,12 @@ namespace Rawr.Mage
         ArcaneMissiles3,
         [Description("Arcane Missiles (4)")]
         ArcaneMissiles4,
-        [Description("MBAM (0)")]
-        ArcaneMissilesMB,
-        [Description("MBAM (1)")]
-        ArcaneMissilesMB1,
-        [Description("MBAM (2)")]
-        ArcaneMissilesMB2,
-        [Description("MBAM (3)")]
-        ArcaneMissilesMB3,
-        [Description("MBAM (4)")]
-        ArcaneMissilesMB4,
-        ArcaneMissilesNoProc,
+        [Description("Arcane Missiles (5)")]
+        ArcaneMissiles5,
+        [Description("Arcane Missiles (6)")]
+        ArcaneMissiles6,
         [Description("Frostbolt")]
         Frostbolt,
-        [Description("POM+Frostbolt")]
-        FrostboltPOM,
-        FrostboltNoCC,
         [Description("Deep Freeze")]
         DeepFreeze,
         [Description("Fireball")]
@@ -64,25 +58,22 @@ namespace Rawr.Mage
         PyroblastPOMDotUptime,
         [Description("Fire Blast")]
         FireBlast,
-        [Description("Flame Orb")]
-        FlameOrb,
+        [Description("Inferno Blast")]
+        InfernoBlast,
         Combustion,
         [Description("Scorch")]
         Scorch,
-        ScorchNoCC,
         [Description("Living Bomb")]
         LivingBomb,
         [Description("Living Bomb AOE")]
         LivingBombAOE,
-        ArcaneBomb,
-        [Description("Arcane Bomb AOE")]
-        ArcaneBombAOE,
-        ArcaneBlast3NoCC,
+        [Description("Frost Bomb")]
+        FrostBomb,
+        [Description("Frost Bomb AOE")]
+        FrostBombAOE,
         ArcaneBlastRaw,
         [Description("Arcane Blast (0)")]
         ArcaneBlast0,
-        ArcaneBlast0NoCC,
-        ArcaneBlast0POM,
         [Description("Arcane Blast (1)")]
         ArcaneBlast1,
         ArcaneBlast1NoCC,
@@ -92,23 +83,25 @@ namespace Rawr.Mage
         ArcaneBlast3,
         [Description("Arcane Blast (4)")]
         ArcaneBlast4,
-        ArcaneBlast2NoCC,
-        ArcaneBlast0Hit,
-        ArcaneBlast1Hit,
-        ArcaneBlast2Hit,
-        ArcaneBlast3Hit,
-        ArcaneBlast0Miss,
-        ArcaneBlast1Miss,
-        ArcaneBlast2Miss,
-        ArcaneBlast3Miss,
+        [Description("Arcane Blast (5)")]
+        ArcaneBlast5,
+        [Description("Arcane Blast (6)")]
+        ArcaneBlast6,
+        NetherTempest,
+        NetherTempestAOE,
+        NetherTempestDOT,
+        NetherTempestDOTAOE,
         Slow,
         IceLance,
+        FrozenOrb,
         [Description("Arcane Explosion")]
         ArcaneExplosion0,
         ArcaneExplosion1,
         ArcaneExplosion2,
         ArcaneExplosion3,
         ArcaneExplosion4,
+        ArcaneExplosion5,
+        ArcaneExplosion6,
         FlamestrikeSpammed,
         [Description("Flamestrike")]
         FlamestrikeSingle,
@@ -120,7 +113,7 @@ namespace Rawr.Mage
         DragonsBreath,
         [Description("Cone of Cold")]
         ConeOfCold,
-        MageWard,
+        IncantersWard,
         Waterbolt,
         MirrorImage,
     }
@@ -132,7 +125,7 @@ namespace Rawr.Mage
         {
             Name = "Waterbolt";
             InitializeCastTime(false, false, 2.5f, 0);
-            InitializeScaledDamage(solver, false, 45, MagicSchool.Frost, 0.01f, 0.405000001192093f, 0.25f, 0, 0.833000004291534f, 0, 1, 1, 0);
+            InitializeScaledDamage(solver, false, 45, MagicSchool.Frost, 0.01f, 0.4000000060f, 0.25f, 0, 0.4000000060f, 0, 1, 1, 0);
             if (solver.Character.Race == CharacterRace.Orc)
             {
                 BaseSpellModifier *= 1.05f;
@@ -145,9 +138,13 @@ namespace Rawr.Mage
         {
             Spell spell = Spell.New(this, castingState.Solver);
             spell.Calculate(castingState);
-            spell.RawSpellDamage *= 0.4f;
+            if (!castingState.Frozen)
+            {
+                spell.AdditiveSpellModifier += castingState.FrostburnBonus; // waterbolt always benefits from Frostburn (but not shatter)
+            }
+            //spell.RawSpellDamage *= 0.4f;
             spell.CalculateDerivedStats(castingState);
-            spell.DamagePerSpellPower *= 0.4f;
+            //spell.DamagePerSpellPower *= 0.4f;
             return spell;
         }
     }
@@ -171,7 +168,6 @@ namespace Rawr.Mage
             {
                 InitializeCastTime(false, false, 2.5f, 0);
                 InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0, 0.328000009059906f, 0.241999998688698f, 0, 0.337999999523163f, 0, 0, 0, 0);
-                IgniteFactor = 0;
             }
             else
             {
@@ -271,19 +267,15 @@ namespace Rawr.Mage
         }
     }
 
-    // spell id: 82739/83619, scaling id: 572/583
-    public class FlameOrbTemplate : SpellTemplate
+    // spell id: 84721
+    public class FrozenOrbTemplate : SpellTemplate
     {
         public void Initialize(Solver solver)
         {
             // TODO consider splitting explosion out for display purposes
-            Name = "Flame Orb";
+            Name = "Frozen Orb";
             InitializeCastTime(false, true, 0, 60);
-            float explosion = solver.MageTalents.FirePower == 3 ? 1f : 0.33f * solver.MageTalents.FirePower;
-            InitializeScaledDamage(solver, false, 40, solver.MageTalents.FrostfireOrb > 0 ? MagicSchool.FrostFire : MagicSchool.Fire, 0.06f, 15 * 0.277999997138977f + explosion * 1.317999958992f, 0.25f, 0, 15 * 0.13400000333786f + explosion * 0.193000003695488f, 0, 15 + explosion, 15 + explosion, 0);
-            IgniteFactor = 0;
-            BaseDirectDamageModifier *= (1f + 0.05f * solver.MageTalents.CriticalMass);
-            BaseDotDamageModifier += 0.05f * solver.MageTalents.CriticalMass; // additive with mastery
+            InitializeScaledDamage(solver, false, 40, MagicSchool.Frost, 0.1f, 10 * 0.6520000100f, 0.25f, 0, 10 * 0.5109999776f, 0, 10, 10, 0);
             Dirty = false;
         }
     }
@@ -291,25 +283,15 @@ namespace Rawr.Mage
     // spell id: 2948, scaling id: 27
     public class ScorchTemplate : SpellTemplate
     {
-        public virtual Spell GetSpell(CastingState castingState, bool clearcastingActive)
-        {
-            Spell spell = Spell.New(this, castingState.Solver);
-            spell.Calculate(castingState);
-            spell.CalculateManualClearcasting(true, false, clearcastingActive);
-            spell.CalculateDerivedStats(castingState);
-            spell.CalculateManualClearcastingCost(castingState.Solver, false, true, false, clearcastingActive);
-            return spell;
-        }
-
         public void Initialize(Solver solver)
         {
             Name = "Scorch";
             InitializeCastTime(false, false, 1.5f, 0);
-            InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0.08f, 0.781000018119812f, 0.170000001788139f, 0, 0.512000024318695f, 0, 1, 1, 0);
-            BaseCostAmplifier *= (1 - 0.5f * solver.MageTalents.ImprovedScorch);
-            if (solver.Mage4PVP)
+            InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0f, 0.9760000110f, 0.1700000018f, 0, 0.8370000124f, 0, 1, 1, 0);
+            CausesIgnite = true;
+            if (solver.Specialization == Specialization.Fire) // Critical Mass
             {
-                BaseSpellModifier *= 1.05f;
+                CritRateMultiplier = 1.3f;
             }
             if (solver.BaseStats.DragonwrathProc > 0)
             {
@@ -337,7 +319,7 @@ namespace Rawr.Mage
         {
             Name = "Flamestrike";
             InitializeCastTime(false, false, 2, 0);
-            InitializeScaledDamage(solver, true, 40, MagicSchool.Fire, 0.3f, 0.662000000476837f, 0.202000007033348f, 4 * 0.103000000119209f, 0.145999997854233f, 4 * 0.0610000006854534f, 1, 1, 8f);
+            InitializeScaledDamage(solver, true, 40, MagicSchool.Fire, 0.06f, 0.2280000001f, 0.2020000070f, 4 * 0.1190000027f, 0.2590000033f, 4 * 0.1350000054f, 1, 1, 8f);
             DotTickInterval = 2;
             if (solver.BaseStats.DragonwrathProc > 0)
             {
@@ -356,40 +338,33 @@ namespace Rawr.Mage
         {
             Name = "Conjure Mana Gem";
             InitializeCastTime(false, false, 3, 0);
-            InitializeScaledDamage(solver, false, 0, MagicSchool.Arcane, 0.75f, 0, 0, 0, 0, 0, 0, 1, 0);
+            InitializeScaledDamage(solver, false, 0, MagicSchool.Arcane, 0.18f, 0, 0, 0, 0, 0, 0, 1, 0);
             Dirty = false;
         }
     }
 
-    public class MageWardTemplate : SpellTemplate
+    public class IncantersWardTemplate : SpellTemplate
     {
-        private const float spellPowerCoefficient = 0.807f;
+        private const float spellPowerCoefficient = 1f;
 
         public override Spell GetSpell(CastingState castingState)
         {
             Spell spell = Spell.New(this, castingState.Solver);
             spell.Calculate(castingState);
             spell.CalculateDerivedStats(castingState);
-            // 70% absorbed, 30% negated
-            // number of negates until absorb is distributed negative binomial
-            // mean number of negated is then (1-p)/p = 0.3 / 0.7 times the absorb value
-            // however on average it can't be more than (1-p) * incoming damage
-            float q = 0f;
-            float absorb = castingState.CalculationOptions.GetSpellValue(2.32399988174438f) + spellPowerCoefficient * castingState.ArcaneSpellPower;
+            float absorb = castingState.CalculationOptions.GetSpellValue(1f) + spellPowerCoefficient * castingState.ArcaneSpellPower;
             spell.Absorb = absorb;
-            // in 3.3.3 warding doesn't count as absorb for IA, assume that we'll get to normal absorb at least once in 30 sec (i.e. we're not lucky enough to continue proccing warding for the whole 30 sec)
-            float dps = (float)(castingState.Solver.IncomingDamageDpsFire + castingState.Solver.IncomingDamageDpsArcane + castingState.Solver.IncomingDamageDpsFrost);
-            spell.TotalAbsorb = Math.Min(absorb, 30f * dps);
-            //spell.TotalAbsorb = Math.Min((1 + q / (1 - q)) * absorb, 30f * dps);
-            spell.AverageCost -= Math.Min(q / (1 - q) * absorb, q * 30f * dps);
+            float dps = castingState.Solver.IncomingDamageDps;
+            spell.TotalAbsorb = Math.Min(absorb, 8f * dps);
+            spell.AverageCost -= (0.18f * castingState.BaseStats.Mana * spell.TotalAbsorb / absorb); // 18% max mana absorb
             return spell;
         }
 
         public void Initialize(Solver solver)
         {
-            Name = "Mage Ward";
-            InitializeCastTime(false, true, 0, 30);
-            InitializeScaledDamage(solver, false, 0, MagicSchool.Arcane, 0.16f, 0, 0, 0, 0, 0, 0, 1, 0);
+            Name = "Incanter's Ward";
+            InitializeCastTime(false, true, 0, 25);
+            InitializeScaledDamage(solver, false, 0, MagicSchool.Arcane, 0f, 0, 0, 0, 0, 0, 0, 1, 0);
             Dirty = false;
         }
     }
@@ -401,7 +376,7 @@ namespace Rawr.Mage
         {
             Name = "Frost Nova";
             InitializeCastTime(false, true, 0, 25);
-            InitializeScaledDamage(solver, true, 0, MagicSchool.Frost, 0.07f, 0.42399999499321f, 0.150000005960464f, 0, 0.193000003695488f, 0, 1, 1, 0);
+            InitializeScaledDamage(solver, true, 0, MagicSchool.Frost, 0.02f, 0.5299999714f, 0.1500000060f, 0, 0.1879999936f, 0, 1, 1, 0);
             if (solver.BaseStats.DragonwrathProc > 0)
             {
                 BaseSpellModifier *= 1.1f;
@@ -416,28 +391,14 @@ namespace Rawr.Mage
     // spell id: 116, scaling id: 21
     public class FrostboltTemplate : SpellTemplate
     {
-        public Spell GetSpell(CastingState castingState, bool manualClearcasting, bool clearcastingActive, bool pom)
-        {
-            Spell spell = Spell.New(this, castingState.Solver);
-            spell.Calculate(castingState);
-            if (manualClearcasting) spell.CalculateManualClearcasting(true, false, clearcastingActive);
-            if (castingState.Frozen)
-            {
-                spell.SpellModifier *= (1f + 0.1f * castingState.MageTalents.Shatter);
-            }
-            spell.CalculateDerivedStats(castingState, false, pom, false);
-            if (manualClearcasting) spell.CalculateManualClearcastingCost(castingState.Solver, false, true, false, clearcastingActive);
-            return spell;
-        }
-
         public override Spell GetSpell(CastingState castingState)
         {
             Spell spell = Spell.New(this, castingState.Solver);
             spell.Calculate(castingState);
-            if (castingState.Frozen)
+            /*if (castingState.Frozen)
             {
-                spell.SpellModifier *= (1f + 0.1f * castingState.MageTalents.Shatter);
-            }
+                spell.SpellModifier *= 1.2f;
+            }*/
             spell.CalculateDerivedStats(castingState);
             return spell;
         }
@@ -450,21 +411,13 @@ namespace Rawr.Mage
             {
                 BaseCastTime *= 0.9f;
             }
-            InitializeScaledDamage(solver, false, 35, MagicSchool.Frost, 0.13f, 0.8844000220298771f, 0.241999998688698f, 0, 0.9430000186f, 0, 1, 1, 0);
-            if (solver.MageTalents.GlyphOfFrostbolt)
-            {
-                BaseCritRate += 0.05f;
-            }
-            if (solver.Specialization == Specialization.Frost)
-            {
-                BaseAdditiveSpellModifier += 0.15f;
-            }
+            InitializeScaledDamage(solver, false, 35, MagicSchool.Frost, 0.04f, 1.6610000134f, 0.2399999946f, 0, 1.6610000134f, 0, 1, 1, 0);
             //BaseCritRate += 0.05f * solver.BaseStats.Mage4T9;
             NukeProcs = 1;
             NukeProcs2 = 1;
-            if (solver.Mage4PVP)
+            if (solver.Specialization == Specialization.Frost)
             {
-                BaseSpellModifier *= 1.05f;
+                BaseSpellModifier *= 1.15f; // 3 stack Frostbolt debuff
             }
             if (solver.BaseStats.DragonwrathProc > 0)
             {
@@ -478,6 +431,7 @@ namespace Rawr.Mage
     }
 
     // spell id: 71757, scaling id: 408
+    // DEPRECATED
     public class DeepFreezeTemplate : SpellTemplate
     {
         //float fingersOfFrostCritRate;
@@ -511,8 +465,32 @@ namespace Rawr.Mage
         {
             Name = "Fire Blast";
             InitializeCastTime(false, true, 0, 8);
-            InitializeScaledDamage(solver, false, 30 + 5 * solver.MageTalents.ImprovedFireBlast, MagicSchool.Fire, 0.21f, 1.11300003528595f, 0.170000001788139f, 0, 0.428999990224838f, 0, 1, 1, 0);
-            BaseCritRate += 0.04f * solver.MageTalents.ImprovedFireBlast;
+            InitializeScaledDamage(solver, false, 30, MagicSchool.Fire, 0.02f, 1.0119999647f, 0.1700000018f, 0, 0.7889999747f, 0, 1, 1, 0);
+            if (solver.BaseStats.DragonwrathProc > 0)
+            {
+                BaseSpellModifier *= 1.1f;
+                Ticks *= 1.1f;
+                CastProcs *= 1.1f;
+                CastProcs2 *= 1.1f;
+            }
+            Dirty = false;
+        }
+    }
+
+    // spell id: 108853
+    public class InfernoBlastTemplate : SpellTemplate
+    {
+        public void Initialize(Solver solver)
+        {
+            Name = "Inferno Blast";
+            InitializeCastTime(false, true, 0, 8);
+            InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0.02f, 0.6000000238f, 0.1700000018f, 0, 0.6000000238f, 0, 1, 1, 0);
+            BaseCritRate = 1f;
+            CausesIgnite = true;
+            if (solver.Specialization == Specialization.Fire)
+            {
+                BaseSpellModifier *= 1.1f; // Pyromaniac
+            }
             if (solver.BaseStats.DragonwrathProc > 0)
             {
                 BaseSpellModifier *= 1.1f;
@@ -542,24 +520,19 @@ namespace Rawr.Mage
         public void Initialize(Solver solver)
         {
             Name = "Fireball";
-            InitializeCastTime(false, false, 2.5f, 0);
+            InitializeCastTime(false, false, 2.25f, 0);
             if (solver.Mage4T11)
             {
                 BaseCastTime *= 0.9f;
             }
-            InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0.09f, 1.2000000477f, 0.2419999987f, 0, 1.2359999418f, 0, 1, 1, 0);
-            if (solver.MageTalents.GlyphOfFireball)
-            {
-                BaseCritRate += 0.05f;
-                NonHSCritRate += 0.05f;
-            }
-            //BaseCritRate += 0.05f * solver.BaseStats.Mage4T9;
-            //BaseSpellModifier *= (1 + solver.BaseStats.BonusMageNukeMultiplier);
+            InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0.04f, 1.5000000000f, 0.2399999946f, 0, 1.5000000000f, 0, 1, 1, 0);
             NukeProcs = 1;
             NukeProcs2 = 1;
-            if (solver.Mage4PVP)
+            CausesIgnite = true;
+            if (solver.Specialization == Specialization.Fire)
             {
-                BaseSpellModifier *= 1.05f;
+                CritRateMultiplier = 1.3f; // Critical Mass
+                BaseSpellModifier *= 1.1f; // Pyromaniac
             }
             if (solver.BaseStats.DragonwrathProc > 0)
             {
@@ -575,6 +548,11 @@ namespace Rawr.Mage
     // spell id: 44614, scaling id: 22
     public class FrostfireBoltTemplate : SpellTemplate
     {
+        // brain freeze proc chance
+        // nether_tempest = 0.09
+        // living_bomb = 0.25
+        // frost_bomb = 1.00
+
         public Spell GetSpell(CastingState castingState, bool pom, bool brainFreeze)
         {
             Spell spell = Spell.New(this, castingState.Solver);
@@ -590,26 +568,19 @@ namespace Rawr.Mage
         public void Initialize(Solver solver)
         {
             Name = "Frostfire Bolt";
-            InitializeCastTime(false, false, 2.5f, 0);
+            InitializeCastTime(false, false, 2.75f, 0);
             if (solver.Mage4T11)
             {
                 BaseCastTime *= 0.9f;
             }
-            InitializeScaledDamage(solver, false, 40, MagicSchool.FrostFire, 0.09f, 0.949000000953674f, 0.241999998688698f, 0 /*0.00712000019848347*/, 0.976999998092651f, 0 /*0.00732999993488193*/, 1, 1, 0);
-            if (solver.MageTalents.GlyphOfFrostfire)
-            {
-                BaseDirectDamageModifier *= 1.15f;
-                BasePeriodicDamage = 3 * 0.03f * (BaseMinDamage + BaseMaxDamage) / 2f;
-                DotDamageCoefficient = 3 * 0.03f * SpellDamageCoefficient;
-                DotDuration = 12;
-                DotTickInterval = 3;
-            }
-            //BaseCritRate += 0.05f * solver.BaseStats.Mage4T9;
+            InitializeScaledDamage(solver, false, 40, MagicSchool.FrostFire, 0.04f, 1.5000000000f, 0.2399999946f, 0, 1.5000000000f, 0, 1, 1, 0);
             NukeProcs = 1;
             NukeProcs2 = 1;
-            if (solver.Mage4PVP)
+            CausesIgnite = true;
+            if (solver.Specialization == Specialization.Fire)
             {
-                BaseSpellModifier *= 1.05f;
+                CritRateMultiplier = 1.3f; // Critical Mass
+                BaseSpellModifier *= 1.1f; // Pyromaniac
             }
             if (solver.BaseStats.DragonwrathProc > 0)
             {
@@ -645,13 +616,25 @@ namespace Rawr.Mage
         {
             Name = "Pyroblast!";
             InitializeCastTime(false, false, /*3.5f*/0, 0);
-            InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0f, 1.5000000000f, 0.2380000055f, 4 * 0.1749999970f, 1.5449999571f /*1.25f*/, 4 * 0.1800000072f, 1, 1, 12);
+            // 5.2: 2.2000000477 * 0.9
+            InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0f, 1.9800000429f, 0.2380000055f, 4 * 0.3600000143f, 1.9800000429f, 4 * 0.3600000143f, 1, 1, 12);
             DotDuration = 12;
             DotTickInterval = 3;
             NukeProcs2 = 1;
-            if (solver.MageTalents.GlyphOfPyroblast)
+            CausesIgnite = true;
+            BaseSpellModifier *= 1.25f; // Pyroblast! bonus
+            if (solver.Specialization == Specialization.Fire)
+            {
+                CritRateMultiplier = 1.3f; // Critical Mass
+                BaseSpellModifier *= 1.1f; // Pyromaniac
+            }
+            if (solver.Mage4T15)
             {
                 BaseCritRate += 0.05f;
+            }
+            if (solver.Mage2T14)
+            {
+                BaseSpellModifier *= 1.08f;
             }
             if (solver.Mage2T11)
             {
@@ -690,13 +673,24 @@ namespace Rawr.Mage
         {
             Name = "Pyroblast";
             InitializeCastTime(false, false, 3.5f, 0);
-            InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0f, 1.5000000000f, 0.2380000055f, 4 * 0.1749999970f, 1.5449999571f /*1.25f*/, 4 * 0.1800000072f, 1, 1, 12);
+            // 5.2: 2.2000000477 * 0.9
+            InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0.05f, 1.9800000429f, 0.2380000055f, 4 * 0.3600000143f, 1.9800000429f, 4 * 0.3600000143f, 1, 1, 12);
             DotDuration = 12;
             DotTickInterval = 3;
             NukeProcs2 = 1;
-            if (solver.MageTalents.GlyphOfPyroblast)
+            CausesIgnite = true;
+            if (solver.Specialization == Specialization.Fire)
+            {
+                CritRateMultiplier = 1.3f; // Critical Mass
+                BaseSpellModifier *= 1.1f; // Pyromaniac
+            }
+            if (solver.Mage4T15)
             {
                 BaseCritRate += 0.05f;
+            }
+            if (solver.Mage2T14)
+            {
+                BaseSpellModifier *= 1.08f;
             }
             if (solver.Mage2T11)
             {
@@ -713,7 +707,8 @@ namespace Rawr.Mage
         }
     }
 
-    public class ArcaneBombTemplate : SpellTemplate
+    // spell id: 114923
+    public class NetherTempestTemplate : SpellTemplate
     {
         public Spell GetSpell(CastingState castingState, bool aoe)
         {
@@ -727,15 +722,28 @@ namespace Rawr.Mage
             return spell;
         }
 
+        public Spell GetSpellDOT(CastingState castingState, bool aoe)
+        {
+            Spell spell = Spell.New(this, castingState.Solver);
+            spell.Calculate(castingState);
+            if (aoe)
+            {
+                spell.AreaEffectDot = true;
+            }
+            spell.CalculateDerivedStats(castingState, false, false, false, false, false, false, true);
+            return spell;
+        }
+
         public void Initialize(Solver solver)
         {
-            Name = "Arcane Bomb";
+            Name = "Nether Tempest";
             InitializeCastTime(false, true, 0f, 0f);
-            InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0.033333f, 0, 0, 3.060f, 0, 3.060f, 0, 1, 0);
+            // 3.12.2013 hotfix: 0.2230000049 * 1.4, 0.1739999950 * 1.4
+            InitializeScaledDamage(solver, false, 40, MagicSchool.Arcane, 0.015f, 0, 0, 12 * 0.3122000068f, 0, 12 * 0.2435999930f, 0, 1, 0);
             MaximumAOETargets = 2;
             AOEMultiplier = 0.5f;
             DotDuration = 12;
-            DotTickInterval = 3;
+            DotTickInterval = 1;
             if (solver.BaseStats.DragonwrathProc > 0)
             {
                 BaseSpellModifier *= 1.1f;
@@ -758,22 +766,7 @@ namespace Rawr.Mage
             {
                 spell.AreaEffect = true; // but leave aoe dot at false
             }
-            /*if (castingState.MageTalents.GlyphOfLivingBomb)
-            {
-                spell.DotDamageModifier = (1 + Math.Max(0.0f, Math.Min(1.0f, castingState.FireCritRate)) * (castingState.FireCritBonus - 1));
-            }*/
             spell.CalculateDerivedStats(castingState, false, false, false);
-            /*if (castingState.MageTalents.GlyphOfLivingBomb)
-            {
-                spell.IgniteProcs *= 5; // 4 ticks can proc ignite in addition to the explosion
-                // add ignite contribution from dot
-                if (castingState.Solver.NeedsDisplayCalculations)
-                {
-                    float igniteFactor = spell.SpellModifier * spell.HitRate * spell.PartialResistFactor * Math.Max(0.0f, Math.Min(1.0f, castingState.FireCritRate)) * castingState.FireCritBonus * castingState.Solver.IgniteFactor / (1 + castingState.Solver.IgniteFactor);
-                    spell.IgniteDamage += spell.BasePeriodicDamage * igniteFactor;
-                    spell.IgniteDamagePerSpellPower += spell.DotDamageCoefficient * igniteFactor;
-                }
-            }*/
             return spell;
         }
 
@@ -781,23 +774,48 @@ namespace Rawr.Mage
         {
             Name = "Living Bomb";
             InitializeCastTime(false, true, 0f, 0f);
-            if (solver.CalculationOptions.ModeMOP)
-            {
-                InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0.02f, 1.534f, 0, 1.524f, 1.534f, 1.524f, 1, 1, 0);
-            }
-            else
-            {
-                InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0.17f, 0.5000000000f, 0, 4 * 0.2500000000f, 0.5149999857f, 4 * 0.2579999864f, 1, 1, 0);
-            }
-            MaximumAOETargets = 3;
+            GlobalCooldown = 1.0f;
+            // 5.2: 3.12.2013 hotfix: 0.3330000043 * 1.4, 0.2599999905 * 1.4, 1.3400000334 * 1.4, 1.0449999571 * 1.4
+            // 5.3: 2.21x dot, 0.22x explosion, no more aoe cap. TODO: make explosion scale with ActualTicks/4, assume 1.25 for now
+            InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0.015f, 1.25f * 0.412720010296f, 0, 4 * 1.03030201326f, 1.25f * 0.321859986778f, 4 * 0.804439970607f, 1, 1, 0);            
+            // MaximumAOETargets = 3;
+            AreaEffectDot = false;
             DotDuration = 12;
             DotTickInterval = 3;
-            BaseDirectDamageModifier *= (1f + 0.05f * solver.MageTalents.CriticalMass);
-            BaseDotDamageModifier += 0.05f * solver.MageTalents.CriticalMass; // additive with mastery
-            if (solver.MageTalents.GlyphOfLivingBomb)
+            if (solver.BaseStats.DragonwrathProc > 0)
             {
-                BaseSpellModifier *= 1.03f;
+                BaseSpellModifier *= 1.1f;
+                Ticks *= 1.1f;
+                CastProcs *= 1.1f;
+                CastProcs2 *= 1.1f;
             }
+            Dirty = false;
+        }
+    }
+
+    // spell id: 113092
+    public class FrostBombTemplate : SpellTemplate
+    {
+        public Spell GetSpell(CastingState castingState, bool aoe)
+        {
+            Spell spell = Spell.New(this, castingState.Solver);
+            spell.Calculate(castingState);
+            if (aoe)
+            {
+                spell.AreaEffect = true; // but leave aoe dot at false
+            }
+            spell.CalculateDerivedStats(castingState, false, false, false);
+            return spell;
+        }
+
+        public void Initialize(Solver solver)
+        {
+            Name = "Frost Bomb";
+            InitializeCastTime(false, true, 1.5f, 10f);
+            // 3.12.2013 hotfix: 3.1570000648 * 1.4, 2.4619998932 * 1.4 
+            InitializeScaledDamage(solver, false, 40, MagicSchool.Frost, 0.0125f, 4.4198000907f, 0, 0, 3.4467998504f, 0, 1, 1, 0);
+            //MaximumAOETargets = 10;
+            AOEMultiplier = 0.5f;
             if (solver.BaseStats.DragonwrathProc > 0)
             {
                 BaseSpellModifier *= 1.1f;
@@ -816,11 +834,26 @@ namespace Rawr.Mage
         {
             Spell spell = Spell.New(this, castingState.Solver);
             spell.Calculate(castingState);
-            // remove overestimated part of ignite contribution from on use spell power effects
-            // let's try a fixed percentage reduction, meaning it's very unlikely that if on use effect
-            // is active during combustion that it had any effect on building ignite
-            float extraSpellPower = 0.8f * castingState.StateSpellPower;
-            spell.BasePeriodicDamage -= IgniteContributionCoefficient * extraSpellPower;
+            // calculate dot part based on spell values in current state
+            Spell Pyro = castingState.GetSpell(SpellId.PyroblastDotUptime);
+            Spell FB = castingState.GetSpell(SpellId.Fireball);
+
+            // override so dot damage doesn't get any multipliers except crit
+            spell.DotDamageModifier = 1 / (spell.SpellModifier * spell.AdditiveSpellModifier);
+
+            // contribution from Pyro dot
+            // removed in 5.1
+            // spell.BasePeriodicDamage += Pyro.DotAverageDamage / (Pyro.DotDuration + Pyro.DotExtraTicks * Pyro.DotTickInterval);
+
+            // estimate ignite contribution
+            float igniteFactor = 0.4f * castingState.IgniteBonus / (1 + castingState.IgniteBonus);
+            // TODO probabilistic model for rolling multiplier based on haste
+            float rollingMultiplier = 1f;
+            spell.BasePeriodicDamage += rollingMultiplier * (FB.AverageDamage + Pyro.AverageDamage) / 4f * igniteFactor;
+
+            // extend to 10 ticks
+            spell.BasePeriodicDamage *= 10;
+
             spell.CalculateDerivedStats(castingState, false, false, false);
             spell.CastTime = 0;
             return spell;
@@ -831,63 +864,12 @@ namespace Rawr.Mage
         public void Initialize(Solver solver)
         {
             Name = "Combustion";
-            InitializeCastTime(false, true, 0f, 0f);
-            InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0f, 1.11300003528595f, 0.170000001788139f, 0, 0.428999990224838f, 0, 1, 1, 0);
+            InitializeCastTime(false, true, 0f, 45f);
+            InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0.1f, 1.0000000000f, 0.1700000018f, 0, 1.0000000000f, 0, 1, 1, 0);
             DotDuration = 10;
             DotTickInterval = 1;
+            BaseDotDamageModifier = 1 / BaseSpellModifier;
             UseMaxT13 = true;
-            // estimate combustion dot tick
-            // based on http://elitistjerks.com/f75/t110187-cataclysm_mage_simulators_formulators/p3/#post1824829
-            // and http://elitistjerks.com/f75/t110187-cataclysm_mage_simulators_formulators/p3/#post1825299
-            // presume LB is up, average the dps
-            // presume FFB dot is up, if the glyph is present (regardless if the main rotation is FFB)
-            // calculate dps from ignite by averaging fireball and pyroblast ignite dps
-            if (solver.MageTalents.GlyphOfFrostfire)
-            {
-                FrostfireBoltTemplate FFB = solver.FrostfireBoltTemplate;
-                BasePeriodicDamage += FFB.BasePeriodicDamage / FFB.DotDuration;
-                DotDamageCoefficient += FFB.DotDamageCoefficient / FFB.DotDuration;
-            }
-            // combustion_tick*3=(.2678930839158054*spellpower+518.6158840934165) * (1+mastery)*(1+mastery+CM)
-            // 0.20807229818703332038834951456311*spellpower + 402.8084536647895145631067961165
-            // double dip mastery!!
-            // TODO I don't know how mastery double dip works in relation to on use mastery effects
-            // for now treat it the same as proc mastery effects which might underestimate
-            float lbMult = 1 + solver.FlashburnBonus + 0.05f * solver.MageTalents.CriticalMass;
-            if (solver.MageTalents.GlyphOfLivingBomb)
-            {
-                lbMult *= 1.03f;
-            }
-            BasePeriodicDamage += 402.8084536647895145631067961165f / 3f * lbMult;
-            DotDamageCoefficient += 0.20807229818703332038834951456311f / 3f * lbMult;
-            // combustion_tick*3 ~= (.1005*spellpower + 283.9)* (1+mastery)^2
-            // 0.078058252427184466019417475728155*spellpower + 220.50485436893203883495145631068
-            float pyroMult = 1 + solver.FlashburnBonus;
-            BasePeriodicDamage += 220.50485436893203883495145631068f / 3f * pyroMult;
-            DotDamageCoefficient += 0.078058252427184466019417475728155f / 3f * pyroMult;
-
-            // ignite part doesn't double-dip mastery
-            // solver.IgniteFactor has flashburn and munching in, we want to remove both to get clean ignite
-            // estimate ignite
-            // on use spell power for building ignite is hard to coordinate for combustion purposes
-            // assume it is no better than random proc effect
-            float ignite = (0.13f * solver.MageTalents.Ignite + (solver.MageTalents.Ignite == 3 ? 0.01f : 0.0f));
-            // TODO probabilistic model for rolling multiplier based on haste and crit
-            float rollingMultiplier = 1f;
-            FireballTemplate FB = solver.FireballTemplate;
-            PyroblastTemplate Pyro = solver.PyroblastTemplate;
-            // the way we'll remove the on use spell power part will be by deducting it from the base
-            // so we'll need to remember the coefficient part associated to ignite contribution
-            IgniteContributionCoefficient = 0;
-            BasePeriodicDamage += rollingMultiplier * (FB.BaseMinDamage + FB.BaseMaxDamage) / 4.0f * solver.BaseFireCritBonus * ignite / 4.0f;
-            IgniteContributionCoefficient += rollingMultiplier * FB.SpellDamageCoefficient / 2.0f * solver.BaseFireCritBonus * ignite / 4.0f;
-            BasePeriodicDamage += rollingMultiplier * (Pyro.BaseMinDamage + Pyro.BaseMaxDamage) / 4.0f * solver.BaseFireCritBonus * ignite / 4.0f;
-            IgniteContributionCoefficient += rollingMultiplier * Pyro.SpellDamageCoefficient / 2.0f * solver.BaseFireCritBonus * ignite / 4.0f;
-            DotDamageCoefficient += IgniteContributionCoefficient;
-            // extend to 10 ticks
-            BasePeriodicDamage *= 10;
-            DotDamageCoefficient *= 10;
-            IgniteContributionCoefficient *= 10;
             if (solver.BaseStats.DragonwrathProc > 0)
             {
                 BaseSpellModifier *= 1.1f;
@@ -901,36 +883,29 @@ namespace Rawr.Mage
         public void Initialize(Solver solver, bool pyroDot, float pyroRoll, float fbRoll)
         {
             Name = "Combustion";
-            InitializeCastTime(false, true, 0f, 0f);
-            InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0f, 1.11300003528595f, 0.170000001788139f, 0, 0.428999990224838f, 0, 1, 1, 0);
+            InitializeCastTime(false, true, 0f, 45f);
+            InitializeScaledDamage(solver, false, 40, MagicSchool.Fire, 0.1f, 1.0000000000f, 0.1700000018f, 0, 1.0000000000f, 0, 1, 1, 0);
             DotDuration = 10;
             DotTickInterval = 1;
             UseMaxT13 = true;
-            float lbMult = 1 + solver.FlashburnBonus + 0.05f * solver.MageTalents.CriticalMass;
-            if (solver.MageTalents.GlyphOfLivingBomb)
-            {
-                lbMult *= 1.03f;
-            }
-            BasePeriodicDamage += 402.8084536647895145631067961165f / 3f * lbMult;
-            DotDamageCoefficient += 0.20807229818703332038834951456311f / 3f * lbMult;
 
-            if (pyroDot)
-            {
-                float pyroMult = 1 + solver.FlashburnBonus;
-                BasePeriodicDamage += 220.50485436893203883495145631068f / 3f * pyroMult;
-                DotDamageCoefficient += 0.078058252427184466019417475728155f / 3f * pyroMult;
-            }
+            // removed in 5.1 (or even earlier)
+            // if (pyroDot)
+            // {
+            //     BasePeriodicDamage += 220.50485436893203883495145631068f / 3f;
+            //     DotDamageCoefficient += 0.078058252427184466019417475728155f / 3f;
+            // }
 
-            float ignite = (0.13f * solver.MageTalents.Ignite + (solver.MageTalents.Ignite == 3 ? 0.01f : 0.0f));
+            float ignite = 0;
 
             FireballTemplate FB = solver.FireballTemplate;
             PyroblastTemplate Pyro = solver.PyroblastTemplate;
 
             IgniteContributionCoefficient = 0;
-            BasePeriodicDamage += fbRoll * (FB.BaseMinDamage + FB.BaseMaxDamage) / 2.0f * solver.BaseFireCritBonus * ignite / 4.0f;
-            IgniteContributionCoefficient += fbRoll * FB.SpellDamageCoefficient * solver.BaseFireCritBonus * ignite / 4.0f;
-            BasePeriodicDamage += pyroRoll * (Pyro.BaseMinDamage + Pyro.BaseMaxDamage) / 2.0f * solver.BaseFireCritBonus * ignite / 4.0f;
-            IgniteContributionCoefficient += pyroRoll * Pyro.SpellDamageCoefficient * solver.BaseFireCritBonus * ignite / 4.0f;
+            BasePeriodicDamage += fbRoll * (FB.BaseMinDamage + FB.BaseMaxDamage) / 2.0f * solver.BaseFireCritBonus * 0.4f * ignite / 4.0f;
+            IgniteContributionCoefficient += fbRoll * FB.SpellDamageCoefficient * solver.BaseFireCritBonus * 0.4f * ignite / 4.0f;
+            BasePeriodicDamage += pyroRoll * (Pyro.BaseMinDamage + Pyro.BaseMaxDamage) / 2.0f * solver.BaseFireCritBonus * 0.4f * ignite / 4.0f;
+            IgniteContributionCoefficient += pyroRoll * Pyro.SpellDamageCoefficient * solver.BaseFireCritBonus * 0.4f * ignite / 4.0f;
             DotDamageCoefficient += IgniteContributionCoefficient;
             // extend to 10 ticks
             BasePeriodicDamage *= 10;
@@ -965,8 +940,7 @@ namespace Rawr.Mage
         {
             Name = "Cone of Cold";
             InitializeCastTime(false, true, 0, 10);
-            InitializeScaledDamage(solver, true, 0, MagicSchool.Frost, 0.25f, 0.839999973773956f, 0.0900000035762787f, 0, 0.214000001549721f, 0, 1, 1, 0);
-            Cooldown *= (1 - 0.07f * solver.MageTalents.IceFloes + (solver.MageTalents.IceFloes == 3 ? 0.01f : 0.00f));
+            InitializeScaledDamage(solver, true, 0, MagicSchool.Frost, 0.04f, 0.3810000122f, 0, 0, 0.3179999888f, 0, 1, 1, 0);
             if (solver.MageTalents.GlyphOfConeOfCold)
             {
                 BaseSpellModifier *= 1.25f;
@@ -991,8 +965,11 @@ namespace Rawr.Mage
             spell.Calculate(castingState);
             if (castingState.Frozen)
             {
-                spell.SpellModifier *= 2;
-                spell.AdditiveSpellModifier += 0.25f;
+                spell.SpellModifier *= 4; // base ice lance bonus
+                if (castingState.Solver.Specialization == Specialization.Frost)
+                {
+                    spell.AdditiveSpellModifier += 0.25f; // fingers of frost bonus
+                }
             }
             spell.CalculateDerivedStats(castingState);
             return spell;
@@ -1002,14 +979,22 @@ namespace Rawr.Mage
         {
             Name = "Ice Lance";
             InitializeCastTime(false, true, 0, 0);
-            InitializeScaledDamage(solver, false, 35, MagicSchool.Frost, 0.06f, 0.432000011205673f, 0.241999998688698f, 0, 0.377999991178513f, 0, 1, 1, 0);
+            InitializeScaledDamage(solver, false, 35, MagicSchool.Frost, 0.01f, 0.2500000000f, 0.2500000000f, 0, 0.2500000000f, 0, 1, 1, 0);
             if (solver.MageTalents.GlyphOfIceLance)
             {
                 BaseSpellModifier *= 1.05f;
             }
+            if (solver.Specialization == Specialization.Frost)
+            {
+                BaseSpellModifier *= 1.15f; // 3 stack Frostbolt debuff
+            }
             if (solver.Mage2T11)
             {
                 BaseCritRate += 0.05f;
+            }
+            if (solver.Mage2T14)
+            {
+                BaseSpellModifier *= 1.12f;
             }
             if (solver.BaseStats.DragonwrathProc > 0)
             {
@@ -1030,7 +1015,6 @@ namespace Rawr.Mage
             Spell spell = Spell.New(this, castingState.Solver);
             spell.Calculate(castingState);
             spell.AdditiveSpellModifier += arcaneBlastDamageMultiplier * arcaneBlastDebuff;
-            spell.SpellModifier *= (1 + tormentTheWeak * castingState.SnaredTime);
             if (aoe)
             {
                 spell.AreaEffect = true;
@@ -1041,27 +1025,17 @@ namespace Rawr.Mage
         }
 
         private float arcaneBlastDamageMultiplier;
-        private float tormentTheWeak;
 
         public void Initialize(Solver solver)
         {
             Name = "Arcane Barrage";
-            if (solver.CalculationOptions.ModeMOP)
+            InitializeCastTime(false, true, 0, 3);
+            InitializeScaledDamage(solver, false, 40, MagicSchool.Arcane, 0.005f, 1.0000000000f, 0.2000000030f, 0, 1.0000000000f, 0, 1, 1, 0);
+            AOEMultiplier = 0.5f;
+            arcaneBlastDamageMultiplier = 0.5f;
+            if (solver.Mage4T15)
             {
-                InitializeCastTime(false, true, 0, 3);
-                InitializeScaledDamage(solver, false, 40, MagicSchool.Arcane, 0.005f, 1.425f, 0.200000002980232f, 0, 1.425f, 0, 1, 1, 0);
-                arcaneBlastDamageMultiplier = 0.25f;
-            }
-            else
-            {
-                InitializeCastTime(false, true, 0, 4);
-                InitializeScaledDamage(solver, false, 40, MagicSchool.Arcane, 0.11f, 1.4125f, 0.200000002980232f, 0, 0.90738996982574447f, 0, 1, 1, 0);
-                arcaneBlastDamageMultiplier = 0f;
-            }
-            tormentTheWeak = 0.02f * solver.MageTalents.TormentTheWeak;
-            if (solver.MageTalents.GlyphOfArcaneBarrage)
-            {
-                BaseDirectDamageModifier *= 1.04f;
+                arcaneBlastDamageMultiplier *= 1.2f;
             }
             if (solver.BaseStats.DragonwrathProc > 0)
             {
@@ -1077,33 +1051,11 @@ namespace Rawr.Mage
     // spell id: 30451, scaling id: 9
     public class ArcaneBlastTemplate : SpellTemplate
     {
-        public Spell GetSpell(CastingState castingState, int debuff, bool manualClearcasting, bool clearcastingActive, bool pom)
-        {
-            Spell spell = Spell.New(this, castingState.Solver);
-            spell.Calculate(castingState);
-            if (!castingState.CalculationOptions.ModeMOP)
-            {
-                spell.BaseCastTime -= debuff * 0.1f * castTimeMultiplier;
-            }
-            if (manualClearcasting) spell.CalculateManualClearcasting(true, false, clearcastingActive);
-            spell.AdditiveSpellModifier += arcaneBlastDamageMultiplier * debuff;
-            spell.SpellModifier *= (1 + tormentTheWeak * castingState.SnaredTime);
-            spell.CostModifier += arcaneBlastManaMultiplier * debuff;
-            spell.CalculateDerivedStats(castingState, false, pom, false, true, false, false);
-            if (manualClearcasting) spell.CalculateManualClearcastingCost(castingState.Solver, false, true, false, clearcastingActive);
-            return spell;
-        }
-
         public Spell GetSpell(CastingState castingState, int debuff, bool forceHit)
         {
             Spell spell = Spell.New(this, castingState.Solver);
             spell.Calculate(castingState);
-            if (!castingState.CalculationOptions.ModeMOP)
-            {
-                spell.BaseCastTime -= debuff * 0.1f * castTimeMultiplier;
-            }
             spell.AdditiveSpellModifier += arcaneBlastDamageMultiplier * debuff;
-            spell.SpellModifier *= (1 + tormentTheWeak * castingState.SnaredTime);
             spell.CostModifier += arcaneBlastManaMultiplier * debuff;
             spell.CalculateDerivedStats(castingState, false, false, false, true, forceHit, !forceHit);
             return spell;
@@ -1113,12 +1065,7 @@ namespace Rawr.Mage
         {
             Spell spell = Spell.New(this, castingState.Solver);
             spell.Calculate(castingState);
-            if (!castingState.CalculationOptions.ModeMOP)
-            {
-                spell.BaseCastTime -= debuff * 0.1f * castTimeMultiplier;
-            }
             spell.AdditiveSpellModifier += arcaneBlastDamageMultiplier * debuff;
-            spell.SpellModifier *= (1 + tormentTheWeak * castingState.SnaredTime);
             spell.CostModifier += arcaneBlastManaMultiplier * debuff;
             spell.CalculateDerivedStats(castingState, false, false, false, true, false, false);
             return spell;
@@ -1128,12 +1075,7 @@ namespace Rawr.Mage
         {
             Spell spell = Spell.New(this, castingState.Solver);
             spell.Calculate(castingState);
-            if (!castingState.CalculationOptions.ModeMOP)
-            {
-                spell.BaseCastTime -= castDebuff * 0.1f * castTimeMultiplier;
-            }
             spell.AdditiveSpellModifier += arcaneBlastDamageMultiplier * debuff;
-            spell.SpellModifier *= (1 + tormentTheWeak * castingState.SnaredTime);
             spell.CostModifier += arcaneBlastManaMultiplier * debuff;
             spell.CalculateDerivedStats(castingState, false, false, false, true, false, false);
             return spell;
@@ -1157,11 +1099,6 @@ namespace Rawr.Mage
             {
                 spell.AdditiveSpellModifier += arcaneBlastDamageMultiplier * debuff;
             }
-            if (!castingState.CalculationOptions.ModeMOP)
-            {
-                spell.BaseCastTime -= castDebuff * 0.1f * castTimeMultiplier;
-            }
-            spell.SpellModifier *= (1 + tormentTheWeak * castingState.SnaredTime);
             spell.CostModifier += arcaneBlastManaMultiplier * debuff;
             spell.CalculateDerivedStats(castingState, false, false, false, true, false, false);
             return spell;
@@ -1177,11 +1114,6 @@ namespace Rawr.Mage
                 spell.SpellModifier /= 1.1f;
             }
             spell.AdditiveSpellModifier += arcaneBlastDamageMultiplier * debuff;
-            if (!castingState.CalculationOptions.ModeMOP)
-            {
-                spell.BaseCastTime -= castDebuff * 0.1f * castTimeMultiplier;
-            }
-            spell.SpellModifier *= (1 + tormentTheWeak * castingState.SnaredTime);
             spell.CostModifier += arcaneBlastManaMultiplier * debuff;
             spell.CalculateDerivedStats(castingState, false, false, false, true, false, false);
             return spell;
@@ -1197,11 +1129,6 @@ namespace Rawr.Mage
                 spell.SpellModifier /= 1.1f;
             }
             spell.AdditiveSpellModifier += arcaneBlastDamageMultiplier * debuff;
-            if (!castingState.CalculationOptions.ModeMOP)
-            {
-                spell.BaseCastTime -= castDebuff * 0.1f * castTimeMultiplier;
-            }
-            spell.SpellModifier *= (1 + tormentTheWeak * castingState.SnaredTime);
             spell.CostModifier += arcaneBlastManaMultiplier * debuff;
             spell.CalculateDerivedStats(castingState, false, false, false, true, false, false);
             spell.CastTime = 0;
@@ -1213,7 +1140,6 @@ namespace Rawr.Mage
         {
             Spell spell = Spell.New(this, castingState.Solver);
             spell.Calculate(castingState);
-            spell.SpellModifier *= (1 + tormentTheWeak * castingState.SnaredTime);
             spell.CalculateDerivedStats(castingState, false, false, false, true, false, false);
             return spell;
         }
@@ -1243,21 +1169,17 @@ namespace Rawr.Mage
             cycle.NukeProcs2 += weight * rawSpell.NukeProcs2;
             cycle.Ticks += weight * rawSpell.Ticks;
             cycle.HitProcs += weight * rawSpell.HitProcs;
+            cycle.HitPPM += weight * rawSpell.HitPPM;
             cycle.CritProcs += weight * rawSpell.CritProcs;
             cycle.TargetProcs += weight * rawSpell.TargetProcs;
             cycle.damageProcs += weight * rawSpell.HitProcs;
-
-            double roundCost = Math.Round(rawSpell.BaseCost * rawSpell.CostAmplifier);
-            cycle.costPerSecond += (1 - solver.ClearcastingChance) * (weight0 * (float)Math.Floor(roundCost * rawSpell.CostModifier) + weight1 * (float)Math.Floor(roundCost * (rawSpell.CostModifier + arcaneBlastManaMultiplier)) + weight2 * (float)Math.Floor(roundCost * (rawSpell.CostModifier + 2 * arcaneBlastManaMultiplier)) + weight3 * (float)Math.Floor(roundCost * (rawSpell.CostModifier + 3 * arcaneBlastManaMultiplier)));
-            cycle.costPerSecond -= weight * rawSpell.CritRate * rawSpell.BaseCost * 0.15f * mageTalents.MasterOfElements;
-            //cycle.costPerSecond -= weight * BaseUntalentedCastTime / 60f * solver.BaseStats.ManaRestoreFromBaseManaPPM * solver.CalculationOptions.BaseMana;
 
             float multiplier = (weight * rawSpell.AdditiveSpellModifier + arcaneBlastDamageMultiplier * (weight1 + 2 * weight2 + 3 * weight3)) / rawSpell.AdditiveSpellModifier;
             cycle.DpsPerSpellPower += multiplier * rawSpell.DamagePerSpellPower;
             cycle.DpsPerCrit += multiplier * rawSpell.DamagePerCrit;
             //cycle.DpsPerMastery += multiplier * rawSpell.DamagePerMastery;
             cycle.damagePerSecond += multiplier * rawSpell.AverageDamage;
-            cycle.threatPerSecond += multiplier * rawSpell.AverageThreat;
+            //cycle.threatPerSecond += multiplier * rawSpell.AverageThreat;
         }
 
         public void AddToCycle(Solver solver, Cycle cycle, Spell rawSpell, float weight0, float weight1, float weight2, float weight3, float weight4)
@@ -1286,25 +1208,20 @@ namespace Rawr.Mage
             cycle.NukeProcs2 += weight * rawSpell.NukeProcs2;
             cycle.Ticks += weight * rawSpell.Ticks;
             cycle.HitProcs += weight * rawSpell.HitProcs;
+            cycle.HitPPM += weight * rawSpell.HitPPM;
             cycle.CritProcs += weight * rawSpell.CritProcs;
             cycle.TargetProcs += weight * rawSpell.TargetProcs;
             cycle.damageProcs += weight * rawSpell.HitProcs;
-
-            double roundCost = Math.Round(rawSpell.BaseCost * rawSpell.CostAmplifier);
-            cycle.costPerSecond += (1 - solver.ClearcastingChance) * (weight0 * (float)Math.Floor(roundCost * rawSpell.CostModifier) + weight1 * (float)Math.Floor(roundCost * (rawSpell.CostModifier + arcaneBlastManaMultiplier)) + weight2 * (float)Math.Floor(roundCost * (rawSpell.CostModifier + 2 * arcaneBlastManaMultiplier)) + weight3 * (float)Math.Floor(roundCost * (rawSpell.CostModifier + 3 * arcaneBlastManaMultiplier)) + weight4 * (float)Math.Floor(roundCost * (rawSpell.CostModifier + 4 * arcaneBlastManaMultiplier)));
-            cycle.costPerSecond -= weight * rawSpell.CritRate * rawSpell.BaseCost * 0.15f * mageTalents.MasterOfElements;
-            //cycle.costPerSecond -= weight * BaseUntalentedCastTime / 60f * solver.BaseStats.ManaRestoreFromBaseManaPPM * solver.CalculationOptions.BaseMana;
 
             float multiplier = (weight * rawSpell.AdditiveSpellModifier + arcaneBlastDamageMultiplier * (weight1 + 2 * weight2 + 3 * weight3 + 4 * weight4)) / rawSpell.AdditiveSpellModifier;
             cycle.DpsPerSpellPower += multiplier * rawSpell.DamagePerSpellPower;
             cycle.DpsPerCrit += multiplier * rawSpell.DamagePerCrit;
             //cycle.DpsPerMastery += multiplier * rawSpell.DamagePerMastery;
             cycle.damagePerSecond += multiplier * rawSpell.AverageDamage;
-            cycle.threatPerSecond += multiplier * rawSpell.AverageThreat;
+            //cycle.threatPerSecond += multiplier * rawSpell.AverageThreat;
         }
 
         private float arcaneBlastDamageMultiplier;
-        private float tormentTheWeak;
         private float arcaneBlastManaMultiplier;
         private float castTimeMultiplier;
 
@@ -1321,34 +1238,18 @@ namespace Rawr.Mage
             {
                 castTimeMultiplier = 1f;
             }
-            if (solver.CalculationOptions.ModeMOP)
-            {
-                InitializeScaledDamage(solver, false, 40, MagicSchool.Arcane, 0.015f, 1.899f, 0.150000005960464f, 0, 1.899f, 0, 1, 1, 0);
-            }
-            else
-            {
-                InitializeScaledDamage(solver, false, 40, MagicSchool.Arcane, 0.05f, 0.95f * 2.03500008583069f, 0.150000005960464f, 0, 0.95f * 1.057000041008f, 0, 1, 1, 0);
-            }
+            InitializeScaledDamage(solver, false, 40, MagicSchool.Arcane, 0.017f, 0.7770000100f, 0.1500000060f, 0, 0.7770000100f, 0, 1, 1, 0);
             Stats baseStats = solver.BaseStats;
             MageTalents mageTalents = solver.MageTalents;
-            //BaseCostModifier += baseStats.ArcaneBlastBonus;
-            //BaseCritRate += 0.05f * solver.BaseStats.Mage4T9;
-            tormentTheWeak = 0.02f * solver.MageTalents.TormentTheWeak;
-            if (solver.CalculationOptions.ModeMOP)
-            {
-                arcaneBlastDamageMultiplier = 0.25f;
-            }
-            else
-            {
-                arcaneBlastDamageMultiplier = mageTalents.GlyphOfArcaneBlast ? 0.13f : 0.1f;
-            }
+            arcaneBlastDamageMultiplier = 0.5f;
             arcaneBlastManaMultiplier = 1.5f;
+            if (solver.Mage4T15)
+            {
+                arcaneBlastDamageMultiplier *= 1.2f;
+                arcaneBlastManaMultiplier *= 1.2f;
+            }
             NukeProcs = 1;
             NukeProcs2 = 1;
-            if (solver.Mage4PVP)
-            {
-                BaseSpellModifier *= 1.05f;
-            }
             if (solver.BaseStats.DragonwrathProc > 0)
             {
                 BaseSpellModifier *= 1.1f;
@@ -1363,43 +1264,16 @@ namespace Rawr.Mage
     // spell id: 7268, scaling id: 12
     public class ArcaneMissilesTemplate : SpellTemplate
     {
-        public Spell GetSpell(CastingState castingState, bool barrage, bool clearcastingAveraged, bool clearcastingActive, bool clearcastingProccing, int arcaneBlastDebuff)
-        {
-            Spell spell = Spell.New(this, castingState.Solver);
-            spell.Calculate(castingState);
-            spell.CalculateManualClearcasting(true, clearcastingAveraged, clearcastingActive);
-            //spell.BaseCastTime = ticks;
-            if (barrage)
-            {
-                spell.BaseCastTime *= 0.5f;
-                spell.CostModifier = Math.Max(spell.CostModifier - 1, 0);
-            }
-            spell.SpellModifier *= (1 + tormentTheWeak * castingState.SnaredTime);
-            spell.AdditiveSpellModifier += arcaneBlastDamageMultiplier * arcaneBlastDebuff;
-            //spell.SpellModifier *= ticks / 5.0f;
-            spell.CalculateDerivedStats(castingState);
-            spell.CalculateManualClearcastingCost(castingState.Solver, false, true, clearcastingAveraged, clearcastingActive);
-            return spell;
-        }
-
-        /*public Spell GetSpell(CastingState castingState, bool barrage, int arcaneBlastDebuff)
-        {
-            return GetSpell(castingState, barrage, arcaneBlastDebuff, 5);
-        }*/
-
         public Spell GetSpell(CastingState castingState, bool barrage, int arcaneBlastDebuff)
         {
             Spell spell = Spell.New(this, castingState.Solver);
             spell.Calculate(castingState);
-            //spell.BaseCastTime = ticks;
             if (barrage)
             {
                 spell.BaseCastTime *= 0.5f;
                 spell.CostModifier = Math.Max(spell.CostModifier - 1, 0);
             }
-            spell.SpellModifier *= (1 + tormentTheWeak * castingState.SnaredTime);
             spell.AdditiveSpellModifier += arcaneBlastDamageMultiplier * arcaneBlastDebuff;
-            //spell.SpellModifier *= ticks / 5.0f;
             spell.CalculateDerivedStats(castingState);
             return spell;
         }
@@ -1415,6 +1289,7 @@ namespace Rawr.Mage
             cycle.NukeProcs2 += weight * rawSpell.NukeProcs2;
             cycle.Ticks += weight * rawSpell.Ticks;
             cycle.HitProcs += weight * rawSpell.HitProcs;
+            cycle.HitPPM += weight * rawSpell.HitPPM;
             cycle.CritProcs += weight * rawSpell.CritProcs;
             cycle.TargetProcs += weight * rawSpell.TargetProcs;
             cycle.costPerSecond += weight * rawSpell.AverageCost;
@@ -1423,80 +1298,36 @@ namespace Rawr.Mage
             cycle.DpsPerSpellPower += multiplier * rawSpell.DamagePerSpellPower;
             //cycle.DpsPerMastery += multiplier * rawSpell.DamagePerMastery;
             cycle.damagePerSecond += multiplier * rawSpell.AverageDamage;
-            cycle.threatPerSecond += multiplier * rawSpell.AverageThreat;
+            //cycle.threatPerSecond += multiplier * rawSpell.AverageThreat;
         }
 
-        float tormentTheWeak;
         float arcaneBlastDamageMultiplier;
 
         public void Initialize(Solver solver)
         {
             Name = "Arcane Missiles";
             float castTime = 0.75f;
-            if (solver.CalculationOptions.ModeMOP)
-            {
-                castTime = 0.4f;
-            }
-            else if (solver.MageTalents.MissileBarrage == 1)
-            {
-                castTime = 0.6f;
-            }
-            else if (solver.MageTalents.MissileBarrage == 2)
-            {
-                castTime = 0.5f;
-            }
-            int missiles = 3 + solver.MageTalents.ImprovedArcaneMissiles;
+            castTime = 0.4f;
+            int missiles = 5;
             InitializeCastTime(true, false, castTime * missiles, 0);
-            if (solver.CalculationOptions.ModeMOP)
-            {
-                InitializeScaledDamage(solver, false, 40, MagicSchool.Arcane, 0, 0.475f, 0, 0, 0.475f, 0, missiles, missiles + 1, 0);
-            }
-            else
-            {
-                InitializeScaledDamage(solver, false, 40, MagicSchool.Arcane, 0, 0.43165999919176072f, 0, 0, 0.2779800076782709f, 0, missiles, missiles + 1, 0);
-            }
+            InitializeScaledDamage(solver, false, 40, MagicSchool.Arcane, 0, 0.2220000029f, 0, 0, 0.2220000029f, 0, missiles, missiles + 1, 0);
             BaseMinDamage *= missiles;
             BaseMaxDamage *= missiles;
             SpellDamageCoefficient *= missiles;
             CastProcs2 = 1;
-            if (solver.MageTalents.GlyphOfArcaneMissiles)
+            arcaneBlastDamageMultiplier = 0.5f;
+            if (solver.Mage4T15)
             {
-                BaseCritRate += 0.05f;
+                arcaneBlastDamageMultiplier *= 1.2f;
+            }
+            if (solver.Mage2T14)
+            {
+                BaseSpellModifier *= 1.07f;
             }
             if (solver.Mage2T11)
             {
                 BaseCritRate += 0.05f;
             }
-            tormentTheWeak = 0.02f * solver.MageTalents.TormentTheWeak;
-            if (solver.CalculationOptions.ModeMOP)
-            {
-                arcaneBlastDamageMultiplier = 0.25f;
-            }
-            else
-            {
-                arcaneBlastDamageMultiplier = 0f;
-            }
-            //BaseSpellModifier *= (1 + solver.BaseStats.BonusMageNukeMultiplier);
-            //BaseCritRate += 0.05f * solver.BaseStats.Mage4T9;
-            // Arcane Potency bug/feature
-            float arcanePotency;
-            switch (solver.MageTalents.ArcanePotency)
-            {
-                case 0:
-                default:
-                    arcanePotency = 0;
-                    break;
-                case 1:
-                    arcanePotency = 0.07f;
-                    break;
-                case 2:
-                    arcanePotency = 0.15f;
-                    break;
-            }
-            // not tested this, but assuming each wave has 1/5th chance even if less waves present
-            // this is assuming two spells before AM are not AM, not completely accurate, but close enough
-            float potencyChance = 11f / 125f * (10f - 3f * solver.ClearcastingChance) * solver.ClearcastingChance;
-            BaseCritRate = BaseCritRate - solver.ArcanePotencyCrit + arcanePotency * potencyChance;
             if (solver.BaseStats.DragonwrathProc > 0)
             {
                 BaseSpellModifier *= 1.1f;
@@ -1519,21 +1350,20 @@ namespace Rawr.Mage
             //{
             //    spell.CostAmplifier = 1f - 0.25f * castingState.MageTalents.ImprovedArcaneExplosion;
             //}
-            spell.AdditiveSpellModifier += arcaneBlastDamageMultiplier * arcaneBlastDebuff;
+            //spell.AdditiveSpellModifier += arcaneBlastDamageMultiplier * arcaneBlastDebuff;
             spell.CalculateDerivedStats(castingState);
             return spell;
         }
 
-        private float arcaneBlastDamageMultiplier;
+        //private float arcaneBlastDamageMultiplier;
 
         public void Initialize(Solver solver)
         {
             Name = "Arcane Explosion";
             InitializeCastTime(false, true, 0, 0);
-            InitializeScaledDamage(solver, true, 0, MagicSchool.Arcane, 0.15f * (1 - 0.25f * solver.MageTalents.ImprovedArcaneExplosion), 0.3677584900856011975f, 0.0799999982118607f, 0, 0.18582850867509814f, 0, 1, 1, 0);
+            InitializeScaledDamage(solver, true, 0, MagicSchool.Arcane, 0.03f, 0.3449999988f, 0.0799999982f, 0, 0.3930000067f, 0, 1, 1, 0);
             // should we count torment the weak?
-            arcaneBlastDamageMultiplier = solver.MageTalents.GlyphOfArcaneBlast ? 0.13f : 0.1f;
-            GlobalCooldown -= 0.25f * solver.MageTalents.ImprovedArcaneExplosion;
+            //arcaneBlastDamageMultiplier = solver.MageTalents.GlyphOfArcaneBlast ? 0.13f : 0.1f;
             if (solver.BaseStats.DragonwrathProc > 0)
             {
                 BaseSpellModifier *= 1.1f;
@@ -1550,7 +1380,7 @@ namespace Rawr.Mage
     {
         public void Initialize(Solver solver)
         {
-            Name = "Blast Wave";
+            Name = "Blast Wave - REMOVE";
             InitializeCastTime(false, true, 0, 15);
             InitializeScaledDamage(solver, true, 0, MagicSchool.Fire, 0.07f, 0.989000022411346f, 0.164000004529953f, 0, 0.14300000667572f, 0, 1, 1, 0);
             if (solver.BaseStats.DragonwrathProc > 0)
@@ -1571,7 +1401,7 @@ namespace Rawr.Mage
         {
             Name = "Dragon's Breath";
             InitializeCastTime(false, true, 0, 20);
-            InitializeScaledDamage(solver, true, 0, MagicSchool.Fire, 0.07f, 1.37800002098083f, 0.150000005960464f, 0, 0.193000003695488f, 0, 1, 1, 0);
+            InitializeScaledDamage(solver, true, 0, MagicSchool.Fire, 0.04f, 1.9670000076f, 0.1500000060f, 0, 0.2150000036f, 0, 1, 1, 0);
             if (solver.BaseStats.DragonwrathProc > 0)
             {
                 BaseSpellModifier *= 1.1f;
@@ -1590,7 +1420,7 @@ namespace Rawr.Mage
         {
             Name = "Blizzard";
             InitializeCastTime(true, false, 8, 0);
-            InitializeScaledDamage(solver, true, 30, MagicSchool.Frost, 0.74f, 8 * 0.5419999957f, 0, 0, 8 * 0.1620000005f, 0, 8, 1, 0);
+            InitializeScaledDamage(solver, true, 30, MagicSchool.Frost, 0.05f, 8 * 0.2310000062f, 0, 0, 8 * 0.2619999945f, 0, 8, 1, 0);
             if (solver.BaseStats.DragonwrathProc > 0)
             {
                 BaseSpellModifier *= 1.1f;

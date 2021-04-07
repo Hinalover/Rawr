@@ -727,10 +727,6 @@ namespace Rawr.Mage
                 if (CalculationOptions.ManaGemEnabled && !ValidateIntegralConsumableOverall(VariableType.ManaGem, 1.0)) return false;
 
                 CastingState evoBaseState = BaseState;
-                if (CalculationOptions.Enable2T10Evocation && Mage2T10)
-                {
-                    evoBaseState = BaseState.Tier10TwoPieceState;
-                }
 
                 if (evocationAvailable && !ValidateIntegralConsumableOverall(VariableType.Evocation, EvocationDuration / 4)) return false;
                 if (CalculationOptions.EnableHastedEvocation)
@@ -753,13 +749,11 @@ namespace Rawr.Mage
                 // ap
                 if (arcanePowerAvailable && !ValidateCooldown((int)StandardEffect.ArcanePower, ArcanePowerDuration, ArcanePowerCooldown, true, ArcanePowerDuration, rowSegmentArcanePower, VariableType.None)) return false;
                 // iv
-                if (icyVeinsAvailable && !ValidateCooldown((int)StandardEffect.IcyVeins, 20.0 + (coldsnapAvailable ? 20.0 : 0.0), IcyVeinsCooldown + (coldsnapAvailable ? 20.0 : 0.0), true, 20.0, rowSegmentIcyVeins, VariableType.None)) return false;
+                if (icyVeinsAvailable && !ValidateCooldown((int)StandardEffect.IcyVeins, 20.0, IcyVeinsCooldown, true, 20.0, rowSegmentIcyVeins, VariableType.None)) return false;
                 // pi
                 if (powerInfusionAvailable && !ValidateCooldown((int)StandardEffect.PowerInfusion, PowerInfusionDuration, PowerInfusionCooldown, true, PowerInfusionDuration, rowSegmentPowerInfusion, VariableType.None)) return false;
                 // blood fury
                 if (bloodFuryAvailable && !ValidateCooldown((int)StandardEffect.BloodFury, 15.0, 120.0, true, 15.0, rowSegmentBloodFury, VariableType.None)) return false;
-                // flame orb
-                if (flameOrbAvailable && !ValidateCooldown((int)StandardEffect.FlameOrb, FlameOrbDuration, FlameOrbCooldown, true, FlameOrbDuration, rowSegmentFlameOrb, VariableType.None)) return false;
                 // water elemental
                 /*if (waterElementalAvailable && !MageTalents.GlyphOfEternalWater)
                 {
@@ -771,8 +765,6 @@ namespace Rawr.Mage
                 if (mirrorImageAvailable && !ValidateCooldown((int)StandardEffect.MirrorImage, MirrorImageDuration, MirrorImageCooldown, true, MirrorImageDuration, rowSegmentMirrorImage, VariableType.None)) return false;
                 // combustion
                 if (combustionAvailable && !ValidateCooldown((int)StandardEffect.Combustion, CombustionDuration, CombustionCooldown)) return false; // the durations are only used to compute segment distances, for 30 sec segments this should work pretty well
-                // flamecap
-                if (flameCapAvailable && !ValidateCooldown((int)StandardEffect.FlameCap, 60.0, 180.0, integralMana, 60.0, rowSegmentFlameCap, VariableType.None)) return false;
                 for (int i = 0; i < ItemBasedEffectCooldownsCount; i++)
                 {
                     EffectCooldown cooldown = ItemBasedEffectCooldowns[i];
@@ -825,13 +817,11 @@ namespace Rawr.Mage
                 // ap
                 if (arcanePowerAvailable && !ValidateCooldown((int)StandardEffect.ArcanePower, ArcanePowerDuration, ArcanePowerCooldown, true, ArcanePowerDuration, rowSegmentArcanePower, VariableType.None)) return false;
                 // iv
-                if (icyVeinsAvailable && !ValidateCooldown((int)StandardEffect.IcyVeins, 20.0 + (coldsnapAvailable ? 20.0 : 0.0), IcyVeinsCooldown + (coldsnapAvailable ? 20.0 : 0.0), true, 20.0, rowSegmentIcyVeins, VariableType.None)) return false;
+                if (icyVeinsAvailable && !ValidateCooldown((int)StandardEffect.IcyVeins, 20.0, IcyVeinsCooldown, true, 20.0, rowSegmentIcyVeins, VariableType.None)) return false;
                 // pi
                 if (powerInfusionAvailable && !ValidateCooldown((int)StandardEffect.PowerInfusion, PowerInfusionDuration, PowerInfusionCooldown, true, PowerInfusionDuration, rowSegmentPowerInfusion, VariableType.None)) return false;
                 // blood fury
                 if (bloodFuryAvailable && !ValidateCooldown((int)StandardEffect.BloodFury, 15.0, 120.0, true, 15.0, rowSegmentBloodFury, VariableType.None)) return false;
-                // flame orb
-                if (flameOrbAvailable && !ValidateCooldown((int)StandardEffect.FlameOrb, FlameOrbDuration, FlameOrbCooldown, true, FlameOrbDuration, rowSegmentFlameOrb, VariableType.None)) return false;
                 // water elemental
                 //if (waterElementalAvailable && !MageTalents.GlyphOfEternalWater && !ValidateCooldown((int)StandardEffect.WaterElemental, WaterElementalDuration + (coldsnapAvailable ? WaterElementalDuration : 0.0), WaterElementalCooldown + (coldsnapAvailable ? WaterElementalDuration : 0.0), true, WaterElementalDuration, rowSegmentWaterElemental, VariableType.None)) return false;
                 // mirror image
@@ -845,8 +835,6 @@ namespace Rawr.Mage
                 //if (icyVeinsAvailable && coldsnapAvailable && !ValidateColdsnap()) return false;
                 // combustion
                 if (combustionAvailable && !ValidateCooldown((int)StandardEffect.Combustion, CombustionDuration, CombustionCooldown)) return false; // the durations are only used to compute segment distances, for 30 sec segments this should work pretty well
-                // flamecap
-                if (flameCapAvailable && !ValidateCooldown((int)StandardEffect.FlameCap, 60.0, 180.0, integralMana, 60.0, rowSegmentFlameCap, VariableType.None)) return false;
                 for (int i = 0; i < ItemBasedEffectCooldownsCount; i++)
                 {
                     EffectCooldown cooldown = ItemBasedEffectCooldowns[i];
@@ -915,9 +903,8 @@ namespace Rawr.Mage
             {
                 // advanced cooldown validation
                 if (arcanePowerAvailable && !ValidateCooldownAdvanced((int)StandardEffect.ArcanePower, ArcanePowerDuration, ArcanePowerCooldown, VariableType.None)) return false;
-                if (icyVeinsAvailable && !coldsnapAvailable && !ValidateCooldownAdvanced((int)StandardEffect.IcyVeins, 20.0, IcyVeinsCooldown, VariableType.None)) return false;
+                if (icyVeinsAvailable && !ValidateCooldownAdvanced((int)StandardEffect.IcyVeins, 20.0, IcyVeinsCooldown, VariableType.None)) return false;
                 if (powerInfusionAvailable && !ValidateCooldownAdvanced((int)StandardEffect.PowerInfusion, PowerInfusionDuration, PowerInfusionCooldown, VariableType.None)) return false;
-                if (flameOrbAvailable && !ValidateCooldownAdvanced((int)StandardEffect.FlameOrb, FlameOrbDuration, FlameOrbCooldown, VariableType.None)) return false;
                 for (int i = 0; i < ItemBasedEffectCooldownsCount; i++)
                 {
                     EffectCooldown cooldown = ItemBasedEffectCooldowns[i];
@@ -945,9 +932,8 @@ namespace Rawr.Mage
 
                 // advanced cooldown validation 2
                 if (arcanePowerAvailable && !ValidateCooldownAdvanced2((int)StandardEffect.ArcanePower, ArcanePowerDuration, ArcanePowerCooldown, VariableType.None)) return false;
-                if (icyVeinsAvailable && !coldsnapAvailable && !ValidateCooldownAdvanced2((int)StandardEffect.IcyVeins, 20.0, IcyVeinsCooldown, VariableType.None)) return false;
+                if (icyVeinsAvailable && !ValidateCooldownAdvanced2((int)StandardEffect.IcyVeins, 20.0, IcyVeinsCooldown, VariableType.None)) return false;
                 if (powerInfusionAvailable && !ValidateCooldownAdvanced2((int)StandardEffect.PowerInfusion, PowerInfusionDuration, PowerInfusionCooldown, VariableType.None)) return false;
-                if (flameOrbAvailable && !ValidateCooldownAdvanced2((int)StandardEffect.FlameOrb, FlameOrbDuration, FlameOrbCooldown, VariableType.None)) return false;
                 for (int i = 0; i < ItemBasedEffectCooldownsCount; i++)
                 {
                     EffectCooldown cooldown = ItemBasedEffectCooldowns[i];
@@ -1070,7 +1056,7 @@ namespace Rawr.Mage
                 case (int)StandardEffect.Berserking:
                     ind = 2;
                     break;
-                case (int)StandardEffect.FlameCap:
+                case (int)StandardEffect.Mage2T15Effect:
                     ind = 3;
                     break;
                 case (int)StandardEffect.Heroism:
@@ -1085,7 +1071,7 @@ namespace Rawr.Mage
                 case (int)StandardEffect.VolcanicPotion:
                     ind = 7;
                     break;
-                case (int)StandardEffect.FlameOrb:
+                case (int)StandardEffect.Invocation:
                     ind = 8;
                     break;
                 case (int)StandardEffect.MirrorImage:
@@ -1126,13 +1112,19 @@ namespace Rawr.Mage
                 case (int)StandardEffect.PowerInfusion:
                     ind = 22;
                     break;
+                case (int)StandardEffect.IncantersWard:
+                    ind = 23;
+                    break;
+                case (int)StandardEffect.IncantersWardCooldown:
+                    ind = 24;
+                    break;
                 default:
                     for (int i = 0; i < ItemBasedEffectCooldownsCount; i++)
                     {
                         EffectCooldown cooldown = ItemBasedEffectCooldowns[i];
                         if (effectsMask == cooldown.Mask)
                         {
-                            ind = 23 + i;
+                            ind = 25 + i;
                             break;
                         }
                     }
@@ -1142,9 +1134,6 @@ namespace Rawr.Mage
                     }
                     switch (cooldownType)
                     {
-                        //case VariableType.Evocation:
-                        //    ind = 12;
-                        //    break;
                         case VariableType.ManaGem:
                             ind = 13;
                             break;
@@ -1229,7 +1218,7 @@ namespace Rawr.Mage
         private void AnalyzeSolution()
         {
             manaList = new double[SegmentList.Count];
-            segmentCooldownCount = new double[23 + ItemBasedEffectCooldownsCount][];
+            segmentCooldownCount = new double[25 + ItemBasedEffectCooldownsCount][];
             manaSegmentCooldownCount = new double[2][];
             hexList = new List<int>[SegmentList.Count];
             segmentFilled = new double[SegmentList.Count];
@@ -4222,17 +4211,6 @@ namespace Rawr.Mage
                                         int outseg = SolutionVariable[index].Segment;
                                         if (outseg >= minseg && outseg <= maxseg) cooldownUsed.SetConstraintElement(row, index, -1.0);
                                     }
-                                    if (effect == (int)StandardEffect.FlameCap && integralMana)
-                                    {
-                                        // if we push flame cap to full in this segment then we can further restrict mana gems to eliminate unnecessary MIP branches
-                                        if (SolutionVariable[index].Type == VariableType.ManaGem)
-                                        {
-                                            //int gemdist = (int)Math.Floor(120.0 / segmentDuration);
-                                            // TODO double check how this has to be with variable resolution stuff
-                                            int outseg = SolutionVariable[index].Segment;
-                                            if (InCooldownDistance(seg, outseg, 0.0, 120.0)/*Math.Abs(outseg - seg) < gemdist*/) cooldownUsed.EraseColumn(index);
-                                        }
-                                    }
                                 }
                                 cooldownUsed.SetConstraintRHS(row, -fullEffectDuration);
                                 // make sure something is in segmin-segmax or we're duplicating work
@@ -4379,7 +4357,7 @@ namespace Rawr.Mage
             // if cooldowns are broken need to add special constraints that ensure cooldowns are respected
             // do this only for effects that can't be coldsnapped as those don't have to respect cooldown always and are handled separately
 
-            if (effect != 0 && (!coldsnapAvailable || effect != (int)StandardEffect.IcyVeins)) // TODO: consider extending for Cooldown.None, but for now we don't need it for evocation
+            if (effect != 0) // TODO: consider extending for Cooldown.None, but for now we don't need it for evocation
             {
                 List<int> activations = new List<int>();
                 // validate consecutive activations
@@ -4438,7 +4416,7 @@ namespace Rawr.Mage
             // if cooldowns are broken need to add special constraints that ensure cooldowns are respected
             // do this only for effects that can't be coldsnapped as those don't have to respect cooldown always and are handled separately
 
-            if (effect != 0 && (!coldsnapAvailable || effect != (int)StandardEffect.IcyVeins)) // TODO: consider extending for Cooldown.None, but for now we don't need it for evocation
+            if (effect != 0) // TODO: consider extending for Cooldown.None, but for now we don't need it for evocation
             {
                 List<ActivationConstraints> activations = new List<ActivationConstraints>();
                 // validate consecutive activations

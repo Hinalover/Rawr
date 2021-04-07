@@ -39,7 +39,15 @@ namespace Rawr.UnitTests.DK
                 // Blood Talents.
                 m_char.DeathKnightTalents = new DeathKnightTalents("03322203130022011321000000000000000000000000000000000000000.00000000000000000000000000000");
             }
-            m_char.CurrentModel = "TankDK";
+
+            //OpOv: Direct private access of fields is no longer allowed
+            PrivateObject po = new PrivateObject(this, new PrivateType(typeof(Character)));
+            string p = (string)po.GetField("CurrentModel");
+            p = "TankDK";
+
+            //m_char.CurrentModel = "TankDK";
+
+
             if (m_char.BossOptions == null || m_char.BossOptions.Attacks.Count <= 0)
             {
                 BossList list = new BossList();

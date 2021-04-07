@@ -22,7 +22,7 @@ namespace Rawr.DK
             UpdateCombatState(CS);
         }
 
-        private int m_iToT = 0;
+        private bool m_bToT = false;
 
         public override void UpdateCombatState(CombatState CS)
         {
@@ -39,22 +39,17 @@ namespace Rawr.DK
         {
             get
             {
-                m_iToT = CState.m_Talents.ThreatOfThassarian;
+                m_bToT = CState.m_Spec == Rotation.Type.Frost;
                 uint WDam = (uint)(this.wMH.damage * this.fWeaponDamageModifier);
                 // Off-hand damage is only effective if we have Threat of Thassaurian
                 // And only for specific strikes as defined by the talent.
                 float iToTMultiplier = 0;
-                if (m_iToT > 0 && null != this.wOH) // DW
+                if (m_bToT && null != this.wOH) // DW
                 {
-                    if (m_iToT == 1)
-                        iToTMultiplier = .30f;
-                    if (m_iToT == 2)
-                        iToTMultiplier = .60f;
-                    if (m_iToT == 3)
-                        iToTMultiplier = 1f;
+                    iToTMultiplier = 1f;
                 }
                 if (this.wOH != null)
-                    WDam += (uint)(this.wOH.damage * iToTMultiplier * this.fWeaponDamageModifier * (1 + (CState.m_Talents.NervesOfColdSteel * .25 / 3)));
+                    WDam += (uint)(this.wOH.damage * iToTMultiplier * this.fWeaponDamageModifier);
                 return WDam;
             }
         }

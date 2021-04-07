@@ -38,34 +38,34 @@ namespace Rawr.ProtWarr
             {
                 // Relevant Gem IDs for ProtWarr
                 // Red
-                int[] bold      = { 52081, 52206, 52255 };  // Strength
-                int[] flashing  = { 52083, 52216, 52259 };  // Parry
-                int[] precise   = { 52085, 52230, 52260 };  // Expertise
+                int[] bold      = { 76564, 76696, 83141 };  // Strength
+                int[] flashing  = { 76563, 76695, 83152 };  // Parry
+                int[] precise   = { 76561, 76693, 83147 };  // Expertise
 
                 // Blue
-                int[] solid     = { 52086, 52242, 52261 };  // Stamina
+                int[] solid = { 76506, 76639, 83148 };  // Stamina
 
                 // Yellow
-                int[] subtle    = { 52090, 52247, 52265 };  // Dodge
-                int[] fractured = { 52094, 52219, 52269 };  // Mastery
+                int[] subtle = { 76566, 76698, 83145 };  // Dodge
+                int[] fractured = { 76568, 76700, 83143 };  // Mastery
 
                 // Orange
-                int[] resolute  = { 52107, 52249, 52249 };  // Expertise + Dodge
-                int[] skillful  = { 52114, 52240, 52240 };  // Strength + Mastery
-                int[] fine      = { 52116, 52215, 52215 };  // Parry + Mastery
-                int[] keen      = { 52118, 52224, 52224 };  // Expertise + Mastery
-                
+                int[] resolute  = { 76531, 76663, 88944 };  // Expertise + Dodge
+                int[] skillful  = { 76542, 76674, 88946 };  // Strength + Mastery
+                int[] fine      = { 76541, 76673, 88937 };  // Parry + Mastery
+                int[] keen      = { 76539, 76671, 88939 };  // Expertise + Mastery                
+
                 // Purple
-                int[] sovereign = { 52095, 52243, 52243 };  // Strength + Stamina
-                int[] defender  = { 52097, 52210, 52210 };  // Parry + Stamina
-                int[] guardian  = { 52099, 52221, 52221 };  // Expertise + Stamina
+                int[] sovereign = { 76559, 76691, 88961 };  // Strength + Stamina
+                int[] defender  = { 76558, 76690, 88953 };  // Parry + Stamina
+                int[] guardian  = { 76556, 76688, 88956 };  // Expertise + Stamina
 
                 // Green
-                int[] regal     = { 52119, 52233, 52233 };  // Dodge + Stamina
-                int[] puissant  = { 52126, 52231, 52231 };  // Mastery + Stamina
+                int[] regal     = { 76521, 76653, 88922 };  // Dodge + Stamina
+                int[] puissant  = { 76524, 76656, 88920 };  // Mastery + Stamina
 
                 // Meta
-                int[] austere   = { 52294 };                // Stamina + 2% Armor
+                int[] austere = { 76895 };                // Stamina + 2% Armor
 
                 string[] groupNames = new string[] { "Uncommon", "Rare", "Jewelcrafter" };
                 int[,][] gemmingTemplates = new int[,][]
@@ -789,9 +789,9 @@ threat and limited threat scaled by the threat scale.",
                     else
                     {
                         if (effect.Trigger == Trigger.ExecuteHit)
-                            effect.AccumulateAverageStats(statsSpecialEffects, triggerIntervals, triggerChances, player.AttackModel.WeaponSpeed, player.BossOpts.BerserkTimer * (float)player.BossOpts.Under20Perc);
+                            effect.AccumulateAverageStats(statsSpecialEffects, triggerIntervals, triggerChances, player.AttackModel.WeaponSpeed, 1f, player.BossOpts.BerserkTimer * (float)player.BossOpts.Under20Perc);
                         else
-                            effect.AccumulateAverageStats(statsSpecialEffects, triggerIntervals, triggerChances, player.AttackModel.WeaponSpeed, player.BossOpts.BerserkTimer);
+                            effect.AccumulateAverageStats(statsSpecialEffects, triggerIntervals, triggerChances, player.AttackModel.WeaponSpeed, 1f, player.BossOpts.BerserkTimer);
                     }
                 }
             }
@@ -999,8 +999,10 @@ threat and limited threat scaled by the threat scale.",
 
         public override bool EnchantFitsInSlot(Enchant enchant, Character character, ItemSlot slot)
         {
+            // No ranged enchants allowed
+            if (enchant.Slot == ItemSlot.Ranged) return false;
             // Filters out Non-Shield Offhand Enchants and Ranged Enchants
-            if ((slot == ItemSlot.OffHand && enchant.Slot != ItemSlot.OffHand) || slot == ItemSlot.Ranged) return false;
+            if (slot == ItemSlot.OffHand && enchant.Slot != ItemSlot.OffHand) return false;
             // Filters out Death Knight and Two-Hander Enchants
             if (enchant.Name.StartsWith("Rune of the") || enchant.Slot == ItemSlot.TwoHand) return false;
             
@@ -1059,6 +1061,7 @@ threat and limited threat scaled by the threat scale.",
                 DodgeRating = stats.DodgeRating,
                 ParryRating = stats.ParryRating,
                 BlockRating = stats.BlockRating,
+                Mastery = stats.Mastery,
                 MasteryRating = stats.MasteryRating,
                 BonusAgilityMultiplier = stats.BonusAgilityMultiplier,
                 BonusStrengthMultiplier = stats.BonusStrengthMultiplier,
@@ -1182,7 +1185,7 @@ threat and limited threat scaled by the threat scale.",
             return
                 (
                     stats.BonusArmor + stats.BonusArmorMultiplier +
-                    stats.BonusStaminaMultiplier + stats.Dodge + stats.DodgeRating + stats.ParryRating + stats.BlockRating + stats.MasteryRating + stats.BonusHealthMultiplier +
+                    stats.BonusStaminaMultiplier + stats.Dodge + stats.DodgeRating + stats.ParryRating + stats.BlockRating + stats.Mastery + stats.MasteryRating + stats.BonusHealthMultiplier +
                     stats.DamageTakenReductionMultiplier + stats.PhysicalDamageTakenReductionMultiplier + stats.BossPhysicalDamageDealtReductionMultiplier + stats.Miss +
                     stats.ArcaneResistance + stats.NatureResistance + stats.FireResistance +
                     stats.FrostResistance + stats.ShadowResistance + stats.ArcaneResistanceBuff +

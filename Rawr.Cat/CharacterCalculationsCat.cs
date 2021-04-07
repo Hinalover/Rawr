@@ -82,7 +82,7 @@ namespace Rawr.Cat
 
                 string tipHaste = string.Format("*Haste Rating %: {0}%", StatConversion.GetPhysicalHasteFromRating(BasicStats.HasteRating, CharacterClass.Druid) * 100f);
 
-                string tipMastery = string.Format("*Increases the damage done by your bleed abilities by {0}%", ((StatConversion.GetMasteryFromRating(BasicStats.MasteryRating, CharacterClass.Druid) + 8f) * 0.031f) * 100f);
+                string tipMastery = string.Format("*Increases the damage done by your bleed abilities by {0}%", (BasicStats.Mastery * 0.0313f) * 100f);
 
 				dictValues.Add("Health", BasicStats.Health.ToString());
 				dictValues.Add("Attack Power", BasicStats.AttackPower.ToString());

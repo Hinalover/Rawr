@@ -16,7 +16,9 @@ namespace Rawr.Retribution
         {
             Stats = stats;
             Attacktype = type;
-            LevelDif = bossOption.Level - 85;
+
+            //TODO: This has been updated to allow loading of characters who are level 90, but the remains of the module have not been updated to reflect any changes for MoP
+            LevelDif = bossOption.Level - 90;
             IsBehind = bossOption.InBack;
         }
 

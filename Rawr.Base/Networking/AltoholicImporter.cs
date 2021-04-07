@@ -99,9 +99,9 @@ namespace Rawr
                 case cxOffHand:
                     oCharacter.OffHand      = new ItemInstance(item.Value as string);
                     break;
-                case cxRanged:
+                /*case cxRanged:
                     oCharacter.Ranged       = new ItemInstance(item.Value as string);
-                    break;
+                    break;*/
                 case cxShirt:
                     oCharacter.Shirt        = new ItemInstance(item.Value as string);
                     break;

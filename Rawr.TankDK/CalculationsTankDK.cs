@@ -995,10 +995,10 @@ Points individually may be important.",
             // Talent: MagicSuppression increases AMS by 8/16/25% per point.
             // Glyph: GlyphofAntiMagicShell increases AMS by 2 sec.
             // AMS has a 45 sec CD.
-            float amsDuration = (5f + (TDK.Char.DeathKnightTalents.GlyphofAntiMagicShell == true ? 2f : 0f)) * (1 + stats.DefensiveCooldownDurationMultiplier);
+            float amsDuration = 5f * (1 + stats.DefensiveCooldownDurationMultiplier);
             float amsUptimePct = amsDuration / 45f;
             // AMS reduces damage taken by 75% up to a max of 50% health.
-            float amsReduction = 0.75f * (1f + (TDK.Char.DeathKnightTalents.MagicSuppression * .25f / 3));
+            float amsReduction = 0.75f + (TDK.Char.DeathKnightTalents.GlyphofAntiMagicShell ? .25f : 0f);
             float amsReductionMax = stats.Health * 0.5f * (1 + stats.DefensiveCooldownReductionMultiplier);
             // up to 50% of health means that the amdDRvalue equates to the raw damage points removed.  
             // This means that toon health and INC damage values from the options pane are going to affect this quite a bit.
@@ -1235,7 +1235,7 @@ Points individually may be important.",
             {
                 DTPSFactor = calcs.DTPSNoAvoidance * 5f;
             }
-            float DamDSHeal = (DTPSFactor * .20f) * (1 + .15f * TDK.Char.DeathKnightTalents.ImprovedDeathStrike); // IDS increases heals by .15 * level
+            float DamDSHeal = (DTPSFactor * .20f); 
             float DSHeal = Math.Max(minDSHeal, DamDSHeal);
             calcs.DSHeal = DSHeal;
             calcs.DSOverHeal = DSHeal * TDK.calcOpts.pOverHealing;
@@ -1543,40 +1543,7 @@ Points individually may be important.",
             AccumulateSetBonusStats(statsTotal, character.SetBonusCount);
 
             #region Tier Bonuses: Tank
-            #region T11
-            int tierCount;
-            if (character.SetBonusCount.TryGetValue("Magma Plated Battlearmor", out tierCount))
-            {
-                if (tierCount >= 2) { statsTotal.b2T11_Tank = true; }
-                if (tierCount >= 4) { statsTotal.b4T11_Tank = true; }
-            }
-            if (statsTotal.b4T11_Tank)
-                statsTotal.AddSpecialEffect(_SE_IBF[1]);
-            else
-                statsTotal.AddSpecialEffect(_SE_IBF[0]);
-            #endregion
-            #region T12
-            if (character.SetBonusCount.TryGetValue("Elementium Deathplate Battlearmor", out tierCount))
-            {
-                if (tierCount >= 2) { statsTotal.b2T12_Tank = true; }
-                if (tierCount >= 4) { statsTotal.b4T12_Tank = true; }
-            }
-            if (statsTotal.b2T12_Tank)
-            {
-                // Your melee attacks cause Burning Blood on your target, 
-                // which deals 800 Fire damage every 2 for 6 sec and 
-                // causes your abilities to behave as if you had 2 diseases 
-                // present on the target.
-                // Implemented in CombatState DiseaseCount
-
-                statsTotal.FireDamage = 800 / 2;
-            }
-            if (statsTotal.b4T12_Tank)
-            {
-                // Your when your Dancing Rune Weapon expires, it grants 15% additional parry chance for 12 sec.
-                // Implemented in DRW talent Static Special Effect.
-            }
-            #endregion
+            int tierCount = 0;
             #region T13
             if (character.SetBonusCount.TryGetValue("Necrotic Boneplate Armor", out tierCount))
             {
@@ -1588,7 +1555,6 @@ Points individually may be important.",
                 // When an attack drops your health below 35%, one of your Blood Runes 
                 // will immediately activate and convert into a Death Rune for the next 
                 // 20 sec. This effect cannot occur more than once every 45 sec.
-                // TODO: Still need to figure out how I want to proc this in the rotation.
             }
             if (statsTotal.b4T13_Tank)
             {
@@ -1597,12 +1563,28 @@ Points individually may be important.",
                 // No modeling for effects that aren't for specifically this character.
             }
             #endregion
+            #region T14
+            if (character.SetBonusCount.TryGetValue("Plate of the Lost Catacomb", out tierCount))
+            {
+                if (tierCount >= 2) { statsTotal.b2T14_Tank = true; }
+                if (tierCount >= 4) { statsTotal.b4T14_Tank = true; }
+            }
+            if (statsTotal.b2T14_Tank)
+            {
+                // TODO: Implement.
+                // Reduces the cooldown of your Vampiric Blood ability by 20 sec.
+            }
+            if (statsTotal.b2T14_Tank)
+            {
+                // TODO: Implement.
+                // Increases the healing received from your Death Strike by 10%.
+            }
+            #endregion
             #endregion
 
             Rawr.DPSDK.CalculationsDPSDK.RemoveDuplicateRunes(statsTotal, character, true/*statsTotal.bDW*/);
             Rawr.DPSDK.CalculationsDPSDK.AccumulateTalents(statsTotal, character);
             Rawr.DPSDK.CalculationsDPSDK.AccumulatePresenceStats(statsTotal, Presence.Blood, character.DeathKnightTalents);
-
 
             statsTotal.ArcaneResistance += statsTotal.ArcaneResistanceBuff; statsTotal.ArcaneResistanceBuff = 0f;
             statsTotal.FireResistance   += statsTotal.FireResistanceBuff;   statsTotal.FireResistanceBuff   = 0f;
@@ -1631,7 +1613,7 @@ Points individually may be important.",
             {
                 #region Special Effects
                 #region Talent: Bone Shield
-                if (character.DeathKnightTalents.BoneShield > 0)
+                if ((Rotation.Type)(character.DeathKnightTalents.Specialization + 1) == Rotation.Type.Blood)
                 {
                     int BSStacks = 6;  // The number of bones by default.  
                     float BoneLossRate = Math.Max(2f, TDK.bo.DynamicCompiler_Attacks.AttackSpeed / fChanceToGetHit);  // 2 sec internal cooldown on loosing bones so the DK can't get spammed to death.  
@@ -1702,10 +1684,6 @@ Points individually may be important.",
                 statSE.Health += StatConversion.GetHealthFromStamina(statSE.Stamina) + statSE.BattlemasterHealthProc;
                 statSE.Health = statSE.Health * (1 + statSE.BonusHealthMultiplier);
                 statsTotal.BonusHealthMultiplier = ((1 + statsTotal.BonusHealthMultiplier) * (1 + statSE.BonusHealthMultiplier)) - 1 ;
-                if (character.DeathKnightTalents.BladedArmor > 0)
-                {
-                    statSE.AttackPower += (statSE.Armor / 180f) * (float)character.DeathKnightTalents.BladedArmor;
-                }
                 statSE.AttackPower += StatConversion.ApplyMultiplier((statSE.Strength * 2), statsTotal.BonusAttackPowerMultiplier);
                 statSE.ParryRating += statSE.Strength * 0.27f;
 
@@ -1729,7 +1707,6 @@ Points individually may be important.",
                 #endregion // Special effects
             }
             // Apply the Multipliers
-            ProcessStatModifiers(statsTotal, character.DeathKnightTalents.BladedArmor, character);
             ProcessAvoidance(statsTotal, TDK.bo.Level, TDK.Char, PreRatingsBase);
             if (character.MainHand != null)
             {

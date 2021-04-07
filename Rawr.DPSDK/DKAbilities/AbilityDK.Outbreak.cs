@@ -18,8 +18,6 @@ namespace Rawr.DK
             this.uRange = 30;
             this.bTriggersGCD = true;
             this.Cooldown = 60 * 1000; // 1 min CD.
-            if (CS.m_Talents.HighestTree == 0)
-                this.Cooldown = 30 * 1000;
             this.ml_TriggeredAbility = new AbilityDK_Base[2];
             UpdateCombatState(CS);
             AbilityIndex = (int)DKability.Outbreak;

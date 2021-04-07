@@ -19,11 +19,11 @@ namespace Rawr.UI
         {
             // Required to initialize variables
             InitializeComponent();
-#if RAWR4
+/*#if RAWR4
             // Losing 4 rows
             for (int i=8; i<12; i++) { GridPanel.RowDefinitions[i].Height = new GridLength(0, GridUnitType.Pixel); }
             MinHeight = 465;
-#endif
+#endif*/
             talentAttributes = new Dictionary<int, TalentDataAttribute>();
             prereqArrows = new Dictionary<int, Image>();
             belowRow = new Dictionary<int, int>();
@@ -42,9 +42,9 @@ namespace Rawr.UI
                 if (value != null)
                 {
                     talents = value;
-                    for (int r = 1; r <= 11; r++)
+                    for (int r = 1; r <= 6; r++)
                     {
-                        for (int c = 1; c <= 4; c++)
+                        for (int c = 1; c <= 3; c++)
                         {
                             this[r, c].TalentData = null;
                         }
@@ -60,22 +60,22 @@ namespace Rawr.UI
                     }
                     prereqArrows.Clear();
                     Class = talents.GetClass();
-                    TreeName = ((string[])Talents.GetType().GetField("TreeNames").GetValue(Talents))[Tree];
-                    BackgroundImage.Source = Icons.TreeBackground(Class, Tree);
+                    //TreeName = ((string[])Talents.GetType().GetField("TreeNames").GetValue(Talents))[Tree];
+                    //BackgroundImage.Source = Icons.TreeBackground(Class, Tree);
                     foreach (PropertyInfo pi in Talents.GetType().GetProperties())
                     {
                         TalentDataAttribute[] talentDatas = pi.GetCustomAttributes(typeof(TalentDataAttribute), true) as TalentDataAttribute[];
                         if (talentDatas.Length > 0)
                         {
                             TalentDataAttribute talentData = talentDatas[0];
-                            if (talentData.Tree != Tree) continue;
+                            //if (talentData.Tree != Tree) continue;
                             this[talentData.Row, talentData.Column].TalentData = talentData;
                             talentAttributes[talentData.Index] = talentData;
                         }
                     }
-                    for (int r = 1; r <= 11; r++)
+                    for (int r = 1; r <= 6; r++)
                     {
-                        for (int c = 1; c <= 4; c++)
+                        for (int c = 1; c <= 3; c++)
                         {
                             this[r, c].Update();
                         }
@@ -84,9 +84,6 @@ namespace Rawr.UI
                 }
             }
         }
-
-        public int Tree { get; set; }
-        public string TreeName { get; private set; }
 
         private Dictionary<int,Image> prereqArrows;
         public void UpdatePrereqs()
@@ -101,7 +98,8 @@ namespace Rawr.UI
 
                     string suffix;
                     if (kvp.Value.MaxPoints == Talents.Data[kvp.Value.Index]) suffix = "-yellow.png";
-                    else if (PointsBelowRow(kvp.Value.Row) >= (kvp.Value.Row - 1) * 5
+                    else if (PointsBelowRow(kvp.Value.Row) >= (kvp.Value.Row - 1)
+                            && PointsInRow(kvp.Value.Row) == 0
                             && Talents.Data[prereq.Index] == prereq.MaxPoints) suffix = "-green.png";
                     else suffix = "-grey.png";
 
@@ -224,9 +222,9 @@ namespace Rawr.UI
         public void RankChanged()
         {
             belowRow.Clear();
-            for (int r = 1; r <= 11; r++)
+            for (int r = 1; r <= 6; r++)
             {
-                for (int c = 1; c <= 4; c++)
+                for (int c = 1; c <= 3; c++)
                 {
                     this[r, c].Update();
                 }
@@ -244,7 +242,7 @@ namespace Rawr.UI
                 int pts = 0;
                 for (int r = 1; r < row; r++)
                 {
-                    for (int c = 1; c <= 4; c++)
+                    for (int c = 1; c <= 3; c++)
                     {
                         pts += this[r, c].Current;
                     }
@@ -253,7 +251,17 @@ namespace Rawr.UI
                 return pts;
             }
         }
-        public int Points() { return PointsBelowRow(12); }
+        public int PointsInRow(int row)
+        {
+            if (row < 1 || row > 6) return 0;
+            int pts = 0;
+            for (int c = 1; c <= 3; c++)
+            {
+                pts += this[row, c].Current;
+            }
+            return pts;
+        }
+        public int Points() { return PointsBelowRow(7); }
 
         private Dictionary<int, TalentDataAttribute> talentAttributes;
         public TalentDataAttribute GetAttribute(int index)
@@ -271,44 +279,44 @@ namespace Rawr.UI
                     if (col == 1) return Talent_1_1;
                     if (col == 2) return Talent_1_2;
                     if (col == 3) return Talent_1_3;
-                    if (col == 4) return Talent_1_4;
+                    //if (col == 4) return Talent_1_4;
                 }
                 else if (row == 2)
                 {
                     if (col == 1) return Talent_2_1;
                     if (col == 2) return Talent_2_2;
                     if (col == 3) return Talent_2_3;
-                    if (col == 4) return Talent_2_4;
+                    //if (col == 4) return Talent_2_4;
                 }
                 else if (row == 3)
                 {
                     if (col == 1) return Talent_3_1;
                     if (col == 2) return Talent_3_2;
                     if (col == 3) return Talent_3_3;
-                    if (col == 4) return Talent_3_4;
+                    //if (col == 4) return Talent_3_4;
                 }
                 else if (row == 4)
                 {
                     if (col == 1) return Talent_4_1;
                     if (col == 2) return Talent_4_2;
                     if (col == 3) return Talent_4_3;
-                    if (col == 4) return Talent_4_4;
+                    //if (col == 4) return Talent_4_4;
                 }
                 else if (row == 5)
                 {
                     if (col == 1) return Talent_5_1;
                     if (col == 2) return Talent_5_2;
                     if (col == 3) return Talent_5_3;
-                    if (col == 4) return Talent_5_4;
+                    //if (col == 4) return Talent_5_4;
                 }
                 else if (row == 6)
                 {
                     if (col == 1) return Talent_6_1;
                     if (col == 2) return Talent_6_2;
                     if (col == 3) return Talent_6_3;
-                    if (col == 4) return Talent_6_4;
+                    //if (col == 4) return Talent_6_4;
                 }
-                else if (row == 7)
+                /*else if (row == 7)
                 {
                     if (col == 1) return Talent_7_1;
                     if (col == 2) return Talent_7_2;
@@ -342,7 +350,7 @@ namespace Rawr.UI
                     if (col == 2) return Talent_11_2;
                     if (col == 3) return Talent_11_3;
                     if (col == 4) return Talent_11_4;
-                }
+                }*/
                 return null;
             }
         }

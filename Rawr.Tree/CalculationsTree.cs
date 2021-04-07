@@ -35,14 +35,14 @@ namespace Rawr.Tree {
         public int BaseTimeMS;
         public int MinHeal;
         public int MaxHeal;
-        public double AvgHeal;
+        public double AvgHeal { get { return (MinHeal + MaxHeal) * 0.5; } }
         public double Coeff;
         public int TickHeal;
         public double TickCoeff;
         public int BaseTickRateMS;
         public int BaseDurationMS;
 
-        public SpellData(string name, int id, int baseManaPercent, int baseTimeMS, int minHeal, int maxHeal, int coeff, int tickHeal = 0, int tickCoeff = 0, int baseTickRateMS = 0, int baseDurationMS = 0)
+        public SpellData(string name, int id, float baseManaPercent, int baseTimeMS, int minHeal, int maxHeal, int coeff, int tickHeal = 0, int tickCoeff = 0, int baseTickRateMS = 0, int baseDurationMS = 0)
         {
             this.Name = name;
             this.ID = id;
@@ -55,7 +55,6 @@ namespace Rawr.Tree {
             this.TickCoeff = tickCoeff / 10000.0;
             this.BaseTickRateMS = baseTickRateMS;
             this.BaseDurationMS = baseDurationMS;
-            this.AvgHeal = (MinHeal + MaxHeal) * 0.5;
         }
 
         public SpellData Clone()
@@ -68,7 +67,7 @@ namespace Rawr.Tree {
     [Rawr.Calculations.RawrModelInfo("Tree", "Ability_Druid_TreeofLife", CharacterClass.Druid)]
     public class CalculationsTree : CalculationsBase
     {
-        internal const int BaseMana = 18635;
+        internal static float BaseMana = BaseCombatRating.DruidBaseMana(90);
 
         internal static SpellData[] SpellData = 
         {            
@@ -84,55 +83,55 @@ namespace Rawr.Tree {
              * Tranquility is later multiplier by 4 * 5 (4 smart heals to 5 people each)
              */
             new SpellData("Nourish", 50464,
-                10,
-                3000,
-                2403, 2791, 2660
+                10.2f,
+                2500,
+                6151, 7148, 6140
                 ),
             new SpellData("Healing Touch", 5185,
-                30,
-                3000,
-                7211, 8515, 8060
+                28.9f,
+                2500,
+                18460, 21800, 18600
                 ),
             new SpellData("Regrowth", 8936,
-                35,
+                29.7f,
                 1500,
-                3383, 3775, 2936,
-                361, 296,
+                9813, 10954, 9580,
+                2361/3, 730,
                 2000, 6000
                 ),
             new SpellData("Lifebloom", 33763,
-                7,
+                5.9f,
                 1500,
-                1847, 1847, 2840,
-                228, 234,
-                1000, 10000
+                8150, 8150, 7520,
+                621, 570,
+                1000, 15000
                 ),
             new SpellData("Rejuvenation", 774,
-                20,
+                16.0f,
                 1500,
-                0, 0, 0,
-                1307, 1340,
+                4234, 4234, 3920,
+                4234, 3920,
                 3000, 12000
                 ),
             new SpellData("Tranquility", 740,
-                32,
+                27.1f,
                 8000,
-                3882, 3882, 3980,
-                343, 680,
+                9037, 9037, 8350,
+                1542, 1420,
                 2000, 8000
                 ),
             new SpellData("Swiftmend", 18562,
-                10,
+                8.5f,
                 1500,
-                5228, 5228, 5360,
-                5228, 5360,
+                13966, 13966, 12900,
+                1676, 1548,   // 0.12 of base values, still need times 3 for targets?
                 1000, 7000
                 ),
             new SpellData("Wild Growth", 48438,
-                27,
+                22.9f,
                 1500,
                 0, 0, 0,
-                425, 437, // TODO: rounding might be incorrect
+                6930/7, 920, // TODO: decreasing rate?
                 1000, 7000
                 )
         };
@@ -457,12 +456,10 @@ namespace Rawr.Tree {
         #region Relevancy
         public override bool EnchantFitsInSlot(Enchant enchant, Character character, ItemSlot slot)
         {
-            // No enchants allowed on our ranged slot
-            if (slot == ItemSlot.Ranged) return false;
+            // No ranged enchants allowed
+            if (enchant.Slot == ItemSlot.Ranged) return false;
             // Make an exception for enchant 4091 - Enchant Off-Hand - Superior Intellect
-            if (slot == ItemSlot.OffHand && enchant.Id == 4091) return true;
-            // No other enchants allowed on our offhands
-            if (slot == ItemSlot.OffHand) return false;
+            if (slot == ItemSlot.OffHand) return (enchant.Id == 4091 || enchant.Id == 4434);
             // Otherwise, return the base value
             return base.EnchantFitsInSlot(enchant, character, slot);
         }
@@ -483,13 +480,13 @@ namespace Rawr.Tree {
                 _relevantGlyphs = new List<string>();
                 _relevantGlyphs.Add("Glyph of Lifebloom");
                 _relevantGlyphs.Add("Glyph of Rejuvenation");
-                _relevantGlyphs.Add("Glyph of Swiftmend");
                 _relevantGlyphs.Add("Glyph of Regrowth");
 
                 _relevantGlyphs.Add("Glyph of Wild Growth");
                 _relevantGlyphs.Add("Glyph of Healing Touch");
                 _relevantGlyphs.Add("Glyph of Innervate");
                 _relevantGlyphs.Add("Glyph of Rebirth");
+                _relevantGlyphs.Add("Glyph of Blooming");
             }
             return _relevantGlyphs;
         }
@@ -550,7 +547,8 @@ namespace Rawr.Tree {
 
         public override bool IsBuffRelevant(Buff buff, Character character)
         {
-            if (buff.SetName == "Stormrider's Vestments" || buff.SetName == "Obsidian Arborweave Vestments" || buff.SetName == "Deep Earth Vestments")
+            if (buff.SetName == "Stormrider's Vestments" || buff.SetName == "Obsidian Arborweave Vestments" || buff.SetName == "Deep Earth Vestments" || 
+                buff.SetName == "Vestments of the Eternal Blossom" || buff.SetName == "Gladiator's Refuge")
                 return true;
 
             // for buffs that are non-exclusive, allow anything that could be useful even slightly
@@ -584,6 +582,7 @@ namespace Rawr.Tree {
                 HasteRating = stats.HasteRating,
                 CritRating = stats.CritRating,
                 SpellPower = stats.SpellPower,
+                Mastery = stats.Mastery,
                 MasteryRating = stats.MasteryRating,
                 // SpellPenetration = stats.SpellPenetration,
                 Mp5 = stats.Mp5,
@@ -727,6 +726,7 @@ namespace Rawr.Tree {
                 stats.Mana != 0 ||
                 stats.HasteRating != 0 ||
                 stats.CritRating != 0 ||
+                stats.Mastery != 0 ||
                 stats.MasteryRating != 0 ||
 
                 // -- MultiplicativeStats --
@@ -875,16 +875,14 @@ namespace Rawr.Tree {
             public override string ToString() { return "Tree of Life"; }
         }
 
-        private static SpecialEffect[] treeOfLife = null;
-        public static SpecialEffect[] TreeOfLife
+        private static SpecialEffect treeOfLife = null;
+        public static SpecialEffect TreeOfLife
         {
             get
             {
                 if (treeOfLife == null)
                 {
-                    treeOfLife = new SpecialEffect[3];
-                    for (int i = 0; i <= 2; ++i)
-                        treeOfLife[i] = new SpecialEffect(Trigger.Use, new TreeOfLifeStats(), 25 + 3 * i, 180.0f);
+                        treeOfLife = new SpecialEffect(Trigger.Use, new TreeOfLifeStats(), 30.0f, 180.0f);
                 }
                 return treeOfLife;
             }
@@ -930,6 +928,8 @@ namespace Rawr.Tree {
             Stats statsBase = BaseStats.GetBaseStats(character.Level, character.Class, character.Race);
             stats.Accumulate(statsBase);
             stats.BaseAgility = statsBase.Agility;
+            stats.Mana *= 5.0f; // Resto specialisation mana bonus: Natural Insight
+            stats.Mp5 *= 5.0f; // Resto specialisation mana bonus: Natural Insight
 
             // Get the gear/enchants/buffs stats loaded in
             stats.Accumulate(GetItemStats(character, additionalItem));
@@ -939,9 +939,9 @@ namespace Rawr.Tree {
             Stats statsTalents = new Stats()
             {
                 BonusIntellectMultiplier = (1 + 0.02f * character.DruidTalents.HeartOfTheWild) * (Character.ValidateArmorSpecialization(character, ItemType.Leather) ? 1.05f : 1f) - 1f,
-                BonusManaMultiplier = 0.05f * character.DruidTalents.Furor,
-                ManaCostReductionMultiplier = character.DruidTalents.Moonglow * 0.03f,
-                SpellCrit = 0.02f * character.DruidTalents.NaturesMajesty
+//                BonusManaMultiplier = 0.05f * character.DruidTalents.Furor,
+//                ManaCostReductionMultiplier = character.DruidTalents.Moonglow * 0.03f,
+//                SpellCrit = 0.02f * character.DruidTalents.NaturesMajesty
             };
 
             stats.Accumulate(statsTalents);
@@ -963,11 +963,14 @@ namespace Rawr.Tree {
             int T13Count;
             character.SetBonusCount.TryGetValue("Deep Earth Vestments", out T13Count);
 
-            if (character.DruidTalents.NaturesGrace > 0)
-                stats.AddSpecialEffect(NaturesGrace[character.DruidTalents.NaturesGrace]);
+            int T14Count;
+            character.SetBonusCount.TryGetValue("Vestments of the Eternal Blossom", out T14Count);
 
-            if (character.DruidTalents.TreeOfLife > 0)
-                stats.AddSpecialEffect(TreeOfLife[character.DruidTalents.NaturalShapeshifter]);
+//            if (character.DruidTalents.NaturesGrace > 0)
+//                stats.AddSpecialEffect(NaturesGrace[character.DruidTalents.NaturesGrace]);
+
+            if (character.DruidTalents.Incarnation > 0)
+                stats.AddSpecialEffect(TreeOfLife);
 
             if (T13Count >= 2)
                 stats.AddSpecialEffect(T13InnervateManaCostReduction);
@@ -1038,9 +1041,9 @@ namespace Rawr.Tree {
 
             List<int> baseHasteBreakpointsList = new List<int>();
 
-            string[] spells = { "LB", "WG", "Rj", "Tq" };
-            int[] tickRates = { 1, 1, 3, 2 };
-            int[] durations = { 10, 7, 12, 8 };
+            string[] spells = { "LB", "WG", "Rj", "Tq", "Rg" };
+            int[] tickRates = { 1, 1, 3, 2, 2 };
+            int[] durations = { 15, 7, 12, 8, 6 };   // TODO: Merge this with spell data at top of file
 
             int numHasteMults = 1 << spellHasteProcs.Length;
             double[] hasteMults = new double[numHasteMults];
@@ -1127,7 +1130,7 @@ namespace Rawr.Tree {
                 Character c2 = character.Clone();
 
                 bool curIsBreakpoint = false;
-                int[] hasteBreakpoints = GetHasteBreakpoints(character, 5000);
+                int[] hasteBreakpoints = GetHasteBreakpoints(character, 10000);   // Assume 10000 haste rating will be enough for this expansion
                 foreach(int hb in hasteBreakpoints)
                 {
                     float hasteDelta = hb - calcsBase.BasicStats.HasteRating;

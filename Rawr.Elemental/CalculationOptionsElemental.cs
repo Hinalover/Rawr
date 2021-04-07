@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
@@ -12,47 +13,55 @@ namespace Rawr.Elemental
         public int BSRatio { get { return _BSRatio; } set { _BSRatio = value; OnPropertyChanged("BSRatio"); } }
         private int _BSRatio = 75; // goes from 0 to 100
 
-        [DefaultValue(true)]
-        public bool UseThunderstorm { get { return _UseThunderstorm; } set { _UseThunderstorm = value; OnPropertyChanged("UseThunderstorm"); } }
-        private bool _UseThunderstorm = true;
-
         [DefaultValue(0)]
         public int RotationType { get { return _rotationType; } set { _rotationType = value; OnPropertyChanged("RotationType"); } }
         private int _rotationType = 0;
 
         [DefaultValue(0.150f)]
-        public float LatencyGcd { get { return _LatencyGcd; } set { _LatencyGcd = value; OnPropertyChanged("LatencyGcd"); } }
-        private float _LatencyGcd = 0.150f;
+        public float LatencyGcd { get { return _Latency; } set { _Latency = value; OnPropertyChanged("Latency"); } }
+        private float _Latency = 0.150f;
 
         [DefaultValue(0.075f)]
-        public float LatencyCast { get { return _LatencyCast; } set { _LatencyCast = value; OnPropertyChanged("LatencyCast"); } }
-        private float _LatencyCast = .075f;
+        public float LatencyCast { get { return _Reaction; } set { _Reaction = value; OnPropertyChanged("Reaction"); } }
+        private float _Reaction = .075f;
 
         [Obsolete("This should be pulled from the Boss Handler instead")]
         [DefaultValue(1)]
         public int NumberOfTargets { get { return _NumberOfTargets; } set { _NumberOfTargets = value; OnPropertyChanged("NumberOfTargets"); } }
         private int _NumberOfTargets = 1;
 
-        [DefaultValue(true)]
-        public bool UseFireNova { get { return _UseFireNova; } set { _UseFireNova = value; OnPropertyChanged("UseFireNova"); } }
-        private bool _UseFireNova = true;
-
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public bool UseChainLightning { get { return _UseChainLightning; } set { _UseChainLightning = value; OnPropertyChanged("UseChainLightning"); } }
-        private bool _UseChainLightning = true;
+        private bool _UseChainLightning = false;
 
-        [DefaultValue(false)]
-        public bool UseDpsTotem { get { return _UseDpsTotem; } set { _UseDpsTotem = value; OnPropertyChanged("UseDpsTotem"); } }
-        private bool _UseDpsTotem = false;
+        [DefaultValue(true)]
+        public bool UseDpsFireTotem { get { return _UseDpsFireTotem; } set { _UseDpsFireTotem = value; OnPropertyChanged("UseDpsFireTotem"); } }
+        private bool _UseDpsFireTotem = true;
 
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         public bool UseFireEle { get { return _UseFireEle; } set { _UseFireEle = value; OnPropertyChanged("UseFireEle"); } }
-        private bool _UseFireEle = false;
+        private bool _UseFireEle = true;
+
+        [DefaultValue(true)]
+        public bool UseThunderstorm { get { return _UseThunderstorm; } set { _UseThunderstorm = value; OnPropertyChanged("UseThunderstorm"); } }
+        private bool _UseThunderstorm = true;
+
+        [XmlIgnore]
+        public List<string> ReforgePriorityList { get { return _reforgePriorityList; } }
+        private List<string> _reforgePriorityList = new List<string> { "Spirit over Hit", "Hit over Spirit" };
+
+        [DefaultValue(0)]
+        public int ReforgePriority { get { return _reforgePriority; } set { _reforgePriority = value; OnPropertyChanged("ReforgePriority"); } }
+        private int _reforgePriority = 0;
+
+        [DefaultValue(false)]
+        public bool AllowReforgingSpiritToHit { get { return _allowReforgingSpiritToHit; } set { _allowReforgingSpiritToHit = value; OnPropertyChanged("AllowReforgingSpiritToHit"); } }
+        private bool _allowReforgingSpiritToHit = false;
 
         #region Stat Graph
-        [DefaultValue(new bool[] { true, true, true, true, true, true, true, true, true, true, true, true, })]
+        [DefaultValue(new bool[] { false, false, false, true, true, false, true, true, true, true, true, false, })]
         public bool[] StatsList { get { return _statsList; } set { _statsList = value; OnPropertyChanged("StatsList"); } }
-        private bool[] _statsList = new bool[] { true, true, true, true, true, true, true, true, true, true, true, true, };
+        private bool[] _statsList = new bool[] { false, false, false, true, true, false, true, true, true, true, true, false, };
         [DefaultValue(100)]
         public int StatsIncrement { get { return _StatsIncrement; } set { _StatsIncrement = value; OnPropertyChanged("StatsIncrement"); } }
         private int _StatsIncrement = 100;

@@ -324,22 +324,22 @@ namespace Rawr
             }
         }
 
-        public ItemInstance GetItemInstance(Item item, int randomSuffixId, Enchant enchant, bool blacksmithingSocket)
+        public ItemInstance GetItemInstance(Item item, int randomSuffixId, Enchant enchant, bool blacksmithingSocket, int upgradeLevel)
         {
-            return GetItemInstance(item, randomSuffixId, enchant, null, null, blacksmithingSocket);
+            return GetItemInstance(item, randomSuffixId, enchant, null, null, blacksmithingSocket, upgradeLevel);
         }
 
-        public ItemInstance GetItemInstance(Item item, int randomSuffixId, Reforging reforging, bool blacksmithingSocket)
+        public ItemInstance GetItemInstance(Item item, int randomSuffixId, Reforging reforging, bool blacksmithingSocket, int upgradeLevel)
         {
-            return GetItemInstance(item, randomSuffixId, null, reforging, null, blacksmithingSocket);
+            return GetItemInstance(item, randomSuffixId, null, reforging, null, blacksmithingSocket, upgradeLevel);
         }
 
-        public ItemInstance GetItemInstance(Item item, int randomSuffixId, Tinkering tinkering, bool blacksmithingSocket)
+        public ItemInstance GetItemInstance(Item item, int randomSuffixId, Tinkering tinkering, bool blacksmithingSocket, int upgradeLevel)
         {
-            return GetItemInstance(item, randomSuffixId, null, null, tinkering, blacksmithingSocket);
+            return GetItemInstance(item, randomSuffixId, null, null, tinkering, blacksmithingSocket, upgradeLevel);
         }
 
-        public ItemInstance GetItemInstance(Item item, int randomSuffixId, Enchant enchant, Reforging reforging, Tinkering tinkering, bool blacksmithingSocket)
+        public ItemInstance GetItemInstance(Item item, int randomSuffixId, Enchant enchant, Reforging reforging, Tinkering tinkering, bool blacksmithingSocket, int upgradeLevel)
         {
             if (item == null) return null;
             Item gem1 = null;
@@ -397,7 +397,7 @@ namespace Rawr
                     }
                     break;
             }
-            return new ItemInstance(item, randomSuffixId, gem1, gem2, gem3, enchant, reforging, tinkering);
+            return new ItemInstance(item, randomSuffixId, gem1, gem2, gem3, enchant, reforging, tinkering, upgradeLevel);
         }
 
         public override string ToString()

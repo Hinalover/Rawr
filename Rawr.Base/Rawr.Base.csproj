@@ -116,16 +116,19 @@
     <Compile Include="Algorithms\MarkovProcess.cs" />
     <Compile Include="Algorithms\SparseMatrix.cs" />
     <Compile Include="Algorithms\StateSpace.cs" />
+    <Compile Include="BaseCombatRating.cs" />
     <Compile Include="Bosses\BossesT10.cs" />
     <Compile Include="Bosses\BossesT11.cs" />
     <Compile Include="Bosses\BossesT12.cs" />
     <Compile Include="Bosses\BossesT13.cs" />
+    <Compile Include="Bosses\BossesT14.cs" />
     <Compile Include="Bosses\BossesT7.cs" />
     <Compile Include="Bosses\BossesT8.cs" />
     <Compile Include="Bosses\BossesT9.cs" />
     <Compile Include="Bosses\BossHandler.cs" />
     <Compile Include="Bosses\BossList.cs" />
     <Compile Include="Bosses\BossStuff.cs" />
+    <Compile Include="CataclysmClassTalents.cs" />
     <Compile Include="CustomControls\ErrorBox.cs" />
     <Compile Include="CustomControls\ErrorWindow.xaml.cs">
       <DependentUpon>ErrorWindow.xaml</DependentUpon>
@@ -161,7 +164,6 @@
     <Compile Include="Character.cs" />
     <Compile Include="ClassGlyphs.cs" />
     <Compile Include="ClassTalents.cs" />
-    <Compile Include="Networking\ElitistArmoryService.cs" />
     <Compile Include="Enchant.cs" />
     <Compile Include="Utility Files\EnumHelper.cs" />
     <Compile Include="Utility Files\Enums.cs" />

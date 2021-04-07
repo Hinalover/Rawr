@@ -156,7 +156,7 @@ namespace Rawr.Enhance
                 priorityList.Add(EnhanceAbility.UnleashElements, new Priority("Unleash Elements", EnhanceAbility.UnleashElements, "Use Unleash Elements", true, ++priority, "UE"));
                 priorityList.Add(EnhanceAbility.LightningBolt, new Priority("Lightning Bolt on 5 stacks of MW", EnhanceAbility.LightningBolt, "Use Lightning Bolt when you have 5 stacks of Maelstrom Weapon", true, ++priority, "MW5_LB"));
                 priorityList.Add(EnhanceAbility.EarthShock, new Priority("Earth Shock", EnhanceAbility.EarthShock, "Use Earth Shock", true, ++priority, "ES"));
-                //priorityList.Add(EnhanceAbility.FireElemental, new Priority("Fire Elemental", EnhanceAbility.FireElemental, "Drop Fire Elemental Totem", true, ++priority, "FE"));
+                priorityList.Add(EnhanceAbility.FireElemental, new Priority("Fire Elemental", EnhanceAbility.FireElemental, "Drop Fire Elemental Totem", true, ++priority, "FE"));
                 priorityList.Add(EnhanceAbility.SearingTotem, new Priority("Searing Totem", EnhanceAbility.SearingTotem, "Refresh Searing Totem", true, ++priority, "ST"));
                 priorityList.Add(EnhanceAbility.ShamanisticRage, new Priority("Shamanistic Rage", EnhanceAbility.ShamanisticRage, "Use Shamanistic Rage", true, ++priority, "SR"));
                 priorityList.Add(EnhanceAbility.LightningShield, new Priority("Lightning Shield", EnhanceAbility.LightningShield, "Refresh Lightning Shield", true, ++priority, "LS"));

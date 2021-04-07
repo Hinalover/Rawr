@@ -31,7 +31,7 @@ namespace Rawr.Mage.SequenceReconstruction
             this.index = index;
             this.variableType = Calculations.SolutionVariable[index].Type;
             mps = Calculations.SolutionVariable[index].Mps;
-            tps = Calculations.SolutionVariable[index].Tps;
+            //tps = Calculations.SolutionVariable[index].Tps;
             this.Duration = duration;
             this.cycle = Calculations.SolutionVariable[index].Cycle;
             this.castingState = Calculations.SolutionVariable[index].State;
@@ -42,37 +42,32 @@ namespace Rawr.Mage.SequenceReconstruction
             minTime = 0.0;
             maxTime = Calculations.CalculationOptions.FightDuration;
 
-            if (variableType == VariableType.Wand)
+            if (variableType == VariableType.ManaGem)
             {
-                cycle = Calculations.Wand;
-                mps = cycle.ManaPerSecond;
-                tps = cycle.ThreatPerSecond;
-            }
-            else if (variableType == VariableType.ManaGem)
-            {
-                mps = 0.0;
-                tps = Calculations.ManaGemTps;
+                //mps = 0.0;
+                mps = Calculations.SolutionVariable[index].Mps;
+                //tps = Calculations.ManaGemTps;
             }
             else if (variableType == VariableType.ManaPotion)
             {
                 mps = 0.0;
-                tps = Calculations.ManaPotionTps;
+                //tps = Calculations.ManaPotionTps;
             }
             else if (variableType == VariableType.Drinking)
             {
                 maxTime = 0.0;
                 mps = -Calculations.BaseState.ManaRegenDrinking;
-                tps = 0.0;
+                //tps = 0.0;
             }
             else if (variableType == VariableType.TimeExtension)
             {
                 minTime = maxTime;
-                tps = 0.0;
+                //tps = 0.0;
             }
             else if (variableType == VariableType.AfterFightRegen)
             {
                 mps = -Calculations.BaseState.ManaRegenDrinking;
-                tps = 0.0;
+                //tps = 0.0;
                 minTime = maxTime;
             }
         }

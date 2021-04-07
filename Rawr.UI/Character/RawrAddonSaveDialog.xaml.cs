@@ -88,7 +88,7 @@ namespace Rawr.UI
                 WriteItem(12, itemSet[CharacterSlot.Back], character, CharacterSlot.Back);
                 WriteItem(12, itemSet[CharacterSlot.MainHand], character, CharacterSlot.MainHand);
                 WriteItem(12, itemSet[CharacterSlot.OffHand], character, CharacterSlot.OffHand);
-                WriteItem(12, itemSet[CharacterSlot.Ranged], character, CharacterSlot.Ranged);
+                //WriteItem(12, itemSet[CharacterSlot.Ranged], character, CharacterSlot.Ranged);
                 WriteItem(12, itemSet[CharacterSlot.Tabard], character, CharacterSlot.Tabard);
             }
             WriteLine(8, "},");

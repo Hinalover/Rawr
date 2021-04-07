@@ -8,6 +8,8 @@ namespace Rawr.Hunter
 {
     public class CharacterCalculationsHunter : CharacterCalculationsBase
     {
+        
+
         public Character character = null;
         public CalculationOptionsHunter CalcOpts = null;
 
@@ -88,12 +90,23 @@ namespace Rawr.Hunter
         public Skills.Readiness Ready { get; set; }
         public Skills.BestialWrath Bestial { get; set; }
         public Skills.RapidFire Rapid { get; set; }
+
+        public AbilWrapper MurderOfCrows { get; set; }
+        //TODO: OpOv - Blink Strike needs to be implemented
+        public AbilWrapper LynxRush { get; set; }
+        public AbilWrapper GlaiveToss { get; set; }
+        public AbilWrapper Powershot { get; set; }
+        public AbilWrapper Barrage { get; set; }
+        public Skills.Fervor Fervor { get; set; }
+        public AbilWrapper DireBeast { get; set; }
+
         #endregion
 
         private float _BonusAttackProcsDPS;
         private float _wildQuiverDPS;
         public float SpecProcDPS;
         private float _customDPS;
+
         public float _masteryBase = 8f;
         public BossOptions BossOpts = null;
 
@@ -265,7 +278,12 @@ namespace Rawr.Hunter
                                 HunterUnBuffed.HitRatingPercent,
                                 HunterUnBuffed.HitRating,
                                 HunterUnBuffed.HitRatingNeeded));
-             
+            dictValues.Add("Expertise", string.Format("{0:00.00%} : {1}*" +
+                                "Ranged Cap: " + Hunter.ExpertiseNeededLabel,
+                                HunterUnBuffed.ExpertiseRatingPercent,
+                                HunterUnBuffed.ExpertiseRating,
+                                HunterUnBuffed.ExpertiseRatingNeeded));
+ 
             dictValues.Add("Crit", string.Format("{0:00.00%} : {1}*Includes:" +
                                 "\r\n{2:00.00%} : Agility" +
                                 "\r\n{3:00.00%} : Rating" +
@@ -331,8 +349,9 @@ namespace Rawr.Hunter
             dictValues.Add("Pet Specials Crit %", petCritTotalSpecials.ToString("P2") + "*includes:\n" +
                             petCritTotalMelee.ToString("P2") + " from melee crit\n" +
                             petCritFromCobraStrikes.ToString("P2") + " from Cobra Strikes");
-            dictValues.Add("Pet White DPS", petWhiteDPS.ToString("F2"));
-            dictValues.Add("Pet Kill Command DPS", petKillCommandDPS.ToString("F2"));
+ * */
+            dictValues.Add("Pet White DPS", petWhiteDPS.ToString("F2") + "*Currently average total PetDPS, needs to be fixed");
+/*            dictValues.Add("Pet Kill Command DPS", petKillCommandDPS.ToString("F2"));
             dictValues.Add("Pet Specials DPS", petSpecialDPS.ToString("F2") /*+ 
                 string.Format("Breakout:\r\n"
                             + "Furious Howl: Use {0} DPS {1:0.00}"
@@ -342,33 +361,43 @@ namespace Rawr.Hunter
 */
             // Shot Stats
 //            dictValues.Add("Aimed Shot", Aimed.GenTooltip(CustomDPS));
-            dictValues.Add("Aimed Shot", Aimed.DPS.ToString("F2"));
-            dictValues.Add("MMM Aimed Shot", MMMAimed.DPS.ToString("F2"));
-            dictValues.Add("CA Aimed Shot", CAAimed.DPS.ToString("F2"));
+            dictValues.Add("Aimed Shot", getDPSString(Aimed));
+            dictValues.Add("MMM Aimed Shot", getDPSString(MMMAimed));
+            dictValues.Add("CA Aimed Shot", getDPSString(CAAimed));
             //            dictValues.Add("Arcane Shot", Arcane.GenTooltip(CustomDPS));
-            dictValues.Add("Arcane Shot", Arcane.DPS.ToString("F2"));
+            dictValues.Add("Arcane Shot", getDPSString(Arcane));
+            
             //            dictValues.Add("Multi Shot", multiShot.GenTooltip());
-//            dictValues.Add("Cobra Shot", cobraShot.GenTooltip());
-            dictValues.Add("Cobra Shot", Cobra.DPS.ToString("F2"));
-//            dictValues.Add("Steady Shot", Steady.GenTooltip(CustomDPS));
-            dictValues.Add("Steady Shot", Steady.DPS.ToString("F2"));
+            //dictValues.Add("Cobra Shot", Cobra.GenTooltip(Cobra.numActivates,CustomDPS));
+            dictValues.Add("Cobra Shot", getDPSString(Cobra));
+
+            //            dictValues.Add("Steady Shot", Steady.GenTooltip(CustomDPS));
+            dictValues.Add("Steady Shot", getDPSString(Steady));
 //            dictValues.Add("Kill Shot", Kill.GenTooltip(CustomDPS));
-            dictValues.Add("Kill Shot", Kill.DPS.ToString("F2"));
+            dictValues.Add("Kill Shot", getDPSString(Kill));
 //            dictValues.Add("Explosive Shot", explosiveShot.GenTooltip());
-            dictValues.Add("Explosive Shot", Explosive.DPS.ToString("F2"));
-            dictValues.Add("Lock N Load", ExplosiveLNL.DPS.ToString("F2"));
+            dictValues.Add("Explosive Shot", getDPSString(Explosive));
+            dictValues.Add("Lock N Load", getDPSString(ExplosiveLNL));
 //            dictValues.Add("Black Arrow", blackArrow.GenTooltip());
-            dictValues.Add("Black Arrow", BlackArrow.DPS.ToString("F2"));
+            dictValues.Add("Black Arrow", getDPSString(BlackArrow));
 //            dictValues.Add("Chimera Shot", Chimera.GenTooltip(CustomDPS));
-            dictValues.Add("Chimera Shot", Chimera.DPS.ToString("F2"));
+            dictValues.Add("Chimera Shot", getDPSString(Chimera));
             
             //dictValues.Add("Rapid Fire", rapidFire.GenTooltip());
             //dictValues.Add("Readiness", readiness.GenTooltip());
             //dictValues.Add("Bestial Wrath", bestialWrath.GenTooltip());
 
+            dictValues.Add("T4 - Dire Beast",getDPSString(DireBeast));
+            dictValues.Add("T5 - A Murder of Crows",getDPSString(MurderOfCrows));
+            //dictValues.Add("T5 - Blink Strike",Bl
+            dictValues.Add("T5 - Lynx Rush",getDPSString(LynxRush));
+            dictValues.Add("T6 - Glaive Toss",getDPSString(GlaiveToss));
+            dictValues.Add("T6 - Powershot",getDPSString(Powershot));
+            dictValues.Add("T6 - Barrage",getDPSString(Barrage));
+
             // Sting Stats
 //            dictValues.Add("Serpent Sting", Serpent.GenTooltip(CustomDPS));
-            dictValues.Add("Serpent Sting", Serpent.DPS.ToString("F2"));
+            dictValues.Add("Serpent Sting", getDPSString(Serpent));
 
             // Trap Stats
             //dictValues.Add("Immolation Trap", immolationTrap.GenTooltip());
@@ -377,7 +406,7 @@ namespace Rawr.Hunter
             //dictValues.Add("Frost Trap", frostTrap.GenTooltip());
 
             // Hunter DPS
-            dictValues.Add("Autoshot DPS", Whites.GenTooltip(CustomDPS));
+            dictValues.Add("Autoshot DPS", Whites.GenTooltip(CustomDPS) + Environment.NewLine + "Damage Single Shot: " + Whites.RwDamageOnUse);
             dictValues.Add("Priority Rotation DPS", CustomDPS.ToString("F2"));
             dictValues.Add("Wild Quiver DPS", WildQuiverDPS.ToString("F2"));
 //            dictValues.Add("Kill Shot low HP gain", killShotSub20FinalGain.ToString("F2")+"*"+
@@ -404,6 +433,20 @@ namespace Rawr.Hunter
             return dictValues;
         }
 
+        private string getDPSString(AbilWrapper abil, bool withTooltip=true)
+        {
+            if (withTooltip)
+            {
+                string dpsStr = abil.DPS.ToString("F2") + "* Damage Per Shot: " + abil.DamagePerUse;
+                dpsStr += Environment.NewLine + "Number of Activates: " + abil.numActivates;
+                dpsStr += Environment.NewLine + "Ability Weight: " + abil.AbilityWeight;
+                return dpsStr;
+            }
+            else
+                return abil.DPS.ToString("F2");
+
+        }
+
         public override float GetOptimizableCalculationValue(string calculation)
         {
             switch (calculation)
@@ -414,6 +457,7 @@ namespace Rawr.Hunter
                 case "Haste %": return Hunter.PhysicalHaste * 100f;
                 case "Attack Power": return Hunter.RangedAttackPower;
                 case "Hit Rating Needed": return Hunter.HitRatingNeeded;
+                case "Expertise Rating Needed": return Hunter.ExpertiseRatingNeeded;
             }
             return 0;
         }

@@ -416,7 +416,7 @@ namespace Rawr.Retribution
                 // Average out proc effects, and add to global stats.
                 Stats statsAverage = new Stats();
                 foreach (SpecialEffect effect in stats.SpecialEffects())
-                    statsAverage.Accumulate(effect.GetAverageStats(triggerIntervals, triggerChances, AbilityHelper.BaseWeaponSpeed(character), character.BossOptions.BerserkTimer));
+                    statsAverage.Accumulate(effect.GetAverageStats(triggerIntervals, triggerChances, AbilityHelper.BaseWeaponSpeed(character), 1f, character.BossOptions.BerserkTimer));
                 stats.Accumulate(statsAverage);
             }
 
@@ -510,6 +510,8 @@ namespace Rawr.Retribution
             stats.Expertise += (talents.GlyphOfSealOfTruth ? PaladinConstants.GLYPH_OF_SEAL_OF_TRUTH : 0) + StatConversion.GetExpertiseFromRating(stats.ExpertiseRating, CharacterClass.Paladin);
             stats.PhysicalHit += StatConversion.GetPhysicalHitFromRating(stats.HitRating, CharacterClass.Paladin);
             stats.SpellHit += StatConversion.GetSpellHitFromRating(stats.HitRating, CharacterClass.Paladin) + PaladinConstants.SHEATH_SPHIT_COEFF;
+
+            stats.Mastery += (StatConversion.GetMasteryFromRating(stats.MasteryRating, CharacterClass.Paladin));
 
             stats.PhysicalCrit +=
                 StatConversion.GetPhysicalCritFromRating(stats.CritRating, CharacterClass.Paladin) +
@@ -671,6 +673,7 @@ namespace Rawr.Retribution
                 SpellHaste = stats.SpellHaste, 
                 Expertise = stats.Expertise,
                 ExpertiseRating = stats.ExpertiseRating,
+                Mastery = stats.Mastery,
                 MasteryRating = stats.MasteryRating,
                 HighestSecondaryStat = stats.HighestSecondaryStat,
                 SpellPower = stats.SpellPower,
@@ -778,6 +781,7 @@ namespace Rawr.Retribution
                                   stats.HasteRating != 0 ||
                                   stats.HighestStat != 0 ||
                                   stats.HighestSecondaryStat != 0 ||
+                                  stats.Mastery != 0 ||
                                   stats.MasteryRating != 0 ||
                                   // Melee stats
                                   stats.Agility != 0 ||

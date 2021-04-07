@@ -178,7 +178,7 @@ namespace Rawr.DPSWarr.Skills
         private readonly Ability _btInfo;
         public float GetActivates(float btActs, float perc)
         {
-            float retVal = TalentsAsSpecialEffects.Bloodsurge[DPSWarrChar.Talents.Bloodsurge].GetAverageProcsPerSecond((FightDuration * perc) / btActs, _btInfo.MHAtkTable.AnyLand, 3.3f, FightDuration * perc);
+            float retVal = TalentsAsSpecialEffects.Bloodsurge[DPSWarrChar.Talents.Bloodsurge].GetAverageProcsPerSecond((FightDuration * perc) / btActs, _btInfo.MHAtkTable.AnyLand, 3.3f, 1f, FightDuration * perc); // FIXME: Pass haste for Real PPM effects
             return retVal * (FightDuration * perc);
         }
 
@@ -231,7 +231,7 @@ namespace Rawr.DPSWarr.Skills
             SwingsOffHand = true;
             BonusCritChance = DPSWarrChar.Talents.GlyphOfRagingBlow ? 0.05f : 0f;
             DamageBonus  = 1f + DPSWarrChar.StatS.BonusRagingBlowDamageMultiplier;
-            DamageBonus *= 1f + (2f*0.056f + 0.0560f * StatConversion.GetMasteryFromRating(DPSWarrChar.StatS.MasteryRating, CharacterClass.Warrior));
+            DamageBonus *= 1f + (0.0560f * DPSWarrChar.StatS.Mastery);
             //
             Initialize();
         }
@@ -341,7 +341,7 @@ namespace Rawr.DPSWarr.Skills
             storedActs = acts;
             // Factor that we don't HS in Exec phase
             float fightDur = (!DPSWarrChar.CombatFactors.FuryStance && DPSWarrChar.CalcOpts.M_ExecuteSpam) ? FightDurationO20 : FightDuration;
-            storedInciteBonusCrits = TalentsAsSpecialEffects.Incite[DPSWarrChar.Talents.Incite].GetAverageProcsPerSecond(fightDur / acts, MHAtkTable.Crit, DPSWarrChar.CombatFactors.MHSpeedHasted, fightDur) * fightDur;
+            storedInciteBonusCrits = TalentsAsSpecialEffects.Incite[DPSWarrChar.Talents.Incite].GetAverageProcsPerSecond(fightDur / acts, MHAtkTable.Crit, DPSWarrChar.CombatFactors.MHSpeedHasted, 1f, fightDur) * fightDur; // FIXME: Pass haste for Real PPM effects
             return storedInciteBonusCrits;
         }
         public override float DamageOnUseOverride {

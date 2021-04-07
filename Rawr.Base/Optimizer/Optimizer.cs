@@ -573,9 +573,6 @@ namespace Rawr.Optimizer
             pairSlotMap[(int)CharacterSlot.MainHand] = (int)CharacterSlot.OffHand;
             pairSlotMap[(int)CharacterSlot.OffHand] = (int)CharacterSlot.MainHand;
             pairSlotMap[(int)CharacterSlot.Neck] = -1;
-            pairSlotMap[(int)CharacterSlot.Projectile] = -1;
-            pairSlotMap[(int)CharacterSlot.ProjectileBag] = -1;
-            pairSlotMap[(int)CharacterSlot.Ranged] = -1;
             pairSlotMap[(int)CharacterSlot.Shoulders] = -1;
             pairSlotMap[(int)CharacterSlot.Trinket1] = (int)CharacterSlot.Trinket2;
             pairSlotMap[(int)CharacterSlot.Trinket2] = (int)CharacterSlot.Trinket1;
@@ -981,7 +978,7 @@ namespace Rawr.Optimizer
                 CharacterSlot[] slots;
                 if (slotToProcess == CharacterSlot.None)
                 {
-                    slots = new CharacterSlot[] { CharacterSlot.Back, CharacterSlot.Chest, CharacterSlot.Feet, CharacterSlot.Finger1, CharacterSlot.Hands, CharacterSlot.Head, CharacterSlot.Legs, CharacterSlot.MainHand, CharacterSlot.Neck, CharacterSlot.OffHand, CharacterSlot.Projectile, CharacterSlot.ProjectileBag, CharacterSlot.Ranged, CharacterSlot.Shoulders, CharacterSlot.Trinket1, CharacterSlot.Waist, CharacterSlot.Wrist };
+                    slots = new CharacterSlot[] { CharacterSlot.Back, CharacterSlot.Chest, CharacterSlot.Feet, CharacterSlot.Finger1, CharacterSlot.Hands, CharacterSlot.Head, CharacterSlot.Legs, CharacterSlot.MainHand, CharacterSlot.Neck, CharacterSlot.OffHand, CharacterSlot.Shoulders, CharacterSlot.Trinket1, CharacterSlot.Waist, CharacterSlot.Wrist };
                 }
                 else
                 {
@@ -1158,7 +1155,7 @@ namespace Rawr.Optimizer
                 // this is currently only called after calculate upgrades already marks items as valid, but we might have to do this here also if things change
                 // MarkEquippedItemsAsValid(_character);
 
-                CharacterSlot[] slots = new CharacterSlot[] { CharacterSlot.Back, CharacterSlot.Chest, CharacterSlot.Feet, CharacterSlot.Finger1, CharacterSlot.Hands, CharacterSlot.Head, CharacterSlot.Legs, CharacterSlot.MainHand, CharacterSlot.Neck, CharacterSlot.OffHand, CharacterSlot.Projectile, CharacterSlot.ProjectileBag, CharacterSlot.Ranged, CharacterSlot.Shoulders, CharacterSlot.Trinket1, CharacterSlot.Waist, CharacterSlot.Wrist };
+                CharacterSlot[] slots = new CharacterSlot[] { CharacterSlot.Back, CharacterSlot.Chest, CharacterSlot.Feet, CharacterSlot.Finger1, CharacterSlot.Hands, CharacterSlot.Head, CharacterSlot.Legs, CharacterSlot.MainHand, CharacterSlot.Neck, CharacterSlot.OffHand, CharacterSlot.Shoulders, CharacterSlot.Trinket1, CharacterSlot.Waist, CharacterSlot.Wrist };
                 CharacterCalculationsBase baseCalculations = model.GetCharacterCalculations(_character);
                 float baseValue = GetOptimizationValue(_character, baseCalculations, calculationToOptimize, requirements);
 
@@ -1297,7 +1294,7 @@ namespace Rawr.Optimizer
             for (int slot = 0; slot < characterSlots; slot++)
             {
                 slotItemsRandom[slot] = new List<KeyedList<KeyedList<ItemInstance>>>();
-                int minJeweler = slotItems[slot].Count > 0 ? 3 : 0;
+                int minJeweler = slotItems[slot].Count > 0 ? 2 : 0;
                 foreach (ItemAvailabilityInformation itemAvailability in itemGenerator.SlotRawItems[slot])
                 {
                     KeyedList<KeyedList<ItemInstance>> list1 = null;
@@ -1346,9 +1343,6 @@ namespace Rawr.Optimizer
             pairSlotMap[(int)CharacterSlot.MainHand] = (int)CharacterSlot.OffHand;
             pairSlotMap[(int)CharacterSlot.OffHand] = (int)CharacterSlot.MainHand;
             pairSlotMap[(int)CharacterSlot.Neck] = -1;
-            pairSlotMap[(int)CharacterSlot.Projectile] = -1;
-            pairSlotMap[(int)CharacterSlot.ProjectileBag] = -1;
-            pairSlotMap[(int)CharacterSlot.Ranged] = -1;
             pairSlotMap[(int)CharacterSlot.Shoulders] = -1;
             pairSlotMap[(int)CharacterSlot.Trinket1] = (int)CharacterSlot.Trinket2;
             pairSlotMap[(int)CharacterSlot.Trinket2] = (int)CharacterSlot.Trinket1;
@@ -1384,21 +1378,16 @@ namespace Rawr.Optimizer
             CalculateWarnings(slotItems[(int)CharacterSlot.Trinket1], "Trinket Items", emptyList, tooManyList, itemLimit);
             CalculateWarnings(slotItems[(int)CharacterSlot.MainHand], "Main Hand Items", emptyList, tooManyList, itemLimit);
             CalculateWarnings(slotItems[(int)CharacterSlot.OffHand], "Offhand Items", null, tooManyList, itemLimit);
-            CalculateWarnings(slotItems[(int)CharacterSlot.Ranged], "Ranged Items", null, tooManyList, itemLimit);
-            CalculateWarnings(slotItems[(int)CharacterSlot.Projectile], "Projectile Items", null, tooManyList, itemLimit);
-            CalculateWarnings(slotItems[(int)CharacterSlot.ProjectileBag], "Projectile Bag Items", null, tooManyList, itemLimit);
 
             CalculateWarnings(itemGenerator.SlotEnchants[(int)CharacterSlot.Back], "Back Enchants", emptyList, null, enchantLimit);
             CalculateWarnings(itemGenerator.SlotEnchants[(int)CharacterSlot.Chest], "Chest Enchants", emptyList, null, enchantLimit);
             CalculateWarnings(itemGenerator.SlotEnchants[(int)CharacterSlot.Feet], "Feet Enchants", emptyList, null, enchantLimit);
             CalculateWarnings(itemGenerator.SlotEnchants[(int)CharacterSlot.Finger1], "Finger Enchants", null, null, enchantLimit);
             CalculateWarnings(itemGenerator.SlotEnchants[(int)CharacterSlot.Hands], "Hands Enchants", emptyList, null, enchantLimit);
-            CalculateWarnings(itemGenerator.SlotEnchants[(int)CharacterSlot.Head], "Head Enchants", emptyList, null, enchantLimit);
             CalculateWarnings(itemGenerator.SlotEnchants[(int)CharacterSlot.Legs], "Legs Enchants", emptyList, null, enchantLimit);
             CalculateWarnings(itemGenerator.SlotEnchants[(int)CharacterSlot.Shoulders], "Shoulder Enchants", emptyList, null, enchantLimit);
             CalculateWarnings(itemGenerator.SlotEnchants[(int)CharacterSlot.MainHand], "Main Hand Enchants", emptyList, null, enchantLimit);
             CalculateWarnings(itemGenerator.SlotEnchants[(int)CharacterSlot.OffHand], "Offhand Enchants", null, null, enchantLimit);
-            CalculateWarnings(itemGenerator.SlotEnchants[(int)CharacterSlot.Ranged], "Ranged Enchants", null, null, enchantLimit);
             CalculateWarnings(itemGenerator.SlotEnchants[(int)CharacterSlot.Wrist], "Wrist Enchants", emptyList, null, enchantLimit);
 
             if (emptyList.Count + tooManyList.Count > 0)
@@ -1850,22 +1839,22 @@ namespace Rawr.Optimizer
                         bestYellowValue = value;
                         bestYellowGem = gem;
                     }
-                    if (gem.IsJewelersGem && Item.GemMatchesSlot(gem, ItemSlot.Blue) && value > bestBlueJewelerValue)
+                    if ((gem.IsJewelersGem || gem.IsJewelersFacet) && Item.GemMatchesSlot(gem, ItemSlot.Blue) && value > bestBlueJewelerValue)
                     {
                         bestBlueJewelerValue = value;
                         bestBlueJewelerGem = gem;
                     }
-                    if (gem.IsJewelersGem && Item.GemMatchesSlot(gem, ItemSlot.Yellow) && value > bestYellowJewelerValue)
+                    if ((gem.IsJewelersGem || gem.IsJewelersFacet) && Item.GemMatchesSlot(gem, ItemSlot.Yellow) && value > bestYellowJewelerValue)
                     {
                         bestYellowJewelerValue = value;
                         bestYellowJewelerGem = gem;
                     }
-                    if (gem.IsJewelersGem && Item.GemMatchesSlot(gem, ItemSlot.Red) && value > bestRedJewelerValue)
+                    if ((gem.IsJewelersGem || gem.IsJewelersFacet) && Item.GemMatchesSlot(gem, ItemSlot.Red) && value > bestRedJewelerValue)
                     {
                         bestRedJewelerValue = value;
                         bestRedJewelerGem = gem;
                     }
-                    if (gem.IsJewelersGem && value > bestJewelerValue)
+                    if ((gem.IsJewelersGem || gem.IsJewelersFacet) && value > bestJewelerValue)
                     {
                         bestJewelerValue = value;
                         bestJewelerGem = gem;
@@ -1965,7 +1954,7 @@ namespace Rawr.Optimizer
                             int bestg = 0;
                             for (int g = 1; g <= gemCount; g++)
                             {
-                                if (item.GetSocketColor(g) != ItemSlot.Meta && !gems[g].IsJewelersGem && bestJewelerValue > bestNonLimitedValue)
+                                if (item.GetSocketColor(g) != ItemSlot.Meta && !gems[g].IsJewelersGem && !gems[g].IsJewelersFacet && bestJewelerValue > bestNonLimitedValue)
                                 {
                                     /*if (Item.GemMatchesSlot(gems[g], item.GetSocketColor(g)))
                                     {*/
@@ -2064,7 +2053,7 @@ namespace Rawr.Optimizer
                                             jewelerValue = bestJewelerValue;
                                             break;
                                     }
-                                    if (item.GetSocketColor(g) != ItemSlot.Meta && !gems[g].IsJewelersGem && jewelerValue > values[g])
+                                    if (item.GetSocketColor(g) != ItemSlot.Meta && !gems[g].IsJewelersGem && !gems[g].IsJewelersFacet && jewelerValue > values[g])
                                     {
                                         float newScore = jewelerValue - values[g];
                                         if (newScore > score)
@@ -2314,7 +2303,7 @@ namespace Rawr.Optimizer
                 {
                     min += minJeweler[s];
                 }
-                int max = 3 - min; // we can use at most this many if we want to be possible to be feasible
+                int max = 2 - min; // we can use at most this many if we want to be possible to be feasible
                 ItemInstance result = null;
                 int count = 0;
                 Random rand = Rnd;
@@ -2355,7 +2344,7 @@ namespace Rawr.Optimizer
                             int c2 = item2 == null ? 0 : item2.JewelerCount;
                             min += Math.Min(c1, c2);
                         }
-                        int max = 3 - min;
+                        int max = 2 - min;
                         ItemInstance f = (ItemInstance)father.Items[slot];
                         int fc = f == null ? 0 : f.JewelerCount;
                         ItemInstance m = (ItemInstance)mother.Items[slot];
@@ -2624,14 +2613,14 @@ namespace Rawr.Optimizer
                         // if there are no reforges to same stat then try something random
                     }
                     // make sure that a reforge swap is actually valid
-                    float currentFrom1 = Reforging.CurrentStatValue(mutation1.Item, mutation1.RandomSuffixId, mutation2.Reforging.ReforgeFrom);
-                    float currentTo1 = Reforging.CurrentStatValue(mutation1.Item, mutation1.RandomSuffixId, mutation2.Reforging.ReforgeTo);
+                    float currentFrom1 = Reforging.CurrentStatValue(mutation1.Item, mutation1.RandomSuffixId, mutation1.ItemInstance.UpgradeLevel, mutation2.Reforging.ReforgeFrom);
+                    float currentTo1 = Reforging.CurrentStatValue(mutation1.Item, mutation1.RandomSuffixId, mutation1.ItemInstance.UpgradeLevel, mutation2.Reforging.ReforgeTo);
                     if (!(currentFrom1 > 0 && currentTo1 == 0))
                     {
                         promising = false;
                     }
-                    float currentFrom2 = Reforging.CurrentStatValue(mutation2.Item, mutation2.RandomSuffixId, mutation1.Reforging.ReforgeFrom);
-                    float currentTo2 = Reforging.CurrentStatValue(mutation2.Item, mutation2.RandomSuffixId, mutation1.Reforging.ReforgeTo);
+                    float currentFrom2 = Reforging.CurrentStatValue(mutation2.Item, mutation2.RandomSuffixId, mutation2.ItemInstance.UpgradeLevel, mutation1.Reforging.ReforgeFrom);
+                    float currentTo2 = Reforging.CurrentStatValue(mutation2.Item, mutation2.RandomSuffixId, mutation2.ItemInstance.UpgradeLevel, mutation1.Reforging.ReforgeTo);
                     if (!(currentFrom2 > 0 && currentTo2 == 0))
                     {
                         promising = false;
@@ -2642,8 +2631,8 @@ namespace Rawr.Optimizer
                 if (promising)
                 {
                     // mutate
-                    ItemInstance item1 = new ItemInstance(mutation1.ItemInstance.Item, mutation1.ItemInstance.RandomSuffixId, mutation1.ItemInstance.Gem1, mutation1.ItemInstance.Gem2, mutation1.ItemInstance.Gem3, mutation1.ItemInstance.Enchant, new Reforging(mutation1.Item, mutation1.RandomSuffixId, mutation2.Reforging.Id), mutation1.ItemInstance.Tinkering) { ItemAvailabilityInformation = mutation1.ItemInstance.ItemAvailabilityInformation };
-                    ItemInstance item2 = new ItemInstance(mutation2.ItemInstance.Item, mutation2.ItemInstance.RandomSuffixId, mutation2.ItemInstance.Gem1, mutation2.ItemInstance.Gem2, mutation2.ItemInstance.Gem3, mutation2.ItemInstance.Enchant, new Reforging(mutation2.Item, mutation2.RandomSuffixId, mutation1.Reforging.Id), mutation2.ItemInstance.Tinkering) { ItemAvailabilityInformation = mutation2.ItemInstance.ItemAvailabilityInformation };
+                    ItemInstance item1 = new ItemInstance(mutation1.ItemInstance.Item, mutation1.ItemInstance.RandomSuffixId, mutation1.ItemInstance.Gem1, mutation1.ItemInstance.Gem2, mutation1.ItemInstance.Gem3, mutation1.ItemInstance.Enchant, new Reforging(mutation1.Item, mutation1.RandomSuffixId, mutation1.ItemInstance.UpgradeLevel, mutation2.Reforging.Id), mutation1.ItemInstance.Tinkering) { ItemAvailabilityInformation = mutation1.ItemInstance.ItemAvailabilityInformation };
+                    ItemInstance item2 = new ItemInstance(mutation2.ItemInstance.Item, mutation2.ItemInstance.RandomSuffixId, mutation2.ItemInstance.Gem1, mutation2.ItemInstance.Gem2, mutation2.ItemInstance.Gem3, mutation2.ItemInstance.Enchant, new Reforging(mutation2.Item, mutation2.RandomSuffixId, mutation2.ItemInstance.UpgradeLevel, mutation1.Reforging.Id), mutation2.ItemInstance.Tinkering) { ItemAvailabilityInformation = mutation2.ItemInstance.ItemAvailabilityInformation };
                     if (((lockedSlot == mutation1.Slot && lockedItems.Contains(item1)) || (lockedSlot != mutation1.Slot && itemAvailable.ContainsKey(item1.GemmedId))) && ((lockedSlot == mutation2.Slot && lockedItems.Contains(item2)) || (lockedSlot != mutation2.Slot && itemAvailable.ContainsKey(item2.GemmedId))))
                     {
                         successful = true;

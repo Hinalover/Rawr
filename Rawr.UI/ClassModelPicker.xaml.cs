@@ -38,17 +38,17 @@ namespace Rawr.UI
             InitializeComponent();
             PopupUtilities.RegisterPopup(this, PopupClassModelPicker, Toggle, Close);
             Items = new ObservableCollection<ClassModelPickerItem>();
-            Items.Add(new ClassModelPickerItem("Death Knight", "DPSDK", "TankDK"));
-            Items.Add(new ClassModelPickerItem("Druid", "Bear", "Cat", "Moonkin", "Tree"));
-            Items.Add(new ClassModelPickerItem("Hunter", "Hunter"));
-            Items.Add(new ClassModelPickerItem("Mage", "Mage"));
-            // Items.Add(new ClassModelPickerItem("Monk", "Brewmaster", "Mistweaver", "Windwalker"));
-            Items.Add(new ClassModelPickerItem("Paladin", "Healadin", "ProtPaladin", "Retribution"));
-            Items.Add(new ClassModelPickerItem("Priest", "HealPriest", "ShadowPriest"));
-            Items.Add(new ClassModelPickerItem("Rogue", "Rogue"));
-            Items.Add(new ClassModelPickerItem("Shaman", "Elemental", "Enhance", "RestoSham"));
-            Items.Add(new ClassModelPickerItem("Warlock", "Warlock"));
-            Items.Add(new ClassModelPickerItem("Warrior", "DPSWarr", "ProtWarr"));
+            Items.Add(new ClassModelPickerItem("Death Knight", "Blood", "Frost", "Unholy"));
+            Items.Add(new ClassModelPickerItem("Druid", "Balance", "Feral", "Guardian", "Restoration"));
+            Items.Add(new ClassModelPickerItem("Hunter", "Beast Mastery", "Marksmanship", "Survival"));
+            Items.Add(new ClassModelPickerItem("Mage", "Arcane", "Fire", "Frost"));
+            Items.Add(new ClassModelPickerItem("Monk", "Brewmaster", "Mistweaver", "Windwalker"));
+            Items.Add(new ClassModelPickerItem("Paladin", "Holy", "Protection", "Retribution"));
+            Items.Add(new ClassModelPickerItem("Priest", "Discipline", "Holy", "Shadow"));
+            Items.Add(new ClassModelPickerItem("Rogue", "Assasination", "Combat", "Subtlety"));
+            Items.Add(new ClassModelPickerItem("Shaman", "Elemental", "Enhancement", "Restoration"));
+            Items.Add(new ClassModelPickerItem("Warlock", "Affliction", "Demonology", "Destruction"));
+            Items.Add(new ClassModelPickerItem("Warrior", "Arms", "Fury", "Protection"));
             //new ClassModelPickerItem("{0} Specific")
 
             Calculations.ModelChanged += new EventHandler(Calculations_ModelChanged);
@@ -113,11 +113,12 @@ namespace Rawr.UI
         {
             TextBlockClassModelButtonPrimary.Text = PrimaryItem.Header;
             TextBlockClassModelButtonSecondary.Text = PrimaryItem.SelectedItem == null ? "" : PrimaryItem.SelectedItem.Header;
+            string key = TextBlockClassModelButtonPrimary.Text + ":" + TextBlockClassModelButtonSecondary.Text;
             foreach (string item in MainPage.Instance.ModelCombo.Items)
             {
-                if (item == PrimaryItem.SelectedItem.Header)
+                if (item == key)
                 {
-                    MainPage.Instance.ModelCombo.SelectedItem = item;
+                    MainPage.Instance.ModelCombo.SelectedItem = key;
                 }
             }
             //GraphDisplay.CurrentGraph = string.Format("{0}|{1}", PrimaryItem, PrimaryItem.SelectedItem);
@@ -125,7 +126,7 @@ namespace Rawr.UI
 
         private void Close()
         {
-            PrimaryItem = Items.FirstOrDefault(classModelPickerItem => true/*classModelPickerItem.Header == GraphDisplay.CurrentGraph.Split('|')[0]*/);
+            PrimaryItem = Items.FirstOrDefault(classModelPickerItem => Calculations.CharacterClasses[classModelPickerItem.Header] == MainPage.Instance.Character.Class);
             PopupClassModelPicker.IsOpen = false;
         }
 

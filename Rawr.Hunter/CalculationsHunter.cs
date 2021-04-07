@@ -12,6 +12,24 @@ namespace Rawr.Hunter {
     [Rawr.Calculations.RawrModelInfo("Hunter", "Inv_Weapon_Bow_07", CharacterClass.Hunter)]
     public class CalculationsHunter : CalculationsBase
     {
+        //added for debugging only
+        //TODO: Remove before going to production with this
+        //public override bool SupportsMultithreading
+        //{
+        //    get
+        //    {
+        //        return false;
+        //    }
+        //}
+
+        //public override int MaxDegreeOfParallelism
+        //{
+        //    get
+        //    {
+        //        return 1;
+        //    }
+        //}
+
         #region Variables and Properties
 
         #region Hunter Gemming Templates
@@ -19,7 +37,8 @@ namespace Rawr.Hunter {
         {
             get
             {
-                // == Relevant Gem IDs for Hunters ==
+                #region Cataclysm GemIds - All commented out
+                /*
                 #region Red
                 int[] delicate = { 52082, 52212, 52212, 52258 };    // Agi
                 #endregion
@@ -58,26 +77,154 @@ namespace Rawr.Hunter {
                 int[] cog_crt = { 59478, 59478, 59478, 59478 }; fixArray(cog_crt);
                 int[] cog_has = { 59479, 59479, 59479, 59479 }; fixArray(cog_has);
                 #endregion
+                */
+                #endregion
+
+                //New Gems for MoP
+
+                #region Meta Gems
+                /// <summary>
+                /// Agility + 3% Critical Strike Damage Multiplier Meta Gem
+                /// </summary>
+                int agile =  76884; // 216 Agility, 3% Crit Dmg - 3R
+                #endregion
+
+                #region Red Gems
+                /// <summary>
+                /// Agility Red Gems
+                /// </summary>
+                int[] delicate = { 76560, 76692, 76692, 83151 };
+                /// <summary>
+                /// Expertise Rating Red Gems
+                /// </summary>
+                int[] precise = { 76561, 76693, 76693, 83147 };
+                #endregion
+
+                #region Blue Gems
+                /// <summary>
+                /// Hit Rating Blue Gems
+                /// </summary>
+                int[] rigid = { 76502, 76636, 76636, 83144 };
+                #endregion
+
+                #region Yellow Gems
+                /// <summary>
+                /// Mastery Rating Yellow Gems
+                /// </summary>
+                int[] fractured = { 76568, 76700, 76700, 83143 };
+                /// <summary>
+                /// Haste Rating Yellow Gems
+                /// </summary>
+                int[] quick = { 76567, 76699, 76699, 83142 };
+                /// <summary>
+                /// Critical Strike Rating Yellow Gems
+                /// </summary>
+                int[] smooth = { 76565, 76697, 76697, 83146 };
+                #endregion
+
+                #region Purple Gems
+                /// <summary>
+                /// Agility + Hit Rating Purple Gems
+                /// </summary>
+                int[] glinting = { 76548, 76680, 88955, 76680 };
+                /// <summary>
+                /// Agility + Stamina Purple Gems
+                /// </summary>
+                int[] shifting = { 76555, 76687, 88960, 76687 };
+                #endregion
+
+                #region Green Gems
+                /// <summary>
+                /// Haste Rating + Stamina Green Gems
+                /// </summary>
+                int[] forceful = { 76522, 76654, 88914, 76654 };
+                /// <summary>
+                /// Critical Strike Rating + Stamina Green Gems
+                /// </summary>
+                int[] jagged = { 76520, 76652, 88915, 76652 };
+                /// <summary>
+                /// Haste Rating + Hit Rating Green Gems
+                /// </summary>
+                int[] lightning = { 76509, 76642, 88916, 76642 };
+                /// <summary>
+                /// Critical Strike Rating + Hit Rating Green Gems
+                /// </summary>
+                int[] piercing = { 76508, 76641, 88919, 76641 };
+                /// <summary>
+                /// Mastery Rating + Stamina Green Gems
+                /// </summary>
+                int[] puissant = { 76524, 76656, 88920, 76656 };
+                /// <summary>
+                /// Mastery Rating + Hit Rating Green Gems
+                /// </summary>
+                int[] sensei = { 76510, 76643, 88923, 76643 };
+                #endregion
+
+                #region Orange Gems
+                /// <summary>
+                /// Agility + Mastery Rating Orange Gems
+                /// </summary>
+                int[] adept = { 76538, 76670, 88930, 76670 };
+                /// <summary>
+                /// Agility + Critical Strike Rating Orange Gems
+                /// </summary>
+                int[] deadly = { 76526, 76658, 88934, 76658 };
+                /// <summary>
+                /// Agility + Haste Rating Orange Gems
+                /// </summary>
+                int[] deft = { 76534, 76666, 88935, 76666 };
+                #endregion
+
+                #region Cogwheels
+                /// <summary>
+                /// Mastery Rating Cogwheel
+                /// </summary>
+                int cog_fractured = 77547;
+                /// <summary>
+                /// Expertise Rating Cogwheel
+                /// </summary>
+                int cog_precise = 77543;
+                /// <summary>
+                /// Haste Rating Cogwheel
+                /// </summary>
+                int cog_quick = 77542;
+                /// <summary>
+                /// Hit Rating Cogwheel
+                /// </summary>
+                int cog_rigid = 77545;
+                /// <summary>
+                /// Critical Strike Rating Cogwheel
+                /// </summary>
+                int cog_smooth = 77541;
+                #endregion
+
+                #region Hydraulic
+                /// <summary>
+                /// Agility Hydraulic
+                /// </summary>
+                int cryst_dread = 89873;
+
+                #endregion
 
                 List<GemmingTemplate> list = new List<GemmingTemplate>();
                 for (int tier = 0; tier < 2; tier++)
                 {
                     list.AddRange(new GemmingTemplate[]
                         {
-                            CreateHunterGemmingTemplate(tier, delicate, delicate, delicate, delicate, agile), 
-                            CreateHunterGemmingTemplate(tier, delicate, adept, glinting, delicate, agile),
-                            CreateHunterGemmingTemplate(tier, delicate, deadly, shifting, delicate, agile),
-                            CreateHunterGemmingTemplate(tier, delicate, deft, glinting, delicate, chaotic),
+                            CreateHunterGemmingTemplate(tier, delicate, delicate, delicate, delicate, agile, cryst_dread), 
+                            CreateHunterGemmingTemplate(tier, delicate, adept, glinting, delicate, agile, cryst_dread),
+                            CreateHunterGemmingTemplate(tier, delicate, deadly, shifting, delicate, agile, cryst_dread),
+                            CreateHunterGemmingTemplate(tier, delicate, deft, glinting, delicate, agile, cryst_dread),
 
 
-                            new GemmingTemplate() { Model = "Hunter", Group = "Engineer", Enabled = false, CogwheelId = cog_hit[0], Cogwheel2Id = cog_mst[0], MetaId = agile, },
-                            new GemmingTemplate() { Model = "Hunter", Group = "Engineer", Enabled = false, CogwheelId = cog_hit[0], Cogwheel2Id = cog_crt[0], MetaId = agile, },
-                            new GemmingTemplate() { Model = "Hunter", Group = "Engineer", Enabled = false, CogwheelId = cog_hit[0], Cogwheel2Id = cog_has[0], MetaId = agile, },
+                            new GemmingTemplate() { Model = "Hunter", Group = "Engineer", Enabled = false, CogwheelId = cog_rigid, Cogwheel2Id = cog_fractured, MetaId = agile, },
+                            new GemmingTemplate() { Model = "Hunter", Group = "Engineer", Enabled = false, CogwheelId = cog_rigid, Cogwheel2Id = cog_smooth, MetaId = agile, },
+                            new GemmingTemplate() { Model = "Hunter", Group = "Engineer", Enabled = false, CogwheelId = cog_rigid, Cogwheel2Id = cog_quick, MetaId = agile, },
 
-                            new GemmingTemplate() { Model = "Hunter", Group = "Engineer", Enabled = false, CogwheelId = cog_mst[0], Cogwheel2Id = cog_crt[0], MetaId = agile, },
-                            new GemmingTemplate() { Model = "Hunter", Group = "Engineer", Enabled = false, CogwheelId = cog_mst[0], Cogwheel2Id = cog_has[0], MetaId = agile, },
+                            new GemmingTemplate() { Model = "Hunter", Group = "Engineer", Enabled = false, CogwheelId = cog_fractured, Cogwheel2Id = cog_smooth, MetaId = agile, },
+                            new GemmingTemplate() { Model = "Hunter", Group = "Engineer", Enabled = false, CogwheelId = cog_fractured, Cogwheel2Id = cog_quick, MetaId = agile, },
 
-                            new GemmingTemplate() { Model = "Hunter", Group = "Engineer", Enabled = false, CogwheelId = cog_crt[0], Cogwheel2Id = cog_has[0], MetaId = agile, },
+                            new GemmingTemplate() { Model = "Hunter", Group = "Engineer", Enabled = false, CogwheelId = cog_smooth, Cogwheel2Id = cog_quick, MetaId = agile, },
                         });
                 }
 
@@ -93,7 +240,7 @@ namespace Rawr.Hunter {
             if (thearray[3] == 0) thearray[3] = thearray[2]; // There was a Purple Rarity (or Blue Rarity/Green Rarity as set above), but no Jewel
         }
         private const int DEFAULT_GEMMING_TIER = 1;
-        private GemmingTemplate CreateHunterGemmingTemplate(int tier, int[] red, int[] yellow, int[] blue, int[] prismatic, int meta)
+        private GemmingTemplate CreateHunterGemmingTemplate(int tier, int[] red, int[] yellow, int[] blue, int[] prismatic, int meta, int hydraulic)
         {
             return new GemmingTemplate()
             {
@@ -104,7 +251,8 @@ namespace Rawr.Hunter {
                 YellowId = yellow[tier],
                 BlueId = blue[tier],
                 PrismaticId = prismatic[tier],
-                MetaId = meta
+                MetaId = meta,
+                HydraulicId = hydraulic
             };
         }
         #endregion
@@ -145,6 +293,7 @@ namespace Rawr.Hunter {
                         "Basic Stats:Agility",
                         "Basic Stats:Ranged Attack Power",
                         "Basic Stats:Hit*8.00% chance to miss base for Yellow Attacks",
+                        "Basic Stats:Expertise",
                         "Basic Stats:Crit",
                         "Basic Stats:Haste",
                         "Basic Stats:Mastery",
@@ -177,6 +326,16 @@ namespace Rawr.Hunter {
                         "Shot Stats:Lock N Load",
                         "Shot Stats:Black Arrow",
                         "Shot Stats:Chimera Shot",
+                        #endregion
+
+                        #region Talent Shots
+                        "Talent Shot Stats:T4 - Dire Beast",
+                        "Talent Shot Stats:T5 - A Murder of Crows",
+                        "Talent Shot Stats:T5 - Blink Strike",
+                        "Talent Shot Stats:T5 - Lynx Rush",
+                        "Talent Shot Stats:T6 - Glaive Toss",
+                        "Talent Shot Stats:T6 - Powershot",
+                        "Talent Shot Stats:T6 - Barrage",
                         #endregion
 
                         #region Sting Information
@@ -293,10 +452,7 @@ namespace Rawr.Hunter {
                     _relevantItemTypes = new List<ItemType>(new[] {
                         ItemType.None,
                         ItemType.Leather, ItemType.Mail,
-                        ItemType.Bow, ItemType.Crossbow, ItemType.Gun,
-                        ItemType.FistWeapon, ItemType.Dagger, ItemType.OneHandAxe, ItemType.OneHandSword,
-                        ItemType.Polearm, ItemType.Staff,
-                        ItemType.TwoHandAxe, ItemType.TwoHandSword
+                        ItemType.Bow, ItemType.Crossbow, ItemType.Gun
                     });
                 }
                 return _relevantItemTypes;
@@ -409,9 +565,11 @@ namespace Rawr.Hunter {
                 PhysicalHit = stats.PhysicalHit,
                 HitRating = stats.HitRating,
                 RangedHitRating = stats.RangedHitRating,
+                ExpertiseRating = stats.ExpertiseRating,
                 PhysicalHaste = stats.PhysicalHaste,
                 HasteRating = stats.HasteRating,
                 RangedHasteRating = stats.RangedHasteRating,
+                Mastery = stats.Mastery,
                 MasteryRating = stats.MasteryRating,
 
                 TargetArmorReduction = stats.TargetArmorReduction,
@@ -498,6 +656,8 @@ namespace Rawr.Hunter {
             if (stats.PhysicalHaste != 0) { return true; }
             if (stats.HitRating != 0) { return true; }
             if (stats.RangedHitRating != 0) { return true; }
+            if (stats.ExpertiseRating != 0) { return true; }
+            if (stats.Mastery != 0) { return true; }
             if (stats.MasteryRating != 0) { return true; }
             #endregion
             #region Bonuses
@@ -1227,7 +1387,7 @@ namespace Rawr.Hunter {
         }
         #endregion
 
-        #region CalculationsBase Overrides
+        #region CalculationsBase Overrides - Commented out
         /*        private void GenPrioRotation(CharacterCalculationsHunter calculatedStats, CalculationOptionsHunter calcOpts, HunterTalents talents) {
             calculatedStats.priorityRotation = new ShotPriority(calcOpts);
             calculatedStats.priorityRotation.priorities[0] = getShotByIndex(calcOpts.PriorityIndex1, calculatedStats);
@@ -1407,6 +1567,16 @@ namespace Rawr.Hunter {
 
         public float ConstrainCrit(float lvlDifMOD, float chance) { return Math.Min(1f + lvlDifMOD, Math.Max(0f, chance)); }
 */
+        #endregion
+
+        #region CalculationsBase Overrides - Active
+        public override bool EnchantFitsInSlot(Enchant enchant, Character character, ItemSlot slot)
+        {
+            // Only allow ranged enchants in main hand
+            if (enchant.Slot == ItemSlot.OneHand || enchant.Slot == ItemSlot.TwoHand) return false;
+            // Otherwise, return the base value
+            return base.EnchantFitsInSlot(enchant, character, slot);
+        }
 
         public override CharacterCalculationsBase GetCharacterCalculations(Character character, Item additionalItem, bool referenceCalculation, bool significantChange, bool needsDisplayCalculations)
         {
@@ -1422,7 +1592,7 @@ namespace Rawr.Hunter {
             calc.BossOpts = bossOpts;
 
             HunterTalents talents = character.HunterTalents;
-            Specialization hunterspec = GetSpecialization(talents);
+            Specialization hunterspec = GetSpecialization(character.HunterTalents.Specialization);
 
             calc.Hunter = new HunterBase(character, this.GetCharacterStats(character, additionalItem, true), talents, hunterspec, bossOpts.Level);
             CombatFactors combatFactors = new CombatFactors(character, calc.Hunter.Stats, calcOpts, bossOpts);
@@ -1463,7 +1633,7 @@ namespace Rawr.Hunter {
                 if (null == calcOpts) { calcOpts = new CalculationOptionsHunter(); }
                 HunterTalents talents = character.HunterTalents;
                 if (null == talents) { return statsTotal; }
-                Specialization tree = GetSpecialization(talents);
+                Specialization tree = GetSpecialization(character.HunterTalents.Specialization);
                 CharacterCalculationsHunter calculatedStats = new CharacterCalculationsHunter();
                 if (null == calculatedStats)
                 {
@@ -1496,9 +1666,14 @@ namespace Rawr.Hunter {
                 statsTotal.Stamina = (float)Math.Floor(statsTotal.Stamina * (1f + statsTotal.BonusStaminaMultiplier));
                 statsTotal.Agility = (float)Math.Floor(statsTotal.Agility * (1f + statsTotal.BonusAgilityMultiplier));
                 calculatedStats.critFromAgi = statsTotal.Agility;
-                // Agi bonus to Survival doesn't affect crit?
-                if (tree == Specialization.Survival) calculatedStats.critFromAgi /= 1.1f;
-                statsTotal.AttackPower += (statsTotal.Agility * 2f); 
+                // Agi bonus just for spec is not in MoP
+                //Agi bonus to Survival doesn't affect crit?
+                //if (tree == Specialization.Survival) calculatedStats.critFromAgi /= 1.1f;
+
+                //OpOv: MoP base attack power now tied directly to character level (pre-release, TODO: Check at release)
+                statsTotal.AttackPower += character.Level * 2;
+                
+                statsTotal.AttackPower += ((statsTotal.Agility-10) * 2f); 
                 statsTotal.AttackPower = statsTotal.RangedAttackPower = (float)Math.Floor(statsTotal.AttackPower * (1f + statsTotal.BonusAttackPowerMultiplier));
                 statsTotal.Health += (float)Math.Floor((statsTotal.Stamina - 20f) * 14f + 20f);
                 statsTotal.Health = (float)Math.Floor(statsTotal.Health * (1f + statsTotal.BonusHealthMultiplier));
@@ -1619,15 +1794,17 @@ namespace Rawr.Hunter {
         {
             StatsHunter s = new StatsHunter();
             #region Specializations : Abilities/Bonuses from picking a tree.
-            switch ((Specialization)talents.HighestTree)
+            switch ((Specialization)talents.Specialization)
             {
                 // BM
                 case Specialization.BeastMastery:
                     {
                         // Initimitation 
                         // TODO: Implemented in Shots/Abilities
+                        
                         // Animal Handler
-                        s.BonusAttackPowerMultiplier += 0.25f;
+                        s.BonusAttackPowerMultiplier += 0.3f;
+                        
                         // Mastery: Master of Beasts
                         // TODO: s.BonusPetDamageMultiplier += .13 + 0.0167 * Mastery
                         break;
@@ -1637,8 +1814,10 @@ namespace Rawr.Hunter {
                     {
                         // Aimed Shot
                         // TODO: Implemented in Shots/Abilities
+                        
                         // Artisan Quiver
                         // TODO: Auto-attack damage + 15%
+                        
                         // Mastery: Wild Quiver
                         // TODO: Additional Auto-Shot 16.8% + 2.1% per Mastery
                         break;
@@ -1648,10 +1827,14 @@ namespace Rawr.Hunter {
                     {
                         // Explosive Shot
                         // TODO: Implemented in Shots/Abilities
-                        // Intothe Wilderness
+
+                        // Into the Wilderness
                         s.BonusAgilityMultiplier += .1f;
+                        
                         // Mastery: Essence of the Viper
                         // Bonus magic damage 8% + 1% per mastery
+                        
+
                         break;
                     }
 
@@ -1786,143 +1969,28 @@ namespace Rawr.Hunter {
             triggerIntervals[Trigger.Use] = effect.Cooldown;
             if (float.IsInfinity(effect.Cooldown)) triggerIntervals[Trigger.Use] = Char.BossOptions.BerserkTimer;
 
-            ItemInstance RangeWeap = Char.Ranged;
+            ItemInstance RangeWeap = Char.MainHand;
             float unhastedAttackSpeed = (RangeWeap != null ? RangeWeap.Speed : 2.4f);
 
-            effect.AccumulateAverageStats(statsAverage, triggerIntervals, triggerChances, unhastedAttackSpeed, Char.BossOptions.BerserkTimer);
+            effect.AccumulateAverageStats(statsAverage, triggerIntervals, triggerChances, unhastedAttackSpeed, 1f, Char.BossOptions.BerserkTimer);
             return statsAverage;
         }
 
-        #if FALSE
-        private StatsHunter GetSpecialEffectsStats(Character Char, Dictionary<Trigger, float> triggerIntervals, Dictionary<Trigger, float> triggerChances, StatsHunter statsTotal, StatsHunter statsToProcess)
-        {
-            CalculationOptionsHunter calcOpts = Char.CalculationOptions as CalculationOptionsHunter;
-            //BossOptions bossOpts = Char.BossOptions;
-            ItemInstance RangeWeap = Char.MainHand;
-            float speed = (RangeWeap != null ? RangeWeap.Speed : 2.4f);
-            HunterTalents talents = Char.HunterTalents;
-            StatsHunter statsProcs = new StatsHunter();
-            float fightDuration_M = 450f;   //bossOpts.BerserkTimer;
-            StatsHunter _stats, _stats2;
-            try
-            {
-                foreach (SpecialEffect effect in (statsToProcess != null ? statsToProcess.SpecialEffects() : statsTotal.SpecialEffects()))
-                {
-                    float fightDuration = fightDuration_M;
-                    /*float oldArp = float.Parse(effect.Stats.ArmorPenetrationRating.ToString());
-                    float arpToHardCap = StatConversion.RATING_PER_ARMORPENETRATION;
-                    if (effect.Stats.ArmorPenetrationRating > 0) {
-                        float arpenBuffs = 0.0f;
-                        float currentArp = arpenBuffs + StatConversion.GetArmorPenetrationFromRating(statsTotal.ArmorPenetrationRating
-                            + (statsToProcess != null ? statsToProcess.ArmorPenetrationRating : 0f));
-                        arpToHardCap *= (1f - currentArp);
-                    }*/
-                    if (triggerIntervals.ContainsKey(effect.Trigger) && (triggerIntervals[effect.Trigger] > 0f || effect.Trigger == Trigger.Use))
-                    {
-                        float weight = 1f;
-                        switch (effect.Trigger)
-                        {
-                            case Trigger.Use:
-                                _stats = new StatsHunter();
-                                if (effect.Stats._rawSpecialEffectDataSize == 1 && statsToProcess == null)
-                                {
-                                    float uptime = effect.GetAverageUptime(0f, 1f, speed, fightDuration);
-                                    _stats.AddSpecialEffect(effect.Stats._rawSpecialEffectData[0]);
-                                    _stats2 = GetSpecialEffectsStats(Char, triggerIntervals, triggerChances, statsTotal, _stats);
-                                    _stats = _stats2 * uptime;
-                                }
-                                else
-                                {
-                                    /*if (effect.Stats.ArmorPenetrationRating > 0 && arpToHardCap < effect.Stats.ArmorPenetrationRating) {
-                                        float uptime = effect.GetAverageUptime(0f, 1f, speed, fightDuration);
-                                        weight = uptime;
-                                        _stats.ArmorPenetrationRating = arpToHardCap;
-                                    } else {*/
-                                    //    _stats = effect.GetAverageStats(0f, 1f, speed, fightDuration);
-                                    _stats = effect.GetAverageStats(triggerIntervals, triggerChances, speed, fightDuration, 1f) as StatsHunter;
-                                    //}
-                                }
-                                statsProcs.Accumulate(_stats, weight);
-                                _stats = null;
-                                break;
-                            case Trigger.RangedHit:
-                            case Trigger.PhysicalHit:
-                            case Trigger.PhysicalAttack:
-                                _stats = new StatsHunter();
-                                weight = 1.0f;
-                                {
-                                    /*if (effect.Stats.ArmorPenetrationRating > 0 && arpToHardCap < effect.Stats.ArmorPenetrationRating) {
-                                        float uptime = effect.GetAverageUptime(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger], speed, fightDuration);
-                                        weight = uptime;
-                                        _stats.ArmorPenetrationRating = arpToHardCap;
-                                    } else {*/
-                                    _stats = effect.GetAverageStats(triggerIntervals, triggerChances, speed, fightDuration, weight) as StatsHunter;
-                                    //}
-                                }
-                                statsProcs.Accumulate(_stats, weight);
-                                _stats = null;
-                                break;
-                            case Trigger.MeleeHit: // Pets Only
-                            case Trigger.MeleeCrit: // Pets Only
-                            case Trigger.RangedCrit:
-                            case Trigger.PhysicalCrit:
-                            case Trigger.DoTTick:
-                            case Trigger.DamageDone: // physical and dots
-                            case Trigger.DamageOrHealingDone: // physical and dots
-                            case Trigger.HunterAutoShotHit:
-                            case Trigger.SteadyShotHit:
-                            case Trigger.CobraShotHit:
-                            case Trigger.PetClawBiteSmackCrit:
-                                _stats = new StatsHunter();
-                                weight = 1.0f;
-                                /*if (effect.Stats.ArmorPenetrationRating > 0 && arpToHardCap < effect.Stats.ArmorPenetrationRating) {
-                                    float uptime = effect.GetAverageUptime(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger], speed, fightDuration);
-                                    weight = uptime;
-                                    _stats.ArmorPenetrationRating = arpToHardCap;
-                                } else {*/
-                                _stats = effect.GetAverageStats(triggerIntervals, triggerChances, speed, fightDuration, weight) as StatsHunter;
-                                //}
-                                statsProcs.Accumulate(_stats, weight);
-                                break;
-                            case Trigger.SerpentWyvernStingsDoDamage:
-                                _stats = new StatsHunter();
-                                weight = 1.0f;
-                                /*if (effect.Stats.ArmorPenetrationRating > 0 && arpToHardCap < effect.Stats.ArmorPenetrationRating) {
-                                    float uptime = effect.GetAverageUptime(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger], speed, fightDuration);
-                                    weight = uptime;
-                                    _stats.ArmorPenetrationRating = arpToHardCap;
-                                } else {*/
-                                _stats = effect.GetAverageStats(triggerIntervals, triggerChances, speed, fightDuration, weight) as StatsHunter;
-                                //}
-                                statsProcs.Accumulate(_stats, weight);
-                                break;
-                        }
-                    }
-                    //effect.Stats.ArmorPenetrationRating = oldArp;
-                }
-            }
-            catch (Exception ex)
-            {
-                new Base.ErrorBox()
-                {
-                    Title = "Error in getting Special Effect information",
-                    Function = "GetSpecialEffectsStats()",
-                    TheException = ex,
-                }.Show();
-            }
-            return statsProcs;
-        }
-        #endif
+        
 
         #endregion //overrides
 
         #region Private Functions
-        private Specialization GetSpecialization(HunterTalents t)
+        private Specialization GetSpecialization(int spec)
         {
-            Specialization curSpecialization = Specialization.BeastMastery;
-            if (t.HighestTree < EnumHelper.GetCount(typeof(Specialization)))
-                curSpecialization = (Specialization)t.HighestTree;
-            return curSpecialization;
+            if (spec == 0)
+                return Specialization.BeastMastery;
+            else if (spec == 1)
+                return Specialization.Marksmanship;
+            else if (spec == 2)
+                return Specialization.Survival;
+            else
+                throw new NotImplementedException("Hunter Specialization passed to function has not been implemented!");
         }
         
         /*
@@ -1953,15 +2021,7 @@ namespace Rawr.Hunter {
         }
          */
         public static float CalcEffectiveDamage(float damageNormal, float missChance, float critChance, float critAdjust, float damageAdjust) {
-            /* OLD CODE
-             * 
-            float damageCrit  =  damageNormal * (1f + critAdjust);
-            float damageTotal = (damageNormal * (1f - critChance)
-                                 + (damageCrit * critChance));
-            float damageReal  = damageTotal * damageAdjust * (1f - missChance);
-
-            return damageReal;*/
-
+            
             float dmg = damageNormal; // MhDamage;                  // Base Damage
             //dmg *= combatFactors.DamageBonus;      // Global Damage Bonuses
             //dmg *= combatFactors.DamageReduction;  // Global Damage Penalties
@@ -1985,19 +2045,7 @@ namespace Rawr.Hunter {
 
             return dmg;
         }
-/*        public float GetArmorDamageReduction(Character Char, Stats StatS, CalculationOptionsHunter CalcOpts, BossOptions BossOpts) {
-            float armorReduction;
-            float arpenBuffs = 0.0f;
 
-            if (BossOpts == null) {
-                armorReduction = Math.Max(0f, 1f - StatConversion.GetArmorDamageReduction(Char.Level, (int)StatConversion.NPC_ARMOR[3], StatS.TargetArmorReduction, arpenBuffs)); // default is vs raid boss
-            } else {
-                armorReduction = Math.Max(0f, 1f - StatConversion.GetArmorDamageReduction(Char.Level, BossOpts.Armor, StatS.TargetArmorReduction, arpenBuffs));
-            }
-
-            return armorReduction;
-        }
-*/
         #endregion
     }
 }

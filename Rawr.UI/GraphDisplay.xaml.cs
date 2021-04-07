@@ -161,6 +161,12 @@ namespace Rawr.UI
             CK_iLvl_11.SetBinding(CheckBox.IsCheckedProperty, new System.Windows.Data.Binding("ilvlF_11") { Mode = BindingMode.TwoWay });
             CK_iLvl_12.SetBinding(CheckBox.IsCheckedProperty, new System.Windows.Data.Binding("ilvlF_12") { Mode = BindingMode.TwoWay });
             CK_iLvl_13.SetBinding(CheckBox.IsCheckedProperty, new System.Windows.Data.Binding("ilvlF_13") { Mode = BindingMode.TwoWay });
+            CK_iLvl_14.SetBinding(CheckBox.IsCheckedProperty, new System.Windows.Data.Binding("ilvlF_14") { Mode = BindingMode.TwoWay });
+            CK_iLvl_15.SetBinding(CheckBox.IsCheckedProperty, new System.Windows.Data.Binding("ilvlF_15") { Mode = BindingMode.TwoWay });
+            CK_iLvl_16.SetBinding(CheckBox.IsCheckedProperty, new System.Windows.Data.Binding("ilvlF_16") { Mode = BindingMode.TwoWay });
+            CK_iLvl_17.SetBinding(CheckBox.IsCheckedProperty, new System.Windows.Data.Binding("ilvlF_17") { Mode = BindingMode.TwoWay });
+            CK_iLvl_18.SetBinding(CheckBox.IsCheckedProperty, new System.Windows.Data.Binding("ilvlF_18") { Mode = BindingMode.TwoWay });
+            CK_iLvl_19.SetBinding(CheckBox.IsCheckedProperty, new System.Windows.Data.Binding("ilvlF_19") { Mode = BindingMode.TwoWay });
             RS_iLvl.SetBinding(RangeSlider.LowerValueProperty, new System.Windows.Data.Binding("ilvlF_SLMin") { Mode = BindingMode.TwoWay });
             RS_iLvl.SetBinding(RangeSlider.UpperValueProperty, new System.Windows.Data.Binding("ilvlF_SLMax") { Mode = BindingMode.TwoWay });
             #endregion
@@ -226,10 +232,10 @@ namespace Rawr.UI
                     return 
                         // Stats
                           "Agility and Strength|Intellect|Spirit|Stamina|Stat Add|Stat Multiplier"
-                        + "|Health|Attack Power|Attack Power (%)|Ranged Attack Power|Spell Power|Haste (%)|Spell Haste|Physical Haste"
+                        + "|Stats|Stamina|Health|Attack Power|Attack Power (%)|Ranged Attack Power|Spell Power|Haste (%)|Spell Haste|Physical Haste"
                         // Offensive
                         + "|Damage (%)|Bleed Damage"
-                        + "|Physical Critical Strike Chance|Spell Critical Strike Chance|Focus Magic, Spell Critical Strike Chance"
+                        + "|Critical Strike|Mastery|Physical Critical Strike Chance|Spell Critical Strike Chance|Focus Magic, Spell Critical Strike Chance"
                         // Defensive
                         + "|Armor|Damage Reduction (Major %)|Damage Reduction (Minor %)|Resistance"
                         // Healing
@@ -249,7 +255,7 @@ namespace Rawr.UI
                         + "|Armor (Major)|Armor (Minor)|Armor Debuff"
                         // Vulvernability
                         + "|Physical Vulnerability|Spell Sensitivity|Target Physical Damage Reduction|Target Damage Reduction"
-                        + "|Disease Damage Taken|Spell Damage Taken";
+                        + "|Disease Damage Taken|Spell Damage Taken|Magic Vulnerability";
                 }
                 case "Current": { return "Current"; }
                 default: { return buffGroup; }
@@ -264,7 +270,6 @@ namespace Rawr.UI
             {
                 case "Gear":                UpdateGraphGear(parts[1]); break;
                 case "Enchants":            UpdateGraphEnchants(parts[1]); break;
-                case "Reforgings":          UpdateGraphReforgings(parts[1]); break;
                 case "Tinkerings":          UpdateGraphTinkerings(parts[1]); break;
                 case "Gems":                UpdateGraphGems(parts[1]); break;
                 case "Buffs":               UpdateGraphBuffs(parts[1]); break;
@@ -277,6 +282,7 @@ namespace Rawr.UI
                 case "Bosses":              UpdateGraphBosses(parts[1]); break;
                 case "Stat Values":         UpdateGraphStatValues(parts[1]); break;
                 case "Search Results":      UpdateGraphSearchResults(parts[1]); break;
+                case "Item Upgrades":       UpdateGraphUpgrades(parts[1]); break;
                 default: UpdateGraphModelSpecific(parts[1]); break;
             }
         }
@@ -295,6 +301,7 @@ namespace Rawr.UI
         private ComparisonCalculationBase[] _searchCalculations = null;
         private ComparisonCalculationBase[] _itemSetCalculations = null;
         private ComparisonCalculationBase[] _enchantCalculations = null;
+        private ComparisonCalculationBase[] _upgradeCalculations = null;
         private ComparisonCalculationBase[] _bossCalculations = null;
         private ComparisonCalculationBase[] _buffCalculations = null;
         private ComparisonCalculationBase[] _raceCalculations = null;
@@ -465,7 +472,7 @@ namespace Rawr.UI
                      {CharacterSlot.MainHand, Character[CharacterSlot.MainHand] == null},
                      {CharacterSlot.Neck, Character[CharacterSlot.Neck] == null},
                      {CharacterSlot.OffHand, Character[CharacterSlot.OffHand] == null},
-                     {CharacterSlot.Ranged, Character[CharacterSlot.Ranged] == null},
+                     //{CharacterSlot.Ranged, Character[CharacterSlot.Ranged] == null},
                      {CharacterSlot.Shoulders, Character[CharacterSlot.Shoulders] == null},
                      {CharacterSlot.Trinket1, Character[CharacterSlot.Trinket1] == null},
                      {CharacterSlot.Trinket2, Character[CharacterSlot.Trinket2] == null},
@@ -489,7 +496,8 @@ namespace Rawr.UI
                 foreach(CharacterSlot s in slots.Keys) {
                     relevantItemInstances.AddRange(Character.GetRelevantItemInstances(s));
                 }
-            } catch (Exception) { relevantItemInstances = new List<ItemInstance>(); }
+            }
+            catch (Exception) { relevantItemInstances = new List<ItemInstance>(); }
             // Give us fresh values for the thread safety checks
             _itemCalculations = new ComparisonCalculationBase[relevantItemInstances.Count];
             _calculationCount = 0;
@@ -640,7 +648,7 @@ namespace Rawr.UI
                      {ItemSlot.MainHand, Character[CharacterSlot.MainHand] == null},
                      {ItemSlot.OneHand, Character[CharacterSlot.MainHand] == null},
                      {ItemSlot.OffHand, Character[CharacterSlot.OffHand] == null},
-                     {ItemSlot.Ranged, Character[CharacterSlot.Ranged] == null},
+                     //{ItemSlot.Ranged, Character[CharacterSlot.Ranged] == null},
                      //{ItemSlot.Neck, Character[CharacterSlot.Neck] == null},
                      //{ItemSlot.Trinket, Character[CharacterSlot.Trinket1] == null},
                      //{ItemSlot.Waist, Character[CharacterSlot.Waist] == null},
@@ -668,68 +676,6 @@ namespace Rawr.UI
             ComparisonGraph.DisplayCalcs(_enchantCalculations = enchantCalculations.ToArray());
 #if DEBUG
             System.Diagnostics.Debug.WriteLine("Finished Enchant Comparison Calculations: Total " + DateTime.Now.Subtract(start).TotalMilliseconds.ToString() + "ms");
-#endif
-        }
-
-        private void UpdateGraphReforgings(string subgraph)
-        {
-            SetGraphControl(ComparisonGraph);
-            List<ComparisonCalculationBase> reforgeCalculations = new List<ComparisonCalculationBase>();
-#if DEBUG
-            DateTime start;
-#endif
-            Dictionary<CharacterSlot, bool> slots;
-            bool forceSlotName = false;
-
-            // Determine which chart we are looking for. All will have the whole list, specific will just have that slot in the list
-            if (subgraph == "All (This is Slow to Calc)")
-            {
-                // Run All Slots
-                slots = new Dictionary<CharacterSlot, bool>() {
-                     {CharacterSlot.Head, Character[CharacterSlot.Head] == null},
-                     {CharacterSlot.Shoulders, Character[CharacterSlot.Shoulders] == null},
-                     {CharacterSlot.Back, Character[CharacterSlot.Back] == null},
-                     {CharacterSlot.Chest, Character[CharacterSlot.Chest] == null},
-                     {CharacterSlot.Wrist, Character[CharacterSlot.Wrist] == null},
-                     {CharacterSlot.Hands, Character[CharacterSlot.Hands] == null},
-                     {CharacterSlot.Legs, Character[CharacterSlot.Legs] == null},
-                     {CharacterSlot.Feet, Character[CharacterSlot.Feet] == null},
-                     {CharacterSlot.Finger1, Character[CharacterSlot.Finger1] == null},
-                     {CharacterSlot.Finger2, Character[CharacterSlot.Finger2] == null},
-                     {CharacterSlot.MainHand, Character[CharacterSlot.MainHand] == null},
-                     {CharacterSlot.OffHand, Character[CharacterSlot.OffHand] == null},
-                     {CharacterSlot.Ranged, Character[CharacterSlot.Ranged] == null},
-                     {CharacterSlot.Neck, Character[CharacterSlot.Neck] == null},
-                     {CharacterSlot.Trinket1, Character[CharacterSlot.Trinket1] == null},
-                     {CharacterSlot.Trinket2, Character[CharacterSlot.Trinket2] == null},
-                     {CharacterSlot.Waist, Character[CharacterSlot.Waist] == null},
-                     //{ItemSlot.Projectile, Character[CharacterSlot.Projectile] == null},
-                     //{ItemSlot.ProjectileBag, Character[CharacterSlot.ProjectileBag] == null},
-                };
-                forceSlotName = true;
-            }
-            else
-            {
-                CharacterSlot _itemSlot = (CharacterSlot)Enum.Parse(typeof(CharacterSlot), subgraph.Replace(" ", ""), true);
-                slots = new Dictionary<CharacterSlot, bool>() {
-                    {_itemSlot, Character[_characterSlot] == null},
-                };
-            }
-
-            CGL_Legend.LegendItems = Calculations.SubPointNameColors;
-            ComparisonGraph.LegendItems = Calculations.SubPointNameColors;
-            ComparisonGraph.Mode = ComparisonGraph.DisplayMode.Subpoints;
-#if DEBUG
-            System.Diagnostics.Debug.WriteLine("Starting Reforge Comparison Calculations");
-            start = DateTime.Now;
-#endif
-            foreach (CharacterSlot s in slots.Keys)
-            {
-                reforgeCalculations.AddRange(Calculations.GetReforgeCalculations(s, Character, Calculations.GetCharacterCalculations(Character), false, forceSlotName));
-            }
-            ComparisonGraph.DisplayCalcs(_enchantCalculations = reforgeCalculations.ToArray());
-#if DEBUG
-            System.Diagnostics.Debug.WriteLine("Finished Reforge Comparison Calculations: Total " + DateTime.Now.Subtract(start).TotalMilliseconds.ToString() + "ms");
 #endif
         }
 
@@ -774,6 +720,64 @@ namespace Rawr.UI
             ComparisonGraph.DisplayCalcs(_enchantCalculations = enchantCalculations.ToArray());
 #if DEBUG
             System.Diagnostics.Debug.WriteLine("Finished Enchant Comparison Calculations: Total " + DateTime.Now.Subtract(start).TotalMilliseconds.ToString() + "ms");
+#endif
+        }
+
+        private void UpdateGraphUpgrades(string subgraph)
+        {
+            SetGraphControl(ComparisonGraph);
+            List<ComparisonCalculationBase> upgradeCalculations = new List<ComparisonCalculationBase>();
+#if DEBUG
+            DateTime start;
+#endif
+            Dictionary<CharacterSlot, bool> slots;
+
+            // Determine which chart we are looking for. All will have the whole list, specific will just have that slot in the list
+            if (subgraph == "All")
+            {
+                // Run All Slots
+                slots = new Dictionary<CharacterSlot, bool>() {
+                     {CharacterSlot.Back, Character[CharacterSlot.Back] == null},
+                     {CharacterSlot.Chest, Character[CharacterSlot.Chest] == null},
+                     {CharacterSlot.Feet, Character[CharacterSlot.Feet] == null},
+                     {CharacterSlot.Finger1, Character[CharacterSlot.Finger1] == null},
+                     {CharacterSlot.Finger2, Character[CharacterSlot.Finger2] == null},
+                     {CharacterSlot.Hands, Character[CharacterSlot.Hands] == null},
+                     {CharacterSlot.Head, Character[CharacterSlot.Head] == null},
+                     {CharacterSlot.Legs, Character[CharacterSlot.Legs] == null},
+                     {CharacterSlot.MainHand, Character[CharacterSlot.MainHand] == null},
+                     {CharacterSlot.Neck, Character[CharacterSlot.Neck] == null},
+                     {CharacterSlot.OffHand, Character[CharacterSlot.OffHand] == null},
+                     {CharacterSlot.Shoulders, Character[CharacterSlot.Shoulders] == null},
+                     {CharacterSlot.Trinket1, Character[CharacterSlot.Trinket1] == null},
+                     {CharacterSlot.Trinket2, Character[CharacterSlot.Trinket2] == null},
+                     {CharacterSlot.Waist, Character[CharacterSlot.Waist] == null},
+                     {CharacterSlot.Wrist, Character[CharacterSlot.Wrist] == null},
+                };
+            }
+            else
+            {
+                _characterSlot = (CharacterSlot)Enum.Parse(typeof(CharacterSlot), subgraph.Replace(" ", ""), true);
+                ComparisonGraph.Slot = _characterSlot;
+                slots = new Dictionary<CharacterSlot, bool>() {
+                    {_characterSlot, Character[_characterSlot] == null},
+                };
+            }
+
+            CGL_Legend.LegendItems = Calculations.SubPointNameColors;
+            ComparisonGraph.LegendItems = Calculations.SubPointNameColors;
+            ComparisonGraph.Mode = ComparisonGraph.DisplayMode.Subpoints;
+#if DEBUG
+            System.Diagnostics.Debug.WriteLine("Starting Upgrade Comparison Calculations");
+            start = DateTime.Now;
+#endif
+            foreach (CharacterSlot s in slots.Keys)
+            {
+                upgradeCalculations.AddRange(Calculations.GetUpgradeCalculations(s, Character, Calculations.GetCharacterCalculations(Character), false));
+            }
+            ComparisonGraph.DisplayCalcs(_upgradeCalculations = upgradeCalculations.ToArray());
+#if DEBUG
+            System.Diagnostics.Debug.WriteLine("Finished Upgrade Comparison Calculations: Total " + DateTime.Now.Subtract(start).TotalMilliseconds.ToString() + "ms");
 #endif
         }
 
@@ -860,95 +864,47 @@ namespace Rawr.UI
             if        (subgraph == "Individual Talents") {
                 #region
                 List<ComparisonCalculationBase> talentCalculations = new List<ComparisonCalculationBase>();
-                Character newChar = Character.Clone();
-                CharacterCalculationsBase currentCalc = Calculations.GetCharacterCalculations(Character, null, false, true, false); ;
+                Character baseChar = Character.Clone();
+                //CharacterCalculationsBase currentCalc = Calculations.GetCharacterCalculations(Character, null, false, true, false); ;
                 CharacterCalculationsBase newCalc;
                 ComparisonCalculationBase compare;
 
-                foreach (PropertyInfo pi in Character.CurrentTalents.GetType().GetProperties())
+                ComparisonCalculationBase[] talentCompare = new ComparisonCalculationBase[Character.CurrentTalents.Data.Length];
+                int depth = talentCompare.Length / 3;
+
+                for (int i = 0; i < depth; i++)
                 {
-                    TalentDataAttribute[] talentDatas = pi.GetCustomAttributes(typeof(TalentDataAttribute), true) as TalentDataAttribute[];
-                    int orig;
-                    if (talentDatas.Length > 0)
+                    baseChar.CurrentTalents.Data[3 * i] = 0;
+                    baseChar.CurrentTalents.Data[3 * i + 1] = 0;
+                    baseChar.CurrentTalents.Data[3 * i + 2] = 0;
+                    CharacterCalculationsBase baseCalc = Calculations.GetCharacterCalculations(baseChar, null, false, true, false);
+                    for (int j = 0; j < 3; j++)
                     {
-                        TalentDataAttribute talentData = talentDatas[0];
-                        orig = Character.CurrentTalents.Data[talentData.Index];
-                        if (talentData.MaxPoints == (int)pi.GetValue(Character.CurrentTalents, null))
-                        {
-                            newChar.CurrentTalents.Data[talentData.Index]--;
-                            newCalc = Calculations.GetCharacterCalculations(newChar, null, false, true, false);
-                            compare = Calculations.GetCharacterComparisonCalculations(newCalc, currentCalc, talentData.Name, talentData.MaxPoints == orig, orig != 0 && orig != talentData.MaxPoints);
-                        }
-                        else
-                        {
-                            newChar.CurrentTalents.Data[talentData.Index]++;
-                            newCalc = Calculations.GetCharacterCalculations(newChar, null, false, true, false);
-                            compare = Calculations.GetCharacterComparisonCalculations(currentCalc, newCalc, talentData.Name, talentData.MaxPoints == orig, orig != 0 && orig != talentData.MaxPoints);
-                        }
-                        string text = string.Format("Current Rank {0}/{1}\r\n\r\n", orig, talentData.MaxPoints);
-                        if (orig == 0)
-                        {
-                            // We originally didn't have it, so first rank is next rank
-                            text += "Next Rank:\r\n";
-                            text += talentData.Description[0];
-                        }
-                        else if (orig >= talentData.MaxPoints)
-                        {
-                            // We originally were at max, so there isn't a next rank, just show the capped one
-                            text += talentData.Description[talentData.MaxPoints - 1];
-                        }
-                        else
-                        {
-                            // We aren't at 0 or MaxPoints originally, so it's just a point in between
-                            text += talentData.Description[orig - 1];
-                            text += "\r\n\r\nNext Rank:\r\n";
-                            text += talentData.Description[orig];
-                        }
-                        compare.Description = text;
-                        compare.Item = null;
-                        compare.ImageSource = talentData.Icon;
-                        talentCalculations.Add(compare);
-                        newChar.CurrentTalents.Data[talentData.Index] = orig;
+                        baseChar.CurrentTalents.Data[3 * i + j] = 1;
+                        newCalc = Calculations.GetCharacterCalculations(baseChar, null, false, true, false);
+                        compare = Calculations.GetCharacterComparisonCalculations(baseCalc, newCalc, null, Character.CurrentTalents.Data[3 * i + j] == 1, false);
+                        talentCompare[3 * i + j] = compare;
+                        baseChar.CurrentTalents.Data[3 * i + j] = 0;
                     }
+                    baseChar.CurrentTalents.Data[3 * i] = Character.CurrentTalents.Data[3 * i];
+                    baseChar.CurrentTalents.Data[3 * i + 1] = Character.CurrentTalents.Data[3 * i + 1];
+                    baseChar.CurrentTalents.Data[3 * i + 2] = Character.CurrentTalents.Data[3 * i + 2];
                 }
-                CGL_Legend.LegendItems = Calculations.SubPointNameColors;
-                ComparisonGraph.LegendItems = Calculations.SubPointNameColors;
-                ComparisonGraph.Mode = ComparisonGraph.DisplayMode.Subpoints;
-                ComparisonGraph.DisplayCalcs(_talentCalculations = talentCalculations.ToArray());
-                #endregion
-            } else if (subgraph == "Individual Talents (Full)") {
-                #region
-                List<ComparisonCalculationBase> talentCalculations = new List<ComparisonCalculationBase>();
-                Character newCharEmpty = Character.Clone();
-                Character newCharFull = Character.Clone();
-                CharacterCalculationsBase currentCalc = Calculations.GetCharacterCalculations(Character, null, false, true, false); ;
-                CharacterCalculationsBase newCalcEmpty, newCalcFull;
-                ComparisonCalculationBase compare;
 
                 foreach (PropertyInfo pi in Character.CurrentTalents.GetType().GetProperties())
                 {
                     TalentDataAttribute[] talentDatas = pi.GetCustomAttributes(typeof(TalentDataAttribute), true) as TalentDataAttribute[];
-                    int orig;
-                    if (talentDatas.Length > 0) {
+                    if (talentDatas.Length > 0)
+                    {
                         TalentDataAttribute talentData = talentDatas[0];
-                        orig = Character.CurrentTalents.Data[talentData.Index];
-                        //
-                        newCharEmpty.CurrentTalents.Data[talentData.Index] = 0;
-                        newCalcEmpty = Calculations.GetCharacterCalculations(newCharEmpty, null, false, true, false);
-                        //
-                        newCharFull.CurrentTalents.Data[talentData.Index] = talentData.MaxPoints - 1;
-                        newCalcFull = Calculations.GetCharacterCalculations(newCharFull, null, false, true, false);
-                        //
-                        compare = Calculations.GetCharacterComparisonCalculations(newCalcEmpty, newCalcFull, talentData.Name, talentData.MaxPoints == orig, orig != 0 && orig != talentData.MaxPoints);
-                        //
-                        string text = string.Format("Current Rank {0}/{1}\r\n\r\n", orig, talentData.MaxPoints);
-                        text += talentData.Description[talentData.MaxPoints - 1];
+                        compare = talentCompare[3 * (talentData.Row - 1) + (talentData.Column - 1)];
+                        compare.Name = talentData.Name;
+                        compare.Item.Name = talentData.Name;
+                        string text = talentData.Description[0];
                         compare.Description = text;
                         compare.Item = null;
                         compare.ImageSource = talentData.Icon;
                         talentCalculations.Add(compare);
-                        newCharEmpty.CurrentTalents.Data[talentData.Index] = orig;
-                        newCharFull.CurrentTalents.Data[talentData.Index] = orig;
                     }
                 }
                 CGL_Legend.LegendItems = Calculations.SubPointNameColors;
@@ -1010,45 +966,6 @@ namespace Rawr.UI
                     if (glyphDatas.Length > 0) {
                         GlyphDataAttribute glyphData = glyphDatas[0];
                         if (relevant == null || relevant.Contains(glyphData.Name)) {
-                            orig = Character.CurrentTalents.GlyphData[glyphData.Index];
-                            if (orig) {
-                                newChar.CurrentTalents.GlyphData[glyphData.Index] = false;
-                                newCalc = Calculations.GetCharacterCalculations(newChar, null, false, true, false);
-                                compare = Calculations.GetCharacterComparisonCalculations(newCalc, currentCalc, glyphData.Name, orig, false);
-                            } else {
-                                newChar.CurrentTalents.GlyphData[glyphData.Index] = true;
-                                newCalc = Calculations.GetCharacterCalculations(newChar, null, false, true, false);
-                                compare = Calculations.GetCharacterComparisonCalculations(currentCalc, newCalc, glyphData.Name, orig, false);
-                            }
-                            // JOTHAY: WTB Tooltips that show info on these charts
-                            compare.Description = glyphData.Description;
-                            compare.Item = null;
-                            compare.ImageSource = classToGlyph[Character.Class][(int)glyphData.Type];
-                            glyphCalculations.Add(compare);
-                            newChar.CurrentTalents.GlyphData[glyphData.Index] = orig;
-                        }
-                    }
-                }
-                CGL_Legend.LegendItems = Calculations.SubPointNameColors;
-                ComparisonGraph.LegendItems = Calculations.SubPointNameColors;
-                ComparisonGraph.Mode = ComparisonGraph.DisplayMode.Subpoints;
-                ComparisonGraph.DisplayCalcs(_glyphCalculations = glyphCalculations.ToArray());
-                #endregion
-            } else if (subgraph == "Glyphs : Prime") {
-                #region
-                List<ComparisonCalculationBase> glyphCalculations = new List<ComparisonCalculationBase>();
-                Character newChar = Character.Clone();
-                CharacterCalculationsBase currentCalc = Calculations.GetCharacterCalculations(Character, null, false, true, false);
-                CharacterCalculationsBase newCalc;
-                ComparisonCalculationBase compare;
-                List<string> relevant = Calculations.GetModel(Character.CurrentModel).GetRelevantGlyphs();
-
-                foreach (PropertyInfo pi in Character.CurrentTalents.GetType().GetProperties()) {
-                    GlyphDataAttribute[] glyphDatas = pi.GetCustomAttributes(typeof(GlyphDataAttribute), true) as GlyphDataAttribute[];
-                    bool orig;
-                    if (glyphDatas.Length > 0) {
-                        GlyphDataAttribute glyphData = glyphDatas[0];
-                        if ((relevant == null || relevant.Contains(glyphData.Name)) && glyphData.Type == GlyphType.Prime) {
                             orig = Character.CurrentTalents.GlyphData[glyphData.Index];
                             if (orig) {
                                 newChar.CurrentTalents.GlyphData[glyphData.Index] = false;
@@ -1169,7 +1086,7 @@ namespace Rawr.UI
                      CharacterSlot.Back, CharacterSlot.Chest, CharacterSlot.Feet, CharacterSlot.Finger1,
                      CharacterSlot.Finger2, CharacterSlot.Hands, CharacterSlot.Head, CharacterSlot.Legs,
                      CharacterSlot.MainHand, CharacterSlot.Neck, CharacterSlot.OffHand, /*CharacterSlot.Projectile,
-                     CharacterSlot.ProjectileBag,*/ CharacterSlot.Ranged, CharacterSlot.Shoulders,
+                     CharacterSlot.ProjectileBag, CharacterSlot.Ranged,*/ CharacterSlot.Shoulders,
                      CharacterSlot.Trinket1, CharacterSlot.Trinket2, CharacterSlot.Waist, CharacterSlot.Wrist
                 };
                 foreach (CharacterSlot slot in slots)
@@ -1209,6 +1126,12 @@ namespace Rawr.UI
             {
                 itemCalculations.AddRange(Calculations.GetBuffCalculations(Character, Calculations.GetCharacterCalculations(Character), ConvertBuffSelector("Current")));
                 ComparisonGraph.DisplayCalcs(itemCalculations.ToArray());
+            }
+            if (subgraph == "Item Upgrades" || subgraph == "All")
+            {
+                foreach (CharacterSlot slot in Character.EquippableCharacterSlots)
+                    if (Character[slot] != null && Character[slot].Item != null)
+                        itemCalculations.AddRange(Calculations.GetUpgradeCalculations(slot, Character, Calculations.GetCharacterCalculations(Character), true));
             }
             // Now Push the results to the screen
             ComparisonGraph.DisplayCalcs(_itemCalculations = itemCalculations.ToArray());
@@ -1269,7 +1192,7 @@ namespace Rawr.UI
                      CharacterSlot.Back, CharacterSlot.Chest, CharacterSlot.Feet, CharacterSlot.Finger1,
                      CharacterSlot.Finger2, CharacterSlot.Hands, CharacterSlot.Head, CharacterSlot.Legs,
                      CharacterSlot.MainHand, CharacterSlot.Neck, CharacterSlot.OffHand, /*CharacterSlot.Projectile,
-                     CharacterSlot.ProjectileBag,*/ CharacterSlot.Ranged, CharacterSlot.Shoulders,
+                     CharacterSlot.ProjectileBag, CharacterSlot.Ranged,*/ CharacterSlot.Shoulders,
                      CharacterSlot.Trinket1, CharacterSlot.Trinket2, CharacterSlot.Waist, CharacterSlot.Wrist
                 };
                 foreach (ItemInstance item in availableGear)
@@ -1547,10 +1470,6 @@ namespace Rawr.UI
             {
                 UpdateGraphDirectUpgradesEnchants();
             }
-            else if (subgraph == "Reforgings")
-            {
-                UpdateGraphDirectUpgradesReforgings();
-            }
             else if (subgraph == "Tinkerings")
             {
                 UpdateGraphDirectUpgradesTinkerings();
@@ -1732,7 +1651,7 @@ namespace Rawr.UI
             if (Character[CharacterSlot.Hands] != null) { slots.Add(ItemSlot.Hands,Calculations.GetEnchantCalculations(ItemSlot.Hands, Character, null, true, true)); }
             if (Character[CharacterSlot.Legs] != null) { slots.Add(ItemSlot.Legs, Calculations.GetEnchantCalculations(ItemSlot.Legs, Character, null, true, true)); }
             if (Character[CharacterSlot.Feet] != null) { slots.Add(ItemSlot.Feet, Calculations.GetEnchantCalculations(ItemSlot.Feet, Character, null, true, true)); }
-            if (Character[CharacterSlot.Ranged] != null) { slots.Add(ItemSlot.Ranged, Calculations.GetEnchantCalculations(ItemSlot.Ranged, Character, null, true, true)); }
+            //if (Character[CharacterSlot.Ranged] != null) { slots.Add(ItemSlot.Ranged, Calculations.GetEnchantCalculations(ItemSlot.Ranged, Character, null, true, true)); }
             // Complex Maps
             CharacterCalculationsBase current = Calculations.GetCharacterCalculations(Character);
             if (Character[CharacterSlot.Finger1] != null) {
@@ -1784,79 +1703,6 @@ namespace Rawr.UI
             ComparisonGraph.DisplayCalcs(_enchantCalculations = enchantCalculations.ToArray());
 #if DEBUG
             System.Diagnostics.Debug.WriteLine("Finished DU Enchant Comparison Calculations: Total " + DateTime.Now.Subtract(start).TotalMilliseconds.ToString() + "ms");
-#endif
-        }
-        private void UpdateGraphDirectUpgradesReforgings()
-        {
-            List<ComparisonCalculationBase> reforgeCalculations = new List<ComparisonCalculationBase>();
-#if DEBUG
-            DateTime start;
-#endif
-            Dictionary<CharacterSlot, List<ComparisonCalculationBase>> slots;//bool> slots;
-
-            // Run All Slots
-            slots = new Dictionary<CharacterSlot, List<ComparisonCalculationBase>>();
-            CharacterCalculationsBase current = Calculations.GetCharacterCalculations(Character);
-            if (Character[CharacterSlot.Head] != null) { slots.Add(CharacterSlot.Head, Calculations.GetReforgeCalculations(CharacterSlot.Head, Character, current, true, true)); }
-            if (Character[CharacterSlot.Shoulders] != null) { slots.Add(CharacterSlot.Shoulders, Calculations.GetReforgeCalculations(CharacterSlot.Shoulders, Character, current, true, true)); }
-            if (Character[CharacterSlot.Back] != null) { slots.Add(CharacterSlot.Back, Calculations.GetReforgeCalculations(CharacterSlot.Back, Character, current, true, true)); }
-            if (Character[CharacterSlot.Chest] != null) { slots.Add(CharacterSlot.Chest, Calculations.GetReforgeCalculations(CharacterSlot.Chest, Character, current, true, true)); }
-            if (Character[CharacterSlot.Wrist] != null) { slots.Add(CharacterSlot.Wrist, Calculations.GetReforgeCalculations(CharacterSlot.Wrist, Character, current, true, true)); }
-            if (Character[CharacterSlot.Hands] != null) { slots.Add(CharacterSlot.Hands, Calculations.GetReforgeCalculations(CharacterSlot.Hands, Character, current, true, true)); }
-            if (Character[CharacterSlot.Legs] != null) { slots.Add(CharacterSlot.Legs, Calculations.GetReforgeCalculations(CharacterSlot.Legs, Character, current, true, true)); }
-            if (Character[CharacterSlot.Feet] != null) { slots.Add(CharacterSlot.Feet, Calculations.GetReforgeCalculations(CharacterSlot.Feet, Character, current, true, true)); }
-            if (Character[CharacterSlot.Ranged] != null) { slots.Add(CharacterSlot.Ranged, Calculations.GetReforgeCalculations(CharacterSlot.Ranged, Character, current, true, true)); }
-            if (Character[CharacterSlot.Finger1] != null)
-            {
-                slots.Add(CharacterSlot.Finger1, Calculations.GetReforgeCalculations(CharacterSlot.Finger1, Character, current, true, true));
-            }
-            if (Character[CharacterSlot.Finger2] != null)
-            {
-                slots.Add(CharacterSlot.Finger2, Calculations.GetReforgeCalculations(CharacterSlot.Finger2, Character, current, true, true));
-            }
-            if (Character[CharacterSlot.MainHand] != null)
-            {
-                slots.Add(CharacterSlot.MainHand, Calculations.GetReforgeCalculations(CharacterSlot.MainHand, Character, current, true, true));
-            }
-            if (Character[CharacterSlot.OffHand] != null)
-            {
-                slots.Add(CharacterSlot.OffHand, Calculations.GetReforgeCalculations(CharacterSlot.OffHand, Character, current, true, true));
-            }
-
-            //CGL_Legend.LegendItems = Calculations.SubPointNameColors;
-            //ComparisonGraph.LegendItems = Calculations.SubPointNameColors;
-            ComparisonGraph.Mode = ComparisonGraph.DisplayMode.Overall;
-#if DEBUG
-            System.Diagnostics.Debug.WriteLine("Starting DU Reforge Comparison Calculations");
-            start = DateTime.Now;
-#endif
-            foreach (CharacterSlot s in slots.Keys)
-            {
-                if (slots[s].Count == 0) { continue; } // The slot doesn't have any reforges, don't try it
-                List<ComparisonCalculationBase> filterme = Calculations.GetReforgeCalculations(s, Character, current, false, true);
-                //
-                for (int i = 0; i < filterme.Count; )
-                {
-                    if (filterme[i].OverallPoints <= slots[s][0].OverallPoints)
-                    {
-                        filterme.RemoveAt(i);
-                    }
-                    else
-                    {
-                        for (int j = 0; j < filterme[i].SubPoints.Length; j++)
-                        {
-                            filterme[i].SubPoints[j] -= slots[s][0].SubPoints[j];
-                        }
-                        filterme[i].OverallPoints -= slots[s][0].OverallPoints;
-                        i++;
-                    }
-                }
-                //
-                reforgeCalculations.AddRange(filterme);
-            }
-            ComparisonGraph.DisplayCalcs(_enchantCalculations = reforgeCalculations.ToArray());
-#if DEBUG
-            System.Diagnostics.Debug.WriteLine("Finished DU Reforge Comparison Calculations: Total " + DateTime.Now.Subtract(start).TotalMilliseconds.ToString() + "ms");
 #endif
         }
         private void UpdateGraphDirectUpgradesTinkerings()
@@ -2286,8 +2132,14 @@ namespace Rawr.UI
             CK_iLvl_11.IsChecked = true;
             CK_iLvl_12.IsChecked = true;
             CK_iLvl_13.IsChecked = true;
-            RS_iLvl.LowerValue = 285;
-            RS_iLvl.UpperValue = 416;
+            CK_iLvl_14.IsChecked = true;
+            CK_iLvl_15.IsChecked = true;
+            CK_iLvl_16.IsChecked = true;
+            CK_iLvl_17.IsChecked = true;
+            CK_iLvl_18.IsChecked = true;
+            CK_iLvl_19.IsChecked = true;
+            RS_iLvl.LowerValue = 404;
+            RS_iLvl.UpperValue = 600;
             Character.IsLoading = true;
             ItemCache.Instance.OnItemsChanged();
         }
@@ -2309,6 +2161,12 @@ namespace Rawr.UI
             CK_iLvl_11.IsChecked = false;
             CK_iLvl_12.IsChecked = false;
             CK_iLvl_13.IsChecked = false;
+            CK_iLvl_14.IsChecked = false;
+            CK_iLvl_15.IsChecked = false;
+            CK_iLvl_16.IsChecked = false;
+            CK_iLvl_17.IsChecked = false;
+            CK_iLvl_18.IsChecked = false;
+            CK_iLvl_19.IsChecked = false;
             Character.IsLoading = false;
             ItemCache.Instance.OnItemsChanged();
         }

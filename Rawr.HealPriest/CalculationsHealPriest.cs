@@ -345,7 +345,7 @@ namespace Rawr.HealPriest
 
         public override bool EnchantFitsInSlot(Enchant enchant, Character character, ItemSlot slot)
         {
-            if (slot == ItemSlot.Ranged) return false;
+            if (enchant.Slot == ItemSlot.Ranged) return false;
             if (slot == ItemSlot.OffHand)
             {
                 if (enchant.ShieldsOnly) return false;
@@ -378,6 +378,7 @@ namespace Rawr.HealPriest
                 Resilience = stats.Resilience,
                 CritRating = stats.CritRating,
                 HasteRating = stats.HasteRating,
+                Mastery = stats.Mastery,
                 MasteryRating = stats.MasteryRating,
 
                 BonusSpellPowerMultiplier = stats.BonusSpellPowerMultiplier,
@@ -447,7 +448,7 @@ namespace Rawr.HealPriest
         {
             bool Yes = (
                 stats.Intellect + stats.Spirit + stats.Mana + stats.Mp5 + stats.SpellPower
-                + stats.SpellHaste + stats.SpellCrit + stats.HasteRating + stats.CritRating + stats.MasteryRating
+                + stats.SpellHaste + stats.SpellCrit + stats.HasteRating + stats.CritRating + stats.Mastery + stats.MasteryRating
                 + stats.BonusSpellPowerMultiplier
                 + stats.BonusIntellectMultiplier + stats.BonusSpiritMultiplier + stats.BonusManaMultiplier + stats.BonusCritHealMultiplier
                 + stats.HealingReceivedMultiplier + stats.BonusHealingDoneMultiplier + stats.BonusManaPotionEffectMultiplier
@@ -865,11 +866,13 @@ namespace Rawr.HealPriest
 
             if (statsTotal.PriestSpec == ePriestSpec.Spec_Disc)
             {
-                statsTotal.ShieldDiscipline = (PriestInformation.DisciplineMasteryBase + StatConversion.GetMasteryFromRating(statsTotal.MasteryRating)) * PriestInformation.DisciplineMasteryEffect;
+                statsTotal.Mastery += (StatConversion.GetMasteryFromRating(statsTotal.MasteryRating));
+                statsTotal.ShieldDiscipline = statsTotal.Mastery * PriestInformation.DisciplineMasteryEffect;
             }
             else if (statsTotal.PriestSpec == ePriestSpec.Spec_Holy)
             {
-                statsTotal.EchoofLight = (PriestInformation.HolyMasteryBase + StatConversion.GetMasteryFromRating(statsTotal.MasteryRating)) * PriestInformation.HolyMasteryEffect;
+                statsTotal.Mastery += (StatConversion.GetMasteryFromRating(statsTotal.MasteryRating));
+                statsTotal.EchoofLight = statsTotal.Mastery * PriestInformation.HolyMasteryEffect;
             }
 
             return statsTotal;

@@ -21,5 +21,12 @@ namespace Rawr.Moonkin
         public float BonusNukeDamageModifier { get; set; }
         public float BonusStarsurgeDamageModifier { get; set; }
         public bool T13FourPieceActive { get; set; }
+        public float BonusEclipseDamageMultiplier { get; set; }
+        public float BonusStarfallDamageModifier { get; set; }
+        public float BonusMoonfireDuration { get; set; }
+        public float BonusMoonfireDamageMultiplier { get; set; }
+        public float BonusStarsurgeCritModifier { get; set; }
+        public bool T16TwoPieceActive { get; set; }
+        public float BonusShootingStarsChance { get; set; }
     }
 }

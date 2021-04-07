@@ -33,11 +33,11 @@ namespace Rawr.UI
         private void character_ClassChanged(object sender, EventArgs e)
         {
             Tree1.Talents = Character.CurrentTalents;
-            TreeTab1.Header = Tree1.TreeName;
-            Tree2.Talents = Character.CurrentTalents;
-            TreeTab2.Header = Tree2.TreeName;
-            Tree3.Talents = Character.CurrentTalents;
-            TreeTab3.Header = Tree3.TreeName;
+            //TreeTab1.Header = Tree1.TreeName;
+            //Tree2.Talents = Character.CurrentTalents;
+            //TreeTab2.Header = Tree2.TreeName;
+            //Tree3.Talents = Character.CurrentTalents;
+            //TreeTab3.Header = Tree3.TreeName;
             Glyph.Character = Character;
             
             UpdateSavedSpecs();
@@ -47,19 +47,19 @@ namespace Rawr.UI
         {
             // Required to initialize variables
             InitializeComponent();
-            Tree1.Tree = 0;
-            Tree2.Tree = 1;
-            Tree3.Tree = 2;
+            //Tree1.Tree = 0;
+            //Tree2.Tree = 1;
+            //Tree3.Tree = 2;
 
 #if SILVERLIGHT
             Scroll1.SetIsMouseWheelScrollingEnabled(true);
-            Scroll2.SetIsMouseWheelScrollingEnabled(true);
-            Scroll3.SetIsMouseWheelScrollingEnabled(true);
+            //Scroll2.SetIsMouseWheelScrollingEnabled(true);
+            //Scroll3.SetIsMouseWheelScrollingEnabled(true);
 #endif
 
             Tree1.TalentsChanged += new EventHandler(TalentsChanged);
-            Tree2.TalentsChanged += new EventHandler(TalentsChanged);
-            Tree3.TalentsChanged += new EventHandler(TalentsChanged);
+            //Tree2.TalentsChanged += new EventHandler(TalentsChanged);
+            //Tree3.TalentsChanged += new EventHandler(TalentsChanged);
             Glyph.TalentsChanged += new EventHandler(TalentsChanged);
         }
 
@@ -97,7 +97,7 @@ namespace Rawr.UI
             else
             {
                 HasCustomSpec = true;
-                current = new SavedTalentSpec("Custom", Character.CurrentTalents, Tree1.Points(), Tree2.Points(), Tree3.Points());
+                current = new SavedTalentSpec("Custom", Character.CurrentTalents, Tree1.Points()/*, Tree2.Points(), Tree3.Points()*/);
                 SavedTalentSpecList currentList = new SavedTalentSpecList();
                 currentList.AddRange(savedSpecs);
                 currentList.Add(current);
@@ -115,7 +115,7 @@ namespace Rawr.UI
             if (HasCustomSpec)
             {
                 SaveTalentSpecDialog dialog = new SaveTalentSpecDialog(currentSpec.TalentSpec(),
-                    currentSpec.Tree1, currentSpec.Tree2, currentSpec.Tree3);
+                    currentSpec.Tree1/*, currentSpec.Tree2, currentSpec.Tree3*/);
                 dialog.Closed += new EventHandler(dialog_Closed);
                 dialog.Show();
             }
@@ -185,10 +185,10 @@ namespace Rawr.UI
         }
 
         //*
-        const int MAX_TALENT_POINTS = 41;
-        const int MAX_TALENT_COL = 4;
-        int MAX_TALENT_ROW { get { return ((MAX_TALENT_POINTS + 4) / 5); } }
-        int MAX_TALENT_SLOTS { get{ return (3 * MAX_TALENT_ROW * MAX_TALENT_COL); } }
+        const int MAX_TALENT_POINTS = 6;
+        const int MAX_TALENT_COL = 3;
+        int MAX_TALENT_ROW { get { return MAX_TALENT_POINTS; } }
+        int MAX_TALENT_SLOTS { get{ return (MAX_TALENT_ROW * MAX_TALENT_COL); } }
 
         //List<int>[] talent_trees = new List<int>[MAX_TALENT_TREES]; // 
 

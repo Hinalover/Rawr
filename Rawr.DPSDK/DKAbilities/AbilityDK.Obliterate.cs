@@ -23,12 +23,12 @@ namespace Rawr.DK
             UpdateCombatState(CS);
         }
 
-        private int m_iToT = 0;
+        private bool m_bToT = false;
         
         public override void UpdateCombatState(CombatState CS)
         {
             base.UpdateCombatState(CS);
-            this.AbilityCost[(int)DKCostTypes.RunicPower] = -20 + (CState.m_Talents.ChillOfTheGrave * -5);
+            this.AbilityCost[(int)DKCostTypes.RunicPower] = -20;
             this.wMH = CState.MH;
             this.wOH = CState.OH;
         }
@@ -41,22 +41,17 @@ namespace Rawr.DK
         {
             get
             {
-                m_iToT = CState.m_Talents.ThreatOfThassarian;
+                m_bToT = CState.m_Spec == Rotation.Type.Frost;
                 uint WDam = (uint)((650 + this.wMH.damage) * this.fWeaponDamageModifier);
                 // Off-hand damage is only effective if we have Threat of Thassaurian
                 // And only for specific strikes as defined by the talent.
                 float iToTMultiplier = 0;
-                if (m_iToT > 0 && null != this.wOH) // DW
+                if (m_bToT && null != this.wOH) // DW
                 {
-                    if (m_iToT == 1)
-                        iToTMultiplier = .30f;
-                    if (m_iToT == 2)
-                        iToTMultiplier = .60f;
-                    if (m_iToT == 3)
-                        iToTMultiplier = 1f;
+                    iToTMultiplier = 1f;
                 }
                 if (this.wOH != null)
-                    WDam += (uint)(this.wOH.damage * iToTMultiplier * this.fWeaponDamageModifier * (1 + (CState.m_Talents.NervesOfColdSteel * .25 / 3)));
+                    WDam += (uint)(this.wOH.damage * iToTMultiplier * this.fWeaponDamageModifier);
                 return WDam;
             }
         }
@@ -73,8 +68,6 @@ namespace Rawr.DK
                 multiplier *= 1 + _DamageMultiplierModifer;
                 multiplier *= 1 + base.DamageMultiplierModifer;
                 multiplier *= 1 + (CState.m_Talents.GlyphofObliterate ? .20f : 0);
-                multiplier *= 1 + (CState.m_Talents.Annihilation * 0.15f);
-                multiplier *= (1 + ((CState.m_Talents.MercilessCombat * .06f) * .35f));
                 return multiplier - 1 ;
             }
         }
@@ -84,7 +77,7 @@ namespace Rawr.DK
         {
             get
             {
-                if (CState.m_Talents.KillingMachine > 0)
+                if (CState.m_Spec == Rotation.Type.Frost)
                     return Math.Max(0, Math.Min(1, _BonusCritChance));
                 else
                     return base.CritChance;
@@ -93,13 +86,6 @@ namespace Rawr.DK
         public void SetKMCritChance(float value)
         {
             _BonusCritChance = value;
-        }
-
-        public override float GetTickDamage()
-        {
-            float baseTickDamage = base.GetTickDamage();
-            float FireBonusDamage = CState.m_Stats.b4T12_DPS ? baseTickDamage * .06f : 0;
-            return baseTickDamage + (FireBonusDamage * (1 + CState.m_Stats.BonusFireDamageMultiplier));
         }
     }
 }

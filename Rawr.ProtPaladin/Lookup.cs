@@ -8,10 +8,10 @@ namespace Rawr.ProtPaladin
     {
         public static float TargetCritChance(Character character, Stats stats, int targetLevel)
         {
-            return Math.Max(0.0f, (0.05f - AvoidanceChance(character, stats, HitResult.Crit, targetLevel)) - character.PaladinTalents.Sanctuary * 0.02f);
+            return 0f;
         }
 
-        public static float TargetAvoidanceChance(int attackerLevel, float spellPenetration, HitResult avoidanceType, int targetLevel)
+        public static float TargetAvoidanceChance(int attackerLevel, HitResult avoidanceType, int targetLevel)
         {
             switch (avoidanceType)
             {
@@ -47,9 +47,9 @@ namespace Rawr.ProtPaladin
         }
 
         public static float SpellHitChance(int attackerLevel, Stats stats, int targetLevel) {
-            float spellHit = StatConversion.GetSpellHitFromRating(stats.HitRating, CharacterClass.Paladin) + stats.SpellHit;// Touched by the Light already accounted for
+            float spellHit = StatConversion.GetSpellHitFromRating(stats.HitRating, CharacterClass.Paladin) + stats.SpellHit;
 
-            int DeltaLevel = attackerLevel - targetLevel;
+            int DeltaLevel = targetLevel - attackerLevel;
 
             return Math.Min(1f, (1 - StatConversion.GetSpellMiss(DeltaLevel, false)) + spellHit);
         }
@@ -90,38 +90,21 @@ namespace Rawr.ProtPaladin
             switch (ability)
             {
                 case Ability.SealOfRighteousness:
-                case Ability.RetributionAura:
-                    abilityCritChance = 0.0f; // can't crit
-                    break;
-                case Ability.AvengersShield:
                 case Ability.MeleeSwing:
                 case Ability.SealOfTruth:
                 case Ability.CensureTick:
+                case Ability.CrusaderStrike:
+                case Ability.HammerOfTheRighteous:
+                case Ability.ShieldOfTheRighteous:
                     // crit chance = melee
                     break;
-                case Ability.JudgementOfRighteousness:
-                case Ability.JudgementOfTruth:
-                    abilityCritChance += (character.PaladinTalents.ArbiterOfTheLight * 0.06f);
-                    break;
-                case Ability.CrusaderStrike:
-                    abilityCritChance += (character.PaladinTalents.RuleOfLaw * 0.05f) + (character.PaladinTalents.GlyphOfCrusaderStrike ? 0.05f : 0f);
-                    break;
-                case Ability.HammerOfTheRighteous:
-                    abilityCritChance += (character.PaladinTalents.RuleOfLaw * 0.05f);
-                    break;
-                case Ability.HammerOfWrath:
-                    abilityCritChance += (character.PaladinTalents.WrathOfTheLightbringer * 0.15f);
-                    break;
-                case Ability.ShieldOfTheRighteous:
-                    // This assumes a rotation where every Shield of the Righteous is preceeded by a judgement.  This includes the standrad 939 rotation this model uses.
-                    abilityCritChance = 0.25f * character.PaladinTalents.SacredDuty + (1f - 0.25f * character.PaladinTalents.SacredDuty) * abilityCritChance;
-                    break;
                 case Ability.HammerOfTheRighteousProc:
+                case Ability.HammerOfWrath:
                 case Ability.Consecration:
-                    abilityCritChance = spellCritChance + (character.PaladinTalents.RuleOfLaw * 0.05f);
-                    break;
                 case Ability.HolyWrath:
-                    abilityCritChance = spellCritChance + (character.PaladinTalents.WrathOfTheLightbringer * 0.15f);
+                case Ability.AvengersShield:
+                case Ability.Judgment:
+                    abilityCritChance = spellCritChance;
                     break;
             }
             return Math.Min(1.0f, abilityCritChance);
@@ -176,41 +159,14 @@ namespace Rawr.ProtPaladin
             return StatConversion.GetArmorDamageReduction(targetLevel, playerLevel, armor, 0, 0);
         }
 
-        public static float ActiveBlockReduction(float bonusBlockValueMultiplier, int holyShield)
+        public static float ActiveBlockReduction(float bonusBlockValueMultiplier)
         {
-            // Dopefish: Reduce Holy Shield passive to 20% * (10sec/30sec).
-            return 0.3f + holyShield * 2 / 30.0f + bonusBlockValueMultiplier;
-        }
-
-        public static float MagicReduction(Stats stats, DamageType school, int targetLevel)
-        {
-            float totalResist = 0.0f;
-
-            switch (school)
-            {
-                case DamageType.Arcane: totalResist += stats.ArcaneResistance; break;
-                case DamageType.Fire: totalResist += stats.FireResistance; break;
-                case DamageType.Frost: totalResist += stats.FrostResistance; break;
-                case DamageType.Nature: totalResist += stats.NatureResistance; break;
-                case DamageType.Shadow: totalResist += stats.ShadowResistance; break;
-            }
-
-            float averageReduction = 0;
-            float[] resistanceTable = StatConversion.GetResistanceTable(targetLevel, 85, totalResist, 0);
-            {
-                for (int i = 1; i <= 10; ++i)
-                {
-                    averageReduction += (i / 10.0f) * resistanceTable[i];
-                }
-            }
-            return averageReduction;
+            return 0.3f + bonusBlockValueMultiplier;
         }
 
         public static float AvoidanceChance(Character character, Stats stats, HitResult avoidanceType, int targetLevel)
         {
             float avoidanceChance = StatConversion.GetDRAvoidanceChance(character, stats, avoidanceType, targetLevel);
-
-            if (avoidanceType == HitResult.Block) { avoidanceChance += (8f + StatConversion.GetMasteryFromRating(stats.MasteryRating, CharacterClass.Paladin)) * 0.0225f; }
 
             return avoidanceChance;
         }
@@ -251,28 +207,14 @@ namespace Rawr.ProtPaladin
 
         public static bool IsAvoidable(Ability ability)
         {
-            switch (ability)
-            {
-                case Ability.CrusaderStrike:
-                case Ability.HammerOfTheRighteous:
-                case Ability.MeleeSwing:
-                case Ability.ShieldOfTheRighteous:
-                    return true;
-                default:
-                    return false;
-            }
+            if (ability == Ability.CensureTick)
+                return false;
+            return true;
         }
 
         public static bool CanCrit(Ability ability)
         {   
-            switch (ability)
-            {
-                case Ability.SealOfRighteousness:
-                case Ability.RetributionAura:
-                    return false;
-                default:
-                return true;
-            }
+            return true;
         }
 
         public static bool IsSpell(Ability ability)
@@ -280,15 +222,15 @@ namespace Rawr.ProtPaladin
             switch (ability)
             {
                 case Ability.AvengersShield:
-                case Ability.HammerOfWrath:
                 case Ability.HolyWrath:
                 case Ability.HammerOfTheRighteousProc:
                 case Ability.CensureTick:
                 case Ability.Consecration:
-                case Ability.RetributionAura:
+                case Ability.Judgment:
+                case Ability.HammerOfWrath:
                     return true;
                 default:
-                return false;
+                    return false;
             }
         }
 
@@ -303,8 +245,7 @@ namespace Rawr.ProtPaladin
                 case Ability.CrusaderStrike: return "Crusader Strike";
                 case Ability.HammerOfTheRighteous: return "Hammer of the Righteous";
                 case Ability.HammerOfTheRighteousProc: return "Hammer of the Righteous AoE Proc";
-                case Ability.JudgementOfRighteousness: return "Judgement of Righteousness";
-                case Ability.JudgementOfTruth: return "Judgement of Truth";
+                case Ability.Judgment: return "Judgment";
                 case Ability.MeleeSwing: return "Melee Swing";
                 case Ability.SealOfRighteousness: return "Seal of Righteousness";
                 case Ability.SealOfTruth: return "Seal of Truth";
@@ -312,8 +253,6 @@ namespace Rawr.ProtPaladin
                 
                 case Ability.CensureTick: return "Censure";
                 case Ability.Consecration: return "Consecration";
-
-                case Ability.RetributionAura: return "Retribution Aura";
                 default: return "";
             }
         }

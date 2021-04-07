@@ -31,20 +31,6 @@ namespace Rawr.DK
             this.wOH = CS.OH;
         }
 
-        public override float DamageMultiplierModifer
-        {
-            get
-            {
-                float DMM = base.DamageMultiplierModifer;
-                DMM += (.15f * CState.m_Talents.RageOfRivendare); // 4.1 raised to 15% per level
-                return DMM;
-            }
-            set
-            {
-                base.DamageMultiplierModifer = value;
-            }
-        }
-
         public override float GetTotalDamage()
         {
             if (CState.m_Spec == Rotation.Type.Unholy)
@@ -60,10 +46,6 @@ namespace Rawr.DK
             ShadowTickDamage *= 1 + CState.m_Stats.BonusShadowDamageMultiplier - CState.m_Stats.PhysicalCrit; // Shadow aspect doesn't crit... So let's pull crit chance value out of this part.
             ShadowTickDamage *= 1 + CState.m_Stats.BonusShadowDamageMultiplierFromMastery;
             float FireBonusDamage = 0;
-            if (CState.m_Stats.b4T12_DPS)
-            {
-                FireBonusDamage = (baseTickDamage + ShadowTickDamage) * .06f;
-            }
             return baseTickDamage + ShadowTickDamage + (FireBonusDamage * (1 + CState.m_Stats.BonusFireDamageMultiplier));
         }
     }

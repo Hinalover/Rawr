@@ -32,7 +32,7 @@ namespace Rawr.DK
             base.UpdateCombatState(CS);
             this.uMaxDamage = (CS.m_Talents.GlyphofChainsofIce ? 156u : 0u);
             this.uMinDamage = (CS.m_Talents.GlyphofChainsofIce ? 144u : 0u);
-            this.AbilityCost[(int)DKCostTypes.RunicPower] = -10 + (CS.m_Talents.ChillOfTheGrave > 0 ? -5 : 0);
+            this.AbilityCost[(int)DKCostTypes.RunicPower] = -10;
             this.ml_TriggeredAbility[0] = new AbilityDK_FrostFever(CS);
         }
 

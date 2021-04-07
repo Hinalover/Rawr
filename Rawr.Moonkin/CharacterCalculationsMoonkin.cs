@@ -15,6 +15,7 @@ namespace Rawr.Moonkin
 
         public float SpellHit { get; set; }
         public float SpellHitCap { get; set; }
+        public float SpellCritPenalty { get; set; }
         public float SpellCrit { get; set; }
         public float SpellHaste { get; set; }
         public float SpellPower { get; set; }
@@ -24,7 +25,8 @@ namespace Rawr.Moonkin
         private StatsMoonkin baseStats;
         public RotationData SelectedRotation { get; set; }
         public RotationData BurstRotation { get; set; }
-        public RotationData[] Rotations = new RotationData[36];
+        public RotationData[] Rotations = new RotationData[1];
+        public bool PTRMode { get; set; }
 
         public override Dictionary<string, string> GetCharacterDisplayCalculationValues() {
             Dictionary<string, string> retVal = new Dictionary<string, string>();
@@ -51,7 +53,7 @@ namespace Rawr.Moonkin
                 StatConversion.GetRatingFromHit(Math.Abs(totalHitDelta)),
                 totalHitDelta > 0 ? "To Cap" : "Over Cap"));
             retVal.Add("Spell Crit", String.Format("{0:F}%*{1} Crit Rating, {2:F}% Crit From Gear, {3:F}% Crit From Intellect",
-                100 * SpellCrit,
+                100 * (SpellCrit - SpellCritPenalty),
                 baseStats.CritRating,
                 100 * StatConversion.GetSpellCritFromRating(baseStats.CritRating),
                 100 * StatConversion.GetSpellCritFromIntellect(baseStats.Intellect)));
@@ -59,10 +61,10 @@ namespace Rawr.Moonkin
                 100 * SpellHaste,
                 baseStats.HasteRating,
                 100 * StatConversion.GetSpellHasteFromRating(baseStats.HasteRating)));
-            retVal.Add("Mastery", String.Format("{0:F}*{1:F} Eclipse %, {2} Rating",
-                Mastery,
-                Mastery * 2.0f,
-                baseStats.MasteryRating));
+            retVal.Add("Mastery", String.Format("{0:F}%*{1} Mastery Rating, {2:F}% Mastery From Gear",
+                Mastery * 1.875f,
+                baseStats.MasteryRating,
+                StatConversion.GetMasteryFromRating(baseStats.MasteryRating) * 1.875f));
             retVal.Add("Mana Regen", String.Format("{0:F0}", ManaRegen * 5.0f));
             retVal.Add("Total Score", String.Format("{0:F2}", OverallPoints));
             retVal.Add("Selected Rotation", String.Format("*{0}", SelectedRotation.Name));
@@ -78,9 +80,6 @@ namespace Rawr.Moonkin
             sb.AppendLine(String.Format("{0}: {1:F2}%, {2:F2} damage, {3:F0} count", "Moonfire", 100 * (SelectedRotation.MoonfireAvgHit) * SelectedRotation.MoonfireCasts / rotationDamage,
                 (SelectedRotation.MoonfireAvgHit) * SelectedRotation.MoonfireCasts,
                 SelectedRotation.MoonfireCasts));
-            sb.AppendLine(String.Format("{0}: {1:F2}%, {2:F2} damage, {3:F0} count", "Insect Swarm", 100 * SelectedRotation.InsectSwarmAvgHit * SelectedRotation.InsectSwarmCasts / rotationDamage,
-                SelectedRotation.InsectSwarmAvgHit * (SelectedRotation.InsectSwarmCasts),
-                SelectedRotation.InsectSwarmCasts));
             sb.AppendLine(String.Format("{0}: {1:F2}%, {2:F2} damage, {3:F0} count", "Wrath", 100 * SelectedRotation.WrathAvgHit * SelectedRotation.WrathCount / rotationDamage,
                 SelectedRotation.WrathAvgHit * SelectedRotation.WrathCount,
                 SelectedRotation.WrathCount));
@@ -109,9 +108,6 @@ namespace Rawr.Moonkin
             sb.AppendLine(String.Format("{0}: {1:F2}%, {2:F2} damage, {3:F0} count", "Moonfire", 100 * (BurstRotation.MoonfireAvgHit) * BurstRotation.MoonfireCasts / rotationDamage,
                 (BurstRotation.MoonfireAvgHit) * BurstRotation.MoonfireCasts,
                 BurstRotation.MoonfireCasts));
-            sb.AppendLine(String.Format("{0}: {1:F2}%, {2:F2} damage, {3:F0} count", "Insect Swarm", 100 * BurstRotation.InsectSwarmAvgHit * BurstRotation.InsectSwarmCasts / rotationDamage,
-                BurstRotation.InsectSwarmAvgHit * (BurstRotation.InsectSwarmCasts),
-                BurstRotation.InsectSwarmCasts));
             sb.AppendLine(String.Format("{0}: {1:F2}%, {2:F2} damage, {3:F0} count", "Wrath", 100 * BurstRotation.WrathAvgHit * BurstRotation.WrathCount / rotationDamage,
                 BurstRotation.WrathAvgHit * BurstRotation.WrathCount,
                 BurstRotation.WrathCount));
@@ -150,10 +146,6 @@ namespace Rawr.Moonkin
                 SelectedRotation.MoonfireAvgHit / (SelectedRotation.MoonfireDuration > 0 ? SelectedRotation.MoonfireDuration : 1f),
                 SelectedRotation.MoonfireAvgCast,
                 SelectedRotation.MoonfireAvgHit));
-            retVal.Add("Insect Swarm", String.Format("{0:F2} dps*{1:F2} s avg\n{2:F2} avg hit",
-                SelectedRotation.InsectSwarmAvgHit / (SelectedRotation.InsectSwarmDuration > 0 ? SelectedRotation.InsectSwarmDuration : 1f),
-                SelectedRotation.InsectSwarmAvgCast,
-                SelectedRotation.InsectSwarmAvgHit));
             retVal.Add("Starfall", String.Format("{0:F2} dps*{1:F2} avg per cast\n{2:F2} avg per star",
                 SelectedRotation.StarfallDamage / 10.0f,
                 SelectedRotation.StarfallDamage,

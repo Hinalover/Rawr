@@ -38,7 +38,7 @@ namespace Rawr.DK {
 
             #region Dodge
             {
-                float baseDodged = StatConversion.WHITE_DODGE_CHANCE_CAP[bossOpts.Level - 85];
+                float baseDodged = StatConversion.WHITE_DODGE_CHANCE_CAP[bossOpts.Level - 90];
                 chanceDodged = baseDodged - StatConversion.GetDodgeParryReducFromExpertise(effectiveExpertise);
                 chanceDodged = Math.Min(Math.Max(chanceDodged, 0f), baseDodged);
             }
@@ -46,7 +46,7 @@ namespace Rawr.DK {
 
             #region Parry
             {
-                float baseParried = StatConversion.WHITE_PARRY_CHANCE_CAP[bossOpts.Level - 85];
+                float baseParried = StatConversion.WHITE_PARRY_CHANCE_CAP[bossOpts.Level - 90];
                 chanceParried = baseParried - StatConversion.GetDodgeParryReducFromExpertise(effectiveExpertise);
                 chanceParried = Math.Min(Math.Max(chanceParried, 0f), baseParried);
             }
@@ -54,9 +54,9 @@ namespace Rawr.DK {
 
             #region Miss
             {
-                float baseMissed = StatConversion.WHITE_MISS_CHANCE_CAP[bossOpts.Level - 85];
+                float baseMissed = StatConversion.WHITE_MISS_CHANCE_CAP[bossOpts.Level - 90];
                 if (!twohander)
-                    baseMissed = StatConversion.WHITE_MISS_CHANCE_CAP_DW[bossOpts.Level - 85];
+                    baseMissed = StatConversion.WHITE_MISS_CHANCE_CAP_DW[bossOpts.Level - 90];
                 chanceMissed = baseMissed - stats.PhysicalHit;
                 chanceMissed = Math.Min(Math.Max(chanceMissed, 0f), baseMissed);
             }
@@ -78,11 +78,6 @@ namespace Rawr.DK {
                 {
                     damage /= 2;
                     DPS /= 2;
-                    if (talents.NervesOfColdSteel > 0)
-                    {
-                        damage *= 1f + (.25f * (talents.NervesOfColdSteel / 3f));
-                        DPS *= 1f + (.25f * (talents.NervesOfColdSteel / 3f)); ;
-                    }
                 }
             }
             #endregion

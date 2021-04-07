@@ -851,8 +851,8 @@ Percentage of Total DPS: {15:00.00%}",
             get
             {
                 if (!Validated) { return new Stats(); }
-                Stats bonus = (Effect == null) ? new Stats() { AttackPower = 0f, } : Effect.GetAverageStats(0f, MHAtkTable.Hit + MHAtkTable.Crit, DPSWarrChar.Whiteattacks.MHEffectiveSpeed, FightDuration);
-                bonus += (Effect2 == null) ? new Stats() { AttackPower = 0f, } : Effect2.GetAverageStats(0f, MHAtkTable.Hit + MHAtkTable.Crit, DPSWarrChar.Whiteattacks.MHEffectiveSpeed, FightDuration);
+                Stats bonus = (Effect == null) ? new Stats() { AttackPower = 0f, } : Effect.GetAverageStats(0f, MHAtkTable.Hit + MHAtkTable.Crit, DPSWarrChar.Whiteattacks.MHEffectiveSpeed, 1f, FightDuration);
+                bonus += (Effect2 == null) ? new Stats() { AttackPower = 0f, } : Effect2.GetAverageStats(0f, MHAtkTable.Hit + MHAtkTable.Crit, DPSWarrChar.Whiteattacks.MHEffectiveSpeed, 1f, FightDuration);
                 return bonus;
             }
         }

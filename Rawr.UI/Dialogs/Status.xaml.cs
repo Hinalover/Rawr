@@ -25,8 +25,11 @@ namespace Rawr.UI
             InitializeComponent();
 
 #if !SILVERLIGHT
+            this.ResizeMode = System.Windows.ResizeMode.NoResize;
             this.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
+            this.WindowStyle = System.Windows.WindowStyle.ToolWindow;
             this.WindowState = System.Windows.WindowState.Normal;
+            this.ShowInTaskbar = false;
 #endif
 
             Expanded = true;
@@ -99,11 +102,11 @@ namespace Rawr.UI
             }
 
             // These throw InvalidCrossThreadAccess
-            ProgressText.Text = string.Format(OVERALL_PROGRESS, doneCount, statusUpdates.Count);
-            ProgressBar.Value = statusUpdates.Count == 0 ? 0 : ((double)doneCount / (double)statusUpdates.Count * 100d);
+            Dispatcher.Invoke(new Action(() => { ProgressText.Text = string.Format(OVERALL_PROGRESS, doneCount, statusUpdates.Count); }));
+            Dispatcher.Invoke(new Action(() => { ProgressBar.Value = statusUpdates.Count == 0 ? 0 : ((double)doneCount / (double)statusUpdates.Count * 100d); }));
 
-            TasksData.ItemsSource = null;
-            TasksData.ItemsSource = statusUpdates;
+            Dispatcher.Invoke(new Action(() => { TasksData.ItemsSource = null; }));
+            Dispatcher.Invoke(new Action(() => { TasksData.ItemsSource = statusUpdates; }));
 
             if (AllowedToClose && statusErrors.Count == 0) this.DialogResult = true;
         }

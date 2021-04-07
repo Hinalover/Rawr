@@ -66,7 +66,13 @@ namespace Rawr.UnitTests.ShadowPriest
             Calculations.Models["ShadowPriest"] = typeof(CalculationsShadowPriest);
             Calculations.LoadModel(calculations);
 
-            _character.CurrentModel = "ShadowPriest";
+
+            //OpOv: Direct private access of fields is no longer allowed
+            PrivateObject po = new PrivateObject(this, new PrivateType(typeof(Character)));
+            string p = (string)po.GetField("CurrentModel");
+            p = "ShadowPriest";
+
+            //_character.CurrentModel = "ShadowPriest";
 
             Stats stats = calculations.GetCharacterStats(_character, null);
 

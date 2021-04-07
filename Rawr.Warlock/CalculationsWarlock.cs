@@ -382,6 +382,7 @@ namespace Rawr.Warlock
                 CritRating = stats.CritRating,
                 SpellCrit = stats.SpellCrit,
                 SpellCritOnTarget = stats.SpellCritOnTarget,
+                Mastery = stats.Mastery,
                 MasteryRating = stats.MasteryRating,
 
                 ShadowDamage = stats.ShadowDamage,
@@ -503,6 +504,7 @@ namespace Rawr.Warlock
                   + stats.HitRating + stats.SpellHit
                   + stats.HasteRating + stats.SpellHaste
                   + stats.CritRating + stats.SpellCrit + stats.SpellCritOnTarget + stats.BonusSpellCritDamageMultiplier
+                  + stats.Mastery
                   + stats.MasteryRating
                   + stats.Mana + stats.Mp5
                   + stats.HighestStat                     //darkmoon card: greatness
@@ -527,8 +529,8 @@ namespace Rawr.Warlock
         }
         public override bool EnchantFitsInSlot(Enchant enchant, Character character, ItemSlot slot)
         {
-            if (slot == ItemSlot.Ranged) return false;
-            if (slot == ItemSlot.OffHand) return (enchant.Id == 4091);
+            if (enchant.Slot == ItemSlot.Ranged) return false;
+            if (slot == ItemSlot.OffHand) return (enchant.Id == 4091 || enchant.Id == 4434);
             return base.EnchantFitsInSlot(enchant, character, slot);
         }
         public override bool ItemFitsInSlot(Item item, Character character, CharacterSlot slot, bool ignoreUnique)

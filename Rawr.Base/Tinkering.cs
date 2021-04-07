@@ -116,7 +116,7 @@ namespace Rawr
         public bool FitsInSlot(ItemSlot slot)
         {
             return (Slot == slot ||
-                (Slot == ItemSlot.OneHand && (slot == ItemSlot.OffHand || slot == ItemSlot.MainHand || slot == ItemSlot.TwoHand)) ||
+                (Slot == ItemSlot.OneHand && (slot == ItemSlot.OffHand || slot == ItemSlot.MainHand || slot == ItemSlot.TwoHand || slot == ItemSlot.Ranged)) ||
                 (Slot == ItemSlot.TwoHand && (slot == ItemSlot.MainHand)));
         }
 
@@ -315,14 +315,14 @@ namespace Rawr
             #endregion
             #region Gloves
             #region Level 90 (MoP)
-            /*
-            defaultTinkerings.Add(TinkeringTemp = new Tinkering(0, "Incindiary Fireworks Launcher", ItemSlot.Hands, new Stats(), "trade_engineering"));
-            TinkeringTemp.Stats.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { FireDamage = (1049 + 1282)/ 2, }, 0, 30, 1));
-            defaultTinkerings.Add(TinkeringTemp = new Tinkering(4180, "Phase Fingers", ItemSlot.Hands, new Stats(), "trade_engineering"));
-            TinkeringTemp.Stats.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { DodgeRating = 240, }, 10, 45));
-            */
+            defaultTinkerings.Add(TinkeringTemp = new Tinkering(4698, "Incindiary Fireworks Launcher", ItemSlot.Hands, new Stats(), "trade_engineering"));
+            TinkeringTemp.Stats.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { FireDamage = (1049 + 1282)/ 2, }, 0, 45, 1));
+            defaultTinkerings.Add(TinkeringTemp = new Tinkering(4697, "Phase Fingers", ItemSlot.Hands, new Stats(), "trade_engineering"));
+            TinkeringTemp.Stats.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { DodgeRating = 2880, }, 10, 45));
+            defaultTinkerings.Add(TinkeringTemp = new Tinkering(4898, "Synapse Springs Mark II", ItemSlot.Hands, new Stats(), "trade_engineering"));
+            TinkeringTemp.Stats.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { HighestStat = 1920, }, 10, 60));
             #endregion
-            // Cataclysm
+            #region Level 85 (Cataclysm)
             defaultTinkerings.Add(TinkeringTemp = new Tinkering(4180, "Quickflip Deflection Plates", ItemSlot.Hands, new Stats(), "trade_engineering"));
             TinkeringTemp.Stats.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { BonusArmor = 1500, }, 12, 60));
             defaultTinkerings.Add(TinkeringTemp = new Tinkering(4179, "Synapse Springs", ItemSlot.Hands, new Stats(), "trade_engineering"));
@@ -330,13 +330,15 @@ namespace Rawr
             TinkeringTemp.Stats.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { HighestStat = 480, }, 10, 60));
             defaultTinkerings.Add(TinkeringTemp = new Tinkering(4181, "Tazik Shocker", ItemSlot.Hands, new Stats(), "trade_engineering"));
             TinkeringTemp.Stats.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { NatureDamage = (4320 + 5280) / 2f, }, 0, 2 * 60));
-            // WotLK
+            #endregion
+            #region Level 80 (WotLK)
             defaultTinkerings.Add(TinkeringTemp = new Tinkering(3860, "Reticulated Armor Webbing", ItemSlot.Hands, new Stats(), "trade_engineering"));
             TinkeringTemp.Stats.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { BonusArmor = 700f }, 14f, 60f));
             defaultTinkerings.Add(TinkeringTemp = new Tinkering(3604, "Hyperspeed Accelerators", ItemSlot.Hands, new Stats(), "trade_engineering"));
             TinkeringTemp.Stats.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { HasteRating = 240f }, 12f, 60f));
             defaultTinkerings.Add(TinkeringTemp = new Tinkering(3603, "Hand-Mounted Pyro Rocket", ItemSlot.Hands, new Stats(), "trade_engineering"));
             TinkeringTemp.Stats.AddSpecialEffect(new SpecialEffect(Trigger.Use, new Stats() { FireDamage = 1837f, }, 0f, 45f));
+            #endregion
             #endregion
             #region Waist
             // This effect has a proc that can make you 100% crittable for 10 sec

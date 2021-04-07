@@ -91,7 +91,7 @@ namespace Rawr.DPSWarr.Skills
         {
             if (AbilIterater != -1 && !DPSWarrChar.CalcOpts.MaintenanceTree[AbilIterater]) { return 0f; }
             float actsUnderSD = DPSWarrChar.Talents.SuddenDeath > 0 ? Buff.GetAverageProcsPerSecond((FightDuration * mod) / Math.Max(0, landedatksoverdur),
-                1f, DPSWarrChar.CombatFactors.CMHItemSpeed, (FightDuration * mod)) * (FightDuration * mod) : 0f;
+                1f, DPSWarrChar.CombatFactors.CMHItemSpeed, 1f, (FightDuration * mod)) * (FightDuration * mod) : 0f; // FIXME: Pass haste for Real PPM effects
             float min = (FightDuration * mod) / CD; // If it follows it's cooldown, no SD procs
             float acts = Math.Max(actsUnderSD, min);
             //float acts = actsUnderSD + min;
@@ -534,9 +534,9 @@ namespace Rawr.DPSWarr.Skills
             //
             Initialize();
         }
-        public static readonly float BaseChance     = 0.16f;
+        public static readonly float BaseChance     = 0.176f;
         //public static readonly float BaseChancePTR  = 0.176f;
-        public static readonly float BonusChance    = 0.02f;
+        public static readonly float BonusChance    = 0.022f;
         //public static readonly float BonusChancePTR = 0.022f;
         public static readonly float DamageModifier = 1.00f;
 
@@ -547,11 +547,10 @@ namespace Rawr.DPSWarr.Skills
             // This attack doesn't consume GCDs and doesn't affect the swing timer
             //float effectActs = _SE_StrikesOfOpportunity[DPSWarrChar.StatS.MasteryRating].GetAverageProcsPerSecond(
             var se = new SpecialEffect(Trigger.MeleeAttack, null, 0f, 0.5f,
-                            (float)Math.Min(Skills.StrikesOfOpportunity.BaseChance
-                                + (float)Math.Max(0f, Skills.StrikesOfOpportunity.BonusChance
-                                    * StatConversion.GetMasteryFromRating(DPSWarrChar.StatS.MasteryRating, CharacterClass.Warrior)), 1f)
+                            (float)Math.Min((float)Math.Max(0f, Skills.StrikesOfOpportunity.BonusChance
+                                    * DPSWarrChar.StatS.Mastery), 1f)
                     ) { BypassCache = true };
-            float effectActs = se.GetAverageProcsPerSecond((FightDuration * perc) / meleeAttemptsOverDur, 1f, DPSWarrChar.CombatFactors.CMHItemSpeed, FightDuration * perc);
+            float effectActs = se.GetAverageProcsPerSecond((FightDuration * perc) / meleeAttemptsOverDur, 1f, 1f, DPSWarrChar.CombatFactors.CMHItemSpeed, FightDuration * perc); // FIXME: Pass haste for Real PPM effects
             effectActs *= FightDuration * perc;
             return effectActs;
         }

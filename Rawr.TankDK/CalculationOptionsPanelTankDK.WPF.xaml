@@ -122,7 +122,7 @@
                         <TextBlock Margin="4" FontWeight="Bold" Text="Notices" VerticalAlignment="Center" />
                     </Border>
                     <TextBlock TextWrapping="Wrap" Grid.Row="12" Margin="2" Grid.ColumnSpan="4" FontSize="10"
-                               Text="Note that many of TankDK's stats are based on Boss Content. Please see the Boss Handler (next to Options in the Tabs above) for additional Fight Related settings you can adjust.&#x0a;&#x0a;A Fresh 85 should use An Easy Boss to start and once some gear has been gathered to appropriately defend against that, move on to The Average Boss. More details on this can be found on the Boss Handler Pane and in the Documentation of Rawr's website."/>
+                               Text="Note that many of TankDK's stats are based on Boss Content. Please see the Boss Handler (next to Options in the Tabs above) for additional Fight Related settings you can adjust.&#x0a;&#x0a;A Fresh 90 should use An Easy Boss to start and once some gear has been gathered to appropriately defend against that, move on to The Average Boss. More details on this can be found on the Boss Handler Pane and in the Documentation of Rawr's website."/>
 
                     <Border Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="4" Background="AliceBlue" BorderBrush="LightSteelBlue" BorderThickness="1">
                         <TextBlock Margin="4" FontWeight="Bold" Text="Stat Graph" VerticalAlignment="Center" />

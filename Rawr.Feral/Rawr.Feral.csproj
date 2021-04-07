@@ -14,19 +14,8 @@
     <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
-    <SilverlightApplication>true</SilverlightApplication>
-    <SupportedCultures>
-    </SupportedCultures>
-    <XapOutputs>true</XapOutputs>
-    <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
-    <XapFilename>Rawr.Feral.xap</XapFilename>
-    <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
-    <SilverlightAppEntry>Rawr.Feral.App</SilverlightAppEntry>
-    <TestPageFileName>Rawr.FeralTestPage.html</TestPageFileName>
-    <CreateTestPage>true</CreateTestPage>
+    <SilverlightApplication>false</SilverlightApplication>
     <ValidateXaml>true</ValidateXaml>
-    <EnableOutOfBrowser>false</EnableOutOfBrowser>
-    <OutOfBrowserSettingsFile>Properties\OutOfBrowserSettings.xml</OutOfBrowserSettingsFile>
     <UsePlatformExtensions>false</UsePlatformExtensions>
     <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
     <LinkedServerProject>
@@ -85,7 +74,9 @@
     <Compile Include="Abilities\AbilityFeral_FerociousBite.cs" />
     <Compile Include="Abilities\AbilityFeral_FieryClaws.cs" />
     <Compile Include="Abilities\AbilityFeral_FurySwipe.cs" />
+    <Compile Include="Abilities\AbilityFeral_Incarnation.cs" />
     <Compile Include="Abilities\AbilityFeral_MangleCat.cs" />
+    <Compile Include="Abilities\AbilityFeral_Pounce.cs" />
     <Compile Include="Abilities\AbilityFeral_Rake.cs" />
     <Compile Include="Abilities\AbilityFeral_Ravage.cs" />
     <Compile Include="Abilities\AbilityFeral_RavageProc.cs" />
@@ -93,22 +84,25 @@
     <Compile Include="Abilities\AbilityFeral_SavageRoar.cs" />
     <Compile Include="Abilities\AbilityFeral_Shred.cs" />
     <Compile Include="Abilities\AbilityFeral_SwipeCat.cs" />
+    <Compile Include="Abilities\AbilityFeral_ThrashCat.cs" />
     <Compile Include="Abilities\AbilityFeral_TigersFury.cs" />
     <Compile Include="Abilities\AbilityFeral_WhiteSwing.cs" />
+    <Compile Include="Abilities\AbilityGuardian_Rip.cs" />
+    <Compile Include="Abilities\FeralTemplate.cs" />
     <Compile Include="CalculationOptionsFeral.cs" />
     <Compile Include="CalculationOptionsPanelFeral.xaml.cs">
       <DependentUpon>CalculationOptionsPanelFeral.xaml</DependentUpon>
     </Compile>
     <Compile Include="CalculationsFeral.cs" />
     <Compile Include="CharacterCalculationsFeral.cs" />
-    <Compile Include="Abilities\CombatTable.cs" />
-    <Compile Include="FeralAbilityStats.cs" />
     <Compile Include="Abilities\FeralCombatState.cs" />
+    <Compile Include="ComparisonCalculationFeral.cs" />
+    <Compile Include="FeralConverters.cs" />
     <Compile Include="FeralEnums.cs" />
-    <Compile Include="FeralRotationCalculator.cs" />
+    <Compile Include="FeralRotation.cs" />
+    <Compile Include="FeralSolver.cs" />
     <Compile Include="FeralWeapon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rotation.cs" />
     <Compile Include="StatsFeral.cs" />
   </ItemGroup>
   <ItemGroup>

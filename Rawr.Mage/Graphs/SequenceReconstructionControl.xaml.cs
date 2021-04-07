@@ -293,7 +293,7 @@ namespace Rawr.Mage.Graphs
                         duration = 0;
                         if (sequence[i].VariableType == VariableType.ManaGem)
                         {
-                            mana += (float)((1 + calculations.BaseStats.BonusManaGem) * calculations.ManaGemValue * value);
+                            mana += (float)(-sequence[i].Mps * value);
                             gemCount++;
                         }
                         else if (sequence[i].VariableType == VariableType.ManaPotion)

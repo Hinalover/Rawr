@@ -52,6 +52,7 @@ namespace Rawr.Mage.Graphs
             effectList.AddRange(calculations.IntellectEffects);
             effectList.AddRange(calculations.HasteRatingEffects);
             effectList.AddRange(calculations.MasteryRatingEffects);
+            effectList.AddRange(calculations.CritRatingEffects);
 
             Color[] colors = new Color[] {
                         Color.FromArgb(255,202,180,96), 
@@ -99,6 +100,7 @@ namespace Rawr.Mage.Graphs
                                 switch (effectList[i].Trigger)
                                 {
                                     case Trigger.DamageSpellCrit:
+                                    case Trigger.DamageSpellOrDoTCrit:
                                     case Trigger.SpellCrit:
                                         triggers += (float)(calculations.Solution[j] * c.Ticks / c.CastTime);
                                         procs += (float)(calculations.Solution[j] * c.CritProcs / c.CastTime);
@@ -135,6 +137,7 @@ namespace Rawr.Mage.Graphs
                                         break;
                                     case Trigger.DamageDone:
                                     case Trigger.DamageOrHealingDone:
+                                    case Trigger.DamageSpellHitorDoTTick:
                                         triggers += (float)(calculations.Solution[j] * c.DamageProcs / c.CastTime);
                                         procs += (float)(calculations.Solution[j] * c.DamageProcs / c.CastTime);
                                         break;
@@ -154,7 +157,7 @@ namespace Rawr.Mage.Graphs
                     for (int tick = 0; tick <= steps; tick++)
                     {
                         float time = tick / (float)steps * calculations.CalculationOptions.FightDuration;
-                        plot[tick] = new TimeData() { Time = baseTime + TimeSpan.FromSeconds(time), Value = effectList[i].GetUptimePlot(triggerInterval, triggerChance, 3.0f, time) };
+                        plot[tick] = new TimeData() { Time = baseTime + TimeSpan.FromSeconds(time), Value = effectList[i].GetUptimePlot(triggerInterval, triggerChance, 3.0f, calculations.BaseState.CastingSpeed, time) };
                     }
 
                     Style style = new Style(typeof(LineDataPoint));

@@ -95,7 +95,6 @@ namespace Rawr.DK
             }
             set
             {
-                // TODO: we don't want the attack speed to be 0, but definitely not negative.
                 _attackspeed = Math.Max(value, 0);
             }
         }

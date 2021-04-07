@@ -31,30 +31,13 @@ namespace Rawr.DK
         public override void UpdateCombatState(CombatState CS)
         {
             base.UpdateCombatState(CS);
-            this.AbilityCost[(int)DKCostTypes.RunicPower] = -10 + (CS.m_Talents.ChillOfTheGrave > 0 ? -5 : 0);
+            this.AbilityCost[(int)DKCostTypes.RunicPower] = -10;
             this.ml_TriggeredAbility[0] = new AbilityDK_FrostFever(CS);
-            this.uRange = 20 + (uint)(CState.m_Talents.IcyReach * 5);
+            this.uRange = 30;
         }
 
         private int _DamageAdditiveModifer = 0;
         /// <summary>Setup the modifier formula for a given ability.</summary>
         public override int DamageAdditiveModifer { get { return (int)(this.CState.m_Stats.AttackPower * 0.20f); } set { _DamageAdditiveModifer = value; } }
-
-        public override float DamageMultiplierModifer
-        {
-            get
-            {
-                float DMM = base.DamageMultiplierModifer;
-                if (CState.m_Talents.MercilessCombat > 0)
-                {
-                    DMM = DMM * (1 + ((CState.m_Talents.MercilessCombat * .06f) * .35f));
-                }
-                return DMM;
-            }
-            set
-            {
-                base.DamageMultiplierModifer = value;
-            }
-        }
     }
 }

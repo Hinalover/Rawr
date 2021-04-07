@@ -30,6 +30,13 @@ namespace Rawr.DK
         {
             base.UpdateCombatState(CS);
             this.uArea = (uint)(10 + (CState.m_Talents.GlyphofBloodBoil ? 5 : 0));
+            // Roiling Blood:
+            // TODO: Add check for if the target is infected.
+            if (CState.m_Talents.RoilingBlood > 0)
+            {
+                this.ml_TriggeredAbility = new AbilityDK_Base[1];
+                this.ml_TriggeredAbility[0] = new AbilityDK_Pestilence(CS);
+            }
         }
 
         /// <summary>
@@ -56,9 +63,9 @@ namespace Rawr.DK
         {
             get
             {
-                if (CState.m_Talents.CrimsonScourge > 0)
+                if (CState.m_Spec == Rotation.Type.Blood)
                 {
-                    return base.DamageMultiplierModifer + (CState.m_Talents.CrimsonScourge * .2f);
+                    return base.DamageMultiplierModifer + .4f;
                 }
                 else
                     return base.DamageMultiplierModifer;

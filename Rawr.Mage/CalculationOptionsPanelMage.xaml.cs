@@ -121,43 +121,6 @@ namespace Rawr.Mage
 #endif
         }
 
-        private void HotStreakUtilization_Click(object sender, RoutedEventArgs e)
-        {
-            string armor = "Molten Armor";
-            CalculationOptionsMage calculationOptions = Character.CalculationOptions as CalculationOptionsMage;
-            CalculationsMage calculations = (CalculationsMage)Calculations.Instance;
-            Solver solver = new Solver(Character, calculationOptions, false, false, false, 0, armor, false, false, true, false, true, false, false);
-            solver.Initialize(null);
-            CastingState baseState = new CastingState(solver, 0, false, 0);
-
-            FireCycleGenerator generator = new FireCycleGenerator(baseState);
-
-            GenericCycle c1 = new GenericCycle("test", baseState, generator.StateList, true);
-            Cycle c2 = baseState.GetCycle(CycleId.FBLBPyro);
-
-            Dictionary<string, SpellContribution> dict1 = new Dictionary<string, SpellContribution>();
-            Dictionary<string, SpellContribution> dict2 = new Dictionary<string, SpellContribution>();
-            c1.AddDamageContribution(dict1, 1.0f, 0);
-            c2.AddDamageContribution(dict2, 1.0f, 0);
-
-            float predicted = dict2["Pyroblast"].Hits / dict2["Fireball"].Hits;
-            float actual = dict1["Pyroblast"].Hits / dict1["Fireball"].Hits;
-
-            StringBuilder sb = new StringBuilder();
-
-            sb.AppendLine("Pyro/Nuke Ratio:");
-            sb.AppendLine();
-            sb.AppendLine("Approximation Model: " + predicted);
-            sb.AppendLine("Exact Model: " + actual);
-            sb.AppendLine();
-            // predicted = raw * (1 - wastedold)
-            // actual = raw * (1 - wasted)
-            // wasted = 1 - actual / predicted * (1 - wastedold)
-            sb.AppendLine("Predicted Wasted Hot Streaks: " + (1 - actual / predicted));
-
-            MessageBox.Show(sb.ToString());
-        }
-
         private void CalculationTiming_Click(object sender, RoutedEventArgs e)
         {
             CalculationsMage calculations = (CalculationsMage)Calculations.Instance;
@@ -432,7 +395,7 @@ namespace Rawr.Mage
             public void Simulate()
             {
                 float FBc = FB.CritRate;
-                float FBHSc = FB.CritRate - FB.NonHSCritRate;
+                float FBHSc = FB.CritRate;
                 float FBk = Math.Max(-2.73f * FBHSc + 0.95f, 0f);
                 if (baseState.Solver.Mage4T12)
                 {

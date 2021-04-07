@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using Rawr.Hunter.Skills;
 using Rawr.Base.Algorithms;
 
@@ -230,6 +231,17 @@ namespace Rawr.Hunter {
 //        public Skills.FreezingTrap Freezing;
 //        public Skills.FrostTrap Frost;
 
+        //New Talent skills
+        public Skills.MurderOfCrows MurderOfCrows;
+        //TODO: OpOv - Blink Strike needs to be implemented
+        public Skills.LynxRush LynxRush;
+        public Skills.GlaiveToss GlaiveToss;
+        public Skills.Powershot Powershot;
+        public Skills.Barrage Barrage;
+        public Skills.Fervor Fervor;
+        public Skills.DireBeast DireBeast;
+
+
         public float _Steady_DPS = 0f, _Steady_GCDs = 0f;
         public float _Multi_DPS = 0f, _Multi_GCDs = 0f;
         
@@ -238,7 +250,7 @@ namespace Rawr.Hunter {
         #endregion
         #region Get/Set
         protected Character Char { get; set; }
-        protected HunterTalents Talents { get; set; }
+        public HunterTalents Talents { get; set; }
         protected StatsHunter StatS { get; set; }
         public CombatFactors CombatFactors { get; set; }
         public WhiteAttacks WhiteAtks { get; protected set; }
@@ -302,7 +314,7 @@ namespace Rawr.Hunter {
 #endif
 
             #region WildQuiver
-            if (FightDuration > 0)
+            if (FightDuration > 0 && Char.HunterTalents.HighestTree == (int)Specialization.Marksmanship)
             {
                 float numWQProcs = (iActions * calcs.Hunter.MasteryRatePercent);
                 calcs.WildQuiverDPS = (numWQProcs * WhiteAtks.RwDamageOnUse) / FightDuration;
@@ -310,9 +322,9 @@ namespace Rawr.Hunter {
             #endregion
 
             #region Piercing Shots
-            if (Talents.PiercingShots > 0)
+            if (Char.HunterTalents.HighestTree == (int)Specialization.Marksmanship)
             {
-                float PiercingShotsPerc = Talents.PiercingShots * .1f;
+                float PiercingShotsPerc = .3f;
                 float SScritRate = AbilityList[typeof(SteadyShot)].ability.GetXActs(AttackTableSelector.Crit, 1);
                 calcs.PiercingShotsDPSSteadyShot = AbilityList[typeof(SteadyShot)].DPS * SScritRate * PiercingShotsPerc;
                 float CScritRate = AbilityList[typeof(ChimeraShot)].ability.GetXActs(AttackTableSelector.Crit, 1);
@@ -341,8 +353,30 @@ namespace Rawr.Hunter {
             fDPS += AbilityList[typeof(ChimeraShot)].DPS;
             fDPS += AbilityList[typeof(KillShot)].DPS;
             fDPS += AbilityList[typeof(SerpentSting)].DPS;
+
+            fDPS += AbilityList[typeof(MurderOfCrows)].DPS;
+        
+            fDPS += AbilityList[typeof(LynxRush)].DPS;
+            fDPS += AbilityList[typeof(GlaiveToss)].DPS;
+            fDPS += AbilityList[typeof(Powershot)].DPS;
+            fDPS += AbilityList[typeof(Barrage)].DPS;
+            fDPS += AbilityList[typeof(DireBeast)].DPS;
+            
+
             fDPS += calcs.PiercingShotsDPS;
+            
+            //RE'ed from FemaleDwarf/SimCraft
+            float petTotalDPSCalc = (StatS.AttackPower*1.05f) * .13423f + 36.628f;
+
+            if(Char.HunterTalents.Specialization == (int)Specialization.Survival)
+                calcs.petWhiteDPS = petTotalDPSCalc;
+
+            fDPS += calcs.petWhiteDPS;
+            
             calcs.CustomDPS = fDPS;
+            
+            
+            
 
             #region Populate the display values.
             // Whites
@@ -374,6 +408,17 @@ namespace Rawr.Hunter {
             calcs.Rapid = Rapid;
             calcs.Ready = Ready;
             
+            //MoP
+            calcs.MurderOfCrows = this.AbilityList[typeof(MurderOfCrows)];
+            //TODO: OpOv - Blink Strike needs to be implemented
+            calcs.LynxRush = this.AbilityList[typeof(LynxRush)];
+            calcs.GlaiveToss = this.AbilityList[typeof(GlaiveToss)];
+            calcs.Powershot = this.AbilityList[typeof(Powershot)];
+            calcs.Barrage = this.AbilityList[typeof(Barrage)];
+            calcs.DireBeast = this.AbilityList[typeof(DireBeast)];
+            calcs.Fervor = Fervor;
+
+
             // DOT
             calcs.Serpent = AbilityList[typeof(SerpentSting)];
 
@@ -396,17 +441,17 @@ namespace Rawr.Hunter {
             RotationType curRotationType = RotationType.Custom;
             if (t != null)
             {
-                if (t.HighestTree == (int)Specialization.BeastMastery)
+                if (t.Specialization == (int)Specialization.BeastMastery)
                 {
                     // Beast Mastery
                     curRotationType = Rotation.RotationType.BeastMastery;
                 }
-                else if (t.HighestTree == (int)Specialization.Marksmanship)
+                else if (t.Specialization == (int)Specialization.Marksmanship)
                 {
                     // Marksmanship
                     curRotationType = Rotation.RotationType.Marksmanship;
                 }
-                if (t.HighestTree == (int)Specialization.Survival)
+                if (t.Specialization == (int)Specialization.Survival)
                 {
                     // Survival
                     curRotationType = Rotation.RotationType.Survival;
@@ -463,6 +508,24 @@ namespace Rawr.Hunter {
             Kill = new Skills.KillShot(Char, StatS, CombatFactors, WhiteAtks, CalcOpts);
             AddAbility(new AbilWrapper(Kill));
 
+            //MoP Talent Additions
+            MurderOfCrows = new Skills.MurderOfCrows(Char, StatS, CombatFactors, WhiteAtks, CalcOpts);
+            AddAbility(new AbilWrapper(MurderOfCrows));
+            //TODO: OpOv - Blink Strike needs to be implemented
+            LynxRush = new Skills.LynxRush(Char, StatS, CombatFactors, WhiteAtks, CalcOpts);
+            AddAbility(new AbilWrapper(LynxRush));
+            GlaiveToss = new Skills.GlaiveToss(Char, StatS, CombatFactors, WhiteAtks, CalcOpts);
+            AddAbility(new AbilWrapper(GlaiveToss));
+            Powershot = new Skills.Powershot(Char, StatS, CombatFactors, WhiteAtks, CalcOpts);
+            AddAbility(new AbilWrapper(Powershot));
+            Barrage = new Skills.Barrage(Char, StatS, CombatFactors, WhiteAtks, CalcOpts);
+            AddAbility(new AbilWrapper(Barrage));
+            Fervor = new Skills.Fervor(Char, StatS, CombatFactors, WhiteAtks, CalcOpts);
+            AddAbility(new AbilWrapper(Fervor));
+            DireBeast = new Skills.DireBeast(Char, StatS, CombatFactors, WhiteAtks, CalcOpts);
+            AddAbility(new AbilWrapper(DireBeast));
+            //Survival Specific
+
             // Buffs
             Rapid = new Skills.RapidFire(Char, StatS, CombatFactors, WhiteAtks, CalcOpts);
             AddAbility(new AbilWrapper(Rapid));
@@ -485,22 +548,69 @@ namespace Rawr.Hunter {
             AbilityList.Add(abilWrapper.ability.GetType(), abilWrapper);
         }
 
+        static int counter = 0;
+
         public virtual void doIterations() 
         {
-            if (this.Char.Ranged == null) return;
+            if (this.Char.MainHand == null)
+                return;
 
-            HunterStateSpaceGenerator HSSG;
+            
             MarkovProcess<AbilWrapper> mp;
 
-            HSSG = new HunterStateSpaceGenerator(Talents, Fight); // Setup State Space.
+            HunterStateSpaceGenerator HSSG = new HunterStateSpaceGenerator(this, Fight); // Setup State Space.
+            HunterStateSpaceGenerator HSSGUnder20 = new HunterStateSpaceGenerator(this, Fight);
+            HSSGUnder20.Under20Percent = true;
+
+
+            HSSG.PhysicalHaste = this.calcs.Hunter.Haste;
+            //HSSG.PhysicalHaste = 5000;
+            HSSGUnder20.PhysicalHaste = this.calcs.Hunter.Haste;
+            
             HSSG.AbilityList = AbilityList;
             List<State<AbilWrapper>> SSpace = HSSG.GenerateStateSpace();
+
             mp = new MarkovProcess<AbilWrapper>(SSpace); // Generate weightings for each ability.
+
+            float totalCastTimes = mp.AbilityWeight.Where(t => t.Value > 0).Sum(t => t.Key.CastTime);
 
             foreach (KeyValuePair<AbilWrapper, double> kvp in mp.AbilityWeight)
             {
-                kvp.Key.AbilityWeight = kvp.Value;
-                kvp.Key.DPS = kvp.Key.Damage / (float)mp.AverageTransitionDuration;
+                kvp.Key.AbilityWeight = kvp.Value * (1-BossOpts.Under20Perc);
+                kvp.Key.DPS = (kvp.Key.Damage / ((float)mp.AverageTransitionDuration / 1000f)) * (1 - (float)BossOpts.Under20Perc);
+
+                if (this.Char.HunterTalents.Specialization == (int)Specialization.Survival && kvp.Key.ability.DamageType != ItemDamageType.Physical)
+                {
+                    if(this.calcs.Hunter.MasteryRatePercent != 0)
+                        kvp.Key.DPS *= (1 + (this.calcs.Hunter.MasteryRatePercent));
+                }
+
+                //float timeDistribution = (Convert.ToSingle((double)kvp.Key.CastTime * kvp.Value) / totalCastTimes);
+
+                kvp.Key.numActivates = ((Convert.ToSingle((double)kvp.Key.CastTime * kvp.Value) / totalCastTimes) * BossOpts.BerserkTimer) / kvp.Key.CastTime * (1 - (float)BossOpts.Under20Perc);
+            }
+
+            HSSGUnder20.AbilityList = AbilityList;
+            SSpace = HSSGUnder20.GenerateStateSpace();
+
+            mp = new MarkovProcess<AbilWrapper>(SSpace); // Generate weightings for each ability.
+
+            totalCastTimes = mp.AbilityWeight.Where(t => t.Value > 0).Sum(t => t.Key.CastTime);
+
+            foreach (KeyValuePair<AbilWrapper, double> kvp in mp.AbilityWeight)
+            {
+                kvp.Key.AbilityWeight += kvp.Value * BossOpts.Under20Perc;
+                kvp.Key.DPS += kvp.Key.Damage / ((float)mp.AverageTransitionDuration / 1000f) * (float)BossOpts.Under20Perc;
+
+                if (this.Char.HunterTalents.Specialization == (int)Specialization.Survival && kvp.Key.ability.DamageType != ItemDamageType.Physical)
+                {
+                    if (this.calcs.Hunter.MasteryRatePercent != 0)
+                        kvp.Key.DPS *= (1 + (this.calcs.Hunter.MasteryRatePercent / 100));
+                }
+
+                //float timeDistribution = (Convert.ToSingle((double)kvp.Key.CastTime * kvp.Value) / totalCastTimes);
+
+                kvp.Key.numActivates += ((Convert.ToSingle((double)kvp.Key.CastTime * kvp.Value) / totalCastTimes) * BossOpts.BerserkTimer) / kvp.Key.CastTime * (float)BossOpts.Under20Perc;
             }
         }
 
@@ -508,6 +618,7 @@ namespace Rawr.Hunter {
         {
             for (int i = 0; i < EnumHelper.GetCount(typeof(ShotResult)); i++) for (int k = 0; k < EnumHelper.GetCount(typeof(AttackType)); k++)
                 _atkOverDurs[i,k] = -1f;
+
         }
 
         #region Attacks over Duration

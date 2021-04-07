@@ -22,7 +22,7 @@
             public const float AssassinsResolveEnergyBonus = 20f;
             public const float AssassinsResolveMeleeDmgBonus = 0.15f;
             public const float Executioner = 0.16f;
-            public const float ExecutionerPerMast = 0.02f;
+            public const float ExecutionerPerMast = 0.025f;
             public const float ImprovedPoisonsDPBonus = 0.2f;
             public const float ImprovedPoisonsIPFreqMult = 0.5f;
             public const float MainGauche = 0.16f;

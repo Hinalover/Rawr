@@ -41,6 +41,8 @@ namespace Rawr.UI
                 MinDamageNum.Value = (double)CurrentItem.MinDamage;
                 MaxDamageNum.Value = (double)CurrentItem.MaxDamage;
                 IlvlNum.Value = (double)CurrentItem.ItemLevel;
+                UpgradeAmount.Value = (double)(CurrentItem.UpgradeLevels.Count > 0 ? CurrentItem.UpgradeLevels[0] : 0);
+                UpgradeCount.Value = (double)CurrentItem.UpgradeLevels.Count;
 
                 if (currentItem.SocketColor1 == ItemSlot.Meta) Gem1Combo.SelectedIndex = 1;
                 else if (currentItem.SocketColor1 == ItemSlot.Red) Gem1Combo.SelectedIndex = 2;
@@ -175,6 +177,7 @@ namespace Rawr.UI
             ClassCheckBoxes["Druid"] = DruidCheckBox;
             ClassCheckBoxes["Hunter"] = HunterCheckBox;
             ClassCheckBoxes["Mage"] = MageCheckBox;
+            ClassCheckBoxes["Monk"] = MonkCheckBox;
             ClassCheckBoxes["Paladin"] = PaladinCheckBox;
             ClassCheckBoxes["Priest"] = PriestCheckBox;
             ClassCheckBoxes["Rogue"] = RogueCheckBox;
@@ -249,6 +252,11 @@ namespace Rawr.UI
                 CurrentItem.Quality = (ItemQuality)QualityCombo.SelectedIndex;
                 CurrentItem.DamageType = (ItemDamageType)DamageTypeComboBox.SelectedIndex;
                 CurrentItem.Cost = (float)CostText.Value;
+                currentItem.UpgradeLevels.Clear();
+                for (int level = 0; level < UpgradeCount.Value; ++level)
+                {
+                    currentItem.UpgradeLevels.Add((level + 1) * (int)UpgradeAmount.Value);
+                }
 
                 if (Gem1Combo.SelectedIndex == 1) CurrentItem.SocketColor1 = ItemSlot.Meta;
                 else if (Gem1Combo.SelectedIndex == 2) CurrentItem.SocketColor1 = ItemSlot.Red;

@@ -27,7 +27,7 @@ namespace Rawr.ProtPaladin
             set { _overallPoints = value; }
         }
 
-        private float[] _subPoints = new float[] { 0f, 0f, 0f };
+        private float[] _subPoints = new float[] { 0f, 0f, 0f, 0f };
         public override float[] SubPoints
         {
             get { return _subPoints; }
@@ -50,6 +50,12 @@ namespace Rawr.ProtPaladin
         {
             get { return _subPoints[2]; }
             set { _subPoints[2] = value; }
+        }
+
+        public float RecoveryPoints
+        {
+            get { return _subPoints[3]; }
+            set { _subPoints[3] = value; }
         }
 
         private Item _item = null;

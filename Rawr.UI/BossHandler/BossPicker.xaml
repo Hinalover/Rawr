@@ -107,6 +107,11 @@
                         <System:Int32>86</System:Int32>
                         <System:Int32>87</System:Int32>
                         <System:Int32>88</System:Int32>
+                        <System:Int32>89</System:Int32>
+                        <System:Int32>90</System:Int32>
+                        <System:Int32>91</System:Int32>
+                        <System:Int32>92</System:Int32>
+                        <System:Int32>93</System:Int32>
                     </ComboBox>
                     <Grid x:Name="LO_Armor" Margin="2" Grid.Column="2" Height="24" VerticalAlignment="Bottom" Grid.ColumnSpan="2">
                         <Grid.ColumnDefinitions>
@@ -119,6 +124,11 @@
                             <System:Int32>11441</System:Int32>
                             <System:Int32>11682</System:Int32>
                             <System:Int32>11977</System:Int32>
+                            <System:Int32>20140</System:Int32>
+                            <System:Int32>22900</System:Int32>
+                            <System:Int32>23546</System:Int32>
+                            <System:Int32>24191</System:Int32>
+                            <System:Int32>24835</System:Int32>
                         </ComboBox>
                     </Grid>
                     <TextBlock x:Name="LB_MobType" Margin="2" Text="Mob Type:" TextWrapping="Wrap" Grid.Row="1" VerticalAlignment="Center" Grid.ColumnSpan="2"/>

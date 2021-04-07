@@ -27,11 +27,11 @@ namespace Rawr.ProtWarr
             switch (avoidanceType)
             {
                 case HitResult.Miss:
-                    return StatConversion.WHITE_MISS_CHANCE_CAP[player.BossOpts.Level - 85];
+                    return StatConversion.WHITE_MISS_CHANCE_CAP[player.BossOpts.Level - player.Character.Level];
                 case HitResult.Dodge:
-                    return StatConversion.YELLOW_DODGE_CHANCE_CAP[player.BossOpts.Level - 85];
+                    return StatConversion.YELLOW_DODGE_CHANCE_CAP[player.BossOpts.Level - player.Character.Level];
                 case HitResult.Parry:
-                    return StatConversion.YELLOW_PARRY_CHANCE_CAP[player.BossOpts.Level - 85];
+                    return StatConversion.YELLOW_PARRY_CHANCE_CAP[player.BossOpts.Level - player.Character.Level];
                 case HitResult.Glance:
                     return 0.06f + ((player.BossOpts.Level - player.Character.Level) * 0.06f);
                 case HitResult.Crit:
@@ -110,7 +110,7 @@ namespace Rawr.ProtWarr
 
         public static float BonusMasteryBlockPercentage(Player player)
         {
-            return 0.015f * (8.0f + StatConversion.GetMasteryFromRating(player.Stats.MasteryRating, CharacterClass.Warrior));
+            return 0.015f * (player.Stats.Mastery + StatConversion.GetMasteryFromRating(player.Stats.MasteryRating, CharacterClass.Warrior));
         }
 
         public static float BonusExpertisePercentage(Player player)

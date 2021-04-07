@@ -7,10 +7,16 @@ namespace Rawr.Hunter {
             Char = character;
             if (Char != null)
             {
-                if (Char.Ranged != null)
-                    RW = Char.Ranged.Item;
+                //JA:Added criteria to check that Main Hand Weapon is a ranged weapon, otherwise something has gone horribly wrong given the removal of the range slot
+                //Original line below read: if (Char.MainHand != null)
+                if (Char.MainHand != null && (Char.MainHand.Type == ItemType.Bow || Char.MainHand.Type == ItemType.Gun|| Char.MainHand.Type == ItemType.Crossbow))
+                    RW = Char.MainHand.Item;
                 else
+                {
+                    //JA: TODO: Don't know enough about expected functionality to know if when we default RW to Knuckles and not change the UI to show no weapon, do we need to update UI here as well?
                     RW = new Knuckles();
+                }
+
                 if (Char.HunterTalents != null)
                     Talents = Char.HunterTalents;
                 else
@@ -109,7 +115,14 @@ namespace Rawr.Hunter {
         private float CalcNormalizedWeaponDamage(Item weapon) {
             return weapon.Speed * weapon.DPS + StatS.RangedAttackPower / 14f * 2.8f + StatS.WeaponDamage;
         }
-        public float AvgRwWeaponDmgUnhasted { get { return (useRW ? (StatS.RangedAttackPower / 14f + RW.DPS) * _c_rwItemSpeed + StatS.WeaponDamage : 0f); } }
+        public float AvgRwWeaponDmgUnhasted 
+        { 
+            get 
+            { 
+                return (useRW ? (StatS.RangedAttackPower / 14f + RW.DPS) * _c_rwItemSpeed + StatS.WeaponDamage : 0f); 
+            } 
+        }
+
         /*public float AvgRwWeaponDmg(float speed) {       return (useMH ? (StatS.AttackPower / 14f + MH.DPS) * speed + StatS.WeaponDamage : 0f); }*/
         #endregion
         #region Weapon Crit Damage
@@ -200,7 +213,7 @@ namespace Rawr.Hunter {
         private float YwMissChance { get { return Math.Max(0f, YwMissCap - MissPrevBonuses); } }
         #endregion
         #region Dodge
-        private float DodgeChanceCap { get { return 0f; } }// StatConversion.WHITE_DODGE_CHANCE_CAP[CalcOpts.TargetLevel - Char.Level]; } }
+        private float DodgeChanceCap { get { return StatConversion.WHITE_DODGE_CHANCE_CAP[Math.Max(BossOpts.Level - Char.Level,0)]; } }
         private float RwDodgeChance { get { return Math.Max(0f, DodgeChanceCap - StatConversion.GetDodgeParryReducFromExpertise(_c_rwexpertise, CharacterClass.Hunter) /*- Talents.WeaponMastery * 0.01f*/); } }
         #endregion
         #region Parry

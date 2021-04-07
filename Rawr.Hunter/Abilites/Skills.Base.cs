@@ -13,17 +13,21 @@ namespace Rawr.Hunter.Skills
         public float FocusCost { get { return ability.FocusCost; } }
         public float Focus { get { return ability.FocusCost; } }
         public float Damage { get { return ability.DamageOnUse * (float)AbilityWeight; } }
+        public float DamagePerUse { get { return ability.DamageOnUse; } }
         public float DPS { get; set; }
         public double AbilityWeight { get; set; }
+        
+
         public bool isDamaging { get { return ability.DamageOverride > 0f; } }
         public string GenTooltip(float fRotationDPS) { return ability.GenTooltip(fRotationDPS); }
+        public string GenTooltip(float acts, float fRotationDPS) { return ability.GenTooltip(acts,fRotationDPS); }
         public override string ToString()
         {
             return ability.Name;
         }
     }
 
-    public enum AttackTableSelector { Missed = 0, Crit, Hit }
+    public enum AttackTableSelector { Missed = 0, Dodged, Crit, Hit }
 
     // TODO: refactor this to inherit from Base Ability?
     public class WhiteAttacks
@@ -102,6 +106,7 @@ namespace Rawr.Hunter.Skills
                     // Work the Attack Table
                     float dmgDrop = (1f
                         - RWAtkTable.Miss   // no damage when being missed
+                        - RWAtkTable.Dodge // no damage when being dodged
                         - RWAtkTable.Crit); // crits   handled below
 
                     float dmgCrit = dmg * RWAtkTable.Crit * (1f + combatFactors.BonusWhiteCritDmg); //Bonus Damage when critting
@@ -149,7 +154,7 @@ namespace Rawr.Hunter.Skills
             //return MHAtkTable.AnyNotLand / abilInterval / whiteAtkInterval * manaCost / MHSwingMana;
             //float whiteMod = (MhActivates * MHSwingMana + (combatFactors.useOH ? OhActivates * OHSwingMana : 0f)) / FightDuration;
             if (RwActivates <= 0f) { return 0f; }
-            return (RWAtkTable.Miss * focusCost) / (abilInterval * ((RwActivates /* * (MHSwingMana + MHUWProcValue)*/) / FightDuration));
+            return ((RWAtkTable.Miss * focusCost) + (RWAtkTable.Dodge * focusCost)) / (abilInterval * ((RwActivates /* * (MHSwingMana + MHUWProcValue)*/) / FightDuration));
         }
         public virtual float GetXActs(AttackTableSelector i, float acts)
         {
@@ -158,6 +163,7 @@ namespace Rawr.Hunter.Skills
             switch (i)
             {
                 case AttackTableSelector.Missed:  { retVal = acts * table.Miss;   break; }
+                case AttackTableSelector.Dodged:  { retVal = acts * table.Dodge; break; }
                 case AttackTableSelector.Crit:    { retVal = acts * table.Crit;   break; }
                 case AttackTableSelector.Hit:     { retVal = acts * table.Hit;    break; }
                 default: { break; }
@@ -168,16 +174,19 @@ namespace Rawr.Hunter.Skills
         {
             float acts = RwActivates;
             float misses = GetXActs(AttackTableSelector.Missed, acts), missesPerc = (acts == 0f ? 0f : misses / acts);
+            float dodges = GetXActs(AttackTableSelector.Dodged, acts), dodgesPerc = (acts == 0f ? 0f : dodges / acts);
             float crits = GetXActs(AttackTableSelector.Crit, acts), critsPerc = (acts == 0f ? 0f : crits / acts);
             float hits = GetXActs(AttackTableSelector.Hit, acts), hitsPerc = (acts == 0f ? 0f : hits / acts);
 
             bool showmisss = misses > 0f;
+            bool showdodges = dodges > 0f;
             bool showcrits = crits > 0f;
 
             string tooltip = string.Format("{0:0.0}*White Damage (Ranged Weapon)", RwDPS) +
                 Environment.NewLine + "Shot Speed: " + (RwEffectiveSpeed != -1 ? RwEffectiveSpeed.ToString("0.00") : "None") +
             Environment.NewLine + Environment.NewLine + acts.ToString("000.00") + " Activates over Attack Table:" +
             (showmisss ? Environment.NewLine + "- " + misses.ToString("000.00") + " : " + missesPerc.ToString("00.00%") + " : Missed " : "") +
+            (showdodges ? Environment.NewLine + "- " + dodges.ToString("000.00") + " : " + dodgesPerc.ToString("00.00%") + " : Dodged " : "") +
             (showcrits ? Environment.NewLine + "- " + crits.ToString("000.00") + " : " + critsPerc.ToString("00.00%") + " : Crit " : "") +
                          Environment.NewLine + "- " + hits.ToString("000.00") + " : " + hitsPerc.ToString("00.00%") + " : Hit " +
                 Environment.NewLine +
@@ -206,6 +215,7 @@ namespace Rawr.Hunter.Skills
             Name = "Invalid";
             ReqTalent = false;
             CanCrit = true;
+            CanBeDodged = true;
             CRITBONUS = 0.5f;
             CRITBONUSMULTIPLIER = 1.0f;
             Talent2ChksValue = 0;
@@ -225,17 +235,21 @@ namespace Rawr.Hunter.Skills
             BonusCritChance = 0.00f;
             UseSpellHit = false;
             Consumes_Tier12_4pc = false;
+            DamageType = ItemDamageType.Physical;
         }
         public static Ability NULL = new NullAbility();
+        public static string shortName = "NULL";
         #region Variables
         public Shots eShot;
         private string NAME;
+        private int SPELLID;
         private float DAMAGEBASE;
         private float DAMAGEBONUS;
         private float HEALINGBASE;
         private float HEALINGBONUS;
         private float BONUSCRITCHANCE;
         private bool CANCRIT;
+        private bool CANBEDODGED;
         private float CRITBONUS;
         private float CRITBONUSMULTIPLIER;
         private bool REQTALENT;
@@ -277,8 +291,10 @@ namespace Rawr.Hunter.Skills
         private WhiteAttacks WHITEATTACKS;
         private CalculationOptionsHunter CALCOPTS;
         private BossOptions BOSSOPTS;
+        private ItemDamageType DAMAGETYPE;
         private bool USESPELLHIT = false;
         private bool USEHITTABLE = true;
+        private bool SUPPRESSAUTOSHOT = false;
         public int AbilIterater;
         public float Mastery = 0f;
         public bool RefreshesSS = false; // Refreshes Serpent Sting
@@ -286,11 +302,14 @@ namespace Rawr.Hunter.Skills
         #endregion
         #region Get/Set
         public string Name { get { return NAME; } set { NAME = value; } }
+        public int SpellId { get { return SPELLID; } set { SPELLID = value; } }
         protected bool ReqTalent { get { return REQTALENT; } set { REQTALENT = value; } }
         protected int Talent2ChksValue { get { return TALENT2CHKSVALUE; } set { TALENT2CHKSVALUE = value; } }
         protected bool ReqRangedWeap { get { return REQRANGEDWEAP; } set { REQRANGEDWEAP = value; } }
+        
         protected bool ReqSkillsRange { get { return REQSKILLSRANGE; } set { REQSKILLSRANGE = value; } }
         protected bool ReqMultiTargs { get { return REQMULTITARGS; } set { REQMULTITARGS = value; } }
+        protected bool SuppressesAutoShot { get { return SUPPRESSAUTOSHOT; } set { SUPPRESSAUTOSHOT = value; } }
         private float _AvgTargets = -1f;
         public float AvgTargets
         {
@@ -311,6 +330,8 @@ namespace Rawr.Hunter.Skills
         }
         protected float Targets { get { return TARGETS; } set { TARGETS = value; } }
         public bool CanCrit { get { return CANCRIT; } set { CANCRIT = value; } }
+        public bool CanBeDodged { get { return CANBEDODGED; } set { CANBEDODGED = value; } }
+        public ItemDamageType DamageType { get { return DAMAGETYPE; } set { DAMAGETYPE = value; } }
         public float MinRange { get { return MINRANGE; } set { MINRANGE = value; } } // In Yards 
         public float MaxRange { get { return MAXRANGE; } set { MAXRANGE = value; } } // In Yards
         public float Cd
@@ -435,7 +456,7 @@ namespace Rawr.Hunter.Skills
                 {
                     validatedSet = false;
                 }
-                else if (ReqRangedWeap && (Char.Ranged == null || Char.Ranged.MaxDamage <= 0))
+                else if (ReqRangedWeap && (Char.MainHand == null || Char.MainHand.MaxDamage <= 0))
                 {
                     validatedSet = false;
                 }
@@ -486,6 +507,7 @@ namespace Rawr.Hunter.Skills
                 // Work the Attack Table
                 float dmgDrop = (1f
                     - RWAtkTable.Miss   // no damage when being missed
+                    - RWAtkTable.Dodge   // no damage when being dodged
                     - RWAtkTable.Crit); // crits   handled below
 
                 float dmgCrit = dmg * RWAtkTable.Crit * (1f + combatFactors.BonusYellowCritDmg); //Bonus Damage when critting
@@ -503,7 +525,7 @@ namespace Rawr.Hunter.Skills
         #region Functions
         protected void Initialize()
         {
-            if (!UseSpellHit && UseHitTable && /*CanBeDodged &&*/ CanCrit && BonusCritChance == 0f) {
+            if (!UseSpellHit && UseHitTable && CanBeDodged && CanCrit && BonusCritChance == 0f) {
                 RWAtkTable = combatFactors.AttackTableBasicRW;
             } else {
                 RWAtkTable = new AttackTable(Char, StatS, combatFactors, CalcOpts, this, UseSpellHit, !UseHitTable);
@@ -548,6 +570,7 @@ namespace Rawr.Hunter.Skills
             switch (i)
             {
                 case AttackTableSelector.Missed: { retVal = acts * RWAtkTable.Miss; break; }
+                case AttackTableSelector.Dodged: { retVal = acts * RWAtkTable.Dodge; break; }
                 case AttackTableSelector.Crit: { retVal = acts * RWAtkTable.Crit; break; }
                 case AttackTableSelector.Hit: { retVal = acts * RWAtkTable.Hit; break; }
                 default: { break; }
@@ -563,10 +586,12 @@ namespace Rawr.Hunter.Skills
         public virtual string GenTooltip(float acts, float ttldps)
         {
             float misses = GetXActs(AttackTableSelector.Missed, acts), missesPerc = (acts == 0f ? 0f : misses / acts);
+            float dodges = GetXActs(AttackTableSelector.Dodged, acts), dodgesPerc = (acts == 0f ? 0f : misses / acts);
             float crits = GetXActs(AttackTableSelector.Crit, acts), critsPerc = (acts == 0f ? 0f : crits / acts);
             float hits = GetXActs(AttackTableSelector.Hit, acts), hitsPerc = (acts == 0f ? 0f : hits / acts);
 
             bool showmisss = misses > 0f;
+            bool showdodges = dodges > 0f;
             bool showcrits = CanCrit && crits > 0f;
             float localDPS = GetDPS(acts);
 
@@ -577,6 +602,7 @@ namespace Rawr.Hunter.Skills
                                     (FocusCost != -1 ? FocusCost.ToString() : "None")) +
                 Environment.NewLine + acts.ToString("000.00") + " Activates over Attack Table:" +
             (showmisss ? Environment.NewLine + "- " + misses.ToString("000.00") + " : " + missesPerc.ToString("00.00%") + " : Missed " : "") +
+            (showdodges ? Environment.NewLine + "- " + dodges.ToString("000.00") + " : " + dodgesPerc.ToString("00.00%") + " : Dodged " : "") +
             (showcrits ? Environment.NewLine + "- " + crits.ToString("000.00") + " : " + critsPerc.ToString("00.00%") + " : Crit " : "") +
                          Environment.NewLine + "- " + hits.ToString("000.00") + " : " + hitsPerc.ToString("00.00%") + " : Hit " +
                 Environment.NewLine +
@@ -671,11 +697,12 @@ namespace Rawr.Hunter.Skills
             get
             {
                 if (!Validated) { return new StatsHunter(); }
-                StatsHunter bonus = (Effect == null) ? new StatsHunter() { AttackPower = 0f, } : Effect.GetAverageStats(0f, RWAtkTable.Hit + RWAtkTable.Crit, Whiteattacks.RwEffectiveSpeed, FightDuration) as StatsHunter;
-                bonus.Accumulate((Effect2 == null) ? new StatsHunter() { AttackPower = 0f, } : Effect2.GetAverageStats(0f, RWAtkTable.Hit + RWAtkTable.Crit, Whiteattacks.RwEffectiveSpeed, FightDuration) as StatsHunter); 
+                StatsHunter bonus = (Effect == null) ? new StatsHunter() { AttackPower = 0f, } : Effect.GetAverageStats(0f, RWAtkTable.Hit + RWAtkTable.Crit, Whiteattacks.RwEffectiveSpeed, combatFactors.TotalHaste, FightDuration) as StatsHunter;
+
+                bonus.Accumulate((Effect2 == null) ? new StatsHunter() { AttackPower = 0f, } : Effect2.GetAverageStats(0f, RWAtkTable.Hit + RWAtkTable.Crit, Whiteattacks.RwEffectiveSpeed, combatFactors.TotalHaste, FightDuration) as StatsHunter);
+
                 return bonus;
             }
         }
     }
 }
-

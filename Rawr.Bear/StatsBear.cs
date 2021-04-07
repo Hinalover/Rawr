@@ -10,72 +10,52 @@ namespace Rawr.Bear
     public class StatsBear : Stats
     {
         /// <summary>
-        /// Percentage mod for Mangle. Use as 1.05 = 105% = +5%
+        /// Increases movement speed of the Druid
         /// </summary>
-        public float BonusMangleDamageMultiplier { get; set; }
+        public float GuardianMovementSpeed { get; set; }
         /// <summary>
-        /// Percentage mod for Maul. Use as 1.05 = 105% = +5%
+        /// Increases the periodic damage done by your Rake and Lacerate abilities by 10%.
         /// </summary>
-        public float BonusMaulDamageMultiplier { get; set; }
+        public bool Tier_11_2_piece { get; set; }
         /// <summary>
-        /// Percentage mod for Enrage. Use as 1.05 = 105% = +5%
+        /// The duration of your Survival Instinct ability is increased by 50%.
         /// </summary>
-        public float BonusEnrageDamageMultiplier { get; set; }
+        public bool Tier_11_4_piece { get; set; }
         /// <summary>
-        /// Mod for Mangle Cooldown. Use as 1 = 1 sec reduction
+        /// Your attacks with Mangle, Maul, and Shred deal 10% additional damage as Fire damage over 4 sec.
         /// </summary>
-        public float MangleCooldownReduction { get; set; }
+        public bool Tier_12_2_piece { get; set; }
         /// <summary>
-        /// Percentage mod reduction for Mangle Cost. Use as 0.05 = 5% reduction in cost
+        /// When your Barkskin ability expires you gain an additional 10% chance to dodge for 12 sec.
         /// </summary>
-        public float MangleCostReduction { get; set; }
+        public bool Tier_12_4_piece { get; set; }
         /// <summary>
-        /// Percentage mod for Swipe. Use as 1.05 = 105% = +5%
-        /// </summary>
-        public float BonusSwipeDamageMultiplier { get; set; }
-        /// <summary>
-        /// Percentage value for chance to proc Fury Swipes. Use as 0.05 = 005% = +5%
-        /// </summary>
-        public float FurySwipesChance { get; set; }
-        /// <summary>
-        /// Percentage value for Haste. Use as 0.05 = 005% = +5%
-        /// </summary>
-        public float HasteOnFeralCharge { get; set; }
-        /// <summary>
-        /// Value mod for Pulverize. Use as 1 = 1 sec bonus
-        /// </summary>
-        public float BonusPulverizeDuration { get; set; }
-        /// <summary>
-        /// Percentage mod for Lacerate's Chance to Crit. Use as 0.05 = 005% = +5%
-        /// </summary>
-        public float BonusLacerateCritChance { get; set; }
-        /// <summary>
-        /// Value mod for Faerie Fire. Use as 1 = 1 bonus stack
-        /// </summary>
-        public float BonusFaerieFireStacks { get; set; }
-        /// <summary>
-        /// Percentage mod for Survival Instincts Duration. Use as 0.05 = 005% = +5%
-        /// </summary>
-        public float BonusSurvivalInstinctsDurationMultiplier { get; set; }
-        /// <summary>
-        /// Contains the individual values for the uptimes of Armor
-        /// </summary>
-        public WeightedStat[] TemporaryArmorUptimes { get; set; }
-        /// <summary>
-        /// Value mod for Berserk. Use as 1 = 1 sec bonus.
-        /// </summary>
-        public float BerserkDuration { get; set; }
-        /// <summary>
-        /// While Berserk is active, Savage Defense absorbs are 100% larger.
+        /// Reduces the rage cost of your Savage Defense by 5.
         /// </summary>
         public bool Tier_13_2_piece { get; set; }
         /// <summary>
-        /// Frenzied Regeneration also affects all raid and party members.
+        /// Might of Ursoc also affects all raid and party members.
         /// </summary>
-        public float Tier_13_4_piece { get; set; }
+        public bool Tier_13_4_piece { get; set; }
+        /// <summary>
+        /// Reduces the cooldown of your Might of Ursoc ability by 60 sec.
+        /// </summary>
+        public bool Tier_14_2_piece { get; set; }
+        /// <summary>
+        /// Increases the healing received from your Frenzied Regeneration by 10% and increases the dodge granted by your Savage Defense by 10%.
+        /// </summary>
+        public bool Tier_14_4_piece { get; set; }
         /// <summary>
         /// Added support for Physical Damage from Proc.
         /// </summary>
         public float PhysicalDamageProc { get; set; }
+        /// <summary>
+        /// Bonus Critical Strike Rating Multiplier
+        /// </summary>
+        public float BonusCritRatingMultiplier { get; set; }
+        /// <summary>
+        /// Bonus Haste Rating Multiplier
+        /// </summary>
+        public float BonusHasteRatingMultiplier { get; set; }
     }
 }

@@ -820,7 +820,7 @@ Select additional abilities to watch how they affect your DPS. Thunder Clap appl
                 }
                 else if (Character == null) { return; }
                 CalcOpts = Character.CalculationOptions as CalculationOptionsHunter;
-                ThePetTalentPicker.Character = character;
+                //ThePetTalentPicker.Character = character;
                 //PetBuffs.Character = Character;
                 PopulateArmoryPets();
                 PopulatePetAbilities();
@@ -1073,6 +1073,7 @@ Select additional abilities to watch how they affect your DPS. Thunder Clap appl
             CB_PetPrio_06.SelectedIndex = 0; // none
             CB_PetPrio_07.SelectedIndex = 0; // none
         }
+        
         private void CB_PetFamily_SelectedIndexChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_loadingCalculationOptions) updateTalentDisplay();
@@ -1089,26 +1090,42 @@ Select additional abilities to watch how they affect your DPS. Thunder Clap appl
             }
         }
 
+        private void CB_PetSpec_SelectedIndexChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_loadingCalculationOptions) updateTalentDisplay();
+            else
+            {
+                if (CB_PetSpec.SelectedItem != null)
+                {
+                    PopulatePetAbilities();
+                    updateTalentDisplay();
+                    resetTalents();
+                    _loadingCalculationOptions = false; // force it
+                    Character.OnCalculationsInvalidated();
+                }
+            }
+        }
+
         private void updateTalentDisplay() { if (CalcOpts != null) updateTalentDisplay(CalcOpts.PetTalents); } // this can get called before Character is set while loading xaml
         private void updateTalentDisplay(PetTalents newtalents)
         {
             PETFAMILYTREE tree = CalcOpts.Pet.FamilyTree;
-            //if (newtalents != CalcOpts.PetTalents) {
-                ThePetTalentPicker.Tree1.Talents = newtalents;
-                ThePetTalentPicker.Tree2.Talents = newtalents;
-                ThePetTalentPicker.Tree3.Talents = newtalents;
-                ThePetTalentPicker.RefreshSpec();
-            //}
-            ThePetTalentPicker.TreeTab1.Visibility = (tree == PETFAMILYTREE.None || tree == PETFAMILYTREE.Cunning ? Visibility.Visible : Visibility.Collapsed);
-            ThePetTalentPicker.TreeTab2.Visibility = (tree == PETFAMILYTREE.None || tree == PETFAMILYTREE.Ferocity ? Visibility.Visible : Visibility.Collapsed);
-            ThePetTalentPicker.TreeTab3.Visibility = (tree == PETFAMILYTREE.None || tree == PETFAMILYTREE.Tenacity ? Visibility.Visible : Visibility.Collapsed);
+            ////if (newtalents != CalcOpts.PetTalents) {
+            //    ThePetTalentPicker.Tree1.Talents = newtalents;
+            //    ThePetTalentPicker.Tree2.Talents = newtalents;
+            //    ThePetTalentPicker.Tree3.Talents = newtalents;
+            //    ThePetTalentPicker.RefreshSpec();
+            ////}
+            //ThePetTalentPicker.TreeTab1.Visibility = (tree == PETFAMILYTREE.None || tree == PETFAMILYTREE.Cunning ? Visibility.Visible : Visibility.Collapsed);
+            //ThePetTalentPicker.TreeTab2.Visibility = (tree == PETFAMILYTREE.None || tree == PETFAMILYTREE.Ferocity ? Visibility.Visible : Visibility.Collapsed);
+            //ThePetTalentPicker.TreeTab3.Visibility = (tree == PETFAMILYTREE.None || tree == PETFAMILYTREE.Tenacity ? Visibility.Visible : Visibility.Collapsed);
 
-            switch(tree){
-                case PETFAMILYTREE.Cunning : { ThePetTalentPicker.TreeTab1.IsSelected = true; break; }
-                case PETFAMILYTREE.Ferocity: { ThePetTalentPicker.TreeTab2.IsSelected = true; break; }
-                case PETFAMILYTREE.Tenacity: { ThePetTalentPicker.TreeTab3.IsSelected = true; break; }
-                default: { ThePetTalentPicker.TreeTab1.IsSelected = true; break; }
-            }
+            //switch(tree){
+            //    case PETFAMILYTREE.Cunning : { ThePetTalentPicker.TreeTab1.IsSelected = true; break; }
+            //    case PETFAMILYTREE.Ferocity: { ThePetTalentPicker.TreeTab2.IsSelected = true; break; }
+            //    case PETFAMILYTREE.Tenacity: { ThePetTalentPicker.TreeTab3.IsSelected = true; break; }
+            //    default: { ThePetTalentPicker.TreeTab1.IsSelected = true; break; }
+            //}
         }
         private void resetTalents() { CalcOpts.PetTalents = new Hunter.PetTalents(); }
         private void CB_ArmoryPets_SelectedIndexChanged(object sender, SelectionChangedEventArgs e)

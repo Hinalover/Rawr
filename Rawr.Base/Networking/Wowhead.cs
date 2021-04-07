@@ -11,11 +11,13 @@ using System.Windows.Browser;
 #endif
 using System.Windows.Threading;
 using System.Xml.Linq;
+using System.Threading;
 
 namespace Rawr
 {
     public class WowheadService
     {
+        private AutoResetEvent _itemDownloadComplete = new AutoResetEvent(false);
         public WowheadService()
         {
             _webClient = new WebClient();
@@ -667,6 +669,214 @@ namespace Rawr
                     _pvpTokenMap["73445"] = "Cataclysmic Gladiator's War Edge";
                     #endregion
                     #endregion
+                    #region Season 12
+                    #region Death Knight
+                    _pvpTokenMap["84795"] = "Malevolent Gladiator's Dreadplate Chestpiece";
+                    _pvpTokenMap["84840"] = "Malevolent Gladiator's Dreadplate Gauntlets";
+                    _pvpTokenMap["84853"] = "Malevolent Gladiator's Dreadplate Helm";
+                    _pvpTokenMap["84872"] = "Malevolent Gladiator's Dreadplate Legguards";
+                    _pvpTokenMap["84918"] = "Malevolent Gladiator's Dreadplate Shoulders";
+                    #endregion
+                    #region Druid
+                    #region Refuge
+                    _pvpTokenMap["84833"] = "Malevolent Gladiator's Kodohide Gloves";
+                    _pvpTokenMap["84850"] = "Malevolent Gladiator's Kodohide Helm";
+                    _pvpTokenMap["84882"] = "Malevolent Gladiator's Kodohide Legguards";
+                    _pvpTokenMap["84907"] = "Malevolent Gladiator's Kodohide Robes";
+                    _pvpTokenMap["84927"] = "Malevolent Gladiator's Kodohide Spaulders";
+                    #endregion
+                    #region Sanctuary
+                    _pvpTokenMap["84832"] = "Malevolent Gladiator's Dragonhide Gloves";
+                    _pvpTokenMap["84852"] = "Malevolent Gladiator's Dragonhide Helm";
+                    _pvpTokenMap["84871"] = "Malevolent Gladiator's Dragonhide Legguards";
+                    _pvpTokenMap["84901"] = "Malevolent Gladiator's Dragonhide Robes";
+                    _pvpTokenMap["84916"] = "Malevolent Gladiator's Dragonhide Spaulders";
+                    #endregion
+                    #region Wildhide
+                    _pvpTokenMap["84843"] = "Malevolent Gladiator's Wyrmhide Gloves";
+                    _pvpTokenMap["84861"] = "Malevolent Gladiator's Wyrmhide Helm";
+                    _pvpTokenMap["84880"] = "Malevolent Gladiator's Wyrmhide Legguards";
+                    _pvpTokenMap["84906"] = "Malevolent Gladiator's Wyrmhide Robes";
+                    _pvpTokenMap["84925"] = "Malevolent Gladiator's Wyrmhide Spaulders";
+                    #endregion
+                    #endregion
+                    #region Hunter
+                    _pvpTokenMap["84796"] = "Malevolent Gladiator's Chain Armor";
+                    _pvpTokenMap["84841"] = "Malevolent Gladiator's Chain Gauntlets";
+                    _pvpTokenMap["84858"] = "Malevolent Gladiator's Chain Helm";
+                    _pvpTokenMap["84874"] = "Malevolent Gladiator's Chain Leggings";
+                    _pvpTokenMap["84921"] = "Malevolent Gladiator's Chain Spaulders";
+                   #endregion
+                    #region Mage
+                    _pvpTokenMap["84837"] = "Malevolent Gladiator's Silk Handguards";
+                    _pvpTokenMap["84855"] = "Malevolent Gladiator's Silk Cowl";
+                    _pvpTokenMap["84875"] = "Malevolent Gladiator's Silk Trousers";
+                    _pvpTokenMap["84904"] = "Malevolent Gladiator's Silk Robe";
+                    _pvpTokenMap["84917"] = "Malevolent Gladiator's Silk Amice";
+                    #endregion
+                    #region Monk
+                    #region Ironskin
+                    _pvpTokenMap["84839"] = "Malevolent Gladiator's Ironskin Gloves";
+                    _pvpTokenMap["84857"] = "Malevolent Gladiator's Ironskin Helm";
+                    _pvpTokenMap["84877"] = "Malevolent Gladiator's Ironskin Legguards";
+                    _pvpTokenMap["84902"] = "Malevolent Gladiator's Ironskin Robes";
+                    _pvpTokenMap["84919"] = "Malevolent Gladiator's Ironskin Spaulders";
+                    #endregion
+                    #region Copperskin
+                    _pvpTokenMap["84836"] = "Malevolent Gladiator's Copperskin Gloves";
+                    _pvpTokenMap["84854"] = "Malevolent Gladiator's Copperskin Helm";
+                    _pvpTokenMap["84873"] = "Malevolent Gladiator's Copperskin Legguards";
+                    _pvpTokenMap["84903"] = "Malevolent Gladiator's Copperskin Robes";
+                    _pvpTokenMap["84920"] = "Malevolent Gladiator's Copperskin Spaulders";
+                    #endregion
+                    #endregion
+                    #region Paladin
+                    #region Redemption
+                    _pvpTokenMap["84793"] = "Malevolent Gladiator's Ornamented Chestguard";
+                    _pvpTokenMap["84831"] = "Malevolent Gladiator's Ornamented Gloves";
+                    _pvpTokenMap["84849"] = "Malevolent Gladiator's Ornamented Headcover";
+                    _pvpTokenMap["84869"] = "Malevolent Gladiator's Ornamented Legplates";
+                    _pvpTokenMap["84914"] = "Malevolent Gladiator's Ornamented Spaulders";
+                    #endregion
+                    #region Vindication
+                    _pvpTokenMap["84794"] = "Malevolent Gladiator's Scaled Chestpiece";
+                    _pvpTokenMap["84834"] = "Malevolent Gladiator's Scaled Gauntlets";
+                    _pvpTokenMap["84851"] = "Malevolent Gladiator's Scaled Helm";
+                    _pvpTokenMap["84870"] = "Malevolent Gladiator's Scaled Legguards";
+                    _pvpTokenMap["84915"] = "Malevolent Gladiator's Scaled Shoulders";
+                    #endregion
+                    #endregion
+                    #region Priest
+                    #region Investiture
+                    _pvpTokenMap["84846"] = "Malevolent Gladiator's Mooncloth Gloves";
+                    _pvpTokenMap["84863"] = "Malevolent Gladiator's Mooncloth Helm";
+                    _pvpTokenMap["84883"] = "Malevolent Gladiator's Mooncloth Leggings";
+                    _pvpTokenMap["84908"] = "Malevolent Gladiator's Mooncloth Robe";
+                    _pvpTokenMap["84928"] = "Malevolent Gladiator's Mooncloth Mantle";
+                    #endregion
+                    #region Raiment
+                    _pvpTokenMap["84838"] = "Malevolent Gladiator's Satin Gloves";
+                    _pvpTokenMap["84864"] = "Malevolent Gladiator's Satin Hood";
+                    _pvpTokenMap["84884"] = "Malevolent Gladiator's Satin Leggings";
+                    _pvpTokenMap["84909"] = "Malevolent Gladiator's Satin Robe";
+                    _pvpTokenMap["84929"] = "Malevolent Gladiator's Satin Mantle";
+                    #endregion
+                    #endregion
+                    #region Rogue
+                    _pvpTokenMap["84792"] = "Malevolent Gladiator's Leather Tunic";
+                    _pvpTokenMap["84830"] = "Malevolent Gladiator's Leather Gloves";
+                    _pvpTokenMap["84848"] = "Malevolent Gladiator's Leather Helm";
+                    _pvpTokenMap["84868"] = "Malevolent Gladiator's Leather Legguards";
+                    _pvpTokenMap["84913"] = "Malevolent Gladiator's Leather Spaulders";
+                    #endregion
+                    #region Shaman
+                    #region Earthshaker
+                    _pvpTokenMap["84799"] = "Malevolent Gladiator's Linked Armor";
+                    _pvpTokenMap["84844"] = "Malevolent Gladiator's Linked Gauntlets";
+                    _pvpTokenMap["84862"] = "Malevolent Gladiator's Linked Helm";
+                    _pvpTokenMap["84881"] = "Malevolent Gladiator's Linked Leggings";
+                    _pvpTokenMap["84926"] = "Malevolent Gladiator's Linked Spaulders";
+                    #endregion
+                    #region Thunderfist
+                    _pvpTokenMap["84798"] = "Malevolent Gladiator's Mail Armor";
+                    _pvpTokenMap["84845"] = "Malevolent Gladiator's Mail Gauntlets";
+                    _pvpTokenMap["84860"] = "Malevolent Gladiator's Mail Helm";
+                    _pvpTokenMap["84879"] = "Malevolent Gladiator's Mail Leggings";
+                    _pvpTokenMap["84924"] = "Malevolent Gladiator's Mail Spaulders";
+                    #endregion
+                    #region Wartide
+                    _pvpTokenMap["84800"] = "Malevolent Gladiator's Ringmail Armor";
+                    _pvpTokenMap["84847"] = "Malevolent Gladiator's Ringmail Gauntlets";
+                    _pvpTokenMap["84865"] = "Malevolent Gladiator's Ringmail Helm";
+                    _pvpTokenMap["84885"] = "Malevolent Gladiator's Ringmail Leggings";
+                    _pvpTokenMap["84930"] = "Malevolent Gladiator's Ringmail Spaulders";
+                    #endregion
+                    #endregion
+                    #region Warlock
+                    _pvpTokenMap["84842"] = "Malevolent Gladiator's Felweave Handguards";
+                    _pvpTokenMap["84859"] = "Malevolent Gladiator's Felweave Cowl";
+                    _pvpTokenMap["84878"] = "Malevolent Gladiator's Felweave Trousers";
+                    _pvpTokenMap["84905"] = "Malevolent Gladiator's Felweave Raiment";
+                    _pvpTokenMap["84923"] = "Malevolent Gladiator's Felweave Amice";
+                    #endregion
+                    #region Warrior
+                    _pvpTokenMap["84797"] = "Malevolent Gladiator's Plate Chestpiece";
+                    _pvpTokenMap["84840"] = "Malevolent Gladiator's Plate Gauntlets";
+                    _pvpTokenMap["84856"] = "Malevolent Gladiator's Plate Helm";
+                    _pvpTokenMap["84876"] = "Malevolent Gladiator's Plate Legguards";
+                    _pvpTokenMap["84922"] = "Malevolent Gladiator's Plate Shoulders";
+                    #endregion
+                    #region Non-Class Armor Tokens
+                    #region Waist
+                    _pvpTokenMap["84955"] = "Malevolent Gladiator's Cord of Accuracy";
+                    _pvpTokenMap["84954"] = "Malevolent Gladiator's Cord of Cruelty";
+                    _pvpTokenMap["84953"] = "Malevolent Gladiator's Belt of Meditation";
+                    _pvpTokenMap["84948"] = "Malevolent Gladiator's Waistband of Accuracy";
+                    _pvpTokenMap["84947"] = "Malevolent Gladiator's Waistband of Cruelty";
+                    _pvpTokenMap["84946"] = "Malevolent Gladiator's Waistguard of Meditation";
+                    _pvpTokenMap["84957"] = "Malevolent Gladiator's Links of Accuracy";
+                    _pvpTokenMap["84958"] = "Malevolent Gladiator's Links of Cruelty";
+                    _pvpTokenMap["84959"] = "Malevolent Gladiator's Waistguard of Cruelty";
+                    _pvpTokenMap["84949"] = "Malevolent Gladiator's Girdle of Accuracy";
+                    _pvpTokenMap["84950"] = "Malevolent Gladiator's Girdle of Prowess";
+                    _pvpTokenMap["84951"] = "Malevolent Gladiator's Clasp of Cruelty";
+                    #endregion
+                    #region Feet
+                    _pvpTokenMap["84815"] = "Malevolent Gladiator's Treads of Alacrity";
+                    _pvpTokenMap["84814"] = "Malevolent Gladiator's Treads of Cruelty";
+                    _pvpTokenMap["84816"] = "Malevolent Gladiator's Treads of Meditation";
+                    _pvpTokenMap["84809"] = "Malevolent Gladiator's Boots of Alacrity";
+                    _pvpTokenMap["84808"] = "Malevolent Gladiator's Boots of Cruelty";
+                    _pvpTokenMap["84813"] = "Malevolent Gladiator's Footguards of Meditation";
+                    _pvpTokenMap["84821"] = "Malevolent Gladiator's Footguards of Meditation";
+                    _pvpTokenMap["84818"] = "Malevolent Gladiator's Sabatons of Alacrity";
+                    _pvpTokenMap["84817"] = "Malevolent Gladiator's Sabatons of Cruelty";
+                    _pvpTokenMap["84820"] = "Malevolent Gladiator's Footguards of Alacrity";
+                    _pvpTokenMap["84822"] = "Malevolent Gladiator's Warboots of Alacrity";
+                    _pvpTokenMap["84810"] = "Malevolent Gladiator's Warboots of Cruelty";
+                    _pvpTokenMap["84811"] = "Malevolent Gladiator's Greaves of Alacrity";
+                    #endregion
+                    #region Off-Hand
+                    _pvpTokenMap["84866"] = "Malevolent Gladiator's Endgame";
+                    _pvpTokenMap["84867"] = "Malevolent Gladiator's Reprieve";
+                    #endregion
+                    #region Shields
+                    _pvpTokenMap["84911"] = "Malevolent Gladiator's Barrier";
+                    _pvpTokenMap["84912"] = "Malevolent Gladiator's Redoubt";
+                    _pvpTokenMap["84910"] = "Malevolent Gladiator's Shield Wall";
+                    #endregion
+                    #endregion
+                    #region Weapon Tokens
+                    _pvpTokenMap["84899"] = "Malevolent Gladiator's Baton of Light";
+                    _pvpTokenMap["84787"] = "Malevolent Gladiator's Battle Staff";
+                    _pvpTokenMap["84970"] = "Malevolent Gladiator's Bonecracker";
+                    _pvpTokenMap["84785"] = "Malevolent Gladiator's Bonegrinder";
+                    _pvpTokenMap["84965"] = "Malevolent Gladiator's Cleaver";
+                    _pvpTokenMap["84791"] = "Malevolent Gladiator's Decapitator";
+                    _pvpTokenMap["84788"] = "Malevolent Gladiator's Energy Staff";
+                    _pvpTokenMap["84971"] = "Malevolent Gladiator's Gavel";
+                    _pvpTokenMap["84790"] = "Malevolent Gladiator's Greatsword";
+                    _pvpTokenMap["84966"] = "Malevolent Gladiator's Hacker";
+                    _pvpTokenMap["84897"] = "Malevolent Gladiator's Heavy Crossbow";
+                    _pvpTokenMap["84894"] = "Malevolent Gladiator's Left Render";
+                    _pvpTokenMap["84893"] = "Malevolent Gladiator's Left Ripper";
+                    _pvpTokenMap["84896"] = "Malevolent Gladiator's Longbow";
+                    _pvpTokenMap["84786"] = "Malevolent Gladiator's Pike";
+                    _pvpTokenMap["84964"] = "Malevolent Gladiator's Pummeler";
+                    _pvpTokenMap["84969"] = "Malevolent Gladiator's Quickblade";
+                    _pvpTokenMap["84900"] = "Malevolent Gladiator's Rifle";
+                    _pvpTokenMap["84963"] = "Malevolent Gladiator's Render";
+                    _pvpTokenMap["84962"] = "Malevolent Gladiator's Ripper";
+                    _pvpTokenMap["84967"] = "Malevolent Gladiator's Shanker";
+                    _pvpTokenMap["84895"] = "Malevolent Gladiator's Shiv";
+                    _pvpTokenMap["84968"] = "Malevolent Gladiator's Slicer";
+                    _pvpTokenMap["84961"] = "Malevolent Gladiator's Spellblade";
+                    _pvpTokenMap["84789"] = "Malevolent Gladiator's Staff";
+                    _pvpTokenMap["84898"] = "Malevolent Gladiator's Touch of Defeat";
+                    #endregion
+                    #endregion
+                    #region Season 13
+                    #endregion
 
                     //_vendorTokenMap["44990"] = "Champion's Seal";
                     //_vendorTokenMap["40752"] = "Emblem of Heroism";//This item is no longer available within the game.
@@ -692,6 +902,8 @@ namespace Rawr
                     _tokenDropMap["401"] = new TokenDropInfo() { Name = "Tol'vir Archaeology Fragment" };
                     _tokenDropMap["385"] = new TokenDropInfo() { Name = "Troll Archaeology Fragment" };
                     _tokenDropMap["399"] = new TokenDropInfo() { Name = "Vrykul Archaeology Fragment" };
+                    _tokenDropMap["676"] = new TokenDropInfo() { Name = "Pandaren Archaeology Fragment" };
+                    _tokenDropMap["677"] = new TokenDropInfo() { Name = "Mogu Archaeology Fragment" };
                     #region Tier 11 Tokens
                     #region Normal
                     // T11: Paladin, Priest, Warlock
@@ -824,6 +1036,212 @@ namespace Rawr
                     _tokenDropMap["78858"] = new TokenDropInfo() { Name = "Leggings of the Corrupted Vanquisher", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Dragon Soul", Boss = "Yor'sahj the Unsleeping", Heroic = true };
                     #endregion
                     #endregion
+                    #region Tier 14 Tokens
+                    #region Looking For Raid
+                    // T14.LFR: Paladin, Priest, Warlock
+                    _tokenDropMap["89274"] = new TokenDropInfo() { Name = "Helm of the Shadowy Conqueror", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Sha of Fear", LFR = true };
+                    _tokenDropMap["89277"] = new TokenDropInfo() { Name = "Shoulders of the Shadowy Conqueror", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Lei Shi", LFR = true };
+                    _tokenDropMap["89265"] = new TokenDropInfo() { Name = "Chest of the Shadowy Conqueror", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Grand Empress Shek'zeer", LFR = true };
+                    _tokenDropMap["89271"] = new TokenDropInfo() { Name = "Gauntlets of the Shadowy Conqueror", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Wind Lord Mel'jarak", LFR = true };
+                    _tokenDropMap["89268"] = new TokenDropInfo() { Name = "Leggings of the Shadowy Conqueror", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Amber-Shaper Un'sok", LFR = true };
+                    // T14.LFR: Hunter, Monk, Shaman, Warrior
+                    _tokenDropMap["89275"] = new TokenDropInfo() { Name = "Helm of the Shadowy Protector", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Sha of Fear", LFR = true };
+                    _tokenDropMap["89278"] = new TokenDropInfo() { Name = "Shoulders of the Shadowy Protector", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Lei Shi", LFR = true };
+                    _tokenDropMap["89266"] = new TokenDropInfo() { Name = "Chest of the Shadowy Protector", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Grand Empress Shek'zeer", LFR = true };
+                    _tokenDropMap["89272"] = new TokenDropInfo() { Name = "Gauntlets of the Shadowy Protector", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Wind Lord Mel'jarak", LFR = true };
+                    _tokenDropMap["89269"] = new TokenDropInfo() { Name = "Leggings of the Shadowy Protector", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Amber-Shaper Un'sok", LFR = true };
+                    // T14.LFR: Rogue, Death Knight, Mage, Druid
+                    _tokenDropMap["89273"] = new TokenDropInfo() { Name = "Helm of the Shadowy Vanquisher", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Sha of Fear", LFR = true };
+                    _tokenDropMap["89276"] = new TokenDropInfo() { Name = "Shoulders of the Shadowy Vanquisher", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Lei Shi", LFR = true };
+                    _tokenDropMap["89264"] = new TokenDropInfo() { Name = "Chest of the Shadowy Vanquisher", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Grand Empress Shek'zeer", LFR = true };
+                    _tokenDropMap["89270"] = new TokenDropInfo() { Name = "Gauntlets of the Shadowy Vanquisher", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Wind Lord Mel'jarak", LFR = true };
+                    _tokenDropMap["89267"] = new TokenDropInfo() { Name = "Leggings of the Shadowy Vanquisher", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Amber-Shaper Un'sok", LFR = true };
+                    #endregion
+                    #region Normal
+                    // T14: Paladin, Priest, Warlock
+                    _tokenDropMap["89235"] = new TokenDropInfo() { Name = "Helm of the Shadowy Conqueror", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Sha of Fear" };
+                    _tokenDropMap["89246"] = new TokenDropInfo() { Name = "Shoulders of the Shadowy Conqueror", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Lei Shi" };
+                    _tokenDropMap["89237"] = new TokenDropInfo() { Name = "Chest of the Shadowy Conqueror", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Grand Empress Shek'zeer" };
+                    _tokenDropMap["89240"] = new TokenDropInfo() { Name = "Gauntlets of the Shadowy Conqueror", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Wind Lord Mel'jarak" };
+                    _tokenDropMap["89243"] = new TokenDropInfo() { Name = "Leggings of the Shadowy Conqueror", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Amber-Shaper Un'sok" };
+                    // T14: Hunter, Monk, Shaman, Warrior
+                    _tokenDropMap["89236"] = new TokenDropInfo() { Name = "Helm of the Shadowy Protector", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Sha of Fear" };
+                    _tokenDropMap["89247"] = new TokenDropInfo() { Name = "Shoulders of the Shadowy Protector", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Lei Shi" };
+                    _tokenDropMap["89238"] = new TokenDropInfo() { Name = "Chest of the Shadowy Protector", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Grand Empress Shek'zeer" };
+                    _tokenDropMap["89241"] = new TokenDropInfo() { Name = "Gauntlets of the Shadowy Protector", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Wind Lord Mel'jarak" };
+                    _tokenDropMap["89244"] = new TokenDropInfo() { Name = "Leggings of the Shadowy Protector", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Amber-Shaper Un'sok" };
+                    // T14: Rogue, Death Knight, Mage, Druid
+                    _tokenDropMap["89234"] = new TokenDropInfo() { Name = "Helm of the Shadowy Vanquisher", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Sha of Fear" };
+                    _tokenDropMap["89248"] = new TokenDropInfo() { Name = "Shoulders of the Shadowy Vanquisher", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Lei Shi" };
+                    _tokenDropMap["89239"] = new TokenDropInfo() { Name = "Chest of the Shadowy Vanquisher", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Grand Empress Shek'zeer" };
+                    _tokenDropMap["89242"] = new TokenDropInfo() { Name = "Gauntlets of the Shadowy Vanquisher", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Wind Lord Mel'jarak" };
+                    _tokenDropMap["89245"] = new TokenDropInfo() { Name = "Leggings of the Shadowy Vanquisher", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Amber-Shaper Un'sok" };
+                    #endregion
+                    #region Heroic
+                    // T14.5: Paladin, Priest, Warlock
+                    _tokenDropMap["89259"] = new TokenDropInfo() { Name = "Helm of the Shadowy Conqueror", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Sha of Fear", Heroic = true };
+                    _tokenDropMap["89262"] = new TokenDropInfo() { Name = "Shoulders of the Shadowy Conqueror", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Lei Shi", Heroic = true };
+                    _tokenDropMap["89250"] = new TokenDropInfo() { Name = "Chest of the Shadowy Conqueror", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Grand Empress Shek'zeer", Heroic = true };
+                    _tokenDropMap["89256"] = new TokenDropInfo() { Name = "Gauntlets of the Shadowy Conqueror", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Wind Lord Mel'jarak", Heroic = true };
+                    _tokenDropMap["89253"] = new TokenDropInfo() { Name = "Leggings of the Shadowy Conqueror", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Amber-Shaper Un'sok", Heroic = true };
+                    // T14.5: Hunter, Monk, Shaman, Warrior
+                    _tokenDropMap["89260"] = new TokenDropInfo() { Name = "Helm of the Shadowy Protector", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Sha of Fear", Heroic = true };
+                    _tokenDropMap["89263"] = new TokenDropInfo() { Name = "Shoulders of the Shadowy Protector", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Lei Shi", Heroic = true };
+                    _tokenDropMap["89251"] = new TokenDropInfo() { Name = "Chest of the Shadowy Protector", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Grand Empress Shek'zeer", Heroic = true };
+                    _tokenDropMap["89257"] = new TokenDropInfo() { Name = "Gauntlets of the Shadowy Protector", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Wind Lord Mel'jarak", Heroic = true };
+                    _tokenDropMap["89254"] = new TokenDropInfo() { Name = "Leggings of the Shadowy Protector", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Amber-Shaper Un'sok", Heroic = true };
+                    // T14.5: Rogue, Death Knight, Mage, Druid
+                    _tokenDropMap["89258"] = new TokenDropInfo() { Name = "Helm of the Shadowy Vanquisher", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Sha of Fear", Heroic = true };
+                    _tokenDropMap["89261"] = new TokenDropInfo() { Name = "Shoulders of the Shadowy Vanquisher", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "The Terrace of Endless Spring", Boss = "Lei Shi", Heroic = true };
+                    _tokenDropMap["89249"] = new TokenDropInfo() { Name = "Chest of the Shadowy Vanquisher", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Grand Empress Shek'zeer", Heroic = true };
+                    _tokenDropMap["89255"] = new TokenDropInfo() { Name = "Gauntlets of the Shadowy Vanquisher", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Wind Lord Mel'jarak", Heroic = true };
+                    _tokenDropMap["89252"] = new TokenDropInfo() { Name = "Leggings of the Shadowy Vanquisher", Vendor = "Faldren Tillsdale", VendorArea = "Stormwind City", Area = "Heart of Fear", Boss = "Amber-Shaper Un'sok", Heroic = true };
+                    #endregion
+                    #endregion
+                    #region Tier 15 Tokens
+                    #region Looking For Raid
+                    // T15.LFR: Paladin, Priest, Warlock
+                    _tokenDropMap["95880"] = new TokenDropInfo() { Name = "Helm of the Crackling Conqueror", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Twin Consorts", LFR = true };
+                    _tokenDropMap["95956"] = new TokenDropInfo() { Name = "Shoulders of the Crackling Conqueror", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Iron Qon", LFR = true };
+                    _tokenDropMap["95823"] = new TokenDropInfo() { Name = "Chest of the Crackling Conqueror", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Dark Animus", LFR = true };
+                    _tokenDropMap["95856"] = new TokenDropInfo() { Name = "Gauntlets of the Crackling Conqueror", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Council of Elders", LFR = true };
+                    _tokenDropMap["95888"] = new TokenDropInfo() { Name = "Leggings of the Crackling Conqueror", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Ji-Kun", LFR = true };
+                    // T15.LFR: Hunter, Monk, Shaman, Warrior
+                    _tokenDropMap["95881"] = new TokenDropInfo() { Name = "Helm of the Crackling Protector", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Twin Consorts" };
+                    _tokenDropMap["95957"] = new TokenDropInfo() { Name = "Shoulders of the Crackling Protector", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Iron Qon" };
+                    _tokenDropMap["95824"] = new TokenDropInfo() { Name = "Chest of the Crackling Protector", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Dark Animus" };
+                    _tokenDropMap["95857"] = new TokenDropInfo() { Name = "Gauntlets of the Crackling Protector", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Council of Elders" };
+                    _tokenDropMap["95889"] = new TokenDropInfo() { Name = "Leggings of the Crackling Protector", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Ji-Kun" };
+                    // T15.LFR: Rogue, Death Knight, Mage, Druid
+                    _tokenDropMap["95879"] = new TokenDropInfo() { Name = "Helm of the Crackling Vanquisher", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Twin Consorts", Heroic = true };
+                    _tokenDropMap["95955"] = new TokenDropInfo() { Name = "Shoulders of the Crackling Vanquisher", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Iron Qon", Heroic = true };
+                    _tokenDropMap["95822"] = new TokenDropInfo() { Name = "Chest of the Crackling Vanquisher", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Dark Animus", Heroic = true };
+                    _tokenDropMap["95855"] = new TokenDropInfo() { Name = "Gauntlets of the Crackling Vanquisher", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Council of Elders", Heroic = true };
+                    _tokenDropMap["95887"] = new TokenDropInfo() { Name = "Leggings of the Crackling Vanquisher", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Ji-Kun", Heroic = true };
+                    #endregion
+                    #region Normal
+                    // T15: Paladin, Priest, Warlock
+                    _tokenDropMap["95576"] = new TokenDropInfo() { Name = "Helm of the Crackling Conqueror", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Twin Consorts" };
+                    _tokenDropMap["95578"] = new TokenDropInfo() { Name = "Shoulders of the Crackling Conqueror", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Iron Qon" };
+                    _tokenDropMap["95574"] = new TokenDropInfo() { Name = "Chest of the Crackling Conqueror", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Dark Animus" };
+                    _tokenDropMap["95575"] = new TokenDropInfo() { Name = "Gauntlets of the Crackling Conqueror", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Council of Elders" };
+                    _tokenDropMap["95577"] = new TokenDropInfo() { Name = "Leggings of the Crackling Conqueror", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Ji-Kun" };
+                    // T15: Hunter, Monk, Shaman, Warrior
+                    _tokenDropMap["95581"] = new TokenDropInfo() { Name = "Helm of the Crackling Protector", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Twin Consorts" };
+                    _tokenDropMap["95583"] = new TokenDropInfo() { Name = "Shoulders of the Crackling Protector", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Iron Qon" };
+                    _tokenDropMap["95579"] = new TokenDropInfo() { Name = "Chest of the Crackling Protector", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Dark Animus" };
+                    _tokenDropMap["95580"] = new TokenDropInfo() { Name = "Gauntlets of the Crackling Protector", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Council of Elders" };
+                    _tokenDropMap["95582"] = new TokenDropInfo() { Name = "Leggings of the Crackling Protector", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Ji-Kun" };
+                    // T15: Rogue, Death Knight, Mage, Druid
+                    _tokenDropMap["95571"] = new TokenDropInfo() { Name = "Helm of the Crackling Vanquisher", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Twin Consorts" };
+                    _tokenDropMap["95573"] = new TokenDropInfo() { Name = "Shoulders of the Crackling Vanquisher", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Iron Qon" };
+                    _tokenDropMap["95569"] = new TokenDropInfo() { Name = "Chest of the Crackling Vanquisher", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Dark Animus" };
+                    _tokenDropMap["95570"] = new TokenDropInfo() { Name = "Gauntlets of the Crackling Vanquisher", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Council of Elders" };
+                    _tokenDropMap["95572"] = new TokenDropInfo() { Name = "Leggings of the Crackling Vanquisher", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Ji-Kun" };
+                    #endregion
+                    #region Heroic
+                    // T15.5: Paladin, Priest, Warlock
+                    _tokenDropMap["96624"] = new TokenDropInfo() { Name = "Helm of the Crackling Conqueror", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Twin Consorts", Heroic = true };
+                    _tokenDropMap["96700"] = new TokenDropInfo() { Name = "Shoulders of the Crackling Conqueror", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Iron Qon", Heroic = true };
+                    _tokenDropMap["96567"] = new TokenDropInfo() { Name = "Chest of the Crackling Conqueror", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Dark Animus", Heroic = true };
+                    _tokenDropMap["96600"] = new TokenDropInfo() { Name = "Gauntlets of the Crackling Conqueror", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Council of Elders", Heroic = true };
+                    _tokenDropMap["96632"] = new TokenDropInfo() { Name = "Leggings of the Crackling Conqueror", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Ji-Kun", Heroic = true };
+                    // T15.5: Hunter, Monk, Shaman, Warrior
+                    _tokenDropMap["89260"] = new TokenDropInfo() { Name = "Helm of the Crackling Protector", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Twin Consorts", Heroic = true };
+                    _tokenDropMap["96701"] = new TokenDropInfo() { Name = "Shoulders of the Crackling Protector", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Iron Qon", Heroic = true };
+                    _tokenDropMap["96568"] = new TokenDropInfo() { Name = "Chest of the Crackling Protector", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Dark Animus", Heroic = true };
+                    _tokenDropMap["96601"] = new TokenDropInfo() { Name = "Gauntlets of the Crackling Protector", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Council of Elders", Heroic = true };
+                    _tokenDropMap["96633"] = new TokenDropInfo() { Name = "Leggings of the Crackling Protector", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Ji-Kun", Heroic = true };
+                    // T15.5: Rogue, Death Knight, Mage, Druid
+                    _tokenDropMap["96623"] = new TokenDropInfo() { Name = "Helm of the Crackling Vanquisher", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Twin Consorts", Heroic = true };
+                    _tokenDropMap["96699"] = new TokenDropInfo() { Name = "Shoulders of the Crackling Vanquisher", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Iron Qon", Heroic = true };
+                    _tokenDropMap["96566"] = new TokenDropInfo() { Name = "Chest of the Crackling Vanquisher", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Dark Animus", Heroic = true };
+                    _tokenDropMap["96599"] = new TokenDropInfo() { Name = "Gauntlets of the Crackling Vanquisher", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Council of Elders", Heroic = true };
+                    _tokenDropMap["96631"] = new TokenDropInfo() { Name = "Leggings of the Crackling Vanquisher", Vendor = "Teng of the Flying Daggers", VendorArea = "Isle of Thunder", Area = "Throne of Thunder", Boss = "Ji-Kun", Heroic = true };
+                    #endregion
+                    #endregion
+                    #region Tier 16 Tokens
+                    #region Looking For Raid
+                    // T16.LFR: Paladin, Priest, Warlock
+                    _tokenDropMap["99672"] = new TokenDropInfo() { Name = "Helm of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Thok the Bloodthirsty", LFR = true };
+                    _tokenDropMap["99669"] = new TokenDropInfo() { Name = "Shoulders of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Siegecrafter Blackfuse", LFR = true };
+                    _tokenDropMap["99678"] = new TokenDropInfo() { Name = "Chest of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Treasures of Pandaria", LFR = true };
+                    _tokenDropMap["99681"] = new TokenDropInfo() { Name = "Gauntlets of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "General Nazgrim", LFR = true };
+                    _tokenDropMap["99675"] = new TokenDropInfo() { Name = "Leggings of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Klaxxi Paragons", LFR = true };
+                    // T16.LFR: Hunter, Monk, Shaman, Warrior
+                    _tokenDropMap["99673"] = new TokenDropInfo() { Name = "Helm of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Thok the Bloodthirsty", LFR = true };
+                    _tokenDropMap["99670"] = new TokenDropInfo() { Name = "Shoulders of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Siegecrafter Blackfuse", LFR = true };
+                    _tokenDropMap["99679"] = new TokenDropInfo() { Name = "Chest of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Treasures of Pandaria", LFR = true };
+                    _tokenDropMap["99682"] = new TokenDropInfo() { Name = "Gauntlets of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "General Nazgrim", LFR = true };
+                    _tokenDropMap["99676"] = new TokenDropInfo() { Name = "Leggings of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Klaxxi Paragons", LFR = true };
+                    // T16.LFR: Rogue, Death Knight, Mage, Druid
+                    _tokenDropMap["99671"] = new TokenDropInfo() { Name = "Helm of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Thok the Bloodthirsty", LFR = true };
+                    _tokenDropMap["99668"] = new TokenDropInfo() { Name = "Shoulders of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Siegecrafter Blackfuse", LFR = true };
+                    _tokenDropMap["99678"] = new TokenDropInfo() { Name = "Chest of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Treasures of Pandaria", LFR = true };
+                    _tokenDropMap["99680"] = new TokenDropInfo() { Name = "Gauntlets of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "General Nazgrim", LFR = true };
+                    _tokenDropMap["99674"] = new TokenDropInfo() { Name = "Leggings of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Klaxxi Paragons", LFR = true };
+                    #endregion
+                    #region Flex
+                    // T16.Flex: Paladin, Priest, Warlock
+                    _tokenDropMap["99749"] = new TokenDropInfo() { Name = "Helm of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Thok the Bloodthirsty" };
+                    _tokenDropMap["99755"] = new TokenDropInfo() { Name = "Shoulders of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Siegecrafter Blackfuse" };
+                    _tokenDropMap["99743"] = new TokenDropInfo() { Name = "Chest of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Treasures of Pandaria" };
+                    _tokenDropMap["99746"] = new TokenDropInfo() { Name = "Gauntlets of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "General Nazgrim" };
+                    _tokenDropMap["99752"] = new TokenDropInfo() { Name = "Leggings of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Klaxxi Paragons" };
+                    // T16.Flex: Hunter, Monk, Shaman, Warrior
+                    _tokenDropMap["99750"] = new TokenDropInfo() { Name = "Helm of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Thok the Bloodthirsty" };
+                    _tokenDropMap["99756"] = new TokenDropInfo() { Name = "Shoulders of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Siegecrafter Blackfuse" };
+                    _tokenDropMap["99744"] = new TokenDropInfo() { Name = "Chest of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Treasures of Pandaria" };
+                    _tokenDropMap["99747"] = new TokenDropInfo() { Name = "Gauntlets of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "General Nazgrim" };
+                    _tokenDropMap["99753"] = new TokenDropInfo() { Name = "Leggings of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Klaxxi Paragons" };
+                    // T16.Flex: Rogue, Death Knight, Mage, Druid
+                    _tokenDropMap["99748"] = new TokenDropInfo() { Name = "Helm of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Thok the Bloodthirsty" };
+                    _tokenDropMap["99754"] = new TokenDropInfo() { Name = "Shoulders of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Siegecrafter Blackfuse" };
+                    _tokenDropMap["99742"] = new TokenDropInfo() { Name = "Chest of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Treasures of Pandaria" };
+                    _tokenDropMap["99745"] = new TokenDropInfo() { Name = "Gauntlets of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "General Nazgrim" };
+                    _tokenDropMap["99751"] = new TokenDropInfo() { Name = "Leggings of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Klaxxi Paragons" };
+                    #endregion
+                    #region Normal
+                    // T16: Paladin, Priest, Warlock
+                    _tokenDropMap["99689"] = new TokenDropInfo() { Name = "Helm of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Thok the Bloodthirsty" };
+                    _tokenDropMap["99690"] = new TokenDropInfo() { Name = "Shoulders of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Siegecrafter Blackfuse" };
+                    _tokenDropMap["99686"] = new TokenDropInfo() { Name = "Chest of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Treasures of Pandaria" };
+                    _tokenDropMap["99687"] = new TokenDropInfo() { Name = "Gauntlets of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "General Nazgrim" };
+                    _tokenDropMap["99688"] = new TokenDropInfo() { Name = "Leggings of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Klaxxi Paragons" };
+                    // T16: Hunter, Monk, Shaman, Warrior
+                    _tokenDropMap["99694"] = new TokenDropInfo() { Name = "Helm of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Thok the Bloodthirsty" };
+                    _tokenDropMap["99695"] = new TokenDropInfo() { Name = "Shoulders of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Siegecrafter Blackfuse" };
+                    _tokenDropMap["99691"] = new TokenDropInfo() { Name = "Chest of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Treasures of Pandaria" };
+                    _tokenDropMap["99692"] = new TokenDropInfo() { Name = "Gauntlets of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "General Nazgrim" };
+                    _tokenDropMap["99693"] = new TokenDropInfo() { Name = "Leggings of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Klaxxi Paragons" };
+                    // T16: Rogue, Death Knight, Mage, Druid
+                    _tokenDropMap["99683"] = new TokenDropInfo() { Name = "Helm of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Thok the Bloodthirsty" };
+                    _tokenDropMap["99685"] = new TokenDropInfo() { Name = "Shoulders of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Siegecrafter Blackfuse" };
+                    _tokenDropMap["99696"] = new TokenDropInfo() { Name = "Chest of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Treasures of Pandaria" };
+                    _tokenDropMap["99682"] = new TokenDropInfo() { Name = "Gauntlets of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "General Nazgrim" };
+                    _tokenDropMap["99684"] = new TokenDropInfo() { Name = "Leggings of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Klaxxi Paragons" };
+                    #endregion
+                    #region Heroic
+                    // T16.5: Paladin, Priest, Warlock
+                    _tokenDropMap["99724"] = new TokenDropInfo() { Name = "Helm of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Thok the Bloodthirsty", Heroic = true };
+                    _tokenDropMap["99718"] = new TokenDropInfo() { Name = "Shoulders of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Siegecrafter Blackfuse", Heroic = true };
+                    _tokenDropMap["99715"] = new TokenDropInfo() { Name = "Chest of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Treasures of Pandaria", Heroic = true };
+                    _tokenDropMap["99721"] = new TokenDropInfo() { Name = "Gauntlets of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "General Nazgrim", Heroic = true };
+                    _tokenDropMap["99712"] = new TokenDropInfo() { Name = "Leggings of the Cursed Conqueror", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Klaxxi Paragons", Heroic = true };
+                    // T16.5: Hunter, Monk, Shaman, Warrior
+                    _tokenDropMap["99725"] = new TokenDropInfo() { Name = "Helm of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Thok the Bloodthirsty", Heroic = true };
+                    _tokenDropMap["99719"] = new TokenDropInfo() { Name = "Shoulders of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Siegecrafter Blackfuse", Heroic = true };
+                    _tokenDropMap["99716"] = new TokenDropInfo() { Name = "Chest of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Treasures of Pandaria", Heroic = true };
+                    _tokenDropMap["99722"] = new TokenDropInfo() { Name = "Gauntlets of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "General Nazgrim", Heroic = true };
+                    _tokenDropMap["99713"] = new TokenDropInfo() { Name = "Leggings of the Cursed Protector", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Klaxxi Paragons", Heroic = true };
+                    // T16.5: Rogue, Death Knight, Mage, Druid
+                    _tokenDropMap["99723"] = new TokenDropInfo() { Name = "Helm of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Thok the Bloodthirsty", Heroic = true };
+                    _tokenDropMap["99717"] = new TokenDropInfo() { Name = "Shoulders of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Siegecrafter Blackfuse", Heroic = true };
+                    _tokenDropMap["99714"] = new TokenDropInfo() { Name = "Chest of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Treasures of Pandaria", Heroic = true };
+                    _tokenDropMap["99720"] = new TokenDropInfo() { Name = "Gauntlets of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "General Nazgrim", Heroic = true };
+                    _tokenDropMap["99726"] = new TokenDropInfo() { Name = "Leggings of the Cursed Vanquisher", Vendor = "Lorry Warmheart", VendorArea = "Shrine of Seven Stars", Area = "Siege of Orgrimmar", Boss = "Klaxxi Paragons", Heroic = true };
+                    #endregion
+                    #endregion
 
                     // Holiday Satchels are going to be treated as quest rewards
                     // Valentines Day -  Reward is a Heart-Shaped Box http://www.wowhead.com/item=54537
@@ -856,10 +1274,11 @@ namespace Rawr
         #region Variables
         private const string URL_ITEM = "http://{0}.wowhead.com/item={1}&xml";
         private const string URL_ITEM_NONXML = "http://{0}.wowhead.com/item={1}";
+        private const string URL_ITEMS = "http://{0}.wowdb.com/items?{1}";
         private WebClient _webClient;
         private WebClient _webClient_nonxml;
         bool UsePTR = false;
-        bool needsNewSourceData = true;
+        bool needsNewSourceData = false;
         private bool _canceled = false;
         public event EventHandler<EventArgs<Item>> GetItemCompleted;
         public event EventHandler<EventArgs<string>> ProgressChanged;
@@ -892,7 +1311,7 @@ namespace Rawr
             _queueTimer.Stop();
             if (!_canceled)
             {
-                string url = string.Format(URL_ITEM, false/*UsePTR*/ ? "ptr" : "www", _lastItemId);
+                string url = string.Format(URL_ITEM, false/*UsePTR*/ ? "ptr"/*"ptr"*/ : "www", _lastItemId);
                 _webClient.DownloadStringAsync(new Uri(url));
                 this.Progress = "Downloading Item Data...";
             }
@@ -905,7 +1324,7 @@ namespace Rawr
         {
             _lastItemId = itemId;
             UsePTR = usePTR;
-            string url = string.Format(URL_ITEM, UsePTR ? "ptr" : "www", _lastItemId);
+            string url = string.Format(URL_ITEM, UsePTR ? "ptr"/*"ptr"*/ : "www", _lastItemId);
             _webClient.DownloadStringAsync(new Uri(url));
             this.Progress = "Downloading Item Data...";
         }
@@ -913,7 +1332,9 @@ namespace Rawr
         {
             _lastItemId = itemId;
             UsePTR = usePTR;
-            string url = string.Format(URL_ITEM_NONXML, UsePTR ? "ptr" : "www", _lastItemId);
+            string url = string.Format(URL_ITEM_NONXML, UsePTR ? "ptr"/*"ptr"*/ : "www", _lastItemId);
+            // Emulate IE9 for Wowhead, since they don't play nice with anonymous user agents
+            _webClient_nonxml.Headers[HttpRequestHeader.UserAgent] = "Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)";
             _webClient_nonxml.DownloadStringAsync(new Uri(url));
             this.Progress = "Downloading Item Source Data...";
         }
@@ -967,6 +1388,7 @@ namespace Rawr
                 catch (TargetInvocationException /*ex*/)
                 {
                     Progress = "Did not download item source file correctly";
+                    _itemDownloadComplete.Set();
                     return;
                 }
 
@@ -981,7 +1403,7 @@ namespace Rawr
                     BackgroundWorker bwParseItemSource = new BackgroundWorker();
                     bwParseItemSource.WorkerReportsProgress = false;
                     bwParseItemSource.DoWork += new DoWorkEventHandler(bwParseItemSource_DoWork);
-                    //bwParseItemSource.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwParseItemSource_RunWorkerCompleted);
+                    bwParseItemSource.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bwParseItemSource_RunWorkerCompleted);
                     //bwParseItemSource.ProgressChanged += new ProgressChangedEventHandler(bwParse_ProgressChanged);
                     bwParseItemSource.RunWorkerAsync(hdoc);
                 }
@@ -1090,8 +1512,8 @@ namespace Rawr
                             case "3.5": item.Slot = ItemSlot.Orange; break;
                             case "3.6": item.Slot = ItemSlot.Meta; break;
                             case "3.8": item.Slot = ItemSlot.Prismatic; break;
+                            case "3.9": item.Slot = ItemSlot.Hydraulic; break;
                             case "3.10": item.Slot = ItemSlot.Cogwheel; break;
-                            case "3.11": item.Slot = ItemSlot.Hydraulic; break; // need to verify 11
                         }
                     }
                     else
@@ -1254,26 +1676,28 @@ namespace Rawr
                     if ((classbitfield & 16) > 0)
                         requiredClasses.Add("Priest");
                     if ((classbitfield & 32) > 0)
-                        requiredClasses.Add("Death Knight");
+                        requiredClasses.Add("DeathKnight");
                     if ((classbitfield & 64) > 0)
                         requiredClasses.Add("Shaman");
                     if ((classbitfield & 128) > 0)
                         requiredClasses.Add("Mage");
                     if ((classbitfield & 256) > 0)
                         requiredClasses.Add("Warlock");
-                    //if ((classbitfield & 512) > 0) ; // Only seems to occur in PvP gear, along with another huge value
-                    //    requiredClasses.Add("");
+                    if ((classbitfield & 512) > 0) 
+                        requiredClasses.Add("Monk");
                     if ((classbitfield & 1024) > 0)
                         requiredClasses.Add("Druid");
                     item.RequiredClasses = string.Join("|", requiredClasses.ToArray());
                 }
                 if (json.TryGetValue("resirtng", out tmp) || json.TryGetValue("resilRating", out tmp))
                 {
-                    item.Stats.Resilience += Convert.ToSingle(tmp);
+                    item.Stats.PvPResilience += Convert.ToSingle(tmp);
+                    // Until WoWhead updates their XML parsing PvP Power is providing the same amount as Resil
+                    //item.Stats.PvPPower += Convert.ToSingle(tmp);
                 }
-                if (json.TryGetValue("splpen", out tmp) || json.TryGetValue("spellPen", out tmp))
+                if (json.TryGetValue("splpen", out tmp) || json.TryGetValue("spellPen", out tmp) || json.TryGetValue("pvppower", out tmp))
                 {
-                    item.Stats.SpellPenetration = Convert.ToSingle(tmp);
+                    item.Stats.PvPPower = Convert.ToSingle(tmp);
                 }
                 if (json.TryGetValue("mana", out tmp))
                 {
@@ -1299,6 +1723,14 @@ namespace Rawr
                 {
                     item.Stats.SpellArcaneDamageRating = Convert.ToSingle(tmp);
                 }
+                if (json.TryGetValue("upgrades", out tmp))
+                {
+                    object[] tmpArray = (object[])tmp;
+                    foreach (object obj in tmpArray)
+                    {
+                        item.UpgradeLevels.Add((int)obj);
+                    }
+                }
                 #endregion
 
                 // We don't need to process any more data if it's not a slottable item (eg not Gear/Gem)
@@ -1319,7 +1751,7 @@ namespace Rawr
                     2450, // Main-Hand, One-Hand
                     3400, // Polearm, Staff, Two-Hand, Gun, Bow, Crossbow
                 };
-                string currentArenaSeasonLabel = "Cataclysmic"; // "Such-in-such" Gladiator
+                const string currentArenaSeasonLabel = "Malevolent"; // "Such-in-such" Gladiator
                 if (json.TryGetValue("source", out tmp)) {
                     object[] sourceArr = (object[])tmp;
                     object[] sourcemoreArr = null;
@@ -1718,7 +2150,7 @@ namespace Rawr
                         }
                     }
                     #endregion
-                } else if (item.Stats.Resilience > 0) {
+                } else if ((item.Stats.PvPResilience > 0) || (item.Stats.PvPPower > 0)) {
                     // We DON'T have Source Data, BUT the item has resilience on it, so it's a pvp item
                     item.LocationInfo = new ItemLocationList() { PvpItem.Construct() };
                     (item.LocationInfo[0] as PvpItem).Points = 0;
@@ -1867,8 +2299,16 @@ namespace Rawr
                     {
                         int start = line.IndexOf("<!--");
                         int end = line.IndexOf("-->");
-                        string toRemove = line.Substring(start, end - start + 3);
-                        line = line.Replace(toRemove, "");
+                        if (start < end)
+                        {
+                            string toRemove = line.Substring(start, end - start + 3);
+                            line = line.Replace(toRemove, "");
+                        }
+                        else
+                        {
+                            line = line.Replace("-->", "");
+                            line = line.Replace("<!--", "");
+                        }
                     }
                     // Swap out to real spaces
                     while (line.Contains("&nbsp;")) { line = line.Replace("&nbsp;", " "); }
@@ -1943,6 +2383,11 @@ namespace Rawr
                     htmlTooltip = htmlTooltip.Substring(0, htmlTooltip.IndexOf("</a> (0/"));
                     htmlTooltip = htmlTooltip.Substring(htmlTooltip.LastIndexOf(">") + 1);
                     htmlTooltip = htmlTooltip
+                        #region MoP PVP Set Names
+                        .Replace("Tyrannical ", "") // Season 13
+                        .Replace("Malevolent ", "") // Season 12
+                        .Replace("Dreadful ", "")   // Starting set
+                        #endregion
                         #region Cataclysm PVP Set Names
                         .Replace("Cataclysmic ", "")    // Season 11
                         .Replace("Ruthless ", "")       // Season 10
@@ -2039,8 +2484,8 @@ namespace Rawr
                         string costExcerpt = hdoc.Substring(liststartpos, listendpos - liststartpos);
                         // we are looking for something like cost:[0,0,0,[[40633,1]]]
 
-                        // cost:[gold,[[currencyId1,currencyQu1],[currencyId2,currencyQu2]],[objectId,objectQu]]
-                        Regex costRegex = new Regex(@"cost:\[(?<gold>\d+)\[(?:\[(?<currencyId1>\d+),(?<currencyQu1>\d+)\])?,?(?:\[(?<currencyId2>\d+),(?<currencyQu2>\d+)\])?\],\[(?:\[?(?<tokenId1>\d+),(?<tokenQu1>\d+)\]?)?,?(?:\[?(?<tokenId2>\d+),(?<tokenQu2>\d+)\]?)?\]\]");
+                        // cost:[gold,[currencyId,currencyQu],[objectId,objectQu]]
+                        Regex costRegex = new Regex(@"cost:\[(?<gold>\d+),\[(?:\[(?<currencyId>\d+),(?<currencyQu>\d+)\])?\],\[(?:\[?(?<tokenId>\d+),(?<tokenQu>\d+)\]?)?\]");
                         Regex costRegexGoldOnly = new Regex(@"cost:\[(?<gold>\d+)\]");
                         Match costMatch;
 
@@ -2049,28 +2494,16 @@ namespace Rawr
                             // Start with Gold Cost. Items that don't cost Gold will still get a default of 0
                             goldCost = int.Parse(costMatch.Groups["gold"].Value);
                             // Lets try Currency 1, such as Justice Points
-                            if (!String.IsNullOrEmpty(costMatch.Groups["currencyId1"].Value)) {
-                                tokenIds.Add(costMatch.Groups["currencyId1"].Value);
-                                tokenCounts.Add(int.Parse(costMatch.Groups["currencyQu1"].Value));
-                            }
-                            // Lets try Currency 2, such as Justice Points
-                            // Not sure if there would ever actually be a 2nd here, but it was formatted as if it was possible
-                            // If nothing else, when currencyId1 fails but 2 is valid we put something in the array
-                            if (!String.IsNullOrEmpty(costMatch.Groups["currencyId2"].Value)) {
-                                tokenIds.Add(costMatch.Groups["currencyId2"].Value);
-                                tokenCounts.Add(int.Parse(costMatch.Groups["currencyQu2"].Value));
+                            if (!String.IsNullOrEmpty(costMatch.Groups["currencyId"].Value)) {
+                                tokenIds.Add(costMatch.Groups["currencyId"].Value);
+                                tokenCounts.Add(int.Parse(costMatch.Groups["currencyQu"].Value));
                             }
                             // Lets try Token 1 cost, such as Mantle of the Conqueror
-                            if (!String.IsNullOrEmpty(costMatch.Groups["tokenId1"].Value)) {
-                                tokenIds.Add(costMatch.Groups["tokenId1"].Value);
-                                tokenCounts.Add(int.Parse(costMatch.Groups["tokenQu1"].Value));
+                            if (!String.IsNullOrEmpty(costMatch.Groups["tokenId"].Value)) {
+                                tokenIds.Add(costMatch.Groups["tokenId"].Value);
+                                tokenCounts.Add(int.Parse(costMatch.Groups["tokenQu"].Value));
                             }
-                            // Lets try Token 2 cost, such as Mantle of the Conqueror
-                            if (!String.IsNullOrEmpty(costMatch.Groups["tokenId2"].Value)) {
-                                tokenIds.Add(costMatch.Groups["tokenId2"].Value);
-                                tokenCounts.Add(int.Parse(costMatch.Groups["tokenQu2"].Value));
-                            }
-                        } else if ((costMatch = costRegex.Match(costExcerpt)).Success) {
+                        } else if ((costMatch = costRegexGoldOnly.Match(costExcerpt)).Success) {
                             // Yay! it worked!
                             // Just do Gold Cost. Items that don't cost Gold will still get a default of 0
                             goldCost = int.Parse(costMatch.Groups["gold"].Value);
@@ -2354,7 +2787,7 @@ namespace Rawr
                         // we are looking for something like cost:[0,0,0,[[40633,1]]]
 
                         // cost:[gold,[[currencyId1,currencyQu1],[currencyId2,currencyQu2]],[objectId,objectQu]]
-                        Regex costRegex = new Regex(@"cost:\[(?<gold>\d+),\[(?:\[(?<currencyId1>\d+),(?<currencyQu1>\d+)\])?,?(?:\[(?<currencyId2>\d+),(?<currencyQu2>\d+)\])?\],\[(?:\[?(?<tokenId1>\d+),(?<tokenQu1>\d+)\]?)?,?(?:\[?(?<tokenId2>\d+),(?<tokenQu2>\d+)\]?)?\]\]");
+                        Regex costRegex = new Regex(@"cost:\[(?<gold>\d+),\[(?:\[(?<currencyId>\d+),(?<currencyQu>\d+)\])?\],\[(?:\[?(?<tokenId>\d+),(?<tokenQu>\d+)\]?)?\]");
                         Regex costRegexGoldOnly = new Regex(@"cost:\[(?<gold>\d+)\]");
                         Match costMatch;
 
@@ -2365,25 +2798,14 @@ namespace Rawr
                                 tokenIds.Add(costMatch.Groups["currencyId1"].Value);
                                 tokenCounts.Add(int.Parse(costMatch.Groups["currencyQu1"].Value));
                             }
-                            // Lets try Currency 2, such as Justice Points
-                            // Not sure if there would ever actually be a 2nd here, but it was formatted as if it was possible
-                            // If nothing else, when currencyId1 fails but 2 is valid we put something in the array
-                            if (!String.IsNullOrEmpty(costMatch.Groups["currencyId2"].Value)) {
-                                tokenIds.Add(costMatch.Groups["currencyId2"].Value);
-                                tokenCounts.Add(int.Parse(costMatch.Groups["currencyQu2"].Value));
-                            }
                             // Lets try Token 1 cost, such as Mantle of the Conqueror
                             if (!String.IsNullOrEmpty(costMatch.Groups["tokenId1"].Value)) {
                                 tokenIds.Add(costMatch.Groups["tokenId1"].Value);
                                 tokenCounts.Add(int.Parse(costMatch.Groups["tokenQu1"].Value));
                             }
-                            // Lets try Token 2 cost, such as Mantle of the Conqueror
-                            if (!String.IsNullOrEmpty(costMatch.Groups["tokenId2"].Value)) {
-                                tokenIds.Add(costMatch.Groups["tokenId2"].Value);
-                                tokenCounts.Add(int.Parse(costMatch.Groups["tokenQu2"].Value));
-                            }
-                        } else if ((costMatch = costRegex.Match(costExcerpt)).Success) {
+                        } else if ((costMatch = costRegexGoldOnly.Match(costExcerpt)).Success) {
                             // Yay! it worked!
+                            // Currently no gold cost associated with PvP items?
                         }
                     }
                     #endregion
@@ -2653,8 +3075,19 @@ namespace Rawr
                     this.GetItemCompleted(this, new EventArgs<Item>(e.Result as Item));
                     // Now that we have the item, call for its source under async (because we have to call a separate page)
                     if (needsNewSourceData) { GetItemSourceAsync((e.Result as Item).Id, UsePTR); }
+                    else { _itemDownloadComplete.Set(); }
                 }
             }
+            else
+                _itemDownloadComplete.Set();
+        }
+        private void bwParseItemSource_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Result != null)
+            {
+                Progress = "Complete!";
+            }
+            _itemDownloadComplete.Set();
         }
 
         #region Wowhead Lookups
@@ -2740,8 +3173,8 @@ namespace Rawr
                             case "3.5": item.Slot = ItemSlot.Orange; break;
                             case "3.6": item.Slot = ItemSlot.Meta; break;
                             case "3.8": item.Slot = ItemSlot.Prismatic; break;
+                            case "3.9": item.Slot = ItemSlot.Hydraulic; break;
                             case "3.10": item.Slot = ItemSlot.Cogwheel; break;
-                            case "3.11": item.Slot = ItemSlot.Hydraulic; break; // We don't actually know that this is 11 yet
                         }
                     }
                     else
@@ -2921,19 +3354,19 @@ namespace Rawr
                         requiredClasses.Add("Mage");
                     if ((classbitfield & 256) > 0)
                         requiredClasses.Add("Warlock");
-                    //if ((classbitfield & 512) > 0) ; // Only seems to occur in PvP gear, along with another huge value
-                    //    requiredClasses.Add("");
+                    if ((classbitfield & 512) > 0)
+                        requiredClasses.Add("Monk");
                     if ((classbitfield & 1024) > 0)
                         requiredClasses.Add("Druid");
                     item.RequiredClasses = string.Join("|", requiredClasses.ToArray());
                     break;
 
                 case "resirtng":
-                    item.Stats.Resilience += int.Parse(value);
+                    item.Stats.PvPResilience += int.Parse(value);
                     break;
 
                 case "splpen":
-                    item.Stats.SpellPenetration = int.Parse(value);
+                    item.Stats.PvPPower = int.Parse(value);
                     break;
 
                 case "mana":
@@ -3463,6 +3896,7 @@ namespace Rawr
                             case "3968": return "Ruinen von Lordaeron";
                             case "4378": return "Arena von Dalaran";
                             case "4406": return "Der Ring der Ehre";
+                            case "6296": return "Tol'vir Arena";
                             #endregion
                             #region Battlegrounds
                             case "2597": return "Alteractal";
@@ -3473,6 +3907,9 @@ namespace Rawr
                             case "4710": return "Insel der Eroberung";
                             case "5031": return "Zwillingsgipfel";
                             case "5449": return "Die Schlacht um Gilneas";
+                            case "6051": return "Temple of Kotmogu";
+                            case "6112": return "CTF3";
+                            case "6126": return "Silvershard Mines";
                             #endregion
                             #region Old World
                             #region Kalimdor
@@ -3531,6 +3968,8 @@ namespace Rawr
                             case "2257": return "Die Tiefenbahn";
                             case "5287": return "Das Schlingendornkap";
                             case "5339": return "Schlingendorntal";
+                            case "6170": return "Northshire";
+                            case "6176": return "Coldridge Valley";
                             #endregion
                             #region Dungeons
                             case "133": return "Gnomeregan";
@@ -3701,6 +4140,49 @@ namespace Rawr
                             #endregion
                             case "5706": return "Die Dampfteiche";
                             #endregion
+                            #region MoP
+                            #region Zones
+                            case "5736": return "The Wandering Isle";
+                            case "5785": return "The Jade Forest";
+                            case "5799": return "Eye of the Storm";
+                            case "5805": return "Valley of the Four Winds";
+                            case "5840": return "Vale of Eternal Blossoms";
+                            case "5841": return "Kun-Lai Summit";
+                            case "5842": return "Townlong Steppes";
+                            case "6006": return "The Hidden Pass";
+                            case "6081": return "Gipfel der Ruhe";
+                            case "6138": return "Dread Wastes";
+                            case "6134": return "Krasarang Wilds";
+                            case "6204": return "Greenstone Village";
+                            case "6208": return "Ancient Mogu Crypt";
+                            case "6298": return "The Ring of Valor";
+                            #endregion
+                            #region Dungeons
+                            case "5956": return "Temple of the Jade Serpent";
+                            case "5963": return "Stormstout Brewery";
+                            case "5918": return "Shado-Pan Monastery";
+                            case "5976": return "Gate of the Setting Sun";
+                            case "6052": return "Scarlet Halls";
+                            case "6066": return "Scholomance";
+                            case "6109": return "Scarlet Cathedral";
+                            #endregion
+                            #region Scenerios
+                            case "5297": return "Heart of Fear";
+                            case "6040": return "The Battle for Theramore";
+                            case "6101": return "The Perfect Storm";
+                            case "6182": return "Mogu'shan Palace";
+                            case "6209": return "The Jade Forest";
+                            case "6210": return "Greenstone Village";
+                            case "6214": return "Siege of Niuzao Temple";
+                            case "6215": return "Temple of Katmogu";
+                            case "6219": return "Proving Grounds";
+                            case "6304": return "Black Ox Temple";
+                            #endregion
+                            #region Raids
+                            case "6067": return "Terrace of Endless Spring";
+                            case "6125": return "Mogu'shan Vaults";
+                            #endregion
+                            #endregion
                             default: return "Unbekannt - " + zoneId;
                         }
                     }
@@ -3716,6 +4198,7 @@ namespace Rawr
                             case "3968": return "Ruinas de Lordaeron";
                             case "4378": return "Arena de Dalaran";
                             case "4406": return "El Círculo del Valor";
+                            case "6296": return "Tol'vir Arena";
                             #endregion
                             #region Battlegrounds
                             case "2597": return "Valle de Alterac";
@@ -3726,6 +4209,9 @@ namespace Rawr
                             case "4710": return "Isla de la Conquista";
                             case "5031": return "Cumbres Gemelas";
                             case "5449": return "La Batalla por Gilneas";
+                            case "6051": return "Temple of Kotmogu";
+                            case "6112": return "CTF3";
+                            case "6126": return "Silvershard Mines";
                             #endregion
                             #region Old World
                             #region Kalimdor
@@ -3784,6 +4270,8 @@ namespace Rawr
                             case "2257": return "Deeprun Tram";
                             case "5287": return "The Cape of Stranglethorn";
                             case "5339": return "Stranglethorn Vale";
+                            case "6170": return "Northshire";
+                            case "6176": return "Coldridge Valley";
                             #endregion
                             #region Dungeons
                             case "133": return "Gnomeregan";
@@ -3955,6 +4443,49 @@ namespace Rawr
                             #endregion
                             case "5706": return "The Steam Pools";
                             #endregion
+                            #region MoP
+                            #region Zones
+                            case "5736": return "The Wandering Isle";
+                            case "5785": return "The Jade Forest";
+                            case "5799": return "Eye of the Storm";
+                            case "5805": return "Valley of the Four Winds";
+                            case "5840": return "Vale of Eternal Blossoms";
+                            case "5841": return "Kun-Lai Summit";
+                            case "5842": return "Townlong Steppes";
+                            case "6006": return "The Hidden Pass";
+                            case "6081": return "Pico de la Serenidad";
+                            case "6138": return "Dread Wastes";
+                            case "6134": return "Krasarang Wilds";
+                            case "6204": return "Greenstone Village";
+                            case "6208": return "Ancient Mogu Crypt";
+                            case "6298": return "The Ring of Valor";
+                            #endregion
+                            #region Dungeons
+                            case "5956": return "Temple of the Jade Serpent";
+                            case "5963": return "Stormstout Brewery";
+                            case "5918": return "Shado-Pan Monastery";
+                            case "5976": return "Gate of the Setting Sun";
+                            case "6052": return "Scarlet Halls";
+                            case "6066": return "Scholomance";
+                            case "6109": return "Scarlet Cathedral";
+                            #endregion
+                            #region Scenerios
+                            case "5297": return "Heart of Fear";
+                            case "6040": return "The Battle for Theramore";
+                            case "6101": return "The Perfect Storm";
+                            case "6182": return "Mogu'shan Palace";
+                            case "6209": return "The Jade Forest";
+                            case "6210": return "Greenstone Village";
+                            case "6214": return "Siege of Niuzao Temple";
+                            case "6215": return "Temple of Katmogu";
+                            case "6219": return "Proving Grounds";
+                            case "6304": return "Black Ox Temple";
+                            #endregion
+                            #region Raids
+                            case "6067": return "Terrace of Endless Spring";
+                            case "6125": return "Mogu'shan Vaults";
+                            #endregion
+                            #endregion
                             default: return "Desconocida - " + zoneId;
                         }
                     }
@@ -3970,6 +4501,7 @@ namespace Rawr
                             case "3968": return "Ruines de Lordaeron";
                             case "4378": return "Arène de Dalaran";
                             case "4406": return "L'arène des Valeureux";
+                            case "6296": return "Tol'vir Arena";
                             #endregion
                             #region Battlegrounds
                             case "2597": return "Vallée d'Alterac";
@@ -3980,6 +4512,9 @@ namespace Rawr
                             case "4710": return "Île des Conquérants";
                             case "5031": return "Pics-Jumeaux";
                             case "5449": return "La bataille de Gilnéas";
+                            case "6051": return "Temple of Kotmogu";
+                            case "6112": return "CTF3";
+                            case "6126": return "Silvershard Mines";
                             #endregion
                             #region Old World
                             #region Kalimdor
@@ -4038,6 +4573,8 @@ namespace Rawr
                             case "2257": return "Tram des profondeurs";
                             case "5287": return "Cap Strangleronce";
                             case "5339": return "Vallée de Strangleronce";
+                            case "6170": return "Northshire";
+                            case "6176": return "Coldridge Valley";
                             #endregion
                             #region Dungeons
                             case "133": return "Gnomeregan";
@@ -4209,6 +4746,49 @@ namespace Rawr
                             #endregion
                             case "5706": return "Les bassins de Vapeur";
                             #endregion
+                            #region MoP
+                            #region Zones
+                            case "5736": return "The Wandering Isle";
+                            case "5785": return "The Jade Forest";
+                            case "5799": return "Eye of the Storm";
+                            case "5805": return "Valley of the Four Winds";
+                            case "5840": return "Vale of Eternal Blossoms";
+                            case "5841": return "Kun-Lai Summit";
+                            case "5842": return "Townlong Steppes";
+                            case "6006": return "The Hidden Pass";
+                            case "6081": return "Pic de la Sérénité";
+                            case "6138": return "Dread Wastes";
+                            case "6134": return "Krasarang Wilds";
+                            case "6204": return "Greenstone Village";
+                            case "6208": return "Ancient Mogu Crypt";
+                            case "6298": return "The Ring of Valor";
+                            #endregion
+                            #region Dungeons
+                            case "5956": return "Temple of the Jade Serpent";
+                            case "5963": return "Stormstout Brewery";
+                            case "5918": return "Shado-Pan Monastery";
+                            case "5976": return "Gate of the Setting Sun";
+                            case "6052": return "Scarlet Halls";
+                            case "6066": return "Scholomance";
+                            case "6109": return "Scarlet Cathedral";
+                            #endregion
+                            #region Scenerios
+                            case "5297": return "Heart of Fear";
+                            case "6040": return "The Battle for Theramore";
+                            case "6101": return "The Perfect Storm";
+                            case "6182": return "Mogu'shan Palace";
+                            case "6209": return "The Jade Forest";
+                            case "6210": return "Greenstone Village";
+                            case "6214": return "Siege of Niuzao Temple";
+                            case "6215": return "Temple of Katmogu";
+                            case "6219": return "Proving Grounds";
+                            case "6304": return "Black Ox Temple";
+                            #endregion
+                            #region Raids
+                            case "6067": return "Terrace of Endless Spring";
+                            case "6125": return "Mogu'shan Vaults";
+                            #endregion
+                            #endregion
                             default: return "Inconnue - " + zoneId;
                         }
                     }
@@ -4224,6 +4804,7 @@ namespace Rawr
                             case "3968": return "Ruins of Lordaeron (Undercity Arena)";
                             case "4378": return "Dalaran Arena (Arena)";
                             case "4406": return "The Ring of Valor (Orgrimmar Arena)";
+                            case "6296": return "Tol'vir Arena";
                             #endregion
                             #region Battlegrounds
                             case "2597": return "Alterac Valley";
@@ -4234,6 +4815,9 @@ namespace Rawr
                             case "4710": return "Isle of Conquest";
                             case "5031": return "Twin Peaks";
                             case "5449": return "The Battle for Gilneas";
+                            case "6051": return "Temple of Kotmogu";
+                            case "6112": return "CTF3";
+                            case "6126": return "Silvershard Mines";
                             #endregion
                             #region Old World
                             #region Kalimdor
@@ -4292,6 +4876,8 @@ namespace Rawr
                             case "2257": return "Deeprun Tram";
                             case "5287": return "The Cape of Stranglethorn";
                             case "5339": return "Stranglethorn Vale";
+                            case "6170": return "Northshire";
+                            case "6176": return "Coldridge Valley";
                             #endregion
                             #region Dungeons
                             case "133": return "Gnomeregan";
@@ -4463,6 +5049,49 @@ namespace Rawr
                             #endregion
                             case "5706": return "The Steam Pools";
                             #endregion
+                            #region MoP
+                            #region Zones
+                            case "5736": return "The Wandering Isle";
+                            case "5785": return "The Jade Forest";
+                            case "5799": return "Eye of the Storm";
+                            case "5805": return "Valley of the Four Winds";
+                            case "5840": return "Vale of Eternal Blossoms";
+                            case "5841": return "Kun-Lai Summit";
+                            case "5842": return "Townlong Steppes";
+                            case "6006": return "The Hidden Pass";
+                            case "6081": return "Пик Безмятежности";
+                            case "6138": return "Dread Wastes";
+                            case "6134": return "Krasarang Wilds";
+                            case "6204": return "Greenstone Village";
+                            case "6208": return "Ancient Mogu Crypt";
+                            case "6298": return "The Ring of Valor";
+                            #endregion
+                            #region Dungeons
+                            case "5956": return "Temple of the Jade Serpent";
+                            case "5963": return "Stormstout Brewery";
+                            case "5918": return "Shado-Pan Monastery";
+                            case "5976": return "Gate of the Setting Sun";
+                            case "6052": return "Scarlet Halls";
+                            case "6066": return "Scholomance";
+                            case "6109": return "Scarlet Cathedral";
+                            #endregion
+                            #region Scenerios
+                            case "5297": return "Heart of Fear";
+                            case "6040": return "The Battle for Theramore";
+                            case "6101": return "The Perfect Storm";
+                            case "6182": return "Mogu'shan Palace";
+                            case "6209": return "The Jade Forest";
+                            case "6210": return "Greenstone Village";
+                            case "6214": return "Siege of Niuzao Temple";
+                            case "6215": return "Temple of Katmogu";
+                            case "6219": return "Proving Grounds";
+                            case "6304": return "Black Ox Temple";
+                            #endregion
+                            #region Raids
+                            case "6067": return "Terrace of Endless Spring";
+                            case "6125": return "Mogu'shan Vaults";
+                            #endregion
+                            #endregion
                             default: return "Неизвестно - " + zoneId;
                         }
                     }
@@ -4477,6 +5106,7 @@ namespace Rawr
                             case "3968": return "Ruins of Lordaeron (Undercity Arena)";
                             case "4378": return "Dalaran Arena (Arena)";
                             case "4406": return "The Ring of Valor (Orgrimmar Arena)";
+                            case "6296": return "Tol'vir Arena";
                             #endregion
                             #region Battlegrounds
                             case "2597": return "Alterac Valley";
@@ -4487,6 +5117,9 @@ namespace Rawr
                             case "4710": return "Isle of Conquest";
                             case "5031": return "Twin Peaks";
                             case "5449": return "The Battle for Gilneas";
+                            case "6051": return "Temple of Kotmogu";
+                            case "6112": return "CTF3";
+                            case "6126": return "Silvershard Mines";
                             #endregion
                             #region Old World
                             #region Kalimdor
@@ -4545,6 +5178,8 @@ namespace Rawr
                             case "2257": return "Deeprun Tram";
                             case "5287": return "The Cape of Stranglethorn";
                             case "5339": return "Stranglethorn Vale";
+                            case "6170": return "Northshire";
+                            case "6176": return "Coldridge Valley";
                             #endregion
                             #region Dungeons
                             case "133": return "Gnomeregan";
@@ -4716,6 +5351,54 @@ namespace Rawr
                             #endregion
                             case "5706": return "The Steam Pools";
                             #endregion
+                            #region MoP
+                            #region Zones
+                            case "5736": return "The Wandering Isle";
+                            case "5785": return "The Jade Forest";
+                            case "5799": return "Eye of the Storm";
+                            case "5805": return "Valley of the Four Winds";
+                            case "5840": return "Vale of Eternal Blossoms";
+                            case "5841": return "Kun-Lai Summit";
+                            case "5842": return "Townlong Steppes";
+                            case "6006": return "The Veiled Stair";
+                            case "6138": return "Dread Wastes";
+                            case "6081": return "Peak of Serenity";
+                            case "6134": return "Krasarang Wilds";
+                            case "6141": return "Shrine of Two Moons";
+                            case "6142": return "Shrine of Seven Stars";
+                            case "6204": return "Greenstone Village";
+                            case "6208": return "Ancient Mogu Crypt";
+                            case "6298": return "The Ring of Valor";
+                            case "6507": return "Isle of Thunder";
+                            #endregion
+                            #region Dungeons
+                            case "5956": return "Temple of the Jade Serpent";
+                            case "5963": return "Stormstout Brewery";
+                            case "5918": return "Shado-Pan Monastery";
+                            case "5976": return "Gate of the Setting Sun";
+                            case "6052": return "Scarlet Halls";
+                            case "6066": return "Scholomance";
+                            case "6109": return "Scarlet Monastery";
+                            case "6182": return "Mogu'shan Palace";
+                            case "6214": return "Siege of Niuzao Temple";
+                            #endregion
+                            #region Scenerios
+                            case "6040": return "The Battle for Theramore";
+                            case "6101": return "The Perfect Storm";
+                            case "6209": return "The Jade Forest";
+                            case "6210": return "Greenstone Village";
+                            case "6215": return "Temple of Katmogu";
+                            case "6219": return "Proving Grounds";
+                            case "6304": return "Black Ox Temple";
+                            #endregion
+                            #region Raids
+                            case "6067": return "Terrace of Endless Spring";
+                            case "6125": return "Mogu'shan Vaults";
+                            case "6297": return "Heart of Fear";
+                            case "6622": return "Throne of Thunder";
+                            case "6738": return "Siege of Orgrimmar";
+                            #endregion
+                            #endregion
                             default: return "Unknown - " + zoneId;
                         }
                     }
@@ -4734,9 +5417,8 @@ namespace Rawr
                 case "10": return ItemSlot.Purple;
                 case "12": return ItemSlot.Green;
                 case "14": return ItemSlot.Prismatic;
+                case "16": return ItemSlot.Hydraulic;
                 case "32": return ItemSlot.Cogwheel;
-                // Dont have this id yet, but assuming 33 for now
-                case "33": return ItemSlot.Hydraulic;
                 default:
                     throw (new Exception("Unknown Slot Type :" + socket));
             }
@@ -4784,6 +5466,9 @@ namespace Rawr
                 case "4154": stats.Stamina += 15; break;
                 case "4134": stats.Stamina += 30; break;
                 case "4159": stats.Stamina += 45; break;
+                case "4832": stats.Stamina += 90; break;
+                // case "": stats.Stamina += 180; break;
+                case "4867": stats.Stamina += 270; break;
                 #endregion
                 #region Mp5
                 case "2367":
@@ -4800,8 +5485,9 @@ namespace Rawr
                 case "2767":
                 case "2844": stats.HitRating += 8; break;
                 case "4160": stats.HitRating += 10; break;
-                //case "": stats.HitRating += 20; break;
-                //case "": stats.HitRating += 30; break;
+                case "4835": stats.HitRating += 60; break;
+                case "4847": stats.HitRating += 120; break;
+                //case "": stats.HitRating += 180; break;
                 #endregion
                 #region Crit Rating
                 case "2887":
@@ -4820,6 +5506,9 @@ namespace Rawr
                 case "4151": stats.CritRating += 10; break;
                 case "4152": stats.CritRating += 20; break;
                 case "4153": stats.CritRating += 30; break;
+                case "4833": stats.CritRating += 60; break;
+                case "4843": stats.CritRating += 120; break;
+                case "4855": stats.CritRating += 180; break;
                 #endregion
                 #region Spirit
                 case "2890": stats.Spirit += 4; break;
@@ -4829,6 +5518,9 @@ namespace Rawr
                 case "4142": stats.Spirit += 10; break;
                 case "4129": stats.Spirit += 20; break;
                 case "4125": stats.Spirit += 30; break;
+                case "4838": stats.Spirit += 60; break;
+                case "4852": stats.Spirit += 120; break;
+                case "4866": stats.Spirit += 180; break;
                 #endregion
                 #region Intellect
                 case "2869": stats.Intellect += 4; break;
@@ -4837,6 +5529,9 @@ namespace Rawr
                 case "4143": stats.Intellect += 10; break;
                 case "4144": stats.Intellect += 20; break;
                 case "4150": stats.Intellect += 30; break;
+                case "4831": stats.Intellect += 60; break;
+                case "4848": stats.Intellect += 120; break;
+                case "4860": stats.Intellect += 180; break;
                 #endregion
                 #region Dodge Rating
                 case "2871": stats.DodgeRating += 4; break;
@@ -4845,6 +5540,9 @@ namespace Rawr
                 case "4155": stats.DodgeRating += 10; break;
                 case "4156": stats.DodgeRating += 20; break;
                 case "4157": stats.DodgeRating += 30; break;
+                case "4839": stats.DodgeRating += 60; break;
+                case "4844": stats.DodgeRating += 120; break;
+                //case "": stats.DodgeRating += 180; break;
                 #endregion
                 #region Agility
                 case "3149": stats.Agility += 2; break;
@@ -4854,14 +5552,25 @@ namespace Rawr
                 case "2782": stats.Agility += 10; break;
                 case "4133": stats.Agility += 20; break;
                 case "4145": stats.Agility += 30; break;
+                case "4827": stats.Agility += 60; break;
+                case "4828": stats.Agility += 120; break;
+                case "4829": stats.Agility += 180; break;
                 #endregion
-                #region Resilience
-                case "2878": stats.Resilience += 4; break;
-                case "3600": stats.Resilience += 6; break;
-                case "3821": stats.Resilience += 8; break;
-                case "4184": stats.Resilience += 10; break;
-                case "4185": stats.Resilience += 20; break;
-                case "4186": stats.Resilience += 30; break;
+                #region PvP Resilience
+                case "2878": stats.PvPResilience += 4; break;
+                case "3600": stats.PvPResilience += 6; break;
+                case "3821": stats.PvPResilience += 8; break;
+                case "4184": stats.PvPResilience += 10; break;
+                case "4185": stats.PvPResilience += 20; break;
+                case "4186": stats.PvPResilience += 30; break;
+                case "4842": stats.PvPResilience += 60; break;
+                case "4851": stats.PvPResilience += 120; break;
+                case "4863": stats.PvPResilience += 180; break;
+                #endregion
+                #region PvP Power
+//                case "": stats.PvPPower += 60; break;
+//                case "": stats.PvPPower += 120; break;
+                case "4865": stats.PvPPower += 180; break;
                 #endregion
                 #region Strength
                 case "2892": stats.Strength += 4; break;
@@ -4871,6 +5580,9 @@ namespace Rawr
                 case "4135": stats.Strength += 10; break;
                 case "4136": stats.Strength += 20; break;
                 case "4158": stats.Strength += 30; break;
+                case "4830": stats.Strength += 60; break;
+                case "4853": stats.Strength += 120; break;
+                case "4868": stats.Strength += 180; break;
                 #endregion
                 #region Block Rating
                 case "2972": stats.BlockRating += 4; break;
@@ -4885,14 +5597,18 @@ namespace Rawr
                 case "4146": stats.HasteRating += 10; break;
                 case "4140": stats.HasteRating += 20; break;
                 case "4128": stats.HasteRating += 30; break;
+                case "4836": stats.HasteRating += 60; break;
+                case "4846": stats.HasteRating += 120; break;
+                case "4858": stats.HasteRating += 180; break;
                 #endregion
                 #region Expertise Rating
                 case "3094": stats.ExpertiseRating += 4; break;
                 case "3362": stats.ExpertiseRating += 6; break;
                 case "3778": stats.ExpertiseRating += 8; break;
                 case "4163": stats.ExpertiseRating += 10; break;
-                //case "": stats.ExpertiseRating += 20; break;
-                //case "": stats.ExpertiseRating += 30; break;
+                case "4837": stats.ExpertiseRating += 60; break;
+                case "4845": stats.ExpertiseRating += 120; break;
+                //case "": stats.ExpertiseRating += 180; break;
                 #endregion
                 #region Parry Rating
                 case "3359": stats.ParryRating += 4; break;
@@ -4901,11 +5617,17 @@ namespace Rawr
                 case "4147": stats.ParryRating += 10; break;
                 case "4139": stats.ParryRating += 20; break;
                 case "4148": stats.ParryRating += 30; break;
+                case "4840": stats.ParryRating += 60; break;
+                case "4850": stats.ParryRating += 120; break;
+                case "4862": stats.ParryRating += 180; break;
                 #endregion
                 #region Mastery Rating
                 case "4123": stats.MasteryRating += 10; break;
                 case "4137": stats.MasteryRating += 20; break;
                 case "4138": stats.MasteryRating += 30; break;
+                case "4834": stats.MasteryRating += 60; break;
+                case "4849": stats.MasteryRating += 120; break;
+                case "4861": stats.MasteryRating += 180; break;
                 #endregion
                 default:
                     if (!_unhandledSocketBonus.Contains(socketbonus))
@@ -5099,6 +5821,36 @@ namespace Rawr
                 case "1178": retVal[0] = "Hellscream's Reach"; retVal[1] = ""; retVal[2] = ""; break;
                 case "1204": retVal[0] = "Avengers of Hyjal"; retVal[1] = ""; retVal[2] = ""; break;
                 #endregion
+                #region Mists of Pandaria
+                case "1216": retVal[0] = "Shang Xi's Academy"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1228": retVal[0] = "Forest Hozen"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1242": retVal[0] = "Pearlfin Jinyu"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1243": retVal[0] = "Hozen"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1358": retVal[0] = "Nat Pagle"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1269": retVal[0] = "Golden Lotus"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1270": retVal[0] = "Shado-Pan"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1271": retVal[0] = "Order of the Cloud Serpent"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1272": retVal[0] = "The Tillers"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1273": retVal[0] = "Jogu the Drunk"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1275": retVal[0] = "Ella"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1276": retVal[0] = "Old Hillpaw"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1277": retVal[0] = "Chee Chee"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1278": retVal[0] = "Sho"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1279": retVal[0] = "Haohan Mudclaw"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1280": retVal[0] = "Tina Mudclaw"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1281": retVal[0] = "Gina Mudclaw"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1282": retVal[0] = "Fish Fellreed"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1283": retVal[0] = "Farmer Fung"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1302": retVal[0] = "The Anglers"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1337": retVal[0] = "The Klaxxi"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1341": retVal[0] = "The August Celestials"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1345": retVal[0] = "The Lorewalkers"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1351": retVal[0] = "The Brewmasters"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1359": retVal[0] = "The Black Prince"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1387": retVal[0] = "Kirin Tor Offensive"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1388": retVal[0] = "Sunreaver Onslaught"; retVal[1] = ""; retVal[2] = ""; break;
+                case "1435": retVal[0] = "Shado-Pan Assault"; retVal[1] = ""; retVal[2] = ""; break;
+                #endregion
                 #region Other
                 case "70": retVal[0] = "Syndicate"; retVal[1] = ""; retVal[2] = ""; break;
                 case "589": retVal[0] = "Wintersaber Trainers"; retVal[1] = ""; retVal[2] = ""; break;
@@ -5145,7 +5897,8 @@ namespace Rawr
                 case " Dodge Rating": return "45";
                 case " Parry Rating": return "46";
                 case " Bonus Armor": return "109";
-                case " Resilience": return "79";
+                case " Resilience": 
+                case " PvP Resilience": return "79";
 
                 case " Attack Power": return "77";
                 case " Spell Power": return "123";
@@ -5183,6 +5936,8 @@ namespace Rawr
                     return "ub=3;";
                 case CharacterClass.Mage:
                     return "ub=8;";
+                case CharacterClass.Monk:
+                    return "ub=10;";
                 case CharacterClass.Paladin:
                     return "ub=2;";
                 case CharacterClass.Priest:
@@ -5224,8 +5979,8 @@ namespace Rawr
                     return "sl=2;";
                 case CharacterSlot.OffHand:
                     return "sl=13:14:22:23;";
-                case CharacterSlot.Ranged:
-                    return "sl=15:28:25;";
+                //case CharacterSlot.Ranged:
+                //    return "sl=15:28:25;";
                 case CharacterSlot.Shoulders:
                     return "sl=3;";
                 case CharacterSlot.Trinket1:
@@ -5269,6 +6024,73 @@ namespace Rawr
         #endregion
 
         public delegate bool UpgradeCancelCheck();
+
+        public void ImportItemsFromWowhead(string filter) { ImportItemsFromWowhead(filter, false); }
+        public void ImportItemsFromWowhead(string filter, bool usePTR)
+        {
+            string docUpgradeSearch = null;
+            try
+            {
+                this.GetItemCompleted += new EventHandler<EventArgs<Item>>(ImportItems_GetItemCompleted);
+                string site = "www";
+                StatusMessaging.UpdateStatus("ImportWowheadFilter", "Downloading Item List");
+                string url = string.Format(URL_ITEMS, site, filter);
+                docUpgradeSearch = _webClient_nonxml.DownloadString(new Uri(url));
+                if (docUpgradeSearch != null)
+                {
+                    Regex pageMatch = new Regex("&page=(\\d+)\" class=\"b-pagination-item\"");
+                    MatchCollection pageMatches = pageMatch.Matches(docUpgradeSearch);
+                    int pageCount = 0;
+                    foreach (Match pm in pageMatches)
+                    {
+                        if (int.Parse(pm.Groups[1].Value) > pageCount)
+                            pageCount = int.Parse(pm.Groups[1].Value);
+                    }
+
+                    for (int pg = 1; pg <= pageCount; ++pg)
+                    {
+                        url = string.Format(URL_ITEMS, site, filter + String.Format("&page={0}", pg));
+                        docUpgradeSearch = _webClient_nonxml.DownloadString(new Uri(url));
+                        Regex match = new Regex(@"http://www.wowdb.com/items/(\d+)");
+                        MatchCollection matches = match.Matches(docUpgradeSearch, 0);
+
+                        int i = 0;
+                        foreach (Match mt in matches)
+                        {
+                            StatusMessaging.UpdateStatus("ImportWowheadFilter",
+                                string.Format("Downloading definition {0} of {1} items", 200 * (pg - 1) + i, 200 * pageCount));
+                            // This new code will let it find the item id without worrying
+                            // about wowhead messing with the specifics of the string
+                            string id = mt.Groups[1].Value;
+                            {
+                                GetItemAsync(int.Parse(id), false);
+                                _itemDownloadComplete.WaitOne();
+                            }
+                            ++i;
+                        }
+                    }
+                }
+                else
+                {
+                    StatusMessaging.ReportError("ImportWowheadFilter", null, "No response returned from Wowhead");
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessaging.ReportError("ImportWowheadFilter", ex, "Error interpreting the data returned from Wowhead");
+            }
+            finally
+            {
+                this.GetItemCompleted -= ImportItems_GetItemCompleted;
+            }
+        }
+
+        void ImportItems_GetItemCompleted(object sender, EventArgs<Item> e)
+        {
+            Item item = e.Value;
+            if (item != null)
+                ItemCache.AddItem(item, false);
+        }
 
         /*public static void LoadUpgradesFromWowhead(Character character, CharacterSlot slot, bool usePTR, UpgradeCancelCheck cancel)
         {
@@ -5363,63 +6185,6 @@ namespace Rawr
             {
                 Base.ErrorBox eb = new Base.ErrorBox("", "You need to have a character loaded for Rawr to find Wowhead upgrades.");
                 eb.Show();
-            }
-        }
-
-        public static void ImportItemsFromWowhead(string filter) { ImportItemsFromWowhead(filter, false); }
-        public static void ImportItemsFromWowhead(string filter, bool usePTR)
-        {
-            //WebRequestWrapper.ResetFatalErrorIndicator();
-
-            string docUpgradeSearch = null;
-            try
-            {
-                string site = usePTR ? "ptr" : "www";
-                StatusMessaging.UpdateStatus("ImportWowheadFilter", "Downloading Item List");
-                WebRequestWrapper wrw = new WebRequestWrapper();
-                docUpgradeSearch = wrw.DownloadUpgradesWowhead(site, filter);
-                if (docUpgradeSearch != null)
-                {
-                    // at this stage have an HTML doc that has upgrades in a <div class="listview-void"> block
-                    // need to get the itemID list out and then load them and add to cache
-                    int startpos = docUpgradeSearch.IndexOf("<div class=\"listview-void\">");
-                    if (startpos > 1)
-                    {
-                        int endpos = docUpgradeSearch.IndexOf("</div>", startpos);
-                        XDocument doc = new XDocument();
-                        doc.InnerXml = docUpgradeSearch.Substring(startpos, endpos - startpos + 6);
-                        List<XElement> nodeList = new List<XElement>(doc.SelectNodes("//a/@href"));
-
-                        Regex toMatch = new Regex("(\\d{5})");
-                        Match match;
-
-                        for (int i = 0; i < nodeList.Count; i++)
-                        {
-                            StatusMessaging.UpdateStatus("ImportWowheadFilter",
-                                string.Format("Downloading definition {0} of {1} items", i, nodeList.Count));
-                            //string id = nodeList[i].Value.Substring(7);
-                            // This new code will let it find the item id without worrying
-                            // about wowhead messing with the specifics of the string
-                            match = toMatch.Match(nodeList[i].Value);
-                            string id = match.Value;
-                            {
-                                Item item = GetItem(site, id, true);
-                                if (item != null)
-                                {
-                                    ItemCache.AddItem(item, false);
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    StatusMessaging.ReportError("ImportWowheadFilter", null, "No response returned from Wowhead");
-                }
-            }
-            catch (Exception ex)
-            {
-                StatusMessaging.ReportError("ImportWowheadFilter", ex, "Error interpreting the data returned from Wowhead");
             }
         }
 
@@ -5674,7 +6439,7 @@ namespace Rawr
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/damageData/damage/max")) { maxDamage = int.Parse(node.Value); }
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/damageData/damage/type")) { damageType = (ItemDamageType)Enum.Parse(typeof(ItemDamageType), node.Value, false); }
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/damageData/speed")) { speed = float.Parse(node.Value, System.Globalization.CultureInfo.InvariantCulture); }
-                foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/setData/name")) { setName = node.Value; setName = setName.Replace("Vicious ", ""); }
+                foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/setData/name")) { setName = node.Value; setName = setName.Replace("Malevolent ", ""); }
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/allowableClasses/class")) { requiredClasses.Add(node.Value); }
 
                 foreach (XAttribute attr in ItemInfo.SelectNodes("page/itemInfo/item").Attributes("level")) { itemLevel = int.Parse(attr.Value); }
@@ -5703,16 +6468,18 @@ namespace Rawr
                     case 34356:
                         requiredClasses.Add("Hunter");
                         break;
-                    case 46106:
                     case 32479:
                     case 32480:
-                    case 46109:
+                    case 59453:
                         requiredClasses.Add("Druid");
+                        requiredClasses.Add("Monk");
                         break;
                     case 32478:
                     case 34353:
+                    case 59455:
                         requiredClasses.Add("Druid");
                         requiredClasses.Add("Rogue");
+                        requiredClasses.Add("Monk");
                         break;
                 }
                 #endregion
@@ -5724,7 +6491,7 @@ namespace Rawr
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/bonusDodgeRating")) { stats.DodgeRating = int.Parse(node.Value); }
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/bonusParryRating")) { stats.ParryRating = int.Parse(node.Value); }
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/bonusBlockRating")) { stats.BlockRating = int.Parse(node.Value); }
-                foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/bonusResilienceRating")) { stats.Resilience = int.Parse(node.Value); }
+                foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/bonusResilienceRating")) { stats.PvPResilience = int.Parse(node.Value); }
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/bonusStamina")) { stats.Stamina = int.Parse(node.Value); }
                 foreach (XElement node in Tooltip.SelectNodes("page/itemTooltips/itemTooltip/bonusIntellect")) { stats.Intellect = int.Parse(node.Value); }
 
@@ -5907,6 +6674,12 @@ namespace Rawr
                                 case "Weapon Damage":
                                     socketStats.WeaponDamage = socketBonusValue;
                                     break;
+                                case "PvP Resilience":
+                                    socketStats.PvPResilience = socketBonusValue;
+                                    break;
+                                case "PvP Power":
+                                    socketStats.PvPPower = socketBonusValue;
+                                    break;
                                 case "Resilience":
                                 case "Resilience Rating":
                                     socketStats.Resilience = socketBonusValue;
@@ -6074,6 +6847,12 @@ namespace Rawr
                                         break;
                                     case "Weapon Damage":
                                         stats.WeaponDamage = gemBonusValue;
+                                        break;
+                                    case "PvP Resilience":
+                                        stats.PvPResilience = gemBonusValue;
+                                        break;
+                                    case "PvP Power":
+                                        stats.PvPPower = gemBonusValue;
                                         break;
                                     case "Resilience":
                                     case "Resilience Rating":

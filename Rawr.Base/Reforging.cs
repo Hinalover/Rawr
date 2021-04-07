@@ -144,6 +144,8 @@ namespace Rawr
 
         public float ReforgeAmount { get; set; }
 
+        public int UpgradeItemLevel { get; set; }
+
         public Reforging Clone()
         {
             return new Reforging()
@@ -151,42 +153,46 @@ namespace Rawr
                 reforgeFrom = this.reforgeFrom,
                 reforgeTo = this.reforgeTo,
                 id = this.id,
-                ReforgeAmount = this.ReforgeAmount
+                ReforgeAmount = this.ReforgeAmount,
+                UpgradeItemLevel = this.UpgradeItemLevel
             };
         }
 
         public Reforging() { }
 
-        public Reforging(Item baseItem, int randomSuffixId, AdditiveStat reforgeFrom, AdditiveStat reforgeTo)
+        public Reforging(Item baseItem, int randomSuffixId, int upgradeItemLevel, AdditiveStat reforgeFrom, AdditiveStat reforgeTo)
         {
-            ApplyReforging(baseItem, randomSuffixId, reforgeFrom, reforgeTo);
+            ApplyReforging(baseItem, randomSuffixId, upgradeItemLevel, reforgeFrom, reforgeTo);
         }
 
-        public Reforging(Item baseItem, int randomSuffixId, int id)
+        public Reforging(Item baseItem, int randomSuffixId, int upgradeItemLevel, int id)
         {
-            ApplyReforging(baseItem, randomSuffixId, id);
+            ApplyReforging(baseItem, randomSuffixId, upgradeItemLevel, id);
         }
 
-        public void ApplyReforging(Item baseItem, int randomSuffixId, AdditiveStat reforgeFrom, AdditiveStat reforgeTo)
+        public void ApplyReforging(Item baseItem, int randomSuffixId, int upgradeItemLevel, AdditiveStat reforgeFrom, AdditiveStat reforgeTo)
         {
             this.reforgeFrom = reforgeFrom;
             this.reforgeTo = reforgeTo;
             id = StatsToId(reforgeFrom, reforgeTo);
-            ApplyReforging(baseItem, randomSuffixId);
+            UpgradeItemLevel = upgradeItemLevel;
+            ApplyReforging(baseItem, randomSuffixId, upgradeItemLevel);
         }
 
-        public void ApplyReforging(Item baseItem, int randomSuffixId, int id)
+        public void ApplyReforging(Item baseItem, int randomSuffixId, int upgradeItemLevel, int id)
         {
             Id = id;
-            ApplyReforging(baseItem, randomSuffixId);
+            UpgradeItemLevel = upgradeItemLevel;
+            ApplyReforging(baseItem, randomSuffixId, upgradeItemLevel);
         }
 
-        public void ApplyReforging(Item baseItem, int randomSuffixId)
+        public void ApplyReforging(Item baseItem, int randomSuffixId, int upgradeItemLevel)
         {
+            UpgradeItemLevel = upgradeItemLevel;
             if (baseItem != null && id != 0 && Validate)
             {
-                float currentFrom = CurrentStatValue(baseItem, randomSuffixId, ReforgeFrom);
-                float currentTo = CurrentStatValue(baseItem, randomSuffixId, ReforgeTo);
+                float currentFrom = CurrentStatValue(baseItem, randomSuffixId, upgradeItemLevel, ReforgeFrom);
+                float currentTo = CurrentStatValue(baseItem, randomSuffixId, upgradeItemLevel, ReforgeTo);
                 if (currentFrom > 0 && currentTo == 0)
                 {
                     ReforgeAmount = (float)Math.Floor(currentFrom * 0.4);
@@ -196,7 +202,7 @@ namespace Rawr
             ReforgeAmount = 0;
         }
 
-        public static List<Reforging> GetReforgingOptions(Item baseItem, int randomSuffixId, AdditiveStat[] reforgeStatsFrom, AdditiveStat[] reforgeStatsTo)
+        public static List<Reforging> GetReforgingOptions(Item baseItem, int randomSuffixId, int upgradeItemLevel, AdditiveStat[] reforgeStatsFrom, AdditiveStat[] reforgeStatsTo)
         {
             List<Reforging> options = new List<Reforging>();
             options.Add(null);
@@ -204,15 +210,15 @@ namespace Rawr
             {
                 foreach (var from in reforgeStatsFrom)
                 {
-                    float currentFrom = CurrentStatValue(baseItem, randomSuffixId, from);
+                    float currentFrom = CurrentStatValue(baseItem, randomSuffixId, upgradeItemLevel, from);
                     if (currentFrom > 0)
                     {
                         foreach (var to in reforgeStatsTo)
                         {
-                            float currentTo = CurrentStatValue(baseItem, randomSuffixId, to);
+                            float currentTo = CurrentStatValue(baseItem, randomSuffixId, upgradeItemLevel, to);
                             if (currentTo == 0)
                             {
-                                options.Add(new Reforging(baseItem, randomSuffixId, from, to));
+                                options.Add(new Reforging(baseItem, randomSuffixId, upgradeItemLevel, from, to));
                             }
                         }
                     }
@@ -221,13 +227,28 @@ namespace Rawr
             return options;
         }
 
-        public static float CurrentStatValue(Item baseItem, int randomSuffixId, AdditiveStat stat)
+        public static float CurrentStatValue(Item baseItem, int randomSuffixId, int upgradeItemLevel, AdditiveStat stat)
         {
             if (randomSuffixId == 0)
             {
                 if ((int)stat >= 0 && (int)stat < baseItem.Stats._rawAdditiveData.Length)
                 {
-                        return baseItem.Stats._rawAdditiveData[(int)stat];
+                    float baseValue = baseItem.Stats._rawAdditiveData[(int)stat];
+                    if (upgradeItemLevel > 0 && baseValue > 0)
+                    {
+                        int socketCount = 0;
+                        for (int index = 1; index <= 3; ++index)
+                        {
+                            ItemSlot socket = baseItem.GetSocketColor(index);
+                            if (socket != ItemSlot.None)
+                                ++socketCount;
+                            if (socket == ItemSlot.Meta)
+                                ++socketCount;
+                        }
+                        int secondaryBaseAdjustment = socketCount * 40;
+                        baseValue = (float)Math.Floor((baseValue + secondaryBaseAdjustment) * (float)Math.Pow(1.15, upgradeItemLevel / 15.0)) - secondaryBaseAdjustment;
+                    }
+                    return baseValue;
                 }
                 else 
                 {
@@ -240,7 +261,22 @@ namespace Rawr
             }
             else
             {
-                return RandomSuffix.GetStatValue(baseItem, randomSuffixId, stat);
+                float baseValue = RandomSuffix.GetStatValue(baseItem, randomSuffixId, stat);
+                if (upgradeItemLevel > 0 && baseValue > 0)
+                {
+                    int socketCount = 0;
+                    for (int index = 1; index <= 3; ++index)
+                    {
+                        ItemSlot socket = baseItem.GetSocketColor(index);
+                        if (socket != ItemSlot.None)
+                            ++socketCount;
+                        if (socket == ItemSlot.Meta)
+                            ++socketCount;
+                    }
+                    int secondaryBaseAdjustment = socketCount * 40;
+                    baseValue = (float)Math.Floor((baseValue + secondaryBaseAdjustment) * (float)Math.Pow(1.15, upgradeItemLevel / 15.0)) - secondaryBaseAdjustment;
+                }
+                return baseValue;
             }
         }
 

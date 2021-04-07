@@ -189,141 +189,149 @@ namespace Rawr
 
     public partial class MageTalents
     {
-        private bool[] _glyphData = new bool[33];
+        private bool[] _glyphData = new bool[34];
         public override bool[] GlyphData { get { return _glyphData; } }
 
         #region Prime
         public override int GlyphTreeStartingIndexes_0 { get { return 0; } }
-        /// <summary>Increases the damage of your Arcane Barrage spell by 4%.</summary>
-        [GlyphData( 0, 45738, 63092, "Glyph of Arcane Barrage", GlyphType.Prime,
-            @"Increases the damage of your Arcane Barrage spell by 4%.")]
-        public bool GlyphOfArcaneBarrage { get { return _glyphData[0]; } set { _glyphData[0] = value; } }
-        /// <summary>Increases the damage from your Arcane Blast buff by 3%.</summary>
-        [GlyphData( 1, 44955, 62210, "Glyph of Arcane Blast", GlyphType.Prime,
-            @"Increases the damage from your Arcane Blast buff by 3%.")]
-        public bool GlyphOfArcaneBlast { get { return _glyphData[1]; } set { _glyphData[1] = value; } }
-        /// <summary>Increases the critical strike chance of your Arcane Missiles spell by 5%.</summary>
-        [GlyphData( 2, 42735, 56363, "Glyph of Arcane Missiles", GlyphType.Prime,
-            @"Increases the critical strike chance of your Arcane Missiles spell by 5%.")]
-        public bool GlyphOfArcaneMissiles { get { return _glyphData[2]; } set { _glyphData[2] = value; } }
-        /// <summary>Increases the damage of your Cone of Cold spell by 25%.</summary>
-        [GlyphData( 3, 42753, 56364, "Glyph of Cone of Cold", GlyphType.Prime,
-            @"Increases the damage of your Cone of Cold spell by 25%.")]
-        public bool GlyphOfConeOfCold { get { return _glyphData[3]; } set { _glyphData[3] = value; } }
-        /// <summary>Your Deep Freeze deals 20% additional damage.</summary>
-        [GlyphData( 4, 45736, 63090, "Glyph of Deep Freeze", GlyphType.Prime,
-            @"Your Deep Freeze deals 20% additional damage.")]
-        public bool GlyphOfDeepFreeze { get { return _glyphData[4]; } set { _glyphData[4] = value; } }
-        /// <summary>Increases the critical strike chance of your Fireball spell by 5%.</summary>
-        [GlyphData( 5, 42739, 56368, "Glyph of Fireball", GlyphType.Prime,
-            @"Increases the critical strike chance of your Fireball spell by 5%.")]
-        public bool GlyphOfFireball { get { return _glyphData[5]; } set { _glyphData[5] = value; } }
-        /// <summary>Increases the critical strike chance of your Frostbolt spell by 5%.</summary>
-        [GlyphData( 6, 42742, 56370, "Glyph of Frostbolt", GlyphType.Prime,
-            @"Increases the critical strike chance of your Frostbolt spell by 5%.")]
-        public bool GlyphOfFrostbolt { get { return _glyphData[6]; } set { _glyphData[6] = value; } }
-        /// <summary>Increases the damage done by your Frostfire Bolt by 15% and your Frostfire Bolt now deals 3% additional damage over 12 sec, stacking up to 3 times, but no longer reduces the victim's movement speed.</summary>
-        [GlyphData( 7, 44684, 61205, "Glyph of Frostfire", GlyphType.Prime,
-            @"Increases the damage done by your Frostfire Bolt by 15% and your Frostfire Bolt now deals 3% additional damage over 12 sec, stacking up to 3 times, but no longer reduces the victim's movement speed.")]
-        public bool GlyphOfFrostfire { get { return _glyphData[7]; } set { _glyphData[7] = value; } }
-        /// <summary>Increases the damage of your Ice Lance spell by 5%.</summary>
-        [GlyphData( 8, 42745, 56377, "Glyph of Ice Lance", GlyphType.Prime,
-            @"Increases the damage of your Ice Lance spell by 5%.")]
-        public bool GlyphOfIceLance { get { return _glyphData[8]; } set { _glyphData[8] = value; } }
-        /// <summary>Increases the damage of your Living Bomb spell by 3%.</summary>
-        [GlyphData( 9, 63539, 89926, "Glyph of Living Bomb", GlyphType.Prime,
-            @"Increases the damage of your Living Bomb spell by 3%.")]
-        public bool GlyphOfLivingBomb { get { return _glyphData[9]; } set { _glyphData[9] = value; } }
-        /// <summary>Your Mage Armor regenerates 20% more mana.</summary>
-        [GlyphData(10, 42749, 56383, "Glyph of Mage Armor", GlyphType.Prime,
-            @"Your Mage Armor regenerates 20% more mana.")]
-        public bool GlyphOfMageArmor { get { return _glyphData[10]; } set { _glyphData[10] = value; } }
-        /// <summary>Your Molten Armor grants an additional 2% spell critical strike chance.</summary>
-        [GlyphData(11, 42751, 56382, "Glyph of Molten Armor", GlyphType.Prime,
-            @"Your Molten Armor grants an additional 2% spell critical strike chance.")]
-        public bool GlyphOfMoltenArmor { get { return _glyphData[11]; } set { _glyphData[11] = value; } }
-        /// <summary>Increases the critical strike chance of your Pyroblast spell by 5%.</summary>
-        [GlyphData(12, 42743, 56384, "Glyph of Pyroblast", GlyphType.Prime,
-            @"Increases the critical strike chance of your Pyroblast spell by 5%.")]
-        public bool GlyphOfPyroblast { get { return _glyphData[12]; } set { _glyphData[12] = value; } }
         #endregion
         #region Major
-        public override int GlyphTreeStartingIndexes_1 { get { return 13; } }
-        /// <summary>While Arcane Power is active the global cooldown of your Blink, Mana Shield and Mirror Image is reduced to zero.</summary>
-        [GlyphData(13, 42736, 56381, "Glyph of Arcane Power", GlyphType.Major,
-            @"While Arcane Power is active the global cooldown of your Blink, Mana Shield and Mirror Image is reduced to zero.")]
-        public bool GlyphOfArcanePower { get { return _glyphData[13]; } set { _glyphData[13] = value; } }
-        /// <summary>Increases the duration of Blast Wave's slowing effect by 1 sec.</summary>
-        [GlyphData(14, 44920, 62126, "Glyph of Blast Wave", GlyphType.Major,
-            @"Increases the duration of Blast Wave's slowing effect by 1 sec.")]
-        public bool GlyphOfBlastWave { get { return _glyphData[14]; } set { _glyphData[14] = value; } }
+        public override int GlyphTreeStartingIndexes_1 { get { return 0; } }
+        /// <summary>Increases the radius of your Arcane Explosion by 5 yards.</summary>
+        [GlyphData(0, 42736, 115718, "Glyph of Arcane Explosion", GlyphType.Major,
+            @"Increases the radius of your Arcane Explosion by 5 yards.")]
+        public bool GlyphOfArcaneExplosion { get { return _glyphData[0]; } set { _glyphData[0] = value; } }
+        /// <summary>Increases the duration and cooldown of Arcane Power by 100%.</summary>
+        [GlyphData(1, 44955, 62210, "Glyph of Arcane Power", GlyphType.Major,
+            @"Increases the duration and cooldown of Arcane Power by 100%.")]
+        public bool GlyphOfArcanePower { get { return _glyphData[1]; } set { _glyphData[1] = value; } }
+        /// <summary>Reduces the cast time of your Frost Armor, Mage Armor, and Molten Armor spells by 1.5 sec, and increases the defensive effect of each Armor by an additional 10%.</summary>
+        [GlyphData(2, 69773, 98397, "Glyph of Armors", GlyphType.Major,
+            @"Reduces the cast time of your Frost Armor, Mage Armor, and Molten Armor spells by 1.5 sec, and increases the defensive effect of each Armor by an additional 10%.")]
+        public bool GlyphOfArmors { get { return _glyphData[2]; } set { _glyphData[2] = value; } }
         /// <summary>Increases the distance you travel with the Blink spell by 5 yards.</summary>
-        [GlyphData(15, 42737, 56365, "Glyph of Blink", GlyphType.Major,
+        [GlyphData(3, 42737, 56365, "Glyph of Blink", GlyphType.Major,
             @"Increases the distance you travel with the Blink spell by 5 yards.")]
-        public bool GlyphOfBlink { get { return _glyphData[15]; } set { _glyphData[15] = value; } }
-        /// <summary>Reduces the cooldown of your Dragon's Breath by 3 sec.</summary>
-        [GlyphData(16, 42754, 56373, "Glyph of Dragon's Breath", GlyphType.Major,
-            @"Reduces the cooldown of your Dragon's Breath by 3 sec.")]
-        public bool GlyphOfDragonsBreath { get { return _glyphData[16]; } set { _glyphData[16] = value; } }
-        /// <summary>Your Evocation ability also causes you to regain 40% of your health over its duration.</summary>
-        [GlyphData(17, 42738, 56380, "Glyph of Evocation", GlyphType.Major,
-            @"Your Evocation ability also causes you to regain 40% of your health over its duration.")]
-        public bool GlyphOfEvocation { get { return _glyphData[17]; } set { _glyphData[17] = value; } }
-        /// <summary>Your Frost Armor also causes you to regenerate 2% of your maximum mana every 5 sec.</summary>
-        [GlyphData(18, 69773, 98398, "Glyph of Frost Armor", GlyphType.Major,
-            @"Your Frost Armor also causes you to regenerate 2% of your maximum mana every 5 sec.")]
-        public bool GlyphOfFrostArmor { get { return _glyphData[18]; } set { _glyphData[18] = value; } }
-        /// <summary>Your Frost Nova targets can take an additional 20% damage before the Frost Nova effect automatically breaks.</summary>
-        [GlyphData(19, 42741, 56376, "Glyph of Frost Nova", GlyphType.Major,
-            @"Your Frost Nova targets can take an additional 20% damage before the Frost Nova effect automatically breaks.")]
-        public bool GlyphOfFrostNova { get { return _glyphData[19]; } set { _glyphData[19] = value; } }
-        /// <summary>Increases the amount of damage absorbed by your Ice Barrier by 30%.</summary>
-        [GlyphData(20, 45740, 63095, "Glyph of Ice Barrier", GlyphType.Major,
-            @"Increases the amount of damage absorbed by your Ice Barrier by 30%.")]
-        public bool GlyphOfIceBarrier { get { return _glyphData[20]; } set { _glyphData[20] = value; } }
-        /// <summary>Your Frost Nova cooldown is now reset every time you use Ice Block.</summary>
-        [GlyphData(21, 42744, 56372, "Glyph of Ice Block", GlyphType.Major,
-            @"Your Frost Nova cooldown is now reset every time you use Ice Block.")]
-        public bool GlyphOfIceBlock { get { return _glyphData[21]; } set { _glyphData[21] = value; } }
-        /// <summary>Your Icy Veins ability also removes all movement slowing and cast time slowing effects.</summary>
-        [GlyphData(22, 42746, 56374, "Glyph of Icy Veins", GlyphType.Major,
-            @"Your Icy Veins ability also removes all movement slowing and cast time slowing effects.")]
-        public bool GlyphOfIcyVeins { get { return _glyphData[22]; } set { _glyphData[22] = value; } }
+        public bool GlyphOfBlink { get { return _glyphData[3]; } set { _glyphData[3] = value; } }
+        /// <summary>Increases the direct damage, the duration of the damage over time effect and the cooldown of Combustion by 100%.</summary>
+        [GlyphData(4, 42739, 56368, "Glyph of Combustion", GlyphType.Major,
+            @"Increases the direct damage, the duration of the damage over time effect and the cooldown of Combustion by 100%.")]
+        public bool GlyphOfCombustion { get { return _glyphData[4]; } set { _glyphData[4] = value; } }
+        /// <summary>Increases the damage done by Cone of Cold by 200%.</summary>
+        [GlyphData(5, 42746, 115705, "Glyph of Cone of Cold", GlyphType.Major,
+            @"Increases the damage done by Cone of Cold by 200%.")]
+        public bool GlyphOfConeOfCold { get { return _glyphData[5]; } set { _glyphData[5] = value; } }
+        /// <summary>Your Counterspell can now be cast while casting or channeling other spells, but its cooldown is increased by 4 sec.</summary>
+        [GlyphData(6, 50045, 115703, "Glyph of Cone of Cold", GlyphType.Major,
+            @"Your Counterspell can now be cast while casting or channeling other spells, but its cooldown is increased by 4 sec.")]
+        public bool GlyphOfCounterspell { get { return _glyphData[6]; } set { _glyphData[6] = value; } }
+        /// <summary>Your Deep Freeze spell is no longer on the global cooldown.</summary>
+        [GlyphData(7, 45740, 115710, "Glyph of Deep Freeze", GlyphType.Major,
+            @"Your Deep Freeze spell is no longer on the global cooldown.")]
+        public bool GlyphOfDeepFreeze { get { return _glyphData[7]; } set { _glyphData[7] = value; } }
+        /// <summary>Your Evocation ability also causes you to regain 60% of your health over its duration. With the Invocation talent, you instead gain 40% of your health upon completing an Evocation. With the Rune of Power talent, you gain 1% of your health per second while standing in your own Rune of Power.</summary>
+        [GlyphData(8, 42738, 56380, "Glyph of Evocation", GlyphType.Major,
+            @"Your Evocation ability also causes you to regain 60% of your health over its duration. 
+
+With the Invocation talent, you instead gain 40% of your health upon completing an Evocation.
+
+With the Rune of Power talent, you gain 1% of your health per second while standing in your own Rune of Power.")]
+        public bool GlyphOfEvocation { get { return _glyphData[8]; } set { _glyphData[8] = value; } }
+        /// <summary>Your Fire Blast and Inferno Blast spells now also spread Living Bomb, cause Frost Bomb to instantly explode, and cause Nether Tempest to instantly fire its secondary damage at all nearby targets.</summary>
+        [GlyphData(9, 63539, 89926, "Glyph of Fire Blast", GlyphType.Major,
+            @"Your Fire Blast and Inferno Blast spells now also spread Living Bomb, cause Frost Bomb to instantly explode, and cause Nether Tempest to instantly fire its secondary damage at all nearby targets.")]
+        public bool GlyphOfFireBlast { get { return _glyphData[9]; } set { _glyphData[9] = value; } }
+        /// <summary>Reduces the cooldown of Frost Nova by 5 sec.</summary>
+        [GlyphData(10, 42741, 56376, "Glyph of Frost Nova", GlyphType.Major,
+            @"Reduces the cooldown of Frost Nova by 5 sec.")]
+        public bool GlyphOfFrostNova { get { return _glyphData[10]; } set { _glyphData[10] = value; } }
+        /// <summary>Reduces the cast time of Frostfire Bolt by 0.5 sec.</summary>
+        [GlyphData(11, 44684, 61205, "Glyph of Frostfire Bolt", GlyphType.Major,
+            @"Reduces the cast time of Frostfire Bolt by 0.5 sec.")]
+        public bool GlyphOfFrostfireBolt { get { return _glyphData[11]; } set { _glyphData[11] = value; } }
+        /// <summary>When Ice Block terminates, it triggers an instant free Frost Nova and makes you immune to all spells for 3 sec.</summary>
+        [GlyphData(12, 42744, 115723, "Glyph of Ice Block", GlyphType.Major,
+            @"When Ice Block terminates, it triggers an instant free Frost Nova and makes you immune to all spells for 3 sec.")]
+        public bool GlyphOfIceBlock { get { return _glyphData[12]; } set { _glyphData[12] = value; } }
+        /// <summary>Your Ice Lance now hits 1 additional target for 50% damage.</summary>
+        [GlyphData(13, 42745, 56377, "Glyph of Ice Lance", GlyphType.Major,
+            @"Your Ice Lance now hits 1 additional target for 50% damage.")]
+        public bool GlyphOfIceLance { get { return _glyphData[13]; } set { _glyphData[13] = value; } }
+        /// <summary>Your Icy Veins causes your Frostbolt, Frostfire Bolt, Ice Lance, and your Water Elemental's Waterbolt spells to split into 3 smaller bolts that each do 160% damage, instead of increasing spell casting speed.</summary>
+        [GlyphData(14, 42753, 56364, "Glyph of Icy Veins", GlyphType.Major,
+            @"Your Icy Veins causes your Frostbolt, Frostfire Bolt, Ice Lance, and your Water Elemental's Waterbolt spells to split into 3 smaller bolts that each do 160% damage, instead of increasing spell casting speed.")]
+        public bool GlyphOfIcyVeins { get { return _glyphData[14]; } set { _glyphData[14] = value; } }
         /// <summary>Increases your movement speed while Invisible by 40%.</summary>
-        [GlyphData(23, 42748, 56366, "Glyph of Invisibility", GlyphType.Major,
+        [GlyphData(15, 42748, 56366, "Glyph of Invisibility", GlyphType.Major,
             @"Increases your movement speed while Invisible by 40%.")]
-        public bool GlyphOfInvisibility { get { return _glyphData[23]; } set { _glyphData[23] = value; } }
-        /// <summary>Reduces the cooldown of your Mana Shield by 2 sec.</summary>
-        [GlyphData(24, 50045, 70937, "Glyph of Mana Shield", GlyphType.Major,
-            @"Reduces the cooldown of your Mana Shield by 2 sec.")]
-        public bool GlyphOfManaShield { get { return _glyphData[24]; } set { _glyphData[24] = value; } }
+        public bool GlyphOfInvisibility { get { return _glyphData[15]; } set { _glyphData[15] = value; } }
+        /// <summary>Your Conjure Mana Gem spell now creates a Brilliant Mana Gem, which holds up to 10 charges.</summary>
+        [GlyphData(16, 42749, 56383, "Glyph of Mana Gem", GlyphType.Major,
+            @"Your Conjure Mana Gem spell now creates a Brilliant Mana Gem, which holds up to 10 charges.")]
+        public bool GlyphOfManaGem { get { return _glyphData[16]; } set { _glyphData[16] = value; } }
         /// <summary>Your Polymorph spell also removes all damage over time effects from the target.</summary>
-        [GlyphData(25, 42752, 56375, "Glyph of Polymorph", GlyphType.Major,
+        [GlyphData(17, 42752, 56375, "Glyph of Polymorph", GlyphType.Major,
             @"Your Polymorph spell also removes all damage over time effects from the target.")]
-        public bool GlyphOfPolymorph { get { return _glyphData[25]; } set { _glyphData[25] = value; } }
-        /// <summary>Increases the range of your Slow spell by 5 yards.</summary>
-        [GlyphData(26, 45737, 63091, "Glyph of Slow", GlyphType.Major,
-            @"Increases the range of your Slow spell by 5 yards.")]
-        public bool GlyphOfSlow { get { return _glyphData[26]; } set { _glyphData[26] = value; } }
+        public bool GlyphOfPolymorph { get { return _glyphData[17]; } set { _glyphData[17] = value; } }
+        /// <summary>Increases the damage you deal by 10% for 10 sec after you successfully remove a curse.</summary>
+        [GlyphData(18, 44920, 115700, "Glyph of Remove Curse", GlyphType.Major,
+            @"Increases the damage you deal by 10% for 10 sec after you successfully remove a curse.")]
+        public bool GlyphOfRemoveCurse { get { return _glyphData[18]; } set { _glyphData[18] = value; } }
+        /// <summary>Your Arcane Blast spell applies the Slow spell to any target it damages if no target is currently affected by your Slow.</summary>
+        [GlyphData(19, 45737, 86209, "Glyph of Slow", GlyphType.Major,
+            @"Your Arcane Blast spell applies the Slow spell to any target it damages if no target is currently affected by your Slow.")]
+        public bool GlyphOfSlow { get { return _glyphData[19]; } set { _glyphData[19] = value; } }
+        /// <summary>Spellsteal now also heals you for 3% of your maximum health when it successfully steals a spell.</summary>
+        [GlyphData(20, 42754, 115713, "Glyph of Spellsteal", GlyphType.Major,
+            @"Spellsteal now also heals you for 3% of your maximum health when it successfully steals a spell.")]
+        public bool GlyphOfSpellsteal { get { return _glyphData[20]; } set { _glyphData[20] = value; } }
+        /// <summary>Increases the health of your Water Elemental by 40%, and allows it to cast while moving. When in Assist mode and in combat, commanding your Water Elemental to Follow will cause it to stay near you and autocast Waterbolt when your target is in range.</summary>
+        [GlyphData(21, 45736, 63090, "Glyph of Water Elemental", GlyphType.Major,
+            @"Increases the health of your Water Elemental by 40%, and allows it to cast while moving. When in Assist mode and in combat, commanding your Water Elemental to Follow will cause it to stay near you and autocast Waterbolt when your target is in range.")]
+        public bool GlyphOfWaterElemental { get { return _glyphData[21]; } set { _glyphData[21] = value; } }
         #endregion
         #region Minor
-        public override int GlyphTreeStartingIndexes_2 { get { return 27; } }
-        /// <summary>Increases the duration of your Armor spells by 30 min.</summary>
-        [GlyphData(27, 63416, 89749, "Glyph of Armors", GlyphType.Minor,
-            @"Increases the duration of your Armor spells by 30 min.")]
-        public bool GlyphOfArmors { get { return _glyphData[27]; } set { _glyphData[27] = value; } }
-        /// <summary>Reduces the mana cost of your Conjuring spells by 50%.</summary>
-        [GlyphData(28, 43359, 57928, "Glyph of Conjuring", GlyphType.Minor,
-            @"Reduces the mana cost of your Conjuring spells by 50%.")]
-        public bool GlyphOfConjuring { get { return _glyphData[28]; } set { _glyphData[28] = value; } }
+        public override int GlyphTreeStartingIndexes_2 { get { return 22; } }
+        /// <summary>Your Arcane Brilliance spell allows you to comprehend your allies' racial languages.</summary>
+        [GlyphData(22, 43364, 57925, "Glyph of Arcane Language", GlyphType.Minor,
+            @"Your Arcane Brilliance spell allows you to comprehend your allies' racial languages.")]
+        public bool GlyphOfArcaneLanguage { get { return _glyphData[22]; } set { _glyphData[22] = value; } }
+        /// <summary>Teaches you the ability Conjure Familiar. Conjures a familiar stone, containing either an Arcane, Fiery, or Icy Familiar.</summary>
+        [GlyphData(23, 43359, 126748, "Glyph of Conjure Familiar", GlyphType.Minor,
+            @"Teaches you the ability Conjure Familiar.
+
+Conjures a familiar stone, containing either an Arcane, Fiery, or Icy Familiar.")]
+        public bool GlyphOfConjureFamiliar { get { return _glyphData[23]; } set { _glyphData[23] = value; } }
+        /// <summary>When cast on critters, your Polymorph spells now last 24 hrs and can be cast on multiple targets.</summary>
+        [GlyphData(24, 42751, 56382, "Glyph of Crittermorph", GlyphType.Minor,
+            @"When cast on critters, your Polymorph spells now last 24 hrs and can be cast on multiple targets.")]
+        public bool GlyphOfCrittermorph { get { return _glyphData[24]; } set { _glyphData[24] = value; } }
+        /// <summary>Teaches you the ability Illusion. Transforms the Mage to look like someone else for 2 min.</summary>
+        [GlyphData(25, 45738, 63092, "Glyph of Illusion", GlyphType.Minor,
+            @"Teaches you the ability Illusion.
+
+Transforms the Mage to look like someone else for 2 min.")]
+        public bool GlyphOfIllusion { get { return _glyphData[25]; } set { _glyphData[25] = value; } }
+        /// <summary>Your Mana Gem now restores mana over 6 sec, rather than instantly.</summary>
+        [GlyphData(26, 42735, 56363, "Glyph of Loose Mana", GlyphType.Minor,
+            @"Your Mana Gem now restores mana over 6 sec, rather than instantly.")]
+        public bool GlyphOfLooseMana { get { return _glyphData[26]; } set { _glyphData[26] = value; } }
         /// <summary>Your Mirror Images cast Arcane Blast or Fireball instead of Frostbolt depending on your primary talent tree.</summary>
-        [GlyphData(29, 45739, 63093, "Glyph of Mirror Image", GlyphType.Minor,
+        [GlyphData(27, 45739, 63093, "Glyph of Mirror Image", GlyphType.Minor,
             @"Your Mirror Images cast Arcane Blast or Fireball instead of Frostbolt depending on your primary talent tree.")]
-        public bool GlyphOfMirrorImage { get { return _glyphData[29]; } set { _glyphData[29] = value; } }
-        /// <summary>Your Slow Fall spell no longer requires a reagent.</summary>
-        [GlyphData(30, 43364, 57925, "Glyph of Slow Fall", GlyphType.Minor,
-            @"Your Slow Fall spell no longer requires a reagent.")]
-        public bool GlyphOfSlowFall { get { return _glyphData[30]; } set { _glyphData[30] = value; } }
+        public bool GlyphOfMirrorImage { get { return _glyphData[27]; } set { _glyphData[27] = value; } }
+        /// <summary>Your Blink spell teleports you in the direction you are moving instead of the direction you are facing.</summary>
+        [GlyphData(28, 42743, 56384, "Glyph of Momentum", GlyphType.Minor,
+            @"Your Blink spell teleports you in the direction you are moving instead of the direction you are facing.")]
+        public bool GlyphOfMomentum { get { return _glyphData[28]; } set { _glyphData[28] = value; } }
+        /// <summary>After casting a Mage Teleport spell, or entering a Mage Portal, your movement speed is increased by 70% for 1 min.</summary>
+        [GlyphData(29, 63416, 89749, "Glyph of Rapid Teleportation", GlyphType.Minor,
+            @"After casting a Mage Teleport spell, or entering a Mage Portal, your movement speed is increased by 70% for 1 min.")]
+        public bool GlyphOfRapidTeleportation { get { return _glyphData[29]; } set { _glyphData[29] = value; } }
+        /// <summary>Your Polymorph: Sheep spell polymorphs the target into a polar bear cub instead.</summary>
+        [GlyphData(30, 0, 58136, "Glyph of the Bear Cub", GlyphType.Minor,
+            @"Your Polymorph: Sheep spell polymorphs the target into a polar bear cub instead.")]
+        public bool GlyphOfTheBearCub { get { return _glyphData[30]; } set { _glyphData[30] = value; } }
         /// <summary>Your Polymorph: Sheep spell polymorphs the target into a monkey instead.</summary>
         [GlyphData(31, 43360, 57927, "Glyph of the Monkey", GlyphType.Minor,
             @"Your Polymorph: Sheep spell polymorphs the target into a monkey instead.")]
@@ -332,6 +340,10 @@ namespace Rawr
         [GlyphData(32, 43361, 52648, "Glyph of the Penquin", GlyphType.Minor,
             @"Your Polymorph: Sheep spell polymorphs the target into a penguin instead.")]
         public bool GlyphOfThePenquin { get { return _glyphData[32]; } set { _glyphData[32] = value; } }
+        /// <summary>Your Polymorph: Sheep spell polymorphs the target into a penguin instead.</summary>
+        [GlyphData(33, 43339, 57924, "Glyph of the Porcupine", GlyphType.Minor,
+            @"Your Polymorph: Sheep spell polymorphs the target into a penguin instead.")]
+        public bool GlyphOfThePorcupine { get { return _glyphData[33]; } set { _glyphData[33] = value; } }
         #endregion
     }
 
@@ -340,334 +352,310 @@ namespace Rawr
         private bool[] _glyphData = new bool[41];
         public override bool[] GlyphData { get { return _glyphData; } }
 
-        #region Prime
-        public override int GlyphTreeStartingIndexes_0 { get { return 0; } }
-        /// <summary>Increases the duration of Berserk by 10 sec.</summary>
-        [GlyphData( 0, 45601, 62969, "Glyph of Berserk", GlyphType.Prime,
-            @"Increases the duration of Berserk by 10 sec.")]
-        public bool GlyphOfBerserk { get { return _glyphData[0]; } set { _glyphData[0] = value; } }
-        /// <summary>Increases the damage of your Insect Swarm ability by 30%.</summary>
-        [GlyphData( 1, 40919, 54830, "Glyph of Insect Swarm", GlyphType.Prime,
-            @"Increases the damage of your Insect Swarm ability by 30%.")]
-        public bool GlyphOfInsectSwarm { get { return _glyphData[1]; } set { _glyphData[1] = value; } }
-        /// <summary>Increases the critical strike chance of your Lacerate ability by 5%.</summary>
-        [GlyphData( 2, 67484, 94382, "Glyph of Lacerate", GlyphType.Prime,
-            @"Increases the critical strike chance of your Lacerate ability by 5%.")]
-        public bool GlyphOfLacerate { get { return _glyphData[2]; } set { _glyphData[2] = value; } }
-        /// <summary>Increases the critical effect chance of your Lifebloom 10%.</summary>
-        [GlyphData( 3, 40915, 54826, "Glyph of Lifebloom", GlyphType.Prime,
-            @"Increases the critical effect chance of your Lifebloom 10%.")]
-        public bool GlyphOfLifebloom { get { return _glyphData[3]; } set { _glyphData[3] = value; } }
-        /// <summary>Increases the damage done by Mangle by 10%.</summary>
-        [GlyphData( 4, 40900, 54813, "Glyph of Mangle", GlyphType.Prime,
-            @"Increases the damage done by Mangle by 10%.")]
-        public bool GlyphOfMangle { get { return _glyphData[4]; } set { _glyphData[4] = value; } }
-        /// <summary>Increases the periodic damage of your Moonfire ability by 20%.</summary>
-        [GlyphData( 5, 40923, 54829, "Glyph of Moonfire", GlyphType.Prime,
-            @"Increases the periodic damage of your Moonfire ability by 20%.")]
-        public bool GlyphOfMoonfire { get { return _glyphData[5]; } set { _glyphData[5] = value; } }
-        /// <summary>Your Regrowth heal-over-time will automatically refresh its duration on targets at or below 50% health.</summary>
-        [GlyphData( 6, 40912, 54743, "Glyph of Regrowth", GlyphType.Prime,
-            @"Your Regrowth heal-over-time will automatically refresh its duration on targets at or below 50% health.")]
-        public bool GlyphOfRegrowth { get { return _glyphData[6]; } set { _glyphData[6] = value; } }
-        /// <summary>Increases the healing done by your Rejuvenation by 10%.</summary>
-        [GlyphData( 7, 40913, 54754, "Glyph of Rejuvenation", GlyphType.Prime,
-            @"Increases the healing done by your Rejuvenation by 10%.")]
-        public bool GlyphOfRejuvination { get { return _glyphData[7]; } set { _glyphData[7] = value; } }
-        /// <summary>Increases the periodic damage of your Rip by 15%.</summary>
-        [GlyphData( 8, 40902, 54818, "Glyph of Rip", GlyphType.Prime,
-            @"Increases the periodic damage of your Rip by 15%.")]
-        public bool GlyphOfRip { get { return _glyphData[8]; } set { _glyphData[8] = value; } }
-        /// <summary>Your Savage Roar ability grants an additional 5% bonus damage done.</summary>
-        [GlyphData( 9, 45604, 63055, "Glyph of Savage Roar", GlyphType.Prime,
-            @"Your Savage Roar ability grants an additional 5% bonus damage done.")]
-        public bool GlyphOfSavageRoar { get { return _glyphData[9]; } set { _glyphData[9] = value; } }
-        /// <summary>Each time you Shred or Mangle in Cat Form, the duration of your Rip on the target is extended by 2 sec, up to a maximum of 6 sec.</summary>
-        [GlyphData(10, 40901, 54815, "Glyph of Bloodletting", GlyphType.Prime,
-            @"Each time you Shred or Mangle in Cat Form, the duration of your Rip on the target is extended by 2 sec, up to a maximum of 6 sec.")]
-        public bool GlyphOfBloodletting { get { return _glyphData[10]; } set { _glyphData[10] = value; } }
-        /// <summary>Your Starfire ability increases the duration of yoru Moonfire effect on the target by 3 sec, up to a maximum of 9 additional seconds.</summary>
-        [GlyphData(11, 40916, 54845, "Glyph of Starfire", GlyphType.Prime,
-            @"Your Starfire ability increases the duration of yoru Moonfire effect on the target by 3 sec, up to a maximum of 9 additional seconds.")]
-        public bool GlyphOfStarfire { get { return _glyphData[11]; } set { _glyphData[11] = value; } }
-        /// <summary>When your Starsurge deals damage, the cooldown remaining on your Starfall is reduced by 5 sec.</summary>
-        [GlyphData(12, 45603, 62917, "Glyph of Starsurge", GlyphType.Prime,
-            @"When your Starsurge deals damage, the cooldown remaining on your Starfall is reduced by 5 sec.")]
-        public bool GlyphOfStarsurge { get { return _glyphData[12]; } set { _glyphData[12] = value; } }
-        /// <summary>Your Swiftmend ability no longer consumes a Rejuvenation or Regrowth effect from the target.</summary>
-        [GlyphData(13, 40906, 54824, "Glyph of Swiftmend", GlyphType.Prime,
-            @"Your Swiftmend ability no longer consumes a Rejuvenation or Regrowth effect from the target.")]
-        public bool GlyphOfSwiftmend { get { return _glyphData[13]; } set { _glyphData[13] = value; } }
-        /// <summary>Reduces the cooldown of your Tiger's Fury ability by 3 sec.</summary>
-        [GlyphData(14, 67487, 94390, "Glyph of Tiger's Fury", GlyphType.Prime,
-            @"Reduces the cooldown of your Tiger's Fury ability by 3 sec.")]
-        public bool GlyphOfTigersFury { get { return _glyphData[14]; } set { _glyphData[14] = value; } }
-        /// <summary>Increases the damage done by your Wrath by 10%.</summary>
-        [GlyphData(15, 40922, 54756, "Glyph of Wrath", GlyphType.Prime,
-            @"Increases the damage done by your Wrath by 10%.")]
-        public bool GlyphOfWrath { get { return _glyphData[15]; } set { _glyphData[15] = value; } }
-        #endregion
         #region Major
-        public override int GlyphTreeStartingIndexes_1 { get { return 16; } }
-        /// <summary>Reduces the chance you'll be critically hit by melee attacks by 25% while Barkskin is active.</summary>
-        [GlyphData(16, 45623, 63057, "Glyph of Barkskin", GlyphType.Major,
-            @"Reduces the chance you'll be critically hit by melee attacks by 25% while Barkskin is active.")]
-        public bool GlyphOfBarkskin { get { return _glyphData[16]; } set { _glyphData[16] = value; } }
+        public override int GlyphTreeStartingIndexes_0 { get { return -1; } }
+        public override int GlyphTreeStartingIndexes_1 { get { return 0; } }
+        /// <summary>Reduces the chance you'll be critically hit by 25% while Barkskin is active.</summary>
+        [GlyphData(0, 45623, 63057, "Glyph of Barkskin", GlyphType.Major,
+            @"Reduces the chance you'll be critically hit by 25% while Barkskin is active.")]
+        public bool GlyphofBarkskin { get { return _glyphData[0]; } set { _glyphData[0] = value; } }
+        /// <summary>Increases the bloom heal of your Lifebloom when it expires by 20%, but your Healing Touch, Nourish, and Regrowth abilities no longer refresh the duration of Lifebloom.</summary>
+        [GlyphData(1, 43331, 121840, "Glyph of Blooming", GlyphType.Major,
+            @"Increases the bloom heal of your Lifebloom when it expires by 20%, but your Healing Touch, Nourish, and Regrowth abilities no longer refresh the duration of Lifebloom.")]
+        public bool GlyphofBlooming { get { return _glyphData[1]; } set { _glyphData[1] = value; } }
+        /// <summary>Increases healing done to you by 20% while in Cat Form.</summary>
+        [GlyphData(2, 67487, 47180, "Glyph of Cat Form", GlyphType.Major,
+            @"Increases healing done to you by 20% while in Cat Form.")]
+        public bool GlyphofCatForm { get { return _glyphData[2]; } set { _glyphData[2] = value; } }
+        /// <summary>Increases the range of your Cyclone spell by 4 yards.</summary>
+        [GlyphData(3, 45622, 48514, "Glyph of Cyclone", GlyphType.Major,
+            @"Increases the range of your Cyclone spell by 4 yards.")]
+        public bool GlyphofCyclone { get { return _glyphData[3]; } set { _glyphData[3] = value; } }
+        /// <summary>Reduces the cooldown of your Dash ability by 60 sec.</summary>
+        [GlyphData(4, 43674, 59219, "Glyph of Dash", GlyphType.Major,
+            @"Reduces the cooldown of your Dash ability by 60 sec.")]
+        public bool GlyphofDash { get { return _glyphData[4]; } set { _glyphData[4] = value; } }
         /// <summary>Reduces the cast time of your Entangling Roots by 0.2 sec.</summary>
-        [GlyphData(17, 40924, 54760, "Glyph of Entangling Roots", GlyphType.Major,
+        [GlyphData(5, 40924, 54760, "Glyph of Entangling Roots", GlyphType.Major,
             @"Reduces the cast time of your Entangling Roots by 0.2 sec.")]
-        public bool GlyphOfEntanglingRoots { get { return _glyphData[17]; } set { _glyphData[17] = value; } }
-        /// <summary>Increases the range of your Faerie Fire and Feral Faerie Fire abilities by 10 yds.</summary>
-        [GlyphData(18, 67485, 94386, "Glyph of Faerie Fire", GlyphType.Major,
-            @"Increases the range of your Faerie Fire and Feral Faerie Fire abilities by 10 yds.")]
-        public bool GlyphOfFaerieFire { get { return _glyphData[18]; } set { _glyphData[18] = value; } }
-        /// <summary>Reduces the cooldown of yoru Feral Charge (Cat) ability by 2 sec and the cooldown of your Feral Charge (Bear) ability by 1 sec.</summary>
-        [GlyphData(19, 67486, 94388, "Glyph of Feral Charge", GlyphType.Major,
-            @"Reduces the cooldown of yoru Feral Charge (Cat) ability by 2 sec and the cooldown of your Feral Charge (Bear) ability by 1 sec.")]
-        public bool GlyphOfFeralCharge { get { return _glyphData[19]; } set { _glyphData[19] = value; } }
-        /// <summary>Your Ferocious Bite ability heals you for 1% of your maximum health for each 10 energy used.</summary>
-        [GlyphData(20, 48720, 67598, "Glyph of Ferocious Bite", GlyphType.Major,
-            @"Your Ferocious Bite ability heals you for 1% of your maximum health for each 10 energy used.")]
-        public bool GlyphOfFerociousBite { get { return _glyphData[20]; } set { _glyphData[20] = value; } }
-        /// <summary>Increases the damage done by Starfall by 10%, but decreases its radius by 50%.</summary>
-        [GlyphData(21, 44928, 62080, "Glyph of Focus", GlyphType.Major,
-            @"Increases the damage done by Starfall by 10%, but decreases its radius by 50%.")]
-        public bool GlyphOfFocus { get { return _glyphData[21]; } set { _glyphData[21] = value; } }
-        /// <summary>While Frenzied Regeneration is active, healing effects on you are 30% more powerful but causes your Frenzied Regeneration to no longer convert rage into health.</summary>
-        [GlyphData(22, 40896, 54810, "Glyph of Frenzied Regeneration", GlyphType.Major,
-            @"While Frenzied Regeneration is active, healing effects on you are 30% more powerful but causes your Frenzied Regeneration to no longer convert rage into health.")]
-        public bool GlyphOfFrenziedRegeneration { get { return _glyphData[22]; } set { _glyphData[22] = value; } }
-        /// <summary>When you Healing Touch, the cooldown on your Nature's Swiftness is reduced by 10 sec.</summary>
-        [GlyphData(23, 40914, 54825, "Glyph of Healing Touch", GlyphType.Major,
-            @"When you Healing Touch, the cooldown on your Nature's Swiftness is reduced by 10 sec.")]
-        public bool GlyphOfHealingTouch { get { return _glyphData[23]; } set { _glyphData[23] = value; } }
-        /// <summary>Your Hurricane ability now also slows the movement speed of its victims by 50%.</summary>
-        [GlyphData(24, 40920, 54831, "Glyph of Hurricane", GlyphType.Major,
-            @"Your Hurricane ability now also slows the movement speed of its victims by 50%.")]
-        public bool GlyphOfHurricane { get { return _glyphData[24]; } set { _glyphData[24] = value; } }
-        /// <summary>When Innervate is cast on a friendly target other than the caster, the caster will gain 50% of Innervate's effect.</summary>
-        [GlyphData(25, 40908, 54832, "Glyph of Innervate", GlyphType.Major,
-            @"When Innervate is cast on a friendly target other than the caster, the caster will gain 50% of Innervate's effect.")]
-        public bool GlyphOfInnervate { get { return _glyphData[25]; } set { _glyphData[25] = value; } }
+        public bool GlyphofEntanglingRoots { get { return _glyphData[5]; } set { _glyphData[5] = value; } }
+        /// <summary>Faerie Fire used in Bear Form also silences the target for 3 sec, but triggers a 15 sec cooldown.</summary>
+        [GlyphData(6, 67484, 114237, "Glyph of Fae Silence", GlyphType.Major,
+            @"Faerie Fire used in Bear Form also silences the target for 3 sec, but triggers a 15 sec cooldown.")]
+        public bool GlyphofFaeSilence { get { return _glyphData[6]; } set { _glyphData[6] = value; } }
+        /// <summary>Increases the range of your Faerie Fire by 10 yds.</summary>
+        [GlyphData(7, 67485, 94386, "Glyph of Faerie Fire", GlyphType.Major,
+            @"Increases the range of your Faerie Fire by 10 yds.")]
+        public bool GlyphOfFaerieFire { get { return _glyphData[7]; } set { _glyphData[7] = value; } }
+        /// <summary>Your Ferocious Bite ability heals you for 1% of your maximum health for each 10 Energy used.</summary>
+        [GlyphData(8, 48720, 67598, "Glyph of Ferocious Bite", GlyphType.Major,
+            @"Your Ferocious Bite ability heals you for 1% of your maximum health for each 10 Energy used.")]
+        public bool GlyphofFerociousBite { get { return _glyphData[8]; } set { _glyphData[8] = value; } }
+        /// <summary>For 6 sec after activating Frenzied Regeneration, healing effects on you are 40% more powerful.  However, your Frenzied Regeneration now always costs 60 Rage and no longer converts Rage into health.</summary>
+        [GlyphData(9, 40896, 54810, "Glyph of Frenzied Regeneration", GlyphType.Major,
+            @"For 6 sec after activating Frenzied Regeneration, healing effects on you are 40% more powerful.  However, your Frenzied Regeneration now always costs 60 Rage and no longer converts Rage into health.")]
+        public bool GlyphofFrenziedRegeneration { get { return _glyphData[9]; } set { _glyphData[9] = value; } }
+        /// <summary>When you cast Healing Touch, the cooldown on your Swiftmend is reduced by 1 sec.</summary>
+        [GlyphData(10, 40914, 54825, "Glyph of Healing Touch", GlyphType.Major,
+            @"When you cast Healing Touch, the cooldown on your Swiftmend is reduced by 1 sec.")]
+        public bool GlyphofHealingTouch { get { return _glyphData[10]; } set { _glyphData[10] = value; } }
+        /// <summary>Your Hurricane and Astral Storm abilities now also slow the movement speed of their victims by 50%.</summary>
+        [GlyphData(11, 40920, 54831, "Glyph of Hurricane", GlyphType.Major,
+            @"Your Hurricane and Astral Storm abilities now also slow the movement speed of their victims by 50%.")]
+        public bool GlyphofHurricane { get { return _glyphData[11]; } set { _glyphData[11] = value; } }
+        /// <summary>When Innervate is cast on a friendly target other than the caster, the caster will gain 10% of maximum mana over 10 sec.</summary>
+        [GlyphData(12, 40908, 54832, "Glyph of Innervate", GlyphType.Major,
+            @"When Innervate is cast on a friendly target other than the caster, the caster will gain 10% of maximum mana over 10 sec.")]
+        public bool GlyphofInnervate { get { return _glyphData[12]; } set { _glyphData[12] = value; } }
+        /// <summary>While not in Tree of Life Form, casting Lifebloom on a new target grants that target as many applications as the old target had.</summary>
+        [GlyphData(13, 40915, 114228, "Glyph of Lifebloom", GlyphType.Major,
+            @"While not in Tree of Life Form, casting Lifebloom on a new target grants that target as many applications as the old target had.")]
+        public bool GlyphofLifebloom { get { return _glyphData[13]; } set { _glyphData[13] = value; } }
+        /// <summary>Reduces the mana cost of all shapeshifts by 90%.</summary>
+        [GlyphData(14, 44928, 116172, "Glyph of Master Shapeshifter", GlyphType.Major,
+            @"Reduces the mana cost of all shapeshifts by 90%.")]
+        public bool GlyphofMasterShapeshifter { get { return _glyphData[14]; } set { _glyphData[14] = value; } }
         /// <summary>Your Maul ability now hits 1 additional target for 50% damage.</summary>
-        [GlyphData(26, 40897, 54811, "Glyph of Maul", GlyphType.Major,
+        [GlyphData(15, 40897, 54811, "Glyph of Maul", GlyphType.Major,
             @"Your Maul ability now hits 1 additional target for 50% damage.")]
-        public bool GlyphOfMaul { get { return _glyphData[26]; } set { _glyphData[26] = value; } }
-        /// <summary>Reduces the cooldown of your Typhoon spell by 3 sec.</summary>
-        [GlyphData(27, 45622, 63056, "Glyph of Monsoon", GlyphType.Major,
-            @"Reduces the cooldown of your Typhoon spell by 3 sec.")]
-        public bool GlyphOfMonsoon { get { return _glyphData[27]; } set { _glyphData[27] = value; } }
+        public bool GlyphofMaul { get { return _glyphData[15]; } set { _glyphData[15] = value; } }
+        /// <summary>Increases the health gain from Might of Ursoc by 20%, but increases the cooldown by 2.0 min.</summary>
+        [GlyphData(16, 45603, 116238, "Glyph of Might of Ursoc", GlyphType.Major,
+            @"Increases the health gain from Might of Ursoc by 20%, but increases the cooldown by 2.0 min.")]
+        public bool GlyphofMightofUrsoc { get { return _glyphData[16]; } set { _glyphData[16] = value; } }
+        /// <summary>Reduces the cooldown of Nature's Grasp by 30 sec.</summary>
+        [GlyphData(17, 40922, 116203, "Glyph of Nature's Grasp", GlyphType.Major,
+            @"Reduces the cooldown of Nature's Grasp by 30 sec.")]
+        public bool GlyphofNaturesGrasp { get { return _glyphData[17]; } set { _glyphData[17] = value; } }
         /// <summary>Increases the range of your Pounce by 3 yards.</summary>
-        [GlyphData(28, 40903, 54821, "Glyph of Pounce", GlyphType.Major,
+        [GlyphData(18, 40903, 54821, "Glyph of Pounce", GlyphType.Major,
             @"Increases the range of your Pounce by 3 yards.")]
-        public bool GlyphOfPounce { get { return _glyphData[28]; } set { _glyphData[28] = value; } }
+        public bool GlyphofPounce { get { return _glyphData[18]; } set { _glyphData[18] = value; } }
+        /// <summary>Reduces the movement penalty of Prowl by 100%.</summary>
+        [GlyphData(19, 40902, 116186, "Glyph of Prowl", GlyphType.Major,
+            @"Reduces the movement penalty of Prowl by 100%.")]
+        public bool GlyphofProwl { get { return _glyphData[19]; } set { _glyphData[19] = value; } }
         /// <summary>Players resurrected by Rebirth are returned to life with 100% health.</summary>
-        [GlyphData(29, 40909, 54733, "Glyph of Rebirth", GlyphType.Major,
+        [GlyphData(20, 40909, 54733, "Glyph of Rebirth", GlyphType.Major,
             @"Players resurrected by Rebirth are returned to life with 100% health.")]
-        public bool GlyphOfRebirth { get { return _glyphData[29]; } set { _glyphData[29] = value; } }
+        public bool GlyphofRebirth { get { return _glyphData[20]; } set { _glyphData[20] = value; } }
+        /// <summary>Increases the critical strike chance of your Regrowth by 40%, but removes the periodic component of the spell.</summary>
+        [GlyphData(21, 40912, 116218, "Glyph of Regrowth", GlyphType.Major,
+            @"Increases the critical strike chance of your Regrowth by 40%, but removes the periodic component of the spell.")]
+        public bool GlyphofRegrowth { get { return _glyphData[21]; } set { _glyphData[21] = value; } }
+        /// <summary>/// <summary>Increases the damage done by Starfall by 10%, but decreases its radius by 50%.</summary>
+        [GlyphData(22, 40913, 17076, "Glyph of Rejuvenation", GlyphType.Major,
+            @"When you have Rejuvenation active on three or more targets, the cast time of your Nourish spell is reduced by 30%.")]
+        public bool GlyphofRejuvenation { get { return _glyphData[22]; } set { _glyphData[22] = value; } }
+        /// <summary>Savage Roar can now be used with 0 combo points, resulting in a 12 sec duration.</summary>
+        [GlyphData(23, 40923, 127540, "Glyph of Savagery", GlyphType.Major,
+            @"Savage Roar can now be used with 0 combo points, resulting in a 12 sec duration.")]
+        public bool GlyphofSavagery { get { return _glyphData[23]; } set { _glyphData[23] = value; } }
+        /// <summary>While Berserk or Tiger's Fury is active, Shred has no positional requirement.</summary>
+        [GlyphData(24, 40901, 114234, "Glyph of Shred", GlyphType.Major,
+            @"While Berserk or Tiger's Fury is active, Shred has no positional requirement.")]
+        public bool GlyphofShred { get { return _glyphData[24]; } set { _glyphData[24] = value; } }
+        /// <summary>Increases the duration of your Skull Bash interrupt by 4 sec, but increases the cooldown by 10 sec.</summary>
+        [GlyphData(25, 40921, 116216, "Glyph of Skull Bash", GlyphType.Major,
+            @"Increases the duration of your Skull Bash interrupt by 4 sec, but increases the cooldown by 10 sec.")]
+        public bool GlyphofSkullBash { get { return _glyphData[25]; } set { _glyphData[25] = value; } }
         /// <summary>Increases the duration of your Solar Beam silence effect by 5 sec.</summary>
-        [GlyphData(30, 40899, 54812, "Glyph of Solar Beam", GlyphType.Major,
+        [GlyphData(26, 40899, 54812, "Glyph of Solar Beam", GlyphType.Major,
             @"Increases the duration of your Solar Beam silence effect by 5 sec.")]
-        public bool GlyphOfSolarBeam { get { return _glyphData[30]; } set { _glyphData[30] = value; } }
-        /// <summary>Reduces the cooldown of Starfall by 30 sec.</summary>
-        [GlyphData(31, 40921, 54828, "Glyph of Starfall", GlyphType.Major,
-            @"Reduces the cooldown of Starfall by 30 sec.")]
-        public bool GlyphOfStarfall { get { return _glyphData[31]; } set { _glyphData[31] = value; } }
-        /// <summary>Reduces the cooldown of your Thorns spell by 20 sec.</summary>
-        [GlyphData(32, 43332, 57862, "Glyph of Thorns", GlyphType.Major,
-            @"Reduces the cooldown of your Thorns spell by 20 sec.")]
-        public bool GlyphOfThorns { get { return _glyphData[32]; } set { _glyphData[32] = value; } }
-        /// <summary>Wild Growth can affect 1 additional target.</summary>
-        [GlyphData(33, 45602, 62970, "Glyph of Wild Growth", GlyphType.Major,
-            @"Wild Growth can affect 1 additional target.")]
-        public bool GlyphOfWildGrowth { get { return _glyphData[33]; } set { _glyphData[33] = value; } }
+        public bool GlyphofSolarBeam { get { return _glyphData[26]; } set { _glyphData[26] = value; } }
+        /// <summary>You can now cast Stampeding Roar without being in Bear Form or Cat Form.</summary>
+        [GlyphData(27, 40906, 114300, "Glyph of Stampede", GlyphType.Major,
+            @"You can now cast Stampeding Roar without being in Bear Form or Cat Form.")]
+        public bool GlyphofStampede { get { return _glyphData[27]; } set { _glyphData[27] = value; } }
+        /// <summary>Increases the radius of Stampeding Roar by 30 yards.</summary>
+        [GlyphData(28, 45604, 114222, "Glyph of Stampeding Roar", GlyphType.Major,
+            @"Increases the radius of Stampeding Roar by 30 yards.")]
+        public bool GlyphofStampedingRoar { get { return _glyphData[28]; } set { _glyphData[28] = value; } }
+        /// <summary>Reduces the cooldown of Survival Instincts by 60 sec, but reduces its duration by 50%.</summary>
+        [GlyphData(29, 45601, 114223, "Glyph of Survival Instincts", GlyphType.Major,
+            @"Reduces the cooldown of Survival Instincts by 60 sec, but reduces its duration by 50%.")]
+        public bool GlyphofSurvivalInstincts { get { return _glyphData[29]; } set { _glyphData[29] = value; } }
+        /// <summary>You can now cast Healing Touch, Rejuvenation, Rebirth, and Tranquility without cancelling Moonkin Form.</summary>
+        [GlyphData(30, 40916, 116209, "Glyph of the Moonbeast", GlyphType.Major,
+            @"You can now cast Healing Touch, Rejuvenation, Rebirth, and Tranquility without cancelling Moonkin Form.")]
+        public bool GlyphofTheMoonbeast { get { return _glyphData[30]; } set { _glyphData[30] = value; } }
+        /// <summary>Wild Growth can affect 1 additional target, but its cooldown is increased by 2 sec.</summary>
+        [GlyphData(31, 45602, 45602, "Glyph of Wild Growth", GlyphType.Major,
+            @"Wild Growth can affect 1 additional target, but its cooldown is increased by 2 sec.")]
+        public bool GlyphofWildGrowth { get { return _glyphData[31]; } set { _glyphData[31] = value; } }
         #endregion
         #region Minor
-        public override int GlyphTreeStartingIndexes_2 { get { return 34; } }
+        public override int GlyphTreeStartingIndexes_2 { get { return 32; } }
         /// <summary>Increases your swim speed by 50% while in Aquatic Form.</summary>
-        [GlyphData(34, 43316, 57856, "Glyph of Aquatic Form", GlyphType.Minor,
+        [GlyphData(32, 43316, 57856, "Glyph of Aquatic Form", GlyphType.Minor,
             @"Increases your swim speed by 50% while in Aquatic Form.")]
-        public bool GlyphOfAquaticForm { get { return _glyphData[34]; } set { _glyphData[34] = value; } }
-        /// <summary>Reduces the cooldown of your Challenging Roar by 30 sec.</summary>
-        [GlyphData(35, 43334, 57858, "Glyph of Challenging Roar", GlyphType.Minor,
-            @"Reduces the cooldown of your Challenging Roar by 30 sec.")]
-        public bool GlyphOfChallengingRoar { get { return _glyphData[35]; } set { _glyphData[35] = value; } }
-        /// <summary>Reduces the cooldown of your Dash ability by 20%.</summary>
-        [GlyphData(36, 43674, 59219, "Glyph of Dash", GlyphType.Minor,
-            @"Reduces the cooldown of your Dash ability by 20%.")]
-        public bool GlyphOfDash { get { return _glyphData[36]; } set { _glyphData[36] = value; } }
-        /// <summary>Mana cost of your Mark of the Wild reduced by 50%.</summary>
-        [GlyphData(37, 43335, 57855, "Glyph of Mark of the Wild", GlyphType.Minor,
-            @"Mana cost of your Mark of the Wild reduced by 50%.")]
-        public bool GlyphOfTheWild { get { return _glyphData[37]; } set { _glyphData[37] = value; } }
-        /// <summary>Your Tree of Life Form now resembles a Treant.</summary>
-        [GlyphData(38, 68039, 95212, "Glyph of the Treant", GlyphType.Minor,
-            @"Your Tree of Life Form now resembles a Treant.")]
-        public bool GlyphOfTheTreant { get { return _glyphData[38]; } set { _glyphData[38] = value; } }
-        /// <summary>Reduces the cost of your Typhoon spell by 8% and increases its radius by 10 yards, but it no longer knocks enemies back.</summary>
-        [GlyphData(39, 44922, 62135, "Glyph of Typhoon", GlyphType.Minor,
-            @"Reduces the cost of your Typhoon spell by 8% and increases its radius by 10 yards, but it no longer knocks enemies back.")]
-        public bool GlyphOfTyphoon { get { return _glyphData[39]; } set { _glyphData[39] = value; } }
-        /// <summary>Your Rebirth spell no longer requires a reagent.</summary>
-        [GlyphData(40, 43331, 57857, "Glyph of Unburdened Rebirth", GlyphType.Minor,
-            @"Your Rebirth spell no longer requires a reagent.")]
-        public bool GlyphOfUnburdenedRebirth { get { return _glyphData[40]; } set { _glyphData[40] = value; } }
+        public bool GlyphofAquaticForm { get { return _glyphData[32]; } set { _glyphData[32] = value; } }
+        /// <summary>Teaches you the ability Charm Woodland Creature.\n\n
+        /// Allows the Druid to befriend an ambient creature, which will follow the Druid for 1 hour.</summary>
+        [GlyphData(33, 43335, 57855, "Glyph of Charm Woodland Creature", GlyphType.Minor,
+            @"Teaches you the ability Charm Woodland Creature.\n\n
+              Allows the Druid to befriend an ambient creature, which will follow the Druid for 1 hour.")]
+        public bool GlyphofCharmWoodlandCreature { get { return _glyphData[33]; } set { _glyphData[33] = value; } }
+        /// <summary>Feline Grace reduces falling damage even while not in Cat Form.</summary>
+        [GlyphData(34, 43332, 114295, "Glyph of Grace", GlyphType.Minor,
+            @"Feline Grace reduces falling damage even while not in Cat Form.")]
+        public bool GlyphofGrace { get { return _glyphData[34]; } set { _glyphData[34] = value; } }
+        /// <summary>Your Moonkin Form now appears as Astral Form, conferring all the same benefits, but appearing as an astrally enhanced version of your normal humanoid form.</summary>
+        [GlyphData(35, 44922, 57858, "Glyph of Stars", GlyphType.Minor,
+            @"Your Moonkin Form now appears as Astral Form, conferring all the same benefits, but appearing as an astrally enhanced version of your normal humanoid form.")]
+        public bool GlyphofStars { get { return _glyphData[35]; } set { _glyphData[35] = value; } }
+        /// <summary>Each time you shapeshift into Cat Form or Bear Form, your shapeshifted form will have a random hair color.</summary>
+        [GlyphData(36, 43334, 107059, "Glyph of the Chameleon", GlyphType.Minor,
+            @"Each time you shapeshift into Cat Form or Bear Form, your shapeshifted form will have a random hair color.")]
+        public bool GlyphoftheChameleon { get { return _glyphData[36]; } set { _glyphData[36] = value; } }
+        /// <summary>Your Aquatic Form now appears as an Orca.</summary>
+        [GlyphData(37, 40919, 114333, "Glyph of the Orca", GlyphType.Minor,
+            @"Your Aquatic Form now appears as an Orca.")]
+        public bool GlyphoftheOrca { get { return _glyphData[37]; } set { _glyphData[37] = value; } }
+        /// <summary>Your Track Humanoids ability now also tracks beasts.</summary>
+        [GlyphData(38, 67486, 114280, "Glyph of the Predator", GlyphType.Minor,
+            @"Your Track Humanoids ability now also tracks beasts.")]
+        public bool GlyphofthePredator { get { return _glyphData[38]; } set { _glyphData[38] = value; } }
+        /// <summary>Your Travel Form now appears as a Stag and can be used as a mount by party members.</summary>
+        [GlyphData(39, 40900, 114338, "Glyph of the Stag", GlyphType.Minor,
+            @"Your Travel Form now appears as a Stag and can be used as a mount by party members.")]
+        public bool GlyphoftheStag { get { return _glyphData[39]; } set { _glyphData[39] = value; } }
+        /// <summary>Teaches you the ability Treant Form.\n\n
+        /// Shapeshift into Treant Form.\n\n
+        /// The act of shapeshifting frees the caster of movement impairing effects.</summary>
+        [GlyphData(40, 68039, 57857, "Glyph of the Treant", GlyphType.Minor,
+            @"Teaches you the ability Treant Form.\n\n
+              Shapeshift into Treant Form.\n\n
+              The act of shapeshifting frees the caster of movement impairing effects.")]
+        public bool GlyphoftheTreant { get { return _glyphData[40]; } set { _glyphData[40] = value; } }
+        #endregion
+        #region Discontinued
+        public bool GlyphOfTigersFury { get; set; }
+        public bool GlyphOfBarkskin { get; set; }
+        public bool GlyphOfMangle { get; set; }
+        public bool GlyphOfLacerate { get; set; }
+        public bool GlyphOfBerserk { get; set; }
+        public bool GlyphOfFrenziedRegeneration { get; set; }
+        public bool GlyphOfFeralCharge { get; set; }
+        public bool GlyphOfSavageRoar { get; set; }
+        public bool GlyphOfBloodletting { get; set; }
+        public bool GlyphOfRip { get; set; }
         #endregion
     }
 
     public partial class PaladinTalents
     {
-        private bool[] _glyphData = new bool[35];
+        private bool[] _glyphData = new bool[40];
         public override bool[] GlyphData { get { return _glyphData; } }
 
-        #region Prime
-        public override int GlyphTreeStartingIndexes_0 { get { return 0; } }
-        /// <summary>Increases the critical strike chance of Crusader Strike by 5%.</summary>
-        [GlyphData( 0, 41098, 54927, "Glyph of Crusader Strike", GlyphType.Prime,
-            @"Increases the critical strike chance of Crusader Strike by 5%.")]
-        public bool GlyphOfCrusaderStrike { get { return _glyphData[0]; } set { _glyphData[0] = value; } }
-        /// <summary>Increases the duration of Divine Favor by 10 sec.</summary>
-        [GlyphData( 1, 41106, 54937, "Glyph of Divine Favor", GlyphType.Prime,
-            @"Increases the duration of Divine Favor by 10 sec.")]
-        public bool GlyphOfDivineFavor { get { return _glyphData[1]; } set { _glyphData[1] = value; } }
-        /// <summary>Your Exorcism causes an additional 20% of its damage over 6 sec.</summary>
-        [GlyphData( 2, 41103, 54934, "Glyph of Exorcism", GlyphType.Prime,
-            @"Your Exorcism causes an additional 20% of its damage over 6 sec.")]
-        public bool GlyphOfExorcism { get { return _glyphData[2]; } set { _glyphData[2] = value; } }
-        /// <summary>Increases the damage of both the physical and Holy components of Hammer of the Righteous by 10%.</summary>
-        [GlyphData( 3, 45742, 63219, "Glyph of Hammer of the Righteous", GlyphType.Prime,
-            @"Increases the damage of both the physical and Holy components of Hammer of the Righteous by 10%.")]
-        public bool GlyphOfHammerOfTheRighteous { get { return _glyphData[3]; } set { _glyphData[3] = value; } }
-        /// <summary>Increases the critical effect chance of Holy Shock by 5%.</summary>
-        [GlyphData( 4, 45746, 63224, "Glyph of Holy Shock", GlyphType.Prime,
-            @"Increases the critical effect chance of Holy Shock by 5%.")]
-        public bool GlyphOfHolyShock { get { return _glyphData[4]; } set { _glyphData[4] = value; } }
-        /// <summary>Your Judgement deals 10% more damage.</summary>
-        [GlyphData( 5, 41092, 54922, "Glyph of Judgement", GlyphType.Prime,
-            @"Your Judgement deals 10% more damage.")]
-        public bool GlyphOfJudgement { get { return _glyphData[5]; } set { _glyphData[5] = value; } }
-        /// <summary>While Seal of Insight is active, the effect of your healing spells is increased by 5%.</summary>
-        [GlyphData( 6, 41110, 54943, "Glyph of Seal of Insight", GlyphType.Prime,
-            @"While Seal of Insight is active, the effect of your healing spells is increased by 5%.")]
-        public bool GlyphOfSealOfInsight { get { return _glyphData[6]; } set { _glyphData[6] = value; } }
-        /// <summary>Your Seal of Truth also grants 10 expertise while active.</summary>
-        [GlyphData( 7, 43869, 56416, "Glyph of Seal of Truth", GlyphType.Prime,
-            @"Your Seal of Truth also grants 10 expertise while active.")]
-        public bool GlyphOfSealOfTruth { get { return _glyphData[7]; } set { _glyphData[7] = value; } }
-        /// <summary>Increases the damage of Shield of the Righteous by 10%.</summary>
-        [GlyphData( 8, 45744, 63222, "Glyph of Shield of the Righteous", GlyphType.Prime,
-            @"Increases the damage of Shield of the Righteous by 10%.")]
-        public bool GlyphOfShieldOfTheRighteous { get { return _glyphData[8]; } set { _glyphData[8] = value; } }
-        /// <summary>Increases the damage of Templar's Verdict by 15%.</summary>
-        [GlyphData( 9, 45743, 63220, "Glyph of Templar's Verdict", GlyphType.Prime,
-            @"Increases the damage of Templar's Verdict by 15%.")]
-        public bool GlyphOfTemplarsVerdict { get { return _glyphData[9]; } set { _glyphData[9] = value; } }
-        /// <summary>Increases the healing done by Word of Glory by 10%.</summary>
-        [GlyphData(10, 41105, 54936, "Glyph of Word of Glory", GlyphType.Prime,
-            @"Increases the healing done by Word of Glory by 10%.")]
-        public bool GlyphOfWordOfGlory { get { return _glyphData[10]; } set { _glyphData[10] = value; } }
-        #endregion
+        public override int GlyphTreeStartingIndexes_0 { get { return -1; } }
         #region Major
-        public override int GlyphTreeStartingIndexes_1 { get { return 11; } }
-        /// <summary>Your Beacon of Light costs no mana.</summary>
-        [GlyphData(11, 45741, 63218, "Glyph of Beacon of Light", GlyphType.Major,
-            @"Your Beacon of Light costs no mana.")]
-        public bool GlyphOfBeaconOfLight { get { return _glyphData[11]; } set { _glyphData[11] = value; } }
-        /// <summary>Reduces the mana cost of your Cleanse by 20%.</summary>
-        [GlyphData(12, 41104, 54935, "Glyph of Cleansing", GlyphType.Major,
-            @"Reduces the mana cost of your Cleanse by 20%.")]
-        public bool GlyphOfCleansing { get { return _glyphData[12]; } set { _glyphData[12] = value; } }
-        /// <summary>Increases the duration and cooldown of Consecration by 20%.</summary>
-        [GlyphData(13, 41099, 54928, "Glyph of Consecration", GlyphType.Major,
-            @"Increases the duration and cooldown of Consecration by 20%.")]
-        public bool GlyphOfConsecration { get { return _glyphData[13]; } set { _glyphData[13] = value; } }
-        /// <summary>Your Avenger's Shield now also dazes targets.</summary>
-        [GlyphData(14, 43868, 56414, "Glyph of Dazing Shield", GlyphType.Major,
-            @"Your Avenger's Shield now also dazes targets.")]
-        public bool GlyphOfDazingShield { get { return _glyphData[14]; } set { _glyphData[14] = value; } }
-        /// <summary>Your Divine Plea provides an additional 6% of your total mana.</summary>
-        [GlyphData(15, 45745, 63223, "Glyph of Divine Plea", GlyphType.Major,
-            @"Your Divine Plea provides an additional 6% of your total mana.")]
-        public bool GlyphOfDivinePlea { get { return _glyphData[15]; } set { _glyphData[15] = value; } }
-        /// <summary>Removes the physical damage reduction of your Divine Protection, but increases the magical damage reduction by 20%.</summary>
-        [GlyphData(16, 41096, 54924, "Glyph of Divine Protection", GlyphType.Major,
-            @"Removes the physical damage reduction of your Divine Protection, but increases the magical damage reduction by 20%.")]
-        public bool GlyphOfDivineProtection { get { return _glyphData[16]; } set { _glyphData[16] = value; } }
-        /// <summary>When you use Lay on Hands, you also gain 10% of your maximum mana.</summary>
-        [GlyphData(17, 41108, 54939, "Glyph of Divinity", GlyphType.Major,
-            @"When you use Lay on Hands, you also gain 10% of your maximum mana.")]
-        public bool GlyphOfDivinity { get { return _glyphData[17]; } set { _glyphData[17] = value; } }
-        /// <summary>Your Avenger's Shield hits 2 fewer targets, but for 30% more damage.</summary>
-        [GlyphData(18, 41101, 54930, "Glyph of Focused Shield", GlyphType.Major,
-            @"Your Avenger's Shield hits 2 fewer targets, but for 30% more damage.")]
-        public bool GlyphOfFocusedShield { get { return _glyphData[18]; } set { _glyphData[18] = value; } }
-        /// <summary>Increases your Hammer of Justice range by 5 yards.</summary>
-        [GlyphData(19, 41095, 54923, "Glyph of Hammer of Justice", GlyphType.Major,
-            @"Increases your Hammer of Justice range by 5 yards.")]
-        public bool GlyphOfHammerOfJustice { get { return _glyphData[19]; } set { _glyphData[19] = value; } }
-        /// <summary>Reduces the mana cost of Hammer of Wrath by 100%.</summary>
-        [GlyphData(20, 41097, 54926, "Glyph of Hammer of Wrath", GlyphType.Major,
-            @"Reduces the mana cost of Hammer of Wrath by 100%.")]
-        public bool GlyphOfHammerOfWrath { get { return _glyphData[20]; } set { _glyphData[20] = value; } }
-        /// <summary>Your Holy Wrath now also stuns Elementals and Dragonkin.</summary>
-        [GlyphData(21, 43867, 56420, "Glyph of Holy Wrath", GlyphType.Major,
-            @"Your Holy Wrath now also stuns Elementals and Dragonkin.")]
-        public bool GlyphOfHolyWrath { get { return _glyphData[21]; } set { _glyphData[21] = value; } }
-        /// <summary>Reduces the cooldown of your Lay on Hands spell by 3 min.</summary>
-        [GlyphData(22, 43367, 57955, "Glyph of Lay on Hands", GlyphType.Major,
-            @"Reduces the cooldown of your Lay on Hands spell by 3 min.")]
-        public bool GlyphOfLayOnHands { get { return _glyphData[22]; } set { _glyphData[22] = value; } }
-        /// <summary>Light of Dawn can affect 1 additional target.</summary>
-        [GlyphData(23, 41109, 54940, "Glyph of Light of Dawn", GlyphType.Major,
-            @"Light of Dawn can affect 1 additional target.")]
-        public bool GlyphOfLightOfDawn { get { return _glyphData[23]; } set { _glyphData[23] = value; } }
-        /// <summary>Reduces the mana cost of Rebuke by 100%.</summary>
-        [GlyphData(24, 41094, 54925, "Glyph of Rebuke", GlyphType.Major,
-            @"Reduces the mana cost of Rebuke by 100%.")]
-        public bool GlyphOfRebuke { get { return _glyphData[24]; } set { _glyphData[24] = value; } }
-        /// <summary>Hand of Salvation no longer permanently reduces threat over time but instead reduces all threat as long as Hand of Salvation lasts.</summary>
-        [GlyphData(25, 45747, 63225, "Glyph of Salvation", GlyphType.Major,
-            @"Hand of Salvation no longer permanently reduces threat over time but instead reduces all threat as long as Hand of Salvation lasts.")]
-        public bool GlyphOfSalvation { get { return _glyphData[25]; } set { _glyphData[25] = value; } }
-        /// <summary>Reduces the mana cost of your Crusader Strike by 30%.</summary>
-        [GlyphData(26, 41107, 54938, "Glyph of the Ascetic Crusader", GlyphType.Major,
-            @"Reduces the mana cost of your Crusader Strike by 30%.")]
-        public bool GlyphOfAsceticCrusader { get { return _glyphData[26]; } set { _glyphData[26] = value; } }
-        /// <summary>Your Word of Glory heals for 50% less up front, but provides an additional 50% healing over 6 sec.</summary>
-        [GlyphData(27, 66918, 63466, "Glyph of the Long Word", GlyphType.Major,
-            @"Your Word of Glory heals for 50% less up front, but provides an additional 50% healing over 6 sec.")]
-        public bool GlyphOfTheLongWord { get { return _glyphData[27]; } set { _glyphData[27] = value; } }
-        /// <summary>Reduces the casting time of your Turn Evil spell by 100%, but increases the cooldown by 8 sec.</summary>
-        [GlyphData(28, 41102, 54931, "Glyph of Turn Evil", GlyphType.Major,
-            @"Reduces the casting time of your Turn Evil spell by 100%, but increases the cooldown by 8 sec.")]
-        public bool GlyphOfTurnEvil { get { return _glyphData[28]; } set { _glyphData[28] = value; } }
+        public override int GlyphTreeStartingIndexes_1 { get { return 0; } }
+        [GlyphData(0, 41092, 54922, "Glyph of Double Jeopardy", GlyphType.Major, @"Judging a target increases the damage of your next Judgment by 20%, but only if used on a different second target.")]
+        public bool GlyphOfDoubleJeopardy { get { return _glyphData[0]; } set { _glyphData[0] = value; } }
+        [GlyphData(1, 41094, 54925, "Glyph of Rebuke", GlyphType.Major, @"Increases the cooldown by 5 sec and lockout by 2 sec of Rebuke.")]
+        public bool GlyphOfRebuke { get { return _glyphData[1]; } set { _glyphData[1] = value; } }
+        [GlyphData(2, 41095, 54923, "Glyph of Holy Wrath", GlyphType.Major, @"Your Holy Wrath now also stuns Elementals and Dragonkin.")]
+        public bool GlyphOfHolyWrath { get { return _glyphData[2]; } set { _glyphData[2] = value; } }
+        [GlyphData(3, 41096, 54924, "Glyph of Divine Protection", GlyphType.Major, @"Reduces the magical damage reduction of your Divine Protection to 20% but adds 20% physical damage reduction.")]
+        public bool GlyphOfDivineProtection { get { return _glyphData[3]; } set { _glyphData[3] = value; } }
+        [GlyphData(4, 41097, 54926, "Glyph of Templar's Verdict", GlyphType.Major, @"You take 10% less damage for 6 sec after dealing damage with Templar's Verdict.")]
+        public bool GlyphOfTemplarsVerdict { get { return _glyphData[4]; } set { _glyphData[4] = value; } }
+        [GlyphData(5, 41098, 54927, "Glyph of Avenging Wrath", GlyphType.Major, @"While Avenging Wrath is active, you are healed for 1% of your maximum health every 2 sec.")]
+        public bool GlyphOfAvengingWrath { get { return _glyphData[5]; } set { _glyphData[5] = value; } }
+        [GlyphData(6, 41099, 54928, "Glyph of Consecration", GlyphType.Major, @"You can now target Consecration anywhere within 25 yards.")]
+        public bool GlyphOfConsecration { get { return _glyphData[6]; } set { _glyphData[6] = value; } }
+        [GlyphData(7, 41101, 54930, "Glyph of Focused Shield", GlyphType.Major, @"Your Avenger's Shield hits 2 fewer targets, but for 30% more damage.")]
+        public bool GlyphOfFocusedShield { get { return _glyphData[7]; } set { _glyphData[7] = value; } }
+        [GlyphData(8, 41102, 54931, "Glyph of Turn Evil", GlyphType.Major, @"Reduces the casting time of your Turn Evil spell by 100%, but increases the cooldown by 8 sec.")]
+        public bool GlyphOfTurnEvil { get { return _glyphData[8]; } set { _glyphData[8] = value; } }
+        [GlyphData(9, 41103, 54934, "Glyph of Blinding Light", GlyphType.Major, @"Your Blinding Light now knocks down targets for 3 sec instead of Blinding them.")]
+        public bool GlyphOfBlindingLight { get { return _glyphData[9]; } set { _glyphData[9] = value; } }
+        [GlyphData(10, 41104, 54935, "Glyph of Final Wrath", GlyphType.Major, @"Your Holy Wrath does an additional 50% damage to targets with less than 20% health.")]
+        public bool GlyphOfFinalWrath { get { return _glyphData[10]; } set { _glyphData[10] = value; } }
+        [GlyphData(11, 41105, 54936, "Glyph of Word of Glory", GlyphType.Major, @"Increases your damage by 3% per Holy Power spent after you cast Word of Glory or Eternal Flame. Lasts 6 sec.")]
+        public bool GlyphOfWordOfGlory { get { return _glyphData[11]; } set { _glyphData[11] = value; } }
+        [GlyphData(12, 41106, 54937, "Glyph of Illumination", GlyphType.Major, @"Your Holy Shock criticals grant 1% mana return, but Holy Insight returns 10% less mana.")]
+        public bool GlyphOfIllumination { get { return _glyphData[12]; } set { _glyphData[12] = value; } }
+        [GlyphData(13, 41107, 54938, "Glyph of Harsh Words", GlyphType.Major, @"Your Word of Glory can now also be used on enemy targets, causing Holy damage approximately equal to the amount it would have healed.")]
+        public bool GlyphOfHarshWords { get { return _glyphData[13]; } set { _glyphData[13] = value; } }
+        [GlyphData(14, 41108, 54939, "Glyph of Divinity", GlyphType.Major, @"Increases the cooldown of your Lay on Hands by 2 min but causes it to give you 10% of your maximum mana.")]
+        public bool GlyphOfDivinity { get { return _glyphData[14]; } set { _glyphData[14] = value; } }
+        [GlyphData(15, 41109, 54940, "Glyph of Light of Dawn", GlyphType.Major, @"Light of Dawn affects 2 fewer targets, but heals each target for 25% more.")]
+        public bool GlyphOfLightOfDawn { get { return _glyphData[15]; } set { _glyphData[15] = value; } }
+        [GlyphData(16, 41110, 54943, "Glyph of Blessed Life", GlyphType.Major, @"While Seal of Insight is active, you have a 50% chance to gain a charge of Holy Power whenever you are affected by a Stun, Fear or Immobilize effect.")]
+        public bool GlyphOfBlessedLife { get { return _glyphData[16]; } set { _glyphData[16] = value; } }
+        [GlyphData(17, 43367, 57955, "Glyph of Flash of Light", GlyphType.Major, @"When you Flash of Light a target, it increases your next heal done to that target within 7 sec by 10%.")]
+        public bool GlyphOfFlashOfLight { get { return _glyphData[17]; } set { _glyphData[17] = value; } }
+        [GlyphData(18, 43867, 56420, "Glyph of Denounce", GlyphType.Major, @"Your Holy Shocks have a 50% chance to reduce the cast time of your next Denounce by 1.0 sec.")]
+        public bool GlyphOfDenounce { get { return _glyphData[18]; } set { _glyphData[18] = value; } }
+        [GlyphData(19, 43868, 56414, "Glyph of Dazing Shield", GlyphType.Major, @"Your Avenger's Shield now also dazes targets for 10 sec.")]
+        public bool GlyphOfDazingShield { get { return _glyphData[19]; } set { _glyphData[19] = value; } }
+        [GlyphData(20, 43869, 56416, "Glyph of Immediate Truth", GlyphType.Major, @"Increases the instant damage done by Seal of Truth by 30%, but decreases the damage done by Censure by 50%.")]
+        public bool GlyphOfImmediateTruth { get { return _glyphData[20]; } set { _glyphData[20] = value; } }
+        [GlyphData(21, 45741, 63218, "Glyph of Beacon of Light", GlyphType.Major, @"Removes the global cooldown on Beacon of Light.")]
+        public bool GlyphOfBeaconOfLight { get { return _glyphData[21]; } set { _glyphData[21] = value; } }
+        [GlyphData(22, 45742, 63219, "Glyph of Hammer of the Righteous", GlyphType.Major, @"The physical damage reduction caused by Hammer of the Righteous now lasts 50% longer.")]
+        public bool GlyphOfHammerOfTheRighteous { get { return _glyphData[22]; } set { _glyphData[22] = value; } }
+        [GlyphData(23, 45743, 63220, "Glyph of Divine Storm", GlyphType.Major, @"Your Divine Storm also heals you for 5% of your maximum health.")]
+        public bool GlyphOfDivineStorm { get { return _glyphData[23]; } set { _glyphData[23] = value; } }
+        [GlyphData(24, 45744, 63222, "Glyph of the Alabaster Shield", GlyphType.Major, @"Your successful blocks increase the damage of your next Shield of the Righteous by 20%. Stacks up to 3 times.")]
+        public bool GlyphOfTheAlabasterShield { get { return _glyphData[24]; } set { _glyphData[24] = value; } }
+        [GlyphData(25, 45745, 63223, "Glyph of Divine Plea", GlyphType.Major, @"Divine Plea now has a 5 sec cast time, but you receive 12% of your total mana instantly and your healing is not reduced.")]
+        public bool GlyphOfDivinePlea { get { return _glyphData[25]; } set { _glyphData[25] = value; } }
+        [GlyphData(26, 45746, 63224, "Glyph of Holy Shock", GlyphType.Major, @"Decreases the healing of Holy Shock by 50% but increases its damage by 50%.")]
+        public bool GlyphOfHolyShock { get { return _glyphData[26]; } set { _glyphData[26] = value; } }
+        [GlyphData(27, 45747, 63225, "Glyph of Inquisition", GlyphType.Major, @"Reduces the damage bonus of Inquisition by 15% but increases its duration by 100%.")]
+        public bool GlyphOfInquisition { get { return _glyphData[27]; } set { _glyphData[27] = value; } }
+        [GlyphData(28, 66918, 93466, "Glyph of Protector of the Innocent", GlyphType.Major, @"When you use Word of Glory to heal another target, it also heals you for 20% of the amount.")]
+        public bool GlyphOfProtectorOfTheInnocent { get { return _glyphData[28]; } set { _glyphData[28] = value; } }
+        [GlyphData(29, 81956, 119477, "Glyph of the Battle Healer", GlyphType.Major, @"Using melee attacks while using Seal of Insight heals a nearby injured friendly target, excluding the Paladin, within 30 yards for 30% of damage dealt.")]
+        public bool GlyphOfTheBattleHealer { get { return _glyphData[29]; } set { _glyphData[29] = value; } }
+        [GlyphData(30, 83107, 122028, "Glyph of Mass Exorcism", GlyphType.Major, @"Reduces the range of Exorcism to melee range, but causes 25% damage to all enemies within 8 yards of the primary target.")]
+        public bool GlyphOfMassExorcism { get { return _glyphData[30]; } set { _glyphData[30] = value; } }
         #endregion
         #region Minor
-        public override int GlyphTreeStartingIndexes_2 { get { return 29; } }
-        /// <summary>Reduces the mana cost of Blessing of Kings by 50%.</summary>
-        [GlyphData(29, 43365, 57937, "Glyph of Blessing of Kings", GlyphType.Minor,
-            @"Reduces the mana cost of Blessing of Kings by 50%.")]
-        public bool GlyphOfBlessingOfKings { get { return _glyphData[29]; } set { _glyphData[29] = value; } }
-        /// <summary>Reduces the mana cost of your Blessing of Might by 50%.</summary>
-        [GlyphData(30, 43340, 57958, "Glyph of Blessing of Might", GlyphType.Minor,
-            @"Reduces the mana cost of your Blessing of Might by 50%.")]
-        public bool GlyphOfBlessingOfMight { get { return _glyphData[30]; } set { _glyphData[30] = value; } }
-        /// <summary>Reduces the mana cost of Seal of Insight by 50%.</summary>
-        [GlyphData(31, 43366, 57979, "Glyph of Insight", GlyphType.Minor,
-            @"Reduces the mana cost of Seal of Insight by 50%.")]
-        public bool GlyphOfInsight { get { return _glyphData[31]; } set { _glyphData[31] = value; } }
-        /// <summary>Reduces the mana cost of Seal of Justice by 50%.</summary>
-        [GlyphData(32, 43369, 57954, "Glyph of Justice", GlyphType.Minor,
-            @"Reduces the mana cost of Seal of Justice by 50%.")]
-        public bool GlyphOfJustice { get { return _glyphData[32]; } set { _glyphData[32] = value; } }
-        /// <summary>Reduces the mana cost of Seal of Righteousness by 50%.</summary>
-        [GlyphData(33, 41100, 89401, "Glyph of Righteousness", GlyphType.Minor,
-            @"Reduces the mana cost of Seal of Righteousness by 50%.")]
-        public bool GlyphOfRighteousness { get { return _glyphData[33]; } set { _glyphData[33] = value; } }
-        /// <summary>Reduces the mana cost of Seal of Truth by 50%.</summary>
-        [GlyphData(34, 43368, 57947, "Glyph of Truth", GlyphType.Minor,
-            @"Reduces the mana cost of Seal of Truth by 50%.")]
-        public bool GlyphOfTruth { get { return _glyphData[34]; } set { _glyphData[34] = value; } }
+        public override int GlyphTreeStartingIndexes_2 { get { return 31; } }
+        [GlyphData(31, 41100, 89401, "Glyph of the Luminous Charger", GlyphType.Minor, @"Your Paladin class mounts glow with holy light.")]
+        public bool GlyphOfTheLuminousCharger { get { return _glyphData[31]; } set { _glyphData[31] = value; } }
+        [GlyphData(32, 43340, 57958, "Glyph of the Mounted King", GlyphType.Minor, @"Mounting one of your Paladin class mounts automatically casts Blessing of Kings on you.")]
+        public bool GlyphOfTheMountedKing { get { return _glyphData[32]; } set { _glyphData[32] = value; } }
+        [GlyphData(33, 43365, 125043, "Glyph of Contemplation", GlyphType.Minor, @"Teaches you the ability Contemplation.")]
+        public bool GlyphOfContemplation { get { return _glyphData[33]; } set { _glyphData[33] = value; } }
+        [GlyphData(34, 43366, 57979, "Glyph of Winged Vengeance", GlyphType.Minor, @"Your Avenging Wrath depicts 4 wings.")]
+        public bool GlyphOfWingedVengeance { get { return _glyphData[34]; } set { _glyphData[34] = value; } }
+        [GlyphData(35, 43368, 57947, "Glyph of Seal of Blood", GlyphType.Minor, @"Your Seal of Truth now uses the Seal of Blood visual.")]
+        public bool GlyphOfSealOfBlood { get { return _glyphData[35]; } set { _glyphData[35] = value; } }
+        [GlyphData(36, 43369, 57954, "Glyph of Fire From the Heavens", GlyphType.Minor, @"Your Judgment and Hammer of Wrath criticals call down fire from the sky.")]
+        public bool GlyphOfFireFromTheHeavens { get { return _glyphData[36]; } set { _glyphData[36] = value; } }
+        [GlyphData(37, 80584, 115931, "Glyph of the Falling Avenger", GlyphType.Minor, @"You slow fall during Avenging Wrath.")]
+        public bool GlyphOfTheFallingAvenger { get { return _glyphData[37]; } set { _glyphData[37] = value; } }
+        [GlyphData(38, 80585, 115933, "Glyph of the Righteous Retreat", GlyphType.Minor, @"During Divine Shield, you can invoke your Hearthstone 50% faster.")]
+        public bool GlyphOfTheRighteousRetreat { get { return _glyphData[38]; } set { _glyphData[38] = value; } }
+        [GlyphData(39, 80586, 115934, "Glyph of Bladed Judgment", GlyphType.Minor, @"Your Judgment spell depicts an axe or sword instead of a hammer, if you have an axe or sword equipped.")]
+        public bool GlyphOfBladedJudgment { get { return _glyphData[39]; } set { _glyphData[39] = value; } }
+        #endregion
+        #region Discontinued
+        public bool GlyphOfCrusaderStrike { get; set; }
+        public bool GlyphOfDivineFavor { get; set; }
+        public bool GlyphOfExorcism { get; set; }
+        public bool GlyphOfJudgement { get; set; }
+        public bool GlyphOfSealOfInsight { get; set; }
+        public bool GlyphOfSealOfTruth { get; set; }
+        public bool GlyphOfShieldOfTheRighteous { get; set; }
+        public bool GlyphOfCleansing { get; set; }
+        public bool GlyphOfHammerOfJustice { get; set; }
+        public bool GlyphOfHammerOfWrath { get; set; }
+        public bool GlyphOfLayOnHands { get; set; }
+        public bool GlyphOfSalvation { get; set; }
+        public bool GlyphOfAsceticCrusader { get; set; }
+        public bool GlyphOfTheLongWord { get; set; }
+        public bool GlyphOfBlessingOfKings { get; set; }
+        public bool GlyphOfBlessingOfMight { get; set; }
+        public bool GlyphOfInsight { get; set; }
+        public bool GlyphOfJustice { get; set; }
+        public bool GlyphOfRighteousness { get; set; }
+        public bool GlyphOfTruth { get; set; }
         #endregion
     }
 
@@ -1563,6 +1551,206 @@ namespace Rawr
         [GlyphData(30, 43356, 57902, "Glyph of Scare Beast", GlyphType.Minor,
             @"Reduces the pushback suffered from damaging attacks while casting Scare Beast by 75%.")]
         public bool GlyphOfScareBeast { get { return _glyphData[30]; } set { _glyphData[30] = value; } }
+        #endregion
+    }
+
+    public partial class MonkTalents
+    {
+        private bool[] _glyphData = new bool[35];
+        public override bool[] GlyphData { get { return _glyphData; } }
+
+        #region Major
+        public override int GlyphTreeStartingIndexes_0 { get { return -1; } }
+        public override int GlyphTreeStartingIndexes_1 { get { return 0; } }
+        /// <summary>Increases the chance to summon a Healing Sphere when you kill an enemy while gaining experience or honor by 25%.</summary>
+        [GlyphData(0, 87891, 125676, "Glyph of Afterlife", GlyphType.Major,
+            @"Increases the chance to summon a Healing Sphere when you kill an enemy while gaining experience or honor by 25%.")]
+        public bool GlyphofAfterlife { get { return _glyphData[0]; } set { _glyphData[0] = value; } }
+
+        /// <summary>When you use Breath of Fire on targets afflicted with your Dizzying Haze, they become Disoriented for 3 sec.</summary>
+        [GlyphData(1, 85685, 123394, "Glyph of Breath of Fire", GlyphType.Major,
+            @"When you use Breath of Fire on targets afflicted with your Dizzying Haze, they become Disoriented for 3 sec.")]
+        public bool GlyphofBreathofFire { get { return _glyphData[1]; } set { _glyphData[1] = value; } }
+
+        /// <summary>Increases the range of your Clash ability by 10 yards.</summary>
+        [GlyphData(2, 85687, 123399, "Glyph of Clash", GlyphType.Major,
+            @"Increases the range of your Clash ability by 10 yards.")]
+        public bool GlyphofClash { get { return _glyphData[2]; } set { _glyphData[2] = value; } }
+
+        /// <summary>Your Crackling Jade Lightning knocks the target back a further distance, and after being knocked back increases the damage the target takes from your Crackling Jade Lightning by 25% for 8 sec.</summary>
+        [GlyphData(3, 87880, 125648, "Glyph of Crackling Jade Lightning", GlyphType.Major,
+            @"Your Crackling Jade Lightning knocks the target back a further distance, and after being knocked back increases the damage the target takes from your Crackling Jade Lightning by 25% for 8 sec.")]
+        public bool GlyphofCracklingJadeLightning { get { return _glyphData[3]; } set { _glyphData[3] = value; } }
+
+        /// <summary>Increases the duration of your Healing Spheres by 3 minutes.</summary>
+        [GlyphData(4, 85689, 125648, "Glyph of Enduring Healing Sphere", GlyphType.Major,
+            @"Increases the duration of your Healing Spheres by 3 minutes.")]
+        public bool GlyphofEnduringHealingSphere { get { return _glyphData[4]; } set { _glyphData[4] = value; } }
+
+        /// <summary>Increases the range of your Expel Harm by 10 yards.</summary>
+        [GlyphData(5, 82345, 119724, "Glyph of Expel Harm", GlyphType.Major,
+            @"Increases the range of your Expel Harm by 10 yards.")]
+        public bool GlyphofExpelHarm { get { return _glyphData[5]; } set { _glyphData[5] = value; } }
+
+        /// <summary>When channeling Fists of Fury, your parry chance is increased by 100%.</summary>
+        [GlyphData(6, 87892, 125671, "Glyph of Fists of Fury", GlyphType.Major,
+            @"When channeling Fists of Fury, your parry chance is increased by 100%.")]
+        public bool GlyphofFistsofFury { get { return _glyphData[6]; } set { _glyphData[6] = value; } }
+
+        /// <summary>Your Fortifying Brew reduces damage taken by an additional 5%, but increases your health by 10% rather than 20%.</summary>
+        [GlyphData(7, 87893, 124997, "Glyph of Fortifying Brew", GlyphType.Major,
+            @"Your Fortifying Brew reduces damage taken by an additional 5%, but increases your health by 10% rather than 20%.")]
+        public bool GlyphofFortifyingBrew { get { return _glyphData[7]; } set { _glyphData[7] = value; } }
+
+        /// <summary>Increases the amount your Guard absorbs by 10%, but your Guard can only absorb magical damage.</summary>
+        [GlyphData(8, 85691, 123401, "Glyph of Guard", GlyphType.Major,
+            @"Increases the amount your Guard absorbs by 10%, but your Guard can only absorb magical damage.")]
+        public bool GlyphofGuard { get { return _glyphData[8]; } set { _glyphData[8] = value; } }
+
+        /// <summary>Teaches you the spell Leer of the Ox.\n\n
+        /// Leer of the Ox\n
+        /// Your Ox Statue stirs hatred in the target, reducing their movement speed by 50% and causing them to attack your Black Ox Statue for 8 sec. The statue must be within 40 yards of the target.\n\n
+        /// Requires Black Ox Statue to be active.</summary>
+        [GlyphData(9, 87894, 125648, "Glyph of Leer of the Ox", GlyphType.Major,
+            @"Teaches you the spell Leer of the Ox.
+
+Leer of the Ox
+Your Ox Statue stirs hatred in the target, reducing their movement speed by 50% and causing them to attack your Black Ox Statue for 8 sec. The statue must be within 40 yards of the target.
+
+Requires Black Ox Statue to be active.")]
+        public bool GlyphofLeeroftheOx { get { return _glyphData[9]; } set { _glyphData[9] = value; } }
+
+        /// <summary>Life Cocoon can now be cast while stunned.</summary>
+        [GlyphData(10, 87895, 124989, "Glyph of Life Cocoon", GlyphType.Major,
+            @"Life Cocoon can now be cast while stunned.")]
+        public bool GlyphofLifeCocoon { get { return _glyphData[10]; } set { _glyphData[10] = value; } }
+
+        /// <summary>Your Mana Tea is instant instead of channeled and consumes two stacks when used, but causes a 10 sec cooldown.</summary>
+        [GlyphData(11, 85692, 123763, "Glyph of Mana Tea", GlyphType.Major,
+            @"Your Mana Tea is instant instead of channeled and consumes two stacks when used, but causes a 10 sec cooldown.")]
+        public bool GlyphofManaTea { get { return _glyphData[11]; } set { _glyphData[11] = value; } }
+
+        /// <summary>Increases the number of Fire Blossoms you create by 1.</summary>
+        [GlyphData(12, 87897, 125755, "Glyph of Path of Blossoms", GlyphType.Major,
+            @"Increases the number of Fire Blossoms you create by 1.")]
+        public bool GlyphofPathofBlossoms { get { return _glyphData[12]; } set { _glyphData[12] = value; } }
+
+        /// <summary>Your Renewing Mist travels to the furthest injured target within 40 yards rather than the closest injured target within 20 yards.</summary>
+        [GlyphData(13, 85696, 123334, "Glyph of Renewing Mists", GlyphType.Major,
+            @"Your Renewing Mist travels to the furthest injured target within 40 yards rather than the closest injured target within 20 yards.")]
+        public bool GlyphofRenewingMists { get { return _glyphData[13]; } set { _glyphData[13] = value; } }
+
+        /// <summary>When you Roll or Chi Torpedo, all threat is temporarily reduced for 10 sec.</summary>
+        [GlyphData(14, 87880, 124969, "Glyph of Retreat", GlyphType.Major,
+            @"When you Roll or Chi Torpedo, all threat is temporarily reduced for 10 sec.")]
+        public bool GlyphofRetreat { get { return _glyphData[14]; } set { _glyphData[14] = value; } }
+
+        /// <summary>While Sparring, you also have a 5% chance to deflect spells from attackers in front of you, stacking up to 3 times.</summary>
+        [GlyphData(15, 87898, 125673, "Glyph of Sparring", GlyphType.Major,
+            @"While Sparring, you also have a 5% chance to deflect spells from attackers in front of you, stacking up to 3 times.")]
+        public bool GlyphofSparring { get { return _glyphData[15]; } set { _glyphData[15] = value; } }
+
+        /// <summary>You move at full speed while channeling Spinning Crane Kick.</summary>
+        [GlyphData(16, 85697, 120479, "Glyph of Spinning Crane Kick", GlyphType.Major,
+            @"You move at full speed while channeling Spinning Crane Kick.")]
+        public bool GlyphofSpinningCraneKick { get { return _glyphData[16]; } set { _glyphData[16] = value; } }
+
+        /// <summary>When you use Fortifying Brew, all bleed damage taken is reduced by 20% while active.</summary>
+        [GlyphData(17, 87899, 125169, "Glyph of Stoneskin", GlyphType.Major,
+            @"When you use Fortifying Brew, all bleed damage taken is reduced by 20% while active.")]
+        public bool GlyphofStoneskin { get { return _glyphData[17]; } set { _glyphData[17] = value; } }
+
+        /// <summary>Your Surging Mist no longer requires a target, and instead heals the lowest health target within 40 yards.</summary>
+        [GlyphData(18, 85699, 120483, "Glyph of Surging Mist", GlyphType.Major,
+            @"Your Surging Mist no longer requires a target, and instead heals the lowest health target within 40 yards.")]
+        public bool GlyphofSurgingMist { get { return _glyphData[18]; } set { _glyphData[18] = value; } }
+
+        /// <summary>Your Touch of Death no longer has a Chi cost, but the cooldown is increased by 2 minutes.</summary>
+        [GlyphData(19, 85700, 123391, "Glyph of Touch of Death", GlyphType.Major,
+            @"Your Touch of Death no longer has a Chi cost, but the cooldown is increased by 2 minutes.")]
+        public bool GlyphofTouchofDeath { get { return _glyphData[19]; } set { _glyphData[19] = value; } }
+
+        /// <summary>Your Touch of Karma now has a 20 yard range.</summary>
+        [GlyphData(20, 87900, 125678, "Glyph of Touch of Karma", GlyphType.Major,
+            @"Your Touch of Karma now has a 20 yard range.")]
+        public bool GlyphofTouchofKarma { get { return _glyphData[20]; } set { _glyphData[20] = value; } }
+
+        /// <summary>Increases the range of your Transcendence: Transfer spell by 10 yards.</summary>
+        [GlyphData(21, 84652, 123023, "Glyph of Transcendence", GlyphType.Major,
+            @"Increases the range of your Transcendence: Transfer spell by 10 yards.")]
+        public bool GlyphofTranscendence { get { return _glyphData[21]; } set { _glyphData[21] = value; } }
+
+        /// <summary>Your Uplift no longer costs Chi, but instead costs 6% Mana.</summary>
+        [GlyphData(22, 87901, 125669, "Glyph of Uplift", GlyphType.Major,
+            @"Your Uplift no longer costs Chi, but instead costs 6% Mana.")]
+        public bool GlyphofUplift { get { return _glyphData[22]; } set { _glyphData[22] = value; } }
+
+        /// <summary>You can now channel Zen Meditation while moving.</summary>
+        [GlyphData(23, 85695, 120477, "Glyph of Zen Meditation", GlyphType.Major,
+            @"You can now channel Zen Meditation while moving.")]
+        public bool GlyphofZenMeditation { get { return _glyphData[23]; } set { _glyphData[23] = value; } }
+        #endregion
+        #region Minor
+        public override int GlyphTreeStartingIndexes_2 { get { return 24; } }
+        /// <summary>Your Blackout Kick always deals 20% additional damage over 4 sec regardless of positioning but you're unable to trigger the healing effect.</summary>
+        [GlyphData(24, 90715, 132005, "Glyph of Blackout Kick", GlyphType.Minor,
+            @"Your Blackout Kick always deals 20% additional damage over 4 sec regardless of positioning but you're unable to trigger the healing effect.")]
+        public bool GlyphofBlackoutKick { get { return _glyphData[24]; } set { _glyphData[24] = value; } }
+
+        /// <summary>Your Crackling Jade Lightning visual is altered to the color of the White Tiger celestial.</summary>
+        [GlyphData(25, 87881, 125931, "Glyph of Crackling Tiger Lightning", GlyphType.Minor,
+            @"Your Crackling Jade Lightning visual is altered to the color of the White Tiger celestial.")]
+        public bool GlyphofCracklingTigerLightning { get { return _glyphData[25]; } set { _glyphData[25] = value; } }
+
+        /// <summary>Your spirit now appears in a fighting pose when using Transcendence.</summary>
+        [GlyphData(26, 87888, 125872, "Glyph of Fighting Pose", GlyphType.Minor,
+            @"Your spirit now appears in a fighting pose when using Transcendence.")]
+        public bool GlyphofFightingPose { get { return _glyphData[26]; } set { _glyphData[26] = value; } }
+
+        /// <summary>Your Flying Serpent Kick automatically ends when you fly into an enemy, triggering the area of effect damage and snare.</summary>
+        [GlyphData(27, 87882, 123403, "Glyph of Flying Serpent Kick", GlyphType.Minor,
+            @"Your Flying Serpent Kick automatically ends when you fly into an enemy, triggering the area of effect damage and snare.")]
+        public bool GlyphofFlyingSerpentKick { get { return _glyphData[27]; } set { _glyphData[27] = value; } }
+
+        /// <summary>You honorably bow after each successful Touch of Death.</summary>
+        [GlyphData(28, 87883, 125732, "Glyph of Honor", GlyphType.Minor,
+            @"You honorably bow after each successful Touch of Death.")]
+        public bool GlyphofHonor { get { return _glyphData[28]; } set { _glyphData[28] = value; } }
+
+        /// <summary>You always will attack with hands and fist with Jab, even with non-fist weapons equipped.</summary>
+        [GlyphData(29, 87884, 125660, "Glyph of Jab", GlyphType.Minor,
+            @"You always will attack with hands and fist with Jab, even with non-fist weapons equipped.")]
+        public bool GlyphofJab { get { return _glyphData[29]; } set { _glyphData[29] = value; } }
+
+        /// <summary>Your Rising Sun Kick's visual is altered to the color of the White Tiger.</summary>
+        [GlyphData(30, 87885, 125151, "Glyph of Rising Tiger Kick", GlyphType.Minor,
+            @"Your Rising Sun Kick's visual is altered to the color of the White Tiger.")]
+        public bool GlyphofRisingTigerKick { get { return _glyphData[30]; } set { _glyphData[30] = value; } }
+
+        /// <summary>Your Spinning Fire Blossom requires an enemy target rather than traveling in front of you, but is no longer capable of rooting targets.</summary>
+        [GlyphData(31, 85698, 123405, "Glyph of Spinning Fire Blossom", GlyphType.Minor,
+            @"Your Spinning Fire Blossom requires an enemy target rather than traveling in front of you, but is no longer capable of rooting targets.")]
+        public bool GlyphofSpinningFireBlossom { get { return _glyphData[31]; } set { _glyphData[31] = value; } }
+
+        /// <summary>You can cast Roll or Chi Torpedo while dead as a spirit.</summary>
+        [GlyphData(32, 87887, 125154, "Glyph of Spirit Roll", GlyphType.Minor,
+            @"You can cast Roll or Chi Torpedo while dead as a spirit.")]
+        public bool GlyphofSpiritRoll { get { return _glyphData[32]; } set { _glyphData[32] = value; } }
+
+        /// <summary>You can Roll or Chi Torpedo over water.</summary>
+        [GlyphData(33, 87889, 125901, "Glyph of Water Roll", GlyphType.Minor,
+            @"You can Roll or Chi Torpedo over water.")]
+        public bool GlyphofWaterRoll { get { return _glyphData[33]; } set { _glyphData[33] = value; } }
+
+        /// <summary>Teaches you the spell Zen Flight. Zen Flight requires a Flight Master's License in order to be cast.\n\n
+        /// Zen Flight\n
+        /// You fly through the air at a quick speed on a meditative cloud.</summary>
+        [GlyphData(34, 87890, 125893, "Glyph of Zen Flight", GlyphType.Minor,
+            @"Teaches you the spell Zen Flight. Zen Flight requires a Flight Master's License in order to be cast.
+
+Zen Flight
+You fly through the air at a quick speed on a meditative cloud.")]
+        public bool GlyphofZenFlight { get { return _glyphData[34]; } set { _glyphData[34] = value; } }
         #endregion
     }
 

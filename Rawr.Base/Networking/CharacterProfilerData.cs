@@ -430,48 +430,7 @@ namespace Rawr
             // it might be possible to get this from the Locale field, but I'd need data from the other regions
             CharacterRegion charRegion = CharacterRegion.US;
 
-            m_character = new Character(m_sName, m_sRealm,
-                charRegion,
-                race,
-                new BossOptions(),
-                getGearStringBySlot(m_characterInfo, "Head", false),
-                getGearStringBySlot(m_characterInfo, "Neck", false),
-                getGearStringBySlot(m_characterInfo, "Shoulder", false),
-                getGearStringBySlot(m_characterInfo, "Back", false),
-                getGearStringBySlot(m_characterInfo, "Chest", false),
-                getGearStringBySlot(m_characterInfo, "Shirt", false),
-                getGearStringBySlot(m_characterInfo, "Tabard", false),
-                getGearStringBySlot(m_characterInfo, "Wrist", false),
-                getGearStringBySlot(m_characterInfo, "Hands", false),
-                getGearStringBySlot(m_characterInfo, "Waist", false),
-                getGearStringBySlot(m_characterInfo, "Legs", false),
-                getGearStringBySlot(m_characterInfo, "Feet", false),
-                getGearStringBySlot(m_characterInfo, "Finger0", false),
-                getGearStringBySlot(m_characterInfo, "Finger1", false),
-                getGearStringBySlot(m_characterInfo, "Trinket0", false),
-                getGearStringBySlot(m_characterInfo, "Trinket1", false),
-                getGearStringBySlot(m_characterInfo, "MainHand", false),
-                getGearStringBySlot(m_characterInfo, "SecondaryHand", false),
-                getGearStringBySlot(m_characterInfo, "Ranged", false),
-                getGearStringBySlot(m_characterInfo, "Ammo", false),
-                null // Not sure what projectile bag is called
-                    /*null, //TODO: Find ExtraWristSocket
-                    null, //TODO: Find ExtraHandsSocket
-                    null, //TODO: Find ExtraWaistSocket
-                    getEnchantBySlot(characterInfo, "Head"),
-                    getEnchantBySlot(characterInfo, "Shoulder"),
-                    getEnchantBySlot(characterInfo, "Back"),
-                    getEnchantBySlot(characterInfo, "Chest"),
-                    getEnchantBySlot(characterInfo, "Wrist"),
-                    getEnchantBySlot(characterInfo, "Hands"),
-                    getEnchantBySlot(characterInfo, "Legs"),
-                    getEnchantBySlot(characterInfo, "Feet"),
-                    getEnchantBySlot(characterInfo, "Finger0"),
-                    getEnchantBySlot(characterInfo, "Finger1"),
-                    getEnchantBySlot(characterInfo, "MainHand"),
-                    getEnchantBySlot(characterInfo, "SecondaryHand"),
-                    getEnchantBySlot(characterInfo, "Ranged")*/
-            );
+            m_character = new Character(m_sName, m_sRealm, charRegion, race, new BossOptions(), getGearStringBySlot(m_characterInfo, "Head", false), getGearStringBySlot(m_characterInfo, "Neck", false), getGearStringBySlot(m_characterInfo, "Shoulder", false), getGearStringBySlot(m_characterInfo, "Back", false), getGearStringBySlot(m_characterInfo, "Chest", false), getGearStringBySlot(m_characterInfo, "Shirt", false), getGearStringBySlot(m_characterInfo, "Tabard", false), getGearStringBySlot(m_characterInfo, "Wrist", false), getGearStringBySlot(m_characterInfo, "Hands", false), getGearStringBySlot(m_characterInfo, "Waist", false), getGearStringBySlot(m_characterInfo, "Legs", false), getGearStringBySlot(m_characterInfo, "Feet", false), getGearStringBySlot(m_characterInfo, "Finger0", false), getGearStringBySlot(m_characterInfo, "Finger1", false), getGearStringBySlot(m_characterInfo, "Trinket0", false), getGearStringBySlot(m_characterInfo, "Trinket1", false), getGearStringBySlot(m_characterInfo, "MainHand", false), getGearStringBySlot(m_characterInfo, "SecondaryHand", false));
 
             // set the character class
             Character.Class = charClass;

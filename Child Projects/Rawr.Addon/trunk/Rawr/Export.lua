@@ -20,26 +20,18 @@ Rawr.talents.mage = {}
 Rawr.talents.warlock = {}
 Rawr.talents.druid = {}
 Rawr.talents.deathknight = {}
-Rawr.talents.warrior.talents = 61
+Rawr.talents.monk = {}
 Rawr.talents.warrior.glyphs = 34
-Rawr.talents.paladin.talents = 60
 Rawr.talents.paladin.glyphs = 34
-Rawr.talents.hunter.talents = 58
 Rawr.talents.hunter.glyphs = 33
-Rawr.talents.rogue.talents = 57
 Rawr.talents.rogue.glyphs = 34
-Rawr.talents.priest.talents = 61
 Rawr.talents.priest.glyphs = 37
-Rawr.talents.shaman.talents = 57
 Rawr.talents.shaman.glyphs = 32
-Rawr.talents.mage.talents = 61
 Rawr.talents.mage.glyphs = 20
-Rawr.talents.warlock.talents = 56
 Rawr.talents.warlock.glyphs = 17
-Rawr.talents.druid.talents = 64
 Rawr.talents.druid.glyphs = 40
-Rawr.talents.deathknight.talents = 58
 Rawr.talents.deathknight.glyphs = 29
+Rawr.talents.monk.glyphs = 1			-- Char Todo: Figure out the number of monk glyphs & confirm numbers above.
 
 StaticPopupDialogs["RAWR_EXPORT_WINDOW"] = {
 	text = L["export_rawr"],
@@ -158,24 +150,21 @@ function Rawr:GetRaceName(race)
 end
 
 function Rawr:GetModelName(class)
-	local primaryTabId = GetPrimaryTalentTree()
+	local currentSpec = GetSpecialization()
 	if class == "DEATHKNIGHT" then
-		if primaryTabId == 1 then
+		if currentSpec == 1 then
 			return "TankDK", "DeathKnight"
 		else
 			return "DPSDK", "DeathKnight"
 		end
 	elseif class == "DRUID" then
-		if primaryTabId == 1 then
+		if currentSpec == 1 then
 			return "Moonkin", "Druid"
-		elseif primaryTabId == 2 then
-			local _, _, _, _, pulverise = GetTalentInfo(2,21)
-			if pulverise > 0 then
-				return "Bear", "Druid"
-			else
-				return "Cat", "Druid"
-			end
-		elseif primaryTabId == 3 then
+		elseif currentSpec == 2 then
+			return "Feral", "Druid"
+		elseif currentSpec == 3 then
+			return "Bear", "Druid"
+		elseif currentSpec == 4 then
 			return "Tree", "Druid"
 		end
 		return "Bear", "Druid"
@@ -186,23 +175,23 @@ function Rawr:GetModelName(class)
 	elseif class == "ROGUE" then
 		return "Rogue", "Rogue"
 	elseif class == "PALADIN" then
-		if primaryTabId == 1 then
+		if currentSpec == 1 then
 			return "Healadin", "Paladin"
-		elseif primaryTabId == 2 then
+		elseif currentSpec == 2 then
 			return "ProtPaladin", "Paladin"
 		else
 			return "Retribution", "Paladin"
 		end
 	elseif class == "PRIEST" then
-		if primaryTabId == 3 then
+		if currentSpec == 3 then
 			return "ShadowPriest", "Priest"
 		else
 			return "HealPriest", "Priest"
 		end
 	elseif class == "SHAMAN" then
-		if primaryTabId == 1 then
+		if currentSpec == 1 then
 			return "Elemental", "Shaman"
-		elseif primaryTabId == 2 then
+		elseif currentSpec == 2 then
 			return "Enhance", "Shaman"
 		else
 			return "RestoSham", "Shaman"
@@ -211,10 +200,18 @@ function Rawr:GetModelName(class)
 	elseif class == "WARLOCK" then
 		return "Warlock", "Warlock"
 	elseif class == "WARRIOR" then
-		if primaryTabId == 3 then
+		if currentSpec == 3 then
 			return "ProtWarr", "Warrior"
 		else
 			return "DPSWarr", "Warrior"
+		end
+	elseif class == "MONK" then
+		if currentSpec == 1 then
+			return "Brewmaster", "Monk"
+		elseif currentSpec == 2 then
+			return "Mistweaver", "Monk"
+		else
+			return "Windwalker", "Monk"
 		end
 	end
 	return "Unknown", "Unknown"
@@ -265,26 +262,29 @@ function Rawr:IconToProfessionName(icon)
 end
 
 function Rawr:DebugTalents()
-	local numTabs = GetNumTalentTabs()
-	for t=1, numTabs do
-		local numTalents = GetNumTalents(t)
-		for i=1, numTalents do
-			name, _, _, _, currRank = GetTalentInfo(t,i) or "not specified"
-			self:Print("tab:"..t.." talent:"..i..": "..name .. ": " .. (currRank or "nil"))
+	local numTalents = GetNumTalents(0)
+	for i=1, numTalents do
+		name, _, _, _, currRank = GetTalentInfo(i) -- or "not specified"
+		local talentString = "nil"
+		if currRank then
+			talentString = "1"
 		end
+		self:Print("talent:"..i..": "..name .. ": " .. talentString)
 	end
 end
 
 function Rawr:ExportTalents()
 	local talents = ""
-	local numTabs = GetNumTalentTabs()
-	for t=1, numTabs do
-		local numTalents = GetNumTalents(t)
-		for i=1, numTalents do
-			_, _, _, _, currRank = GetTalentInfo(t,i)
-			talents = talents .. (currRank or 0)
+	local numTalents = GetNumTalents(0)
+	for i=1, numTalents do
+		_, _, _, _, currRank = GetTalentInfo(i)
+		if currRank then
+			talents = talents .. 1
+		else
+			talents = talents .. 0
 		end
-	end	
+	end
+
 	local _, class = UnitClass("player")
 	if class == "WARRIOR" then
 		self:AddLine(2, "<WarriorTalents>"..talents.."."..string.rep("0", Rawr.talents.warrior.glyphs).."</WarriorTalents>")
@@ -305,18 +305,19 @@ function Rawr:ExportTalents()
 		self:AddLine(2, "<ShamanTalents>"..talents.."."..string.rep("0", Rawr.talents.shaman.glyphs).."</ShamanTalents>")
 	end
 	if class == "MAGE" then
-	    -- there is erroneous talent present, remove it until fixed on Blizzard side
-		talents = string.sub(talents, 1, 14)..string.sub(talents, 16)
 		self:AddLine(2, "<MageTalents>"..talents.."."..string.rep("0", Rawr.talents.mage.glyphs).."</MageTalents>")
 	end
 	if class == "WARLOCK" then
 		self:AddLine(2, "<WarlockTalents>"..talents.."."..string.rep("0", Rawr.talents.warlock.glyphs).."</WarlockTalents>")
 	end
 	if class == "DRUID" then
-		self:AddLine(2, "<DruidTalents>"..talents.."."..string.rep("0", Rawr.talents.shaman.glyphs).."</DruidTalents>")
+		self:AddLine(2, "<DruidTalents>"..talents.."."..string.rep("0", Rawr.talents.druid.glyphs).."</DruidTalents>")
 	end
 	if class == "DEATHKNIGHT" then
 		self:AddLine(2, "<DeathKnightTalents>"..talents.."."..string.rep("0", Rawr.talents.deathknight.glyphs).."</DeathKnightTalents>")
+	end
+	if class == "MONK" then
+		self:AddLine(2, "<MonkTalents>"..talents.."."..string.rep("0", Rawr.talents.monk.glyphs).."</MonkTalents>")
 	end
 end
 

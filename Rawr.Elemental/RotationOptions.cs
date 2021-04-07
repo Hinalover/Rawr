@@ -6,9 +6,8 @@ namespace Rawr.Elemental
 {
     public class RotationOptions : IRotationOptions
     {
-        public RotationOptions(bool useFN, bool useCL, bool useDpsFireTotem, bool useFireEle)
+        public RotationOptions(bool useCL, bool useDpsFireTotem, bool useFireEle)
         {
-            UseFireNova = useFN;
             UseChainLightning = useCL;
             UseDpsFireTotem = useDpsFireTotem;
             UseFireEle = useFireEle;

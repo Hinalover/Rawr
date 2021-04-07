@@ -105,6 +105,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CastDistributions.cs" />
     <Compile Include="MoonkinConverters.cs" />
     <Compile Include="CalculationOptionsMoonkin.cs" />
     <Compile Include="CalculationOptionsPanelMoonkin.xaml.cs">
@@ -117,6 +118,7 @@
     <Compile Include="MoonkinSimulator.cs" />
     <Compile Include="MoonkinSolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PTRCastDistributions.cs" />
     <Compile Include="Spell.cs" />
     <Compile Include="SpellRotation.cs" />
     <Compile Include="StatsMoonkin.cs" />

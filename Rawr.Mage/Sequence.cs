@@ -1039,16 +1039,6 @@ namespace Rawr.Mage.SequenceReconstruction
             if (list.Count > 0) GroupCooldown(list, SequenceItem.Calculations.PowerInfusionDuration, SequenceItem.Calculations.PowerInfusionCooldown, Calculations.EffectCooldown[(int)StandardEffect.PowerInfusion]);
         }
 
-        public void GroupFlameOrb()
-        {
-            List<SequenceItem> list = new List<SequenceItem>();
-            foreach (SequenceItem item in sequence)
-            {
-                if (item.CastingState.FlameOrb) list.Add(item);
-            }
-            if (list.Count > 0) GroupCooldown(list, Solver.FlameOrbDuration, Solver.FlameOrbCooldown, Calculations.EffectCooldown[(int)StandardEffect.FlameOrb]);
-        }
-
         public void GroupEvocation()
         {
             List<SequenceItem> list = new List<SequenceItem>();
@@ -1105,17 +1095,6 @@ namespace Rawr.Mage.SequenceReconstruction
                 if (item.CastingState.MirrorImage) list.Add(item);
             }
             if (list.Count > 0) GroupCooldown(list, SequenceItem.Calculations.MirrorImageDuration, SequenceItem.Calculations.MirrorImageCooldown, false, Calculations.EffectCooldown[(int)StandardEffect.MirrorImage], VariableType.SummonMirrorImage, SequenceItem.Calculations.BaseGlobalCooldown);
-        }
-
-        public List<SequenceGroup> GroupFlameCap()
-        {
-            List<SequenceItem> list = new List<SequenceItem>();
-            foreach (SequenceItem item in sequence)
-            {
-                if (item.CastingState.FlameCap) list.Add(item);
-            }
-            if (list.Count > 0) return GroupCooldown(list, 60, 180, Calculations.EffectCooldown[(int)StandardEffect.FlameCap]);
-            return null;
         }
 
         public void GroupVolcanicPotion()
@@ -1472,22 +1451,6 @@ namespace Rawr.Mage.SequenceReconstruction
             return group;
         }
 
-        private double moltenFuryStart = 0;
-        public void GroupMoltenFury()
-        {
-            SequenceGroup group = new SequenceGroup();
-            foreach (SequenceItem item in sequence)
-            {
-                if (item.CastingState.MoltenFury)
-                {
-                    group.Add(item);
-                    item.Group.Add(group);
-                }
-            }
-            moltenFuryStart = SequenceItem.Calculations.CalculationOptions.FightDuration - group.Duration;
-            group.MinTime = moltenFuryStart;
-        }
-
         List<SequenceItem> compactItems;
         List<double> compactTime;
         double compactTotalTime;
@@ -1497,7 +1460,7 @@ namespace Rawr.Mage.SequenceReconstruction
 
         public bool SortGroups(Solver solver)
         {
-            if (SequenceItem.Calculations.Specialization == Specialization.Arcane)
+            if (true /*SequenceItem.Calculations.Specialization == Specialization.Arcane*/) // combinatorial solver is now default for everything
             {
                 // it's using fixed ordering anyway so it's more meaningful to show that than to
                 // try to pack cooldowns
@@ -2735,12 +2698,13 @@ namespace Rawr.Mage.SequenceReconstruction
             double nextGem = 0;
             double nextPot = 0;
             //double nextEvo = 0;
-            double maxTps = 50000.0;
+            double maxTps = 100000.0;
             //double evocationFactor = 1.0;
-            if (SequenceItem.Calculations.CalculationOptions.TpsLimit > 0.0)
+            /*if (SequenceItem.Calculations.CalculationOptions.TpsLimit > 0.0)
             {
                 maxTps = SequenceItem.Calculations.CalculationOptions.TpsLimit;
-            }
+            }*/
+            if (sequence.Count == 0) return;
             if (sequence[0].VariableType == VariableType.Drinking)
             {
                 time += sequence[0].Duration;
@@ -3390,7 +3354,6 @@ namespace Rawr.Mage.SequenceReconstruction
             int gemCount = 0;
             double potionCooldown = 0;
             double gemCooldown = 0;
-            double flameCapCooldown = 0;
             bool heroismUsed = false;
             double evocationCooldown = 0;
             double berserkingCooldown = 0;
@@ -3401,11 +3364,10 @@ namespace Rawr.Mage.SequenceReconstruction
             double miCooldown = 0;
             double combustionCooldown = 0;
 
-            double flameCapTime = double.NegativeInfinity;
             double berserkingTime = double.NegativeInfinity;
             double volcanicPotionTime = double.NegativeInfinity;
             double combustionTime = double.NegativeInfinity;
-            double moltenFuryTime = double.NegativeInfinity;
+            //double moltenFuryTime = double.NegativeInfinity;
             double heroismTime = double.NegativeInfinity;
             double apTime = double.NegativeInfinity;
             double piTime = double.NegativeInfinity;
@@ -3414,11 +3376,9 @@ namespace Rawr.Mage.SequenceReconstruction
             double miTime = double.NegativeInfinity;
             double manaGemEffectTime = double.NegativeInfinity;
 
-            bool flameCapActive = false;
             bool berserkingActive = false;
             bool volcanicPotionActive = false;
             bool combustionActive = false;
-            bool moltenFuryActive = false;
             bool heroismActive = false;
             bool apActive = false;
             bool piActive = false;
@@ -3432,7 +3392,6 @@ namespace Rawr.Mage.SequenceReconstruction
 
             bool potionWarning = false;
             //bool gemWarning = false;
-            bool flameCapWarning = false;
             bool apWarning = false;
             bool piWarning = false;
             bool ivWarning = false;
@@ -3463,10 +3422,14 @@ namespace Rawr.Mage.SequenceReconstruction
                 Cycle cycle = sequence[i].Cycle;
                 CastingState state = sequence[i].CastingState;
                 double mps = sequence[i].Mps;
-                if (sequence[i].IsManaPotionOrGem) duration = 0;
+                if (sequence[i].IsManaPotionOrGem)
+                {
+                    duration = 0;
+                    mps = 0;
+                }
                 double manabefore = mana;
                 bool cooldownContinuation = false;
-                if (berserkingActive || flameCapActive || volcanicPotionActive || heroismActive || moltenFuryActive || combustionActive || apActive || ivActive || manaGemEffectActive || piActive)
+                if (berserkingActive || volcanicPotionActive || heroismActive || combustionActive || apActive || ivActive || manaGemEffectActive || piActive)
                 {
                     cooldownContinuation = true;
                 }
@@ -3579,7 +3542,7 @@ namespace Rawr.Mage.SequenceReconstruction
                             if (timing != null) timing.AppendLine("WARNING: Gem ammount too big!");
                         }
                         if (timing != null) timing.AppendLine(TimeFormat(time) + ": Mana Gem (" + Math.Round(mana).ToString() + " mana)");
-                        mana += (1 + BaseStats.BonusManaGem) * SequenceItem.Calculations.ManaGemValue;
+                        mana += -sequence[i].Mps;
                         gemCount++;
                         gemCooldown = 120;
                         //gemWarning = false;
@@ -3754,43 +3717,6 @@ namespace Rawr.Mage.SequenceReconstruction
                         }
                     }
                 }
-                // Flame Cap
-                if (flameCapActive)
-                {
-                    if (state != null && state.FlameCap)
-                    {
-                        if (time + duration > flameCapTime + 60 + eps)
-                        {
-                            unexplained += time + duration - flameCapTime - 60;
-                            if (timing != null) timing.AppendLine("WARNING: Flame Cap duration too long!");
-                        }
-                    }
-                    else if (duration > 0 && 60 - (time - flameCapTime) > eps)
-                    {
-                        //unexplained += Math.Min(duration, 15 - (time - apTime));
-                        if (timing != null) timing.AppendLine("INFO: Flame Cap is still up!");
-                    }
-                }
-                else
-                {
-                    if (state != null && state.FlameCap)
-                    {
-                        if (flameCapCooldown > eps)
-                        {
-                            unexplained += duration;
-                            if (timing != null && !flameCapWarning) timing.AppendLine("WARNING: Flame Cap cooldown not ready!");
-                            flameCapWarning = true;
-                        }
-                        else
-                        {
-                            if (timing != null && reportMode == ReportMode.Listing) timing.AppendLine(TimeFormat(time) + ": Flame Cap (" + Math.Round(manabefore).ToString() + " mana)");
-                            flameCapCooldown = 180;
-                            flameCapTime = time;
-                            flameCapWarning = false;
-                            flameCapActive = true;
-                        }
-                    }
-                }
                 // Mana Gem Effect
                 if (manaGemEffectActive)
                 {
@@ -3917,32 +3843,6 @@ namespace Rawr.Mage.SequenceReconstruction
                             heroismUsed = true;
                             heroismTime = time;
                             heroismActive = true;
-                        }
-                    }
-                }
-                // Molten Fury
-                if (moltenFuryActive)
-                {
-                    if (!(state != null && state.MoltenFury) && duration > 0)
-                    {
-                        //unexplained += duration;
-                        if (timing != null) timing.AppendLine("INFO: Molten Fury is still up!");
-                    }
-                }
-                else
-                {
-                    if (state != null && state.MoltenFury)
-                    {
-                        if (time < moltenFuryStart - eps)
-                        {
-                            unexplained += Math.Min(duration, moltenFuryStart - time);
-                            if (timing != null) timing.AppendLine("WARNING: Molten Fury is not available yet!");
-                        }
-                        else
-                        {
-                            if (timing != null && reportMode == ReportMode.Listing) timing.AppendLine(TimeFormat(time) + ": Molten Fury (" + Math.Round(manabefore).ToString() + " mana)");
-                            moltenFuryTime = time;
-                            moltenFuryActive = true;
                         }
                     }
                 }
@@ -4260,7 +4160,7 @@ namespace Rawr.Mage.SequenceReconstruction
                     double aftertime = data[0];
                     if (aftertime >= time && aftertime <= time + duration)
                     {
-                        if (!berserkingActive && !flameCapActive && !volcanicPotionActive && !heroismActive && !moltenFuryActive && !combustionActive && !apActive && !ivActive && !manaGemEffectActive)
+                        if (!berserkingActive && !volcanicPotionActive && !heroismActive && !combustionActive && !apActive && !ivActive && !manaGemEffectActive)
                         {
                             bool valid = true;
                             foreach (CooldownData d in itemData)
@@ -4286,10 +4186,6 @@ namespace Rawr.Mage.SequenceReconstruction
                 if (type == VariableType.IdleRegen)
                 {
                     label = "Idle Regen";
-                }
-                else if (type == VariableType.Wand)
-                {
-                    label = "Wand";
                 }
                 else if (type == VariableType.SummonWaterElemental)
                 {
@@ -4342,7 +4238,6 @@ namespace Rawr.Mage.SequenceReconstruction
                 miCooldown -= duration;
                 potionCooldown -= duration;
                 gemCooldown -= duration;
-                flameCapCooldown -= duration;
                 foreach (CooldownData d in itemData)
                 {
                     d.Cooldown -= duration;
@@ -4357,7 +4252,6 @@ namespace Rawr.Mage.SequenceReconstruction
                 if (miActive && SequenceItem.Calculations.MirrorImageDuration - (time - miTime) <= eps) miActive = false;
                 if (heroismActive && 40 - (time - heroismTime) <= eps) heroismActive = false;
                 if (volcanicPotionActive && 25 - (time - volcanicPotionTime) <= eps) volcanicPotionActive = false;
-                if (flameCapActive && 60 - (time - flameCapTime) <= eps) flameCapActive = false;
                 foreach (CooldownData d in itemData)
                 {
                     if (d.Active && d.Effect.Duration - (time - d.Time) <= eps) d.Active = false;

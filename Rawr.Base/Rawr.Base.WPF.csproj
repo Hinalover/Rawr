@@ -92,16 +92,19 @@
     <Compile Include="Algorithms\MarkovProcess.cs" />
     <Compile Include="Algorithms\SparseMatrix.cs" />
     <Compile Include="Algorithms\StateSpace.cs" />
+    <Compile Include="BaseCombatRating.cs" />
     <Compile Include="Bosses\BossesT10.cs" />
     <Compile Include="Bosses\BossesT11.cs" />
     <Compile Include="Bosses\BossesT12.cs" />
     <Compile Include="Bosses\BossesT13.cs" />
+    <Compile Include="Bosses\BossesT14.cs" />
     <Compile Include="Bosses\BossesT7.cs" />
     <Compile Include="Bosses\BossesT8.cs" />
     <Compile Include="Bosses\BossesT9.cs" />
     <Compile Include="Bosses\BossHandler.cs" />
     <Compile Include="Bosses\BossList.cs" />
     <Compile Include="Bosses\BossStuff.cs" />
+    <Compile Include="CataclysmClassTalents.cs" />
     <Compile Include="CustomControls\ErrorBox.cs" />
     <Compile Include="CustomControls\ErrorWindow.xaml.cs">
       <DependentUpon>ErrorWindow.WPF.xaml</DependentUpon>
@@ -130,7 +133,6 @@
     <Compile Include="Networking\AltoholicImporter.cs" />
     <Compile Include="Networking\Armory.cs" />
     <Compile Include="Networking\CharacterProfilerData.cs" />
-    <Compile Include="Networking\ElitistArmoryService.cs" />
     <Compile Include="Networking\JsonParser.cs" />
     <Compile Include="Networking\NetworkUtils.cs" />
     <Compile Include="Networking\Rawr4ArmoryService.cs" />

@@ -107,8 +107,11 @@
   <ItemGroup>
     <Compile Include="CalculationOptionsElemental.cs" />
     <Compile Include="CalculationsElemental.cs" />
+    <Compile Include="CharacterCalculationsElemental.cs" />
     <Compile Include="CombatFactors.cs" />
+    <Compile Include="ComparisonCalculationElemental.cs" />
     <Compile Include="Estimation.cs" />
+    <Compile Include="Gemming.cs" />
     <Compile Include="Rotation.cs" />
     <Compile Include="IRotationOptions.cs" />
     <Compile Include="RotationOptions.cs" />
@@ -127,7 +130,6 @@
     <Compile Include="Spells\SpellBox.cs" />
     <Compile Include="Spells\Thunderstorm.cs" />
     <Compile Include="Spells\Wait.cs" />
-    <Compile Include="Spells\FireNova.cs" />
     <Compile Include="Spells\Totem.cs" />
     <Compile Include="Spells\SearingTotem.cs" />
     <Compile Include="Spells\MagmaTotem.cs" />
@@ -140,6 +142,7 @@
     <Compile Include="Spells\Fulmination.cs" />
     <Compile Include="Spells\UnleashElements.cs" />
     <AppDesigner Include="Properties\" />
+    <Compile Include="StatsElemental.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Rawr.Base\Rawr.Base.WPF.csproj">

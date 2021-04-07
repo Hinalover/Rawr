@@ -112,7 +112,6 @@ namespace Rawr.Elemental
         public FlameShock FS;
         public EarthShock ES;
         public FrostShock FrS;
-        public FireNova FN;
         public SearingTotem ST;
         public MagmaTotem MT;
         public FireElemental FE;
@@ -136,7 +135,6 @@ namespace Rawr.Elemental
             FS = spellBox.FS;
             ES = spellBox.ES;
             FrS = spellBox.FrS;
-            FN = spellBox.FN;
             ST = spellBox.ST;
             MT = spellBox.MT;
             FE = spellBox.FE;
@@ -144,7 +142,7 @@ namespace Rawr.Elemental
 
             useDpsFireTotem = rotOpt.UseDpsFireTotem;
 
-            CalculateRotation(rotOpt.UseFireNova, rotOpt.UseChainLightning, rotOpt.UseDpsFireTotem, rotOpt.UseFireEle);
+            CalculateRotation(rotOpt.UseChainLightning, rotOpt.UseDpsFireTotem, rotOpt.UseFireEle);
         }
 
         /// <summary>
@@ -166,25 +164,25 @@ namespace Rawr.Elemental
         /// <summary>
         /// Calculates a rotation based on the FS>LvB>LB priority.
         /// </summary>
-        public void CalculateRotation(bool useFN, bool useCL, bool useDpsFireTotem, bool useFireEle)
+        public void CalculateRotation(bool useCL, bool useDpsFireTotem, bool useFireEle)
         {
-            if (LB == null || FS == null || LvBFS == null || LvB == null || CL == null || FN == null || ST == null || MT == null || FrS == null)
+            if (LB == null || FS == null || LvBFS == null || LvB == null || CL == null || ST == null || MT == null || FrS == null)
                 return;
-            CalculateRotation(true, true, useFN, useCL, useDpsFireTotem, useFireEle);
+            CalculateRotation(true, true, useCL, useDpsFireTotem, useFireEle);
         }
 
         /// <summary>
         /// Calculates a rotation based on the FS>LvB>LB priority.
         /// </summary>
-        public void CalculateRotation(bool addlb1, bool addlb2, bool useFN, bool useCL, bool useDpsFireTotem, bool useFireEle)
+        public void CalculateRotation(bool addlb1, bool addlb2, bool useCL, bool useDpsFireTotem, bool useFireEle)
         {
-            if (Talents == null || LB == null || FS == null || LvBFS == null || LvB == null || CL == null || FN == null || ST == null || MT == null || FrS == null)
+            if (Talents == null || LB == null || FS == null || LvBFS == null || LvB == null || CL == null || ST == null || MT == null || FrS == null)
                 return;
             this.useDpsFireTotem = useDpsFireTotem;
             spells.Clear();
             Invalidate();
 
-            float LvBreadyAt = 0, FSdropsAt = 0, clReadyAt = 0, fnReadyAt = 0, activeTotemDropsAt = 0;//, fireEleDropsAt = 0, fireEleReadyAt = 0;
+            float LvBreadyAt = 0, FSdropsAt = 0, clReadyAt = 0, activeTotemDropsAt = 0;//, fireEleDropsAt = 0, fireEleReadyAt = 0;
             //float lsCharges = 0f, fsTicks = 0f;
 
             #region GiantBlock
@@ -241,8 +239,8 @@ namespace Rawr.Elemental
                 {
                     if (GetTime() + LvB.CastTime > FSdropsAt) //FS will run out
                     {
-                        if(((LB.DpCT > (Math.Max((useCL && clReadyAt < GetTime()) ? CL.DpCT : 0, (useFN && fnReadyAt < GetTime()) ? FN.DpCT : 0)))) 
-                            && (LB.DpCT > (((activeTotemDropsAt < GetTime()) && useDpsFireTotem) ? ActiveTotem.PeriodicDamage() : 0)))
+                        if((LB.DpCT > ((useCL && clReadyAt < GetTime()) ? CL.DpCT : 0)) &&
+                            (LB.DpCT > (((activeTotemDropsAt < GetTime()) && useDpsFireTotem) ? ActiveTotem.PeriodicDamage() : 0)))
                         {    // LB is the best option available
                             if (LvBreadyAt - (GetTime() + FS.CastTime) > LB.CastTime) //there is enough time to fit in another LB and a FS before LvB is ready
                             {
@@ -254,10 +252,8 @@ namespace Rawr.Elemental
                                 break; //FS recast nescessary -> done
                             }
                         }
-                        else if ((((useCL &&clReadyAt < GetTime()) ? CL.DpCT : 0) >
-                            ((useFN && fnReadyAt < GetTime()) ? FN.DpCT : 0)) 
-                            && (CL.DpCT > ((activeTotemDropsAt < GetTime()) && (useDpsFireTotem) ? ActiveTotem.PeriodicDamage() : 0)))
-                            // CL > FN and CL > Totem [Or totem doesn't need refreshed]
+                        else if (CL.DpCT > ((activeTotemDropsAt < GetTime()) && (useDpsFireTotem) ? ActiveTotem.PeriodicDamage() : 0))
+                            // CL > Totem [Or totem doesn't need refreshed]
                         {
                             if (LvBreadyAt - (GetTime() + FS.CastTime) > CL.CastTime) // Can fit another CL and FS
                             {
@@ -271,21 +267,6 @@ namespace Rawr.Elemental
                                 break;
                             }
                         }
-                        else if ((useFN && fnReadyAt < GetTime()) && (activeTotemDropsAt > GetTime()))
-                        // FN > CL and FN > Totem [Or totem doesn't need refreshed]
-                        {
-                            if (LvBreadyAt - (GetTime() + FS.CastTime) > FN.CastTime) // Can fit another FN and FS
-                            {
-                                AddSpell(FN);
-                                fnReadyAt = GetTime() + FN.Cooldown;
-                            }
-                            else
-                            {
-                                AddSpell(FN);
-                                fnReadyAt = GetTime() + FN.Cooldown;
-                                break;
-                            }
-                        }
                         else // If the totem needs refreshed...
                         {
                             AddSpell(ActiveTotem);
@@ -295,23 +276,16 @@ namespace Rawr.Elemental
                     else if (LvBreadyAt - GetTime() <= LB.CastTime && !addlb1) //time before the next LvB is lower than LB cast time
                         AddSpell(new Wait(LvBreadyAt - GetTime()));
                     else //LvB is on cooldown, FS won't run out soon
-                        if(((LB.DpCT > (Math.Max((useCL && clReadyAt < GetTime()) ? CL.DpCT : 0, (useFN && fnReadyAt < GetTime()) ? FN.DpCT : 0)))) 
-                            && (LB.DpCT > (((activeTotemDropsAt < GetTime()) && useDpsFireTotem) ? ActiveTotem.PeriodicDamage() : 0)))
-                        {    //Is LB Dmg per cast time bigger than the Dpct of CL or FN and are these spells ready?
+                        if(((LB.DpCT > ((useCL && clReadyAt < GetTime()) ? CL.DpCT : 0))) &&
+                            (LB.DpCT > (((activeTotemDropsAt < GetTime()) && useDpsFireTotem) ? ActiveTotem.PeriodicDamage() : 0)))
+                        {    //Is LB Dmg per cast time bigger than the Dpct of CL or Totem [Or totem doesn't need refreshed] and are these spells ready?
                             AddSpell(LB);
                         }
-                        else if ((((useCL &&clReadyAt < GetTime()) ? CL.DpCT : 0) >
-                            ((useFN && fnReadyAt < GetTime()) ? FN.DpCT : 0)) 
-                            && (CL.DpCT > ((activeTotemDropsAt < GetTime()) && (useDpsFireTotem) ? ActiveTotem.PeriodicDamage() : 0)))
-                            // CL > FN and CL > Totem [Or totem doesn't need refreshed]
+                        else if (CL.DpCT > ((activeTotemDropsAt < GetTime()) && (useDpsFireTotem) ? ActiveTotem.PeriodicDamage() : 0))
+                            // CL > Totem [Or totem doesn't need refreshed]
                         {
                             AddSpell(CL);
                             clReadyAt = GetTime() + CL.Cooldown;
-                        }
-                        else if ((useFN && fnReadyAt < GetTime()) && (activeTotemDropsAt > GetTime()))
-                        {    //FN > CL
-                            AddSpell(FN);
-                            fnReadyAt = GetTime() + FN.Cooldown;
                         }
                         else // If the totem needs refreshed...
                         {

@@ -13,7 +13,6 @@ namespace Rawr.Mage
     {
         None = 0,
         IdleRegen,
-        Wand,
         Evocation,
         EvocationIV,
         EvocationHero,
@@ -40,7 +39,7 @@ namespace Rawr.Mage
         public VariableType Type;
         public double Dps;
         public double Mps;
-        public double Tps;
+        //public double Tps;
 
         public bool IsZeroTime
         {
@@ -99,6 +98,7 @@ namespace Rawr.Mage
         public SpecialEffect[] IntellectEffects { get; set; }
         public SpecialEffect[] HasteRatingEffects { get; set; }
         public SpecialEffect[] MasteryRatingEffects { get; set; }
+        public SpecialEffect[] CritRatingEffects { get; set; }
 
         public List<Segment> SegmentList { get; set; }
 
@@ -111,7 +111,7 @@ namespace Rawr.Mage
         public bool ManaGemEffect { get; set; }
 
         public float ManaAdeptBonus { get; set; }
-        public float FlashburnBonus { get; set; }
+        public float IgniteBonus { get; set; }
         public float FrostburnBonus { get; set; }
 
         public float RawArcaneHitRate { get; set; }
@@ -158,7 +158,7 @@ namespace Rawr.Mage
 
         public double[] Solution;
         public List<SolutionVariable> SolutionVariable;
-        public float Tps;
+        //public float Tps;
         public double UpperBound = double.PositiveInfinity;
         public double LowerBound = 0;
 
@@ -166,8 +166,6 @@ namespace Rawr.Mage
         public int MaxConjureManaGem { get; set; }
         public Cycle Ward { get; set; }
         public int MaxWards { get; set; }
-
-        public Spell Wand { get; set; }
 
         public float ChanceToDie { get; set; }
         public float MeanIncomingDps { get; set; }
@@ -192,15 +190,15 @@ namespace Rawr.Mage
                 //sequence = GenerateRawSequence(true);
                 //sequence.SortGroups(displaySolver);
             }
-            foreach (SequenceItem item in sequence.sequence)
+            /*foreach (SequenceItem item in sequence.sequence)
             {
                 item.MinTime = SegmentList[item.Segment].TimeStart;
                 item.MaxTime = SegmentList[item.Segment].TimeEnd - item.Duration;
-            }
+            }*/
 
 
             // mana gem/pot/evo positioning
-            if (Specialization != Specialization.Arcane && CalculationOptions.CooldownRestrictionList == null && !CalculationOptions.BossHandler)
+            if (Specialization != Specialization.Arcane && !CalculationOptions.SimpleStacking && CalculationOptions.CooldownRestrictionList == null && !CalculationOptions.BossHandler)
             {
                 sequence.RepositionManaConsumption();
             }
@@ -294,8 +292,7 @@ namespace Rawr.Mage
                 bestTiming = timing.ToString();
             }*/
 
-            sequence.GroupMoltenFury();
-            SequenceGroup heroismGroup = sequence.GroupHeroism();
+            /*SequenceGroup heroismGroup = sequence.GroupHeroism();
             if (CalculationOptions.HeroismControl == 3)
             {
                 heroismGroup.MinTime = Math.Min(CalculationOptions.FightDuration - CalculationOptions.MoltenFuryPercentage * CalculationOptions.FightDuration, CalculationOptions.FightDuration - 40.0);
@@ -338,29 +335,13 @@ namespace Rawr.Mage
             sequence.GroupMirrorImage();
             sequence.GroupBerserking();
             sequence.GroupPowerInfusion();
-            sequence.GroupFlameOrb();
-            list = sequence.GroupFlameCap();
-            // very very special case for now
-            if (list != null && list.Count == 2 && CalculationOptions.FightDuration < 400 && totalGem >= 1)
-            {
-                foreach (SequenceGroup group in list)
-                {
-                    foreach (CooldownConstraint constraint in group.Constraint)
-                    {
-                        if (constraint.EffectCooldown.StandardEffect == StandardEffect.FlameCap)
-                        {
-                            constraint.Cooldown = 300.0;
-                        }
-                    }
-                }
-            }
-            sequence.GroupEvocation();
+            sequence.GroupEvocation();*/
             return sequence;
         }
 
         private string GetHitRatingDescription(float hitRate)
         {
-            float diff = (hitRate - 1) * 800 / CalculationOptions.LevelScalingFactor;
+            float diff = (hitRate - 1) * 100 * CalculationOptions.HitRatingMultiplier;
             if (diff >= 1)
             {
                 return " (" + (int)Math.Floor(diff) + " hit rating over cap)";
@@ -372,7 +353,7 @@ namespace Rawr.Mage
             return string.Empty;
         }
 
-        public float MinimumRange
+        /*public float MinimumRange
         {
             get
             {
@@ -386,15 +367,15 @@ namespace Rawr.Mage
                 }
                 return minRange;
             }
-        }
+        }*/
 
-        public float ThreatReduction
+        /*public float ThreatReduction
         {
             get
             {
                 return 1 - Tps / BaseCalculations.DpsRating;
             }
-        }
+        }*/
 
         public Solver DisplaySolver { get; set; }
 
@@ -412,28 +393,27 @@ namespace Rawr.Mage
             dictValues.Add("Armor", BaseStats.Armor.ToString());
             dictValues.Add("Health", BaseStats.Health.ToString());
             dictValues.Add("Mana", BaseStats.Mana.ToString());
-            float levelScalingFactor = CalculationOptions.LevelScalingFactor;
-            dictValues.Add("Crit Chance", String.Format("{0:F}%*Crit rating {1} (+{2:F}% crit chance)", 100 * Math.Max(0, BaseState.CritRate), BaseStats.CritRating, BaseStats.CritRating / 14f * levelScalingFactor));
+            dictValues.Add("Crit Chance", String.Format("{0:F}%*Crit rating {1} (+{2:F}% crit chance)", 100 * Math.Max(0, BaseState.CritRate), BaseStats.CritRating, BaseStats.CritRating / CalculationOptions.CritRatingMultiplier));
             if (ManaAdeptBonus > 0)
             {
-                dictValues.Add("Mastery", String.Format("{0:F}*Mastery rating {1} (+{2:F} mastery)\r\nMana Adept {3:F}%", BaseState.Mastery, BaseStats.MasteryRating, BaseStats.MasteryRating / 14f * levelScalingFactor, ManaAdeptBonus * 100));
+                dictValues.Add("Mastery", String.Format("{0:F}*Mastery rating {1} (+{2:F} mastery)\r\nMana Adept {3:F}%", BaseState.Mastery, BaseStats.MasteryRating, BaseStats.MasteryRating / CalculationOptions.MasteryRatingMultiplier, ManaAdeptBonus * 100));
             }
-            else if (FlashburnBonus > 0)
+            else if (IgniteBonus > 0)
             {
-                dictValues.Add("Mastery", String.Format("{0:F}*Mastery rating {1} (+{2:F} mastery)\r\nFlashburn {3:F}%", BaseState.Mastery, BaseStats.MasteryRating, BaseStats.MasteryRating / 14f * levelScalingFactor, FlashburnBonus * 100));
+                dictValues.Add("Mastery", String.Format("{0:F}*Mastery rating {1} (+{2:F} mastery)\r\nIgnite {3:F}%", BaseState.Mastery, BaseStats.MasteryRating, BaseStats.MasteryRating / CalculationOptions.MasteryRatingMultiplier, IgniteBonus * 100));
             }
             else if (FrostburnBonus > 0)
             {
-                dictValues.Add("Mastery", String.Format("{0:F}*Mastery rating {1} (+{2:F} mastery)\r\nFrostburn {3:F}%", BaseState.Mastery, BaseStats.MasteryRating, BaseStats.MasteryRating / 14f * levelScalingFactor, FrostburnBonus * 100));
+                dictValues.Add("Mastery", String.Format("{0:F}*Mastery rating {1} (+{2:F} mastery)\r\nFrostburn {3:F}%", BaseState.Mastery, BaseStats.MasteryRating, BaseStats.MasteryRating / CalculationOptions.MasteryRatingMultiplier, FrostburnBonus * 100));
             }
             else
             {
-                dictValues.Add("Mastery", String.Format("{0:F}*Mastery rating {1} (+{2:F} mastery)", BaseState.Mastery, BaseStats.MasteryRating, BaseStats.MasteryRating / 14f * levelScalingFactor));
+                dictValues.Add("Mastery", String.Format("{0:F}*Mastery rating {1} (+{2:F} mastery)", BaseState.Mastery, BaseStats.MasteryRating, BaseStats.MasteryRating / CalculationOptions.MasteryRatingMultiplier));
             }
             // hit rating = hitrate * 800 / levelScalingFactor
-            dictValues.Add("Hit Chance", String.Format("+{0:F}%*Hit rating {1} (+{2:F}% hit chance)\r\n\r\n+0\t{3:F}% miss chance{4}\r\n+1\t{5:F}% miss chance{6}\r\n+2\t{7:F}% miss chance{8}\r\n+3\t{9:F}% miss chance{10}", 100 * BaseState.SpellHit, BaseStats.HitRating, BaseStats.HitRating * levelScalingFactor / 8f, 100 * Math.Max(0, 0.04 - BaseState.SpellHit), GetHitRatingDescription(0.96f + BaseState.SpellHit), 100 * Math.Max(0, 0.05 - BaseState.SpellHit), GetHitRatingDescription(0.95f + BaseState.SpellHit), 100 * Math.Max(0, 0.06 - BaseState.SpellHit), GetHitRatingDescription(0.94f + BaseState.SpellHit), 100 * Math.Max(0, 0.17 - BaseState.SpellHit), GetHitRatingDescription(0.83f + BaseState.SpellHit)));
-            dictValues.Add("Penetration", BaseStats.SpellPenetration.ToString());
-            dictValues.Add("Haste", String.Format("{0:F}%*Haste rating {1} (+{2:F}% haste)", 100 * (BaseState.CastingSpeed - 1f), BaseState.SpellHasteRating, BaseState.SpellHasteRating / 10f * levelScalingFactor));
+            dictValues.Add("Hit Chance", String.Format("+{0:F}%*Hit rating {1} (+{2:F}% hit chance)\r\nExpertise rating {11} (+{12:F}% hit chance)\r\n\r\n+0\t{3:F}% miss chance{4}\r\n+1\t{5:F}% miss chance{6}\r\n+2\t{7:F}% miss chance{8}\r\n+3\t{9:F}% miss chance{10}", 100 * BaseState.SpellHit, BaseStats.HitRating, BaseStats.HitRating / CalculationOptions.HitRatingMultiplier, 100 * Math.Max(0, 0.06 - BaseState.SpellHit), GetHitRatingDescription(0.94f + BaseState.SpellHit), 100 * Math.Max(0, 0.09 - BaseState.SpellHit), GetHitRatingDescription(0.91f + BaseState.SpellHit), 100 * Math.Max(0, 0.12 - BaseState.SpellHit), GetHitRatingDescription(0.88f + BaseState.SpellHit), 100 * Math.Max(0, 0.15 - BaseState.SpellHit), GetHitRatingDescription(0.85f + BaseState.SpellHit), BaseStats.ExpertiseRating, BaseStats.ExpertiseRating / CalculationOptions.HitRatingMultiplier));
+            dictValues.Add("Penetration", BaseStats.SpellPenetration.ToString());   
+            dictValues.Add("Haste", String.Format("{0:F}%*Haste rating {1} (+{2:F}% haste)", 100 * (BaseState.CastingSpeed - 1f), BaseState.SpellHasteRating, BaseState.SpellHasteRating / CalculationOptions.HasteRatingMultiplier));
             float arcaneSpellPower = BaseState.ArcaneSpellPower * (1 + BaseStats.BonusSpellPowerMultiplier);
             float fireSpellPower = BaseState.FireSpellPower * (1 + BaseStats.BonusSpellPowerMultiplier);
             float frostSpellPower = BaseState.FrostSpellPower * (1 + BaseStats.BonusSpellPowerMultiplier);
@@ -441,45 +421,37 @@ namespace Rawr.Mage
             dictValues.Add("Spell Power", string.Format("{0:F}*Arcane {1:F}\r\nFire {2:F}\r\nFrost {3:F}", spellPower, arcaneSpellPower, fireSpellPower, frostSpellPower));
             dictValues.Add("Mana Regen", Math.Floor(BaseState.ManaRegen * 5).ToString());
             dictValues.Add("Combat Regen", Math.Floor(BaseState.ManaRegen5SR * 5).ToString());
-            dictValues.Add("Arcane Resist", (BaseStats.ArcaneResistance).ToString());
-            dictValues.Add("Fire Resist", (BaseStats.FireResistance).ToString());
-            dictValues.Add("Nature Resist", (BaseStats.NatureResistance).ToString());
-            dictValues.Add("Frost Resist", (BaseStats.FrostResistance).ToString());
-            dictValues.Add("Shadow Resist", (BaseStats.ShadowResistance).ToString());
             dictValues.Add("Physical Mitigation", String.Format("{0:F}%", 100 * BaseState.MeleeMitigation));
-            dictValues.Add("Resilience", string.Format("{0:F}*{1:F}% Damage Taken Reduction", BaseStats.Resilience, 100 * DamageTakenReduction));
+            dictValues.Add("PVP Resilience", string.Format("{0:F}%*Resilience {1} (+{2:F}% Resilience)", 100 * DamageTakenReduction, BaseStats.PvPResilience, 100 * (DamageTakenReduction - 0.4f)));
+            dictValues.Add("PVP Power", string.Format("{0:F}%*Power {1} (+{2:F}% Power)", BaseStats.PvPPower / CalculationOptions.PvPPowerMultiplier, BaseStats.PvPPower, BaseStats.PvPPower / CalculationOptions.PvPPowerMultiplier));
             //dictValues.Add("Defense", BaseState.Defense.ToString());
             dictValues.Add("Crit Reduction", String.Format("{0:F}%*Spell Crit Reduction: {0:F}%\r\nPhysical Crit Reduction: {1:F}%\r\nCrit Damage Reduction: {2:F}%", BaseState.SpellCritReduction * 100, BaseState.PhysicalCritReduction * 100, BaseState.CritDamageReduction * 100));
             dictValues.Add("Dodge", String.Format("{0:F}%", 100 * BaseState.Dodge));
             dictValues.Add("Chance to Die", String.Format("{0:F}%", 100 * ChanceToDie));
             dictValues.Add("Mean Incoming Dps", String.Format("{0:F}", MeanIncomingDps));
-            List<CycleId> cycleList = new List<CycleId>() { CycleId.FBLBPyro, CycleId.ScLBPyro, CycleId.FFBLBPyro, CycleId.ABSpam234AM, CycleId.AB3ABar023AM, CycleId.AB23ABar023AM, CycleId.AB2ABar02AMABABar, CycleId.AB2ABar12AMABABar, CycleId.FrBDFFFBIL, CycleId.ArcaneManaNeutral, CycleId.ABSpam0234AMABar, CycleId.ABSpam0234AMABABar, CycleId.AB2ABar2AMABar0AMABABar, CycleId.ABABar1AM, CycleId.FBPyro, CycleId.AB3ABar123AM, CycleId.AB4ABar1234AM, CycleId.AE4AB, CycleId.AERampAB, CycleId.FBLB3Pyro, CycleId.FFBLB3Pyro, CycleId.ABSpam34AM, CycleId.ABSpam4AM, CycleId.AB4ABar34AM, CycleId.AB4ABar4AM };
-            List<SpellId> spellList = new List<SpellId>() { SpellId.ArcaneMissiles, SpellId.ArcaneBarrage, SpellId.Scorch, SpellId.Fireball, SpellId.PyroblastPOM, SpellId.Frostbolt, SpellId.FireBlast, SpellId.ArcaneExplosion0, SpellId.FlamestrikeSingle, SpellId.Blizzard, SpellId.BlastWave, SpellId.DragonsBreath, SpellId.ConeOfCold, SpellId.FrostfireBolt, SpellId.LivingBomb, SpellId.IceLance, SpellId.FlameOrb, SpellId.Combustion, SpellId.PyroblastSpammed };
+            List<CycleId> cycleList = new List<CycleId>() { CycleId.FBIBPyro, CycleId.ScIBPyro, CycleId.FFBIBPyro, CycleId.AB4AM, CycleId.AB4ABar4AM, CycleId.AB4ABar34AM, CycleId.AB34ABar34AM, CycleId.AB24ABar34AM, CycleId.AB234ABar34AM, CycleId.AB2ABar0AM, CycleId.FFBILFrOFrB, CycleId.ArcaneManaNeutral, CycleId.AE4AB, CycleId.AERampAB };
+            List<SpellId> spellList = new List<SpellId>() { SpellId.ArcaneMissiles, SpellId.ArcaneBarrage, SpellId.NetherTempest, SpellId.Scorch, SpellId.Fireball, SpellId.PyroblastPOM, SpellId.Frostbolt, SpellId.FireBlast, SpellId.InfernoBlast, SpellId.ArcaneExplosion0, SpellId.FlamestrikeSingle, SpellId.Blizzard, SpellId.BlastWave, SpellId.DragonsBreath, SpellId.ConeOfCold, SpellId.FrostfireBolt, SpellId.LivingBomb, SpellId.IceLance, SpellId.FrozenOrb, SpellId.Combustion, SpellId.PyroblastSpammed, SpellId.FrostBomb };
+
             foreach (CycleId cycle in cycleList)
             {
                 Cycle s = BaseState.GetCycle(cycle);
                 if (s != null)
                 {
                     string name = s.Name;
+                    name = name.Replace("Nether Tempest+", "");
+                    name = name.Replace("Living Bomb+", "");
+                    name = name.Replace("Frost Bomb+", "");
                     if (cycle == CycleId.ArcaneManaNeutral)
                     {
                         name = "ArcaneManaNeutral";
                     }
-                    else if (cycle == CycleId.FBLB3Pyro)
-                    {
-                        name = "FBLB3Pyro";
-                    }
-                    else if (cycle == CycleId.FFBLB3Pyro)
-                    {
-                        name = "FFBLB3Pyro";
-                    }
                     if (s.Note != null)
                     {
-                        dictValues.Add(name, string.Format("{0:F} Dps*{11}\r\n{1:F} Mps\r\n{2:F} Tps\r\n{8:F} Dps per Spell Power\r\n{9:F} Dps per Mastery\r\n{10:F} Dps per Crit\r\n{3:F} Cast Procs / Sec\r\n{4:F} Hit Procs / Sec\r\n{7:F} Crit Procs / Sec\r\n{5:F} Damage Procs / Sec\r\n{6:F} Dot Procs / Sec\r\n{12:F} Nuke Procs / Sec\r\n{13:F} Nuke Procs 2 / Sec", s.DamagePerSecond, s.ManaPerSecond, s.ThreatPerSecond, s.CastProcs / s.CastTime, s.HitProcs / s.CastTime, s.DamageProcs / s.CastTime, s.DotProcs / s.CastTime, s.CritProcs / s.CastTime, s.DpsPerSpellPower, s.DpsPerMastery, s.DpsPerCrit / 100, s.Note, s.NukeProcs / s.CastTime, s.NukeProcs2 / s.CastTime));
+                        dictValues.Add(name, string.Format("{0:F} Dps*{11}\r\n{1:F} Mps\r\n{8:F} Dps per Spell Power\r\n{9:F} Dps per Mastery\r\n{10:F} Dps per Crit\r\n{3:F} Cast Procs / Sec\r\n{4:F} Hit Procs / Sec\r\n{7:F} Crit Procs / Sec\r\n{5:F} Damage Procs / Sec\r\n{6:F} Dot Procs / Sec\r\n{12:F} Nuke Procs / Sec\r\n{13:F} Nuke Procs 2 / Sec", s.DamagePerSecond, s.ManaPerSecond, 0, s.CastProcs / s.CastTime, s.HitProcs / s.CastTime, s.DamageProcs / s.CastTime, s.DotProcs / s.CastTime, s.CritProcs / s.CastTime, s.DpsPerSpellPower, s.DpsPerMastery, s.DpsPerCrit / 100, s.Note, s.NukeProcs / s.CastTime, s.NukeProcs2 / s.CastTime));
                     }
                     else
                     {
-                        dictValues.Add(name, string.Format("{0:F} Dps*{1:F} Mps\r\n{2:F} Tps\r\n{8:F} Dps per Spell Power\r\n{9:F} Dps per Mastery\r\n{10:F} Dps per Crit\r\n{3:F} Cast Procs / Sec\r\n{4:F} Hit Procs / Sec\r\n{7:F} Crit Procs / Sec\r\n{5:F} Damage Procs / Sec\r\n{6:F} Dot Procs / Sec\r\n{11:F} Nuke Procs / Sec\r\n{12:F} Nuke Procs 2 / Sec", s.DamagePerSecond, s.ManaPerSecond, s.ThreatPerSecond, s.CastProcs / s.CastTime, s.HitProcs / s.CastTime, s.DamageProcs / s.CastTime, s.DotProcs / s.CastTime, s.CritProcs / s.CastTime, s.DpsPerSpellPower, s.DpsPerMastery, s.DpsPerCrit / 100, s.NukeProcs / s.CastTime, s.NukeProcs2 / s.CastTime));
+                        dictValues.Add(name, string.Format("{0:F} Dps*{1:F} Mps\r\n{8:F} Dps per Spell Power\r\n{9:F} Dps per Mastery\r\n{10:F} Dps per Crit\r\n{3:F} Cast Procs / Sec\r\n{4:F} Hit Procs / Sec\r\n{7:F} Crit Procs / Sec\r\n{5:F} Damage Procs / Sec\r\n{6:F} Dot Procs / Sec\r\n{11:F} Nuke Procs / Sec\r\n{12:F} Nuke Procs 2 / Sec", s.DamagePerSecond, s.ManaPerSecond, 0, s.CastProcs / s.CastTime, s.HitProcs / s.CastTime, s.DamageProcs / s.CastTime, s.DotProcs / s.CastTime, s.CritProcs / s.CastTime, s.DpsPerSpellPower, s.DpsPerMastery, s.DpsPerCrit / 100, s.NukeProcs / s.CastTime, s.NukeProcs2 / s.CastTime));
                     }
                 }
             }
@@ -492,27 +464,21 @@ namespace Rawr.Mage
                     dictValues.Add(bs.Name, GetSpellTooltip(bs));
                 }
             }
-            if (Wand != null)
-            {
-                dictValues.Add(Wand.Name, GetSpellTooltip(Wand));
-            }
             bs = BaseState.GetSpell(SpellId.ArcaneBlast0);
             dictValues.Add("Arcane Blast(0)", GetSpellTooltip(bs, true));
-            bs = BaseState.GetSpell(SpellId.ArcaneBlast4);
-            dictValues.Add("Arcane Blast(4)", GetSpellTooltip(bs, true));
-            bs = BaseState.FrozenState.GetSpell(SpellId.DeepFreeze);
-            dictValues.Add("Deep Freeze", GetSpellTooltip(bs));
+            bs = BaseState.GetSpell(SpellId.ArcaneBlast6);
+            dictValues.Add("Arcane Blast(6)", GetSpellTooltip(bs, true));
             bs = BaseState.GetSpell(SpellId.LivingBombAOE);
             dictValues.Add("Living Bomb AOE", GetSpellTooltip(bs));
             bs = BaseState.GetSpell(SpellId.FlamestrikeSpammed);
             dictValues.Add("FlamestrikeSpam", GetSpellTooltip(bs));
-            Spell abss = BaseState.GetSpell(SpellId.MageWard);
-            dictValues.Add("Mage Ward", string.Format("{0:F} Absorb*{1:F} Mps\r\nAverage Cast Time: {2:F}\r\n{3:F} Mana", abss.Absorb, ((Cycle)abss).ManaPerSecond, abss.CastTime - abss.Latency, abss.ABCost));
+            Spell abss = BaseState.GetSpell(SpellId.IncantersWard);
+            dictValues.Add("Incanter's Ward", string.Format("{0:F} Absorb*{1:F} Mps\r\nAverage Cast Time: {2:F}\r\n{3:F} Mana", abss.Absorb, ((Cycle)abss).ManaPerSecond, abss.CastTime - abss.Latency, abss.ABCost));
             float totalDamage = (CalculationOptions.TargetDamage > 0.0f) ? CalculationOptions.TargetDamage : BaseCalculations.DpsRating * CalculationOptions.FightDuration;
             dictValues.Add("Total Damage", String.Format("{0:F}*Upper Bound: {1:F}\r\nLower Bound: {2:F}", totalDamage, UpperBound, LowerBound));
             dictValues.Add("Score", String.Format("{0:F}", BaseCalculations.OverallPoints));
             dictValues.Add("Dps", String.Format("{0:F}", BaseCalculations.DpsRating));
-            dictValues.Add("Tps", String.Format("{0:F}", Tps));
+            //dictValues.Add("Tps", String.Format("{0:F}", Tps));
             dictValues.Add("Status", String.Format("Score: {0:F}, Dps: {1:F}, Survivability: {2:F}", BaseCalculations.OverallPoints, BaseCalculations.DpsRating, BaseCalculations.SurvivabilityRating));
             dictValues.Add("Sequence", computeReconstruction ? ReconstructSequence() : "...");
             StringBuilder sb = new StringBuilder("*");
@@ -757,7 +723,6 @@ namespace Rawr.Mage
                             sward.AddManaSourcesContribution(ManaSources, (float)Solution[i]);
                             if (segmentedOutput) sb.AppendLine(String.Format("{2} {0}: {1:F}x", Ward.Name, Solution[i] / Ward.CastTime, SegmentList[SolutionVariable[i].Segment]));
                             break;*/
-                        case VariableType.Wand:
                         case VariableType.Spell:
                             double value;
                             Cycle s = SolutionVariable[i].Cycle;
@@ -834,7 +799,7 @@ namespace Rawr.Mage
                     Cycle s = SolutionVariable[combinedSolutionData[kvp.Key]].Cycle;
                     if (s != null)
                     {
-                        sb.AppendLine(String.Format("{0}: {1:F} sec ({2:F} dps, {3:F} mps, {4:F} tps)", kvp.Key, kvp.Value, s.DamagePerSecond, s.ManaPerSecond, s.ThreatPerSecond));
+                        sb.AppendLine(String.Format("{0}: {1:F} sec ({2:F} dps, {3:F} mps)", kvp.Key, kvp.Value, s.DamagePerSecond, s.ManaPerSecond));
                     }
                     else
                     {
@@ -897,8 +862,8 @@ namespace Rawr.Mage
                 }
             }
             dictValues.Add("By Spell", sb.ToString());
-            dictValues.Add("Minimum Range", String.Format("{0:F}", MinimumRange));
-            dictValues.Add("Threat Reduction", String.Format("{0:F}%", ThreatReduction * 100));
+            //dictValues.Add("Minimum Range", String.Format("{0:F}", MinimumRange));
+            //dictValues.Add("Threat Reduction", String.Format("{0:F}%", ThreatReduction * 100));
             CalculationOptions.Calculations = this;
             return dictValues;
         }
@@ -940,12 +905,7 @@ namespace Rawr.Mage
                     Cycle cycle = SolutionVariable[i].Cycle;
                     var variableType = SolutionVariable[i].Type;
 
-                    if (variableType == VariableType.Wand)
-                    {
-                        cycle = Wand;
-                        mps = cycle.ManaPerSecond;
-                    }
-                    else if (variableType == VariableType.ManaGem)
+                    if (variableType == VariableType.ManaGem)
                     {
                         mps = 0.0;
                     }
@@ -1027,7 +987,6 @@ namespace Rawr.Mage
                                     contrib.Damage += mirrorImage.DamagePerSecond * (float)Solution[i];
                                 }
                                 break;
-                            case VariableType.Wand:
                             case VariableType.Spell:
                                 cycle.AddDamageContribution(DamageSources, (float)Solution[i], averageMana);
                                 break;
@@ -1062,7 +1021,7 @@ namespace Rawr.Mage
         public float FrostResistance { get; set; }
         public float ShadowResistance { get; set; }
         public float ArcaneResistance { get; set; }
-        public float Resilience { get; set; }
+        public float PvPResilience { get; set; }
         public float HitRating { get; set; }
         public float HasteRating { get; set; }
         public float CritRating { get; set; }
@@ -1163,7 +1122,7 @@ namespace Rawr.Mage
                 case "Frost Resistance": return OptimizableCalculations.FrostResistance;
                 case "Shadow Resistance": return OptimizableCalculations.ShadowResistance;
                 case "Arcane Resistance": return OptimizableCalculations.ArcaneResistance;
-                case "Resilience": return OptimizableCalculations.Resilience;
+                case "Resilience": return OptimizableCalculations.PvPResilience;
                 case "Chance to Live": return 100 * (1 - OptimizableCalculations.ChanceToDie);
                 case "Hit Rating": return OptimizableCalculations.HitRating;
                 case "Haste Rating": return OptimizableCalculations.HasteRating;

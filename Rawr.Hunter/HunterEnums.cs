@@ -40,6 +40,14 @@ namespace Rawr.Hunter
         EXPLOSIVESHOT = 10,
         PROC_LOCKNLOAD = 11,
         CD_BLACKARROW = 12,
+        CD_FERVOR = 13,
+        CD_DIREBEAST = 14,
+        CD_MURDEROFCROWS = 15,
+        CD_BLINKSTRIKE = 16,
+        CD_LYNXRUSH = 17,
+        CD_GLAIVETOSS = 18,
+        CD_POWERSHOT = 19,
+        CD_BARRAGE = 20
     }
 
     [Flags]
@@ -83,6 +91,14 @@ namespace Rawr.Hunter
         /// BlackArrow available off CD.
         /// </summary>
         CD_BLACKARROW = 1 << CDStates_Enum.CD_BLACKARROW,
+        CD_FERVOR = 1 << CDStates_Enum.CD_FERVOR,
+        CD_DIREBEAST = 1 << CDStates_Enum.CD_DIREBEAST,
+        CD_MURDEROFCROWS = 1 << CDStates_Enum.CD_MURDEROFCROWS,
+        CD_BLINKSTRIKE = 1 << CDStates_Enum.CD_BLINKSTRIKE,
+        CD_LYNXRUSH = 1 << CDStates_Enum.CD_LYNXRUSH,
+        CD_GLAIVETOSS = 1 << CDStates_Enum.CD_GLAIVETOSS,
+        CD_POWERSHOT = 1 << CDStates_Enum.CD_POWERSHOT,
+        CD_BARRAGE = 1 << CDStates_Enum.CD_BARRAGE,
     }
 
     // Updated 4.2 from Wowhead talents, Shots & Abilities.
@@ -100,7 +116,6 @@ namespace Rawr.Hunter
         ConcussiveShot, //
         ExplosiveShot, // SV
         ExplosiveTrap, //
-        Fervor, //
         FocusFire, // 
         FreezingTrap, //
         DistractingShot, //
@@ -119,6 +134,15 @@ namespace Rawr.Hunter
         SnakeTrap, //
         SteadyShot, //
         TranquilizingShot, //
+        //new additions for MoP
+        Fervor,
+        DireBeast,
+        AMurderOfCrows,
+        BlinkStrike,
+        LynxRush,
+        GlaiveToss,
+        Powershot,
+        Barrage
     }
 
     // TODO: Setup map to go with Petfamily & PetAttack

@@ -72,9 +72,10 @@ namespace Rawr.Healadin
         public float RotationHR { get; set; }
         public float RotationLoH { get; set; }
         public float RotationCleanse { get; set; }
-        public float RotationMelee { get; set; }  // Time spend melee, NOT during instant casts. Just doing melee for mana.
+        public float RotationMelee { get; set; }  // Time spend melee, NOT during instant casts. Just doing melee for mana. - Removed as of 5.3
         public float RotationTotal { get; set; }
         public float HolyPowerCasts { get; set; }
+        public float HolyPowerTotal { get; set; }
 
         // total healed for each spell
         public float HealedFoL { get; set; }
@@ -159,7 +160,7 @@ namespace Rawr.Healadin
             dictValues["Intellect"] = BasicStats.Intellect.ToString("N00");
             dictValues["Spirit"] = BasicStats.Spirit.ToString("N00");
             dictValues["Mastery Rating"] = string.Format("{0}*{1} Mastery Rating", 
-                                   (8 + BasicStats.MasteryRating / 179.28f).ToString("N02"), BasicStats.MasteryRating);
+                                   BasicStats.Mastery.ToString("N02"), BasicStats.MasteryRating);
             dictValues["Spell Power"] = string.Format("{0}", SpellPowerTotal.ToString("N00"));
             dictValues["Mana Regen"] = string.Format("{0}", ManaRegenRate.ToString("N00"));
             dictValues["Combat Regen"] = string.Format("{0}", CombatRegenRate.ToString("N00"));  
@@ -183,7 +184,7 @@ namespace Rawr.Healadin
                         FightLength.ToString("N00"), ActiveTime.ToString("N00"), RotationTotal.ToString("N00"));
 
          
-            // Healing Breakdown
+            // Healing Breakdown - Prepare for Holy light's removal
             dictValues["Holy Light Healed"] = string.Format("{0} *Holy Light Information: \nNumber of Casts: {1}\nTotal cast time: {2} sec\nTotal mana used: {3}",
                                                             HealedHL.ToString("N00"), HLCasts.ToString("N01"), RotationHL.ToString("N02"), UsageHL.ToString("N00"));
             dictValues["Divine Light Healed"] = string.Format("{0} *Divine Light Information: \nNumber of Casts: {1}\nTotal cast time: {2} sec\nTotal mana used: {3}",

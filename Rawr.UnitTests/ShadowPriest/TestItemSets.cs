@@ -225,7 +225,7 @@ namespace Rawr.UnitTests.ShadowPriest
                                                       HasteRating = 56
                                                   }
                                   });
-            character.Ranged = new ItemInstance(56122, 0, 0, 0, 0, 0, 0, 0);
+            //character.Ranged = new ItemInstance(56122, 0, 0, 0, 0, 0, 0, 0);
         }
 
         public static void LoadItemSet2(Character character)
@@ -547,7 +547,7 @@ namespace Rawr.UnitTests.ShadowPriest
             character.Trinket2 = new ItemInstance(trinket2, 0, 0, 0, 0, 0, 0, 0);
             character.MainHand = new ItemInstance(mainhand, 0, 0, 0, 0, 0, 0, 0);
             character.OffHand = new ItemInstance(offhand, 0, 0, 0, 0, 0, 0, 0);
-            character.Ranged = new ItemInstance(ranged, 0, 0, 0, 0, 0, 0, 0);
+            //character.Ranged = new ItemInstance(ranged, 0, 0, 0, 0, 0, 0, 0);
         }
 
         public static void LoadItemSet3(Character character)
@@ -869,7 +869,7 @@ namespace Rawr.UnitTests.ShadowPriest
             character.Trinket2 = new ItemInstance(trinket2, 0, 0, 0, 0, 0, 0, 0);
             character.MainHand = new ItemInstance(mainhand, 0, 0, 0, 0, 0, 0, 0);
             character.OffHand = new ItemInstance(offhand, 0, 0, 0, 0, 0, 0, 0);
-            character.Ranged = new ItemInstance(ranged, 0, 0, 0, 0, 0, 0, 0);
+            //character.Ranged = new ItemInstance(ranged, 0, 0, 0, 0, 0, 0, 0);
         }
         #endregion
     }

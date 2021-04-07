@@ -87,11 +87,11 @@ namespace Rawr.Enhance
                     {
                         // When in effect stats, MoteOfAnger is % of melee hits
                         // When in character stats, MoteOfAnger is average procs per second
-                        statsAverage.Accumulate(new Stats() { MoteOfAnger = effect.Stats.MoteOfAnger * effect.GetAverageProcsPerSecond(interval, chance, unhastedAttackSpeed, 0f) / effect.MaxStack });
+                        statsAverage.Accumulate(new Stats() { MoteOfAnger = effect.Stats.MoteOfAnger * effect.GetAverageProcsPerSecond(interval, chance, unhastedAttackSpeed, 1f, 0f) / effect.MaxStack }); // FIXME: Pass haste for Real PPM effects
                     }
                     else
                     {
-                        float timeToMax = (float)Math.Min(_cs.FightLength, effect.GetChance(unhastedAttackSpeed) * interval * effect.MaxStack);
+                        float timeToMax = (float)Math.Min(_cs.FightLength, effect.GetChance(unhastedAttackSpeed, 1f, 1f) * interval * effect.MaxStack); // FIXME: Pass trigger interval and haste for Real PPM effects
                         float buffDuration = _cs.FightLength;
                         if (effect.Stats.AttackPower == 250f || effect.Stats.AttackPower == 215f || effect.Stats.HasteRating == 57f || effect.Stats.HasteRating == 64f)
                         {
@@ -106,7 +106,7 @@ namespace Rawr.Enhance
                 }
                 else
                 {
-                    effect.AccumulateAverageStats(statsAverage, interval, chance, unhastedAttackSpeed);
+                    effect.AccumulateAverageStats(statsAverage, interval, chance, unhastedAttackSpeed, 1f);
                 }
             }
             return statsAverage;
@@ -228,7 +228,7 @@ namespace Rawr.Enhance
                 foreach (SpecialEffect effect in item.GetTotalStats().SpecialEffects())
                 {
                     SetTriggerChanceAndSpeed(effect);
-                    uptime = effect.GetAverageUptime(interval, chance, unhastedAttackSpeed);
+                    uptime = effect.GetAverageUptime(interval, chance, unhastedAttackSpeed, 1f); // FIXME: Pass haste for Real PPM effects
                 }
             return uptime;
         }
@@ -236,15 +236,15 @@ namespace Rawr.Enhance
         public float GetMHUptime()
         {
             if (mainHandEnchant != null && mainHandEnchant.Trigger == Trigger.SpellHit)
-                return mainHandEnchant.GetAverageUptime(1f / _cs.GetSpellAttacksPerSec(), _cs.ChanceSpellHit, _cs.UnhastedMHSpeed, _cs.FightLength);
-            return mainHandEnchant == null ? 0f : mainHandEnchant.GetAverageUptime(_cs.HastedMHSpeed, _cs.ChanceWhiteHitMH, _cs.UnhastedMHSpeed, _cs.FightLength);
+                return mainHandEnchant.GetAverageUptime(1f / _cs.GetSpellAttacksPerSec(), _cs.ChanceSpellHit, _cs.UnhastedMHSpeed, 1f, _cs.FightLength);
+            return mainHandEnchant == null ? 0f : mainHandEnchant.GetAverageUptime(_cs.HastedMHSpeed, _cs.ChanceWhiteHitMH, _cs.UnhastedMHSpeed, 1f, _cs.FightLength);
         }
 
         public float GetOHUptime()
         {
             if (offHandEnchant != null && offHandEnchant.Trigger == Trigger.SpellHit)
-                return offHandEnchant.GetAverageUptime(1f / _cs.GetSpellAttacksPerSec(), _cs.ChanceSpellHit, _cs.UnhastedOHSpeed, _cs.FightLength);
-            return offHandEnchant == null ? 0f : offHandEnchant.GetAverageUptime(_cs.HastedOHSpeed, _cs.ChanceWhiteHitOH, _cs.UnhastedOHSpeed, _cs.FightLength);
+                return offHandEnchant.GetAverageUptime(1f / _cs.GetSpellAttacksPerSec(), _cs.ChanceSpellHit, _cs.UnhastedOHSpeed, 1f, _cs.FightLength);
+            return offHandEnchant == null ? 0f : offHandEnchant.GetAverageUptime(_cs.HastedOHSpeed, _cs.ChanceWhiteHitOH, _cs.UnhastedOHSpeed, 1f, _cs.FightLength);
         }
 
         // Handling for Paragon trinket procs

@@ -17,22 +17,20 @@ namespace Rawr.Feral
     {
         public CalculationOptionsPanelFeral()
         {
-            _loadingCalculationOptions = true;
             InitializeComponent();
-            _loadingCalculationOptions = false;
         }
 
         #region ICalculationOptionsPanel Members
         public UserControl PanelControl { get { return this; } }
 
-        public bool _loadingCalculationOptions = false;
         CalculationOptionsFeral calcOpts = null;
 
         private Character character;
         public Character Character
         {
             get { return character; }
-            set {
+            set
+            {
                 // Kill any old event connections
                 if (character != null && character.CalculationOptions != null
                     && character.CalculationOptions is CalculationOptionsFeral)
@@ -44,7 +42,7 @@ namespace Rawr.Feral
                 LoadCalculationOptions();
                 // Model Specific Code
                 // Set the Data Context
-                this.DataContext = calcOpts;
+                LayoutRoot.DataContext = calcOpts;
                 // Add new event connections
                 calcOpts.PropertyChanged += new PropertyChangedEventHandler(CalculationOptionsPanelFeral_PropertyChanged);
                 // Run it once for any special UI config checks
@@ -52,23 +50,20 @@ namespace Rawr.Feral
             }
         }
 
+        private bool _loadingCalculationOptions;
         public void LoadCalculationOptions()
         {
             _loadingCalculationOptions = true;
-            //
-            if (Character != null && Character.CalculationOptions == null) {
-                Character.CalculationOptions = new CalculationOptionsFeral();
-                _loadingCalculationOptions = true;
-            } else if (Character == null) { return; }
+            if (Character.CalculationOptions == null) Character.CalculationOptions = new CalculationOptionsFeral();
             calcOpts = Character.CalculationOptions as CalculationOptionsFeral;
+            // Model Specific Code
             //
             _loadingCalculationOptions = false;
         }
 
-        public void CalculationOptionsPanelFeral_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        void CalculationOptionsPanelFeral_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (_loadingCalculationOptions) { return; }
-            if (e == null) { e = new PropertyChangedEventArgs(""); }
             // This would handle any special changes, especially combobox assignments, but not when the pane is trying to load
             if (e.PropertyName == "SomeProperty")
             {

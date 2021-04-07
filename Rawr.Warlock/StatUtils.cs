@@ -11,7 +11,8 @@ namespace Rawr.Warlock
         float[] triggerChance, 
         float[] offset, 
         float[] scale,
-        float attackSpeed, 
+        float attackSpeed,
+        float haste,
         float fightDuration, 
         float[] value);
 
@@ -108,11 +109,11 @@ namespace Rawr.Warlock
         {
             if (playerLevel == 85)
             {
-                return StatConversion.GetMasteryFromRating(stats.MasteryRating) + 8f;
+                return StatConversion.GetMasteryFromRating(stats.MasteryRating) + stats.Mastery;
             }
             else
             {
-                return GetMasteryFromRating(stats.MasteryRating, playerLevel) + 8f;
+                return GetMasteryFromRating(stats.MasteryRating, playerLevel) + stats.Mastery;
             }
         }
         public static float GetSpellCritFromIntellect(float intellect, int playerLevel)

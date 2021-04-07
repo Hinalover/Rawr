@@ -33,9 +33,10 @@ namespace Rawr.Tree
         int T11Count;
         int T12Count;
         int T13Count;
+        int T14Count;
         DruidTalents Talents;
         bool Restoration;
-        bool InsectSwarm;
+        bool Moonfire;
 
         class TreeComputedData
         {
@@ -65,6 +66,8 @@ namespace Rawr.Tree
             character.SetBonusCount.TryGetValue("Stormrider's Vestments", out T11Count);
             character.SetBonusCount.TryGetValue("Obsidian Arborweave Vestments", out T12Count);
             character.SetBonusCount.TryGetValue("Deep Earth Vestments", out T13Count);
+            character.SetBonusCount.TryGetValue("Vestments of the Eternal Blossom", out T14Count);
+
             Talents = character.DruidTalents;
             Restoration = (opts != null) ? opts.Restoration : true;
         }
@@ -111,11 +114,11 @@ namespace Rawr.Tree
                 foreach (SpecialEffect effect in calc.BasicStats.SpecialEffects())
                 {
                     if (effect.Trigger == Trigger.DamageSpellCast || effect.Trigger == Trigger.DamageSpellHit || effect.Trigger == Trigger.DoTTick || effect.Trigger == Trigger.DamageSpellCrit)
-                        InsectSwarm = true;
+                        Moonfire = true;
                 }
             }
 
-            if (InsectSwarm)
+            if (Moonfire)
             {
                 triggerIntervals[Trigger.DamageSpellCast] = triggerIntervals[Trigger.DamageSpellHit] = triggerIntervals[Trigger.DoTTick] = triggerIntervals[Trigger.DamageSpellCrit] = (float)calc.DamageProcPeriodicTriggerInterval;
 
@@ -139,7 +142,7 @@ namespace Rawr.Tree
                         calc.MeanMana += avgMana;
                     }
 
-                    Stats stats = effect.GetAverageStats(triggerIntervals, triggerChances, 3.0f, character.BossOptions.BerserkTimer);
+                    Stats stats = effect.GetAverageStats(triggerIntervals, triggerChances, 3.0f, 1f, character.BossOptions.BerserkTimer);
                     
                     if (effect.Trigger == Trigger.Use
                         && effect.MaxStack <= 1
@@ -157,7 +160,7 @@ namespace Rawr.Tree
                     {
                         if (effect.Stats.HasteRating > 0 || effect.Stats.SpellHaste > 0)
                         {
-                            double uptime = effect.GetAverageUptime(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger], 3.0f, character.BossOptions.BerserkTimer);
+                            double uptime = effect.GetAverageUptime(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger], 3.0f, 1f, character.BossOptions.BerserkTimer);
                             hasteProcsList.Add(new KeyValuePair<double, SpecialEffect>(uptime, effect));
                             stats.HasteRating = 0;
                             stats.SpellHaste = 0;
@@ -227,7 +230,7 @@ namespace Rawr.Tree
 
             double baseSpellPower = (float)(MeanStats.SpellPower + Math.Max(0f, calc.BasicStats.Intellect - 10));
             // TODO: does nurturing instinct actually work like this?
-            baseSpellPower += Talents.NurturingInstinct * 0.5 * calc.BasicStats.Agility;
+            baseSpellPower += 0.0; // Talents.NurturingInstinct * 0.5 * calc.BasicStats.Agility;
             baseSpellPower *= 1 + calc.BasicStats.BonusSpellPowerMultiplier;
             calc.BaseSpellPower = baseSpellPower;
 
@@ -242,7 +245,7 @@ namespace Rawr.Tree
                     if ((calc.Division.EffectMasks[div] & (1 << j)) != 0)
                     {
                         if (calc.Division.Effects[j].Stats is CalculationsTree.TreeOfLifeStats)
-                            treeOfLifeActive = true;
+                            treeOfLifeActive = Talents.Incarnation == 1;
                         else
                             statsWithOnUse.Accumulate(calc.Division.Effects[j].Stats);
                     }
@@ -294,13 +297,13 @@ namespace Rawr.Tree
 
             if (opts.InnervateOther)
             {
-                if (character.DruidTalents.GlyphOfInnervate)
+                if (character.DruidTalents.GlyphofInnervate)
                     innervateRatio = 0.1;
                 else
                     innervateRatio = 0;
             }
             else
-                innervateRatio = 0.2 + character.DruidTalents.Dreamstate * 0.15;
+                innervateRatio = 0.2; //  +character.DruidTalents.Dreamstate * 0.15;
             
             innervateRatio += opts.ExternalInnervates * 0.05;
 
@@ -397,10 +400,10 @@ namespace Rawr.Tree
 
             calc.ManaPoolRegen = calc.BasicStats.Mana / calc.FightLength;
             calc.BaseRegen = MeanStats.Mp5 / 5f;
-            calc.SpiritRegen = opts.Restoration ? (StatConversion.GetSpiritRegenSec(MeanStats.Spirit, MeanStats.Intellect) / 2) : 0;
+            calc.SpiritRegen = opts.Restoration ? (StatConversion.GetSpiritRegenSec(MeanStats.Spirit, MeanStats.Intellect) / 2.0f) : 0;
             calc.ReplenishmentRegen = MeanStats.ManaRestoreFromMaxManaPerSecond * calc.MeanMana;
             calc.InnervateRegen = calc.Innervates * calc.InnervateSize / calc.FightLength;
-            calc.RevitalizeRegen = character.DruidTalents.Revitalize * (1.0f / (12.0f + revitalizeDelay)) * 0.01f * calc.MeanMana;
+            calc.RevitalizeRegen = 0.0; //  character.DruidTalents.Revitalize * (1.0f / (12.0f + revitalizeDelay)) * 0.01f * calc.MeanMana;
             calc.PotionRegen = MeanStats.ManaRestore / calc.FightLength;
             calc.ManaRegen = calc.ManaPoolRegen + calc.BaseRegen + calc.SpiritRegen + calc.ReplenishmentRegen + calc.InnervateRegen + calc.RevitalizeRegen + calc.PotionRegen;
         }
@@ -534,7 +537,8 @@ namespace Rawr.Tree
         DiscreteAction buildNourishNB(TreeStats stats, DiscreteAction rj, double rjduration, int rjn, double rjWeight, DiscreteAction nourish)
         {
             DiscreteAction action = new DiscreteAction();
-            double nourishCasts = (rjduration - rj.Time * rjn) / ((1.0f - 0.1f * Talents.NaturesBounty) * nourish.Time);
+//            double nourishCasts = (rjduration - rj.Time * rjn) / ((1.0f - 0.1f * Talents.NaturesBounty) * nourish.Time);
+            double nourishCasts = (rjduration - rj.Time * rjn) / ((1.0f - 0.1f ) * nourish.Time);
             action.Time = rjduration;
             action.Periodic = rj.Periodic * rjn * rjWeight;
             action.Direct = rj.Direct * rjn * rjWeight + nourishCasts * nourish.Direct;
@@ -547,7 +551,7 @@ namespace Rawr.Tree
         // cast Lifebloom on raid during ToL, then an amortized Healing Touch using the average number of clearcasts from the Lifebloom
         DiscreteAction buildTolLbCcHt(TreeStats stats, double lifebloomTicks, DiscreteAction tollb, double tollbWeight, DiscreteAction ccht)
         {
-            double cchtsPerLifebloom = lifebloomTicks * 0.02f * Talents.MalfurionsGift;
+            double cchtsPerLifebloom = lifebloomTicks * 0.02f; // *Talents.MalfurionsGift;
 
             DiscreteAction action = new DiscreteAction();
             action.Time = tollb.Time + cchtsPerLifebloom * ccht.Time;
@@ -590,39 +594,54 @@ namespace Rawr.Tree
             #region Talents
             double rejuvenationInstantTicks = 0;
 
-            spells[(int)TreeSpell.Swiftmend].ExtraDirectBonus += 0.02f * Talents.Genesis;
+//            spells[(int)TreeSpell.Swiftmend].ExtraDirectBonus += 0.02f * Talents.Genesis;
 
-            spells[(int)TreeSpell.Rejuvenation].ExtraTickBonus += Talents.BlessingOfTheGrove * 0.02f;
+//            spells[(int)TreeSpell.Rejuvenation].ExtraTickBonus += Talents.BlessingOfTheGrove * 0.02f;
 
-            spells[(int)TreeSpell.Nourish].TimeReductionMS += 250 * Talents.Naturalist;
-            spells[(int)TreeSpell.HealingTouch].TimeReductionMS += 250 * Talents.Naturalist;
+//            spells[(int)TreeSpell.Nourish].TimeReductionMS += 250 * Talents.Naturalist;
+//            spells[(int)TreeSpell.HealingTouch].TimeReductionMS += 250 * Talents.Naturalist;
 
-            spells[(int)TreeSpell.Rejuvenation].ExtraTickBonus += 0.05f * Talents.ImprovedRejuvenation;
-            spells[(int)TreeSpell.Swiftmend].ExtraTickBonus += 0.05f * Talents.ImprovedRejuvenation;
-            spells[(int)TreeSpell.Swiftmend].ExtraDirectBonus += 0.05f * Talents.ImprovedRejuvenation;
+//            spells[(int)TreeSpell.Rejuvenation].ExtraTickBonus += 0.05f * Talents.ImprovedRejuvenation;
+//            spells[(int)TreeSpell.Swiftmend].ExtraTickBonus += 0.05f * Talents.ImprovedRejuvenation;
+//            spells[(int)TreeSpell.Swiftmend].ExtraDirectBonus += 0.05f * Talents.ImprovedRejuvenation;
 
             // according to Paragon's Anaram posting on ElitistJerks, Efflorescence double-dips Master Shapeshifter and Harmony
-            spells[(int)TreeSpell.Swiftmend].TickMultiplier *= 0.04f * Talents.Efflorescence * (1.0f + Talents.MasterShapeshifter * 0.04f) * (1.0f + stats.Harmony);
+//            spells[(int)TreeSpell.Swiftmend].TickMultiplier *= 0.04f * Talents.Efflorescence * (1.0f + Talents.MasterShapeshifter * 0.04f) * (1.0f + stats.Harmony);
 
-            spells[(int)TreeSpell.Nourish].ExtraDirectBonus += 0.05f * Talents.EmpoweredTouch;
-            spells[(int)TreeSpell.HealingTouch].ExtraDirectBonus += 0.05f * Talents.EmpoweredTouch;
-            spells[(int)TreeSpell.Regrowth].ExtraDirectBonus += 0.05f * Talents.EmpoweredTouch;
+//            spells[(int)TreeSpell.Nourish].ExtraDirectBonus += 0.05f * Talents.EmpoweredTouch;
+//            spells[(int)TreeSpell.HealingTouch].ExtraDirectBonus += 0.05f * Talents.EmpoweredTouch;
+//            spells[(int)TreeSpell.Regrowth].ExtraDirectBonus += 0.05f * Talents.EmpoweredTouch;
 
             // formula from TreeCalcs
             // TODO: test this in-game
-            rejuvenationInstantTicks = Talents.GiftOfTheEarthmother * 0.05f * Math.Floor(4.0f * (1 + StatConversion.GetSpellHasteFromRating((float)stats.Haste.HasteRating)) + 0.5f) * 1.0135f;
-            spells[(int)TreeSpell.Lifebloom].DirectMultiplier *= 1 + Talents.GiftOfTheEarthmother * 0.05f;
+            rejuvenationInstantTicks = 0; // Talents.GiftOfTheEarthmother * 0.05f * Math.Floor(4.0f * (1 + StatConversion.GetSpellHasteFromRating((float)stats.Haste.HasteRating)) + 0.5f) * 1.0135f;
+//            spells[(int)TreeSpell.Lifebloom].DirectMultiplier *= 1 + Talents.GiftOfTheEarthmother * 0.05f;
 
-            if (Talents.SwiftRejuvenation > 0)
-                spells[(int)TreeSpell.Rejuvenation].TimeReductionMS = 500;
+//            if (Talents.SwiftRejuvenation > 0)
+//              spells[(int)TreeSpell.Rejuvenation].TimeReductionMS = 500;  
             #endregion
 
             #region Glyphs
-            if (Talents.GlyphOfRejuvination)
-                spells[(int)TreeSpell.Rejuvenation].ExtraTickBonus += 0.1f;
 
-            if (Talents.GlyphOfRegrowth)
-                spells[(int)TreeSpell.Regrowth].ExtraDurationMS += (Talents.GlyphOfRegrowth ? (int)(Math.Min(opts.GlyphOfRegrowthExtraDuration, calc.FightLength) * 1000.0) : 0);
+            if (Talents.GlyphofRegrowth)
+            {
+                spells[(int)TreeSpell.Regrowth].Stats.SpellCrit += 0.4f;
+                // Clear of periodic effect
+                spells[(int)TreeSpell.Regrowth].Data = CalculationsTree.SpellData[(int)TreeSpell.Regrowth].Clone();
+                spells[(int)TreeSpell.Regrowth].Data.BaseDurationMS = 0;
+                spells[(int)TreeSpell.Regrowth].Data.TickHeal = 0;
+                spells[(int)TreeSpell.Regrowth].Data.TickCoeff = 0;
+            }
+
+            if (Talents.GlyphofBlooming)
+            {
+                spells[(int)TreeSpell.Lifebloom].Data = CalculationsTree.SpellData[(int)TreeSpell.Lifebloom].Clone();
+                spells[(int)TreeSpell.Lifebloom].Data.BaseDurationMS = 10000;
+                spells[(int)TreeSpell.Lifebloom].Data.MinHeal = (int)Math.Round(1.5f * spells[(int)TreeSpell.Lifebloom].Data.MinHeal);
+                spells[(int)TreeSpell.Lifebloom].Data.MaxHeal = (int)Math.Round(1.5f * spells[(int)TreeSpell.Lifebloom].Data.MaxHeal);
+                spells[(int)TreeSpell.Lifebloom].Data.Coeff = Math.Round(1.5f * spells[(int)TreeSpell.Lifebloom].Data.Coeff);
+
+            }
             #endregion
 
             for (int i = 0; i < (int)TreeSpell.Count; ++i)
@@ -651,6 +670,12 @@ namespace Rawr.Tree
                 }
             }
 
+            if (T14Count >= 2)
+            {
+                spells[(int)TreeSpell.Rejuvenation].Data = CalculationsTree.SpellData[(int)TreeSpell.Rejuvenation].Clone();
+                spells[(int)TreeSpell.Rejuvenation].Data.Mana = (int)Math.Floor(spells[(int)TreeSpell.Rejuvenation].Data.Mana * 0.90f );  // TODO: Fix double rounding
+            }
+
             // optimization to avoid duplicating computations
             spells[(int)TreeSpell.HealingTouch].Action.Time = spells[(int)TreeSpell.Nourish].Action.Time;
             spells[(int)TreeSpell.WildGrowth].Action.Time = spells[(int)TreeSpell.Swiftmend].Action.Time;
@@ -669,11 +694,11 @@ namespace Rawr.Tree
 
             #region Cooldowns
             spells[(int)TreeSpell.WildGrowth].Action.Cooldown = 8 + opts.WildGrowthCastDelay;
-            if (character.DruidTalents.GlyphOfWildGrowth)
+            if (character.DruidTalents.GlyphofWildGrowth)
                 spells[(int)TreeSpell.WildGrowth].Action.Cooldown += 2;
 
-            spells[(int)TreeSpell.Tranquility].Action.Cooldown = 8 * 60 - (150 * Talents.MalfurionsGift) + opts.TranquilityCastDelay;
-            spells[(int)TreeSpell.Swiftmend].Action.Cooldown = 15 + opts.SwiftmendCastDelay;
+            spells[(int)TreeSpell.Tranquility].Action.Cooldown = 3 * 60 + opts.TranquilityCastDelay;  // 8 * 60 - (150 * Talents.MalfurionsGift)
+            spells[(int)TreeSpell.Swiftmend].Action.Cooldown = 15 + opts.SwiftmendCastDelay - (T14Count >= 4 ? 3 : 0);  // T14 4 set bonus reduces swiftmend cooldown by 3
             #endregion
 
             return spells;
@@ -696,16 +721,11 @@ namespace Rawr.Tree
             if (T11Count >= 2)
                 lifebloomExtraTickCrit += 0.05f;
 
-            tankLivingSeed = raidLivingSeed = 0.1f * Talents.LivingSeed;
+            tankLivingSeed = raidLivingSeed = 0.1f; // LivingSeed always active for resto *Talents.LivingSeed;
             raidLivingSeed *= opts.LivingSeedEH;
 
-            regrowthExtraCrit += 0.2f * Talents.NaturesBounty;
+            regrowthExtraCrit += 0.6f;  // Crit bonus part of regrowth *Talents.NaturesBounty;
 
-            if (Talents.GlyphOfLifebloom)
-            {
-                lifebloomExtraDirectCrit += 0.1f;
-                lifebloomExtraTickCrit += 0.1f;
-            }
             #endregion
 
             #region Crit
@@ -746,8 +766,7 @@ namespace Rawr.Tree
 
         ContinuousAction[] computeDivisionActions(TreeStats stats, TreeComputedData data, ComputedSpell[] spells)
         {
-            double healingTouchNSReduction = 0;
-            bool swiftmendEatsRejuvenation = true;
+            double healingTouchSMReduction = 0;
             double swiftmendExtraTargets = 0;
             double lifebloomManaPerTick = 0;
 
@@ -757,11 +776,8 @@ namespace Rawr.Tree
             if (T12Count >= 4)
                 swiftmendExtraTargets += opts.SwiftmendExtraHealEH;
 
-            if (Talents.GlyphOfSwiftmend)
-                swiftmendEatsRejuvenation = false;
-
-            if (Talents.GlyphOfHealingTouch)
-                healingTouchNSReduction = 10;
+            if (Talents.GlyphofHealingTouch)
+                healingTouchSMReduction = 1;
 
             data.LifebloomMPSGain = lifebloomManaPerTick * spells[(int)TreeSpell.Lifebloom].TPS;
 
@@ -789,7 +805,7 @@ namespace Rawr.Tree
 
             #region Targets
             double defaultCritMultiplier = getCritMultiplier(stats, 0, 0);
-            double wgTargets = (Talents.GlyphOfWildGrowth ? 6 : 5) + stats.TreeOfLifeUptime * 2;
+            double wgTargets = (Talents.GlyphofWildGrowth ? 6 : 5) + stats.TreeOfLifeUptime * 2;
 
             actions[(int)TreeAction.TankWildGrowth].Periodic += (wgTargets - 1) * actions[(int)TreeAction.RaidWildGrowth].Periodic * opts.TankRaidHealingWeight;
             actions[(int)TreeAction.RaidWildGrowth].Periodic *= wgTargets;
@@ -808,11 +824,6 @@ namespace Rawr.Tree
 
             actions[(int)TreeAction.TankSwiftmend].Ticks *= Math.Max(3 * opts.EfflorescenceEH, 1);
             actions[(int)TreeAction.RaidSwiftmend].Ticks *= 3 * opts.EfflorescenceEH;
-            #endregion
-
-            #region Swiftmend
-            if (swiftmendEatsRejuvenation)
-                actions[(int)TreeAction.RaidSwiftmend].Direct -= actions[(int)TreeAction.RaidRejuvenation].Periodic * 0.5f;
             #endregion
 
             #region Lifebloom
@@ -853,22 +864,6 @@ namespace Rawr.Tree
                 actions[(int)TreeAction.RaidSwiftHT].Direct *= nshtMultiplier;
                 actions[(int)TreeAction.TankSwiftHT].Direct *= nshtMultiplier;
 
-                if (healingTouchNSReduction > 0)
-                {
-                    // add the NS effect as an amortized extra heal to each HT
-                    double swiftHtFraction = (healingTouchNSReduction / (180.0 + opts.NaturesSwiftnessCastDelay));
-                    double htAddTime = swiftHtFraction * stats.Haste.HastedGCD;
-                    double htMulDirect = 1 + swiftHtFraction * nshtMultiplier;
-                    double htMulMana = 1 + swiftHtFraction;
-
-                    actions[(int)TreeAction.TankHealingTouch].Time += htAddTime;
-                    actions[(int)TreeAction.TankHealingTouch].Mana *= htMulMana;
-                    actions[(int)TreeAction.TankHealingTouch].Direct *= htMulDirect;
-
-                    actions[(int)TreeAction.RaidHealingTouch].Time += htAddTime;
-                    actions[(int)TreeAction.RaidHealingTouch].Mana *= htMulMana;
-                    actions[(int)TreeAction.RaidHealingTouch].Direct *= htMulDirect;
-                }
             }
             #endregion
 
@@ -903,9 +898,9 @@ namespace Rawr.Tree
             actions[(int)TreeAction.ReLifebloom].Cooldown = data.LifebloomRefreshInterval;
 
             // TODO: actually compute hit instead of assuming we have 0 hit; also maybe have an option/BossHandler value for the target level (there might a permanent add with lower level than the boss)
-            actions[(int)TreeAction.InsectSwarm].Time = stats.Haste.HastedGCD / (1 - StatConversion.GetSpellMiss(character.Level - character.BossOptions.Level, false));
-            actions[(int)TreeAction.InsectSwarm].Mana = ((int)Math.Floor(CalculationsTree.BaseMana * 8 / 100f) - stats.SpellsManaCostReduction) * stats.SpellsManaCostMultiplier;
-            actions[(int)TreeAction.InsectSwarm].Cooldown = 12 + Talents.Genesis * 2;
+            actions[(int)TreeAction.Moonfire].Time = stats.Haste.HastedGCD / (1 - StatConversion.GetSpellMiss(character.Level - character.BossOptions.Level, false));
+            actions[(int)TreeAction.Moonfire].Mana = ((int)Math.Floor(CalculationsTree.BaseMana * 8.4 / 100f) - stats.SpellsManaCostReduction) * stats.SpellsManaCostMultiplier;
+            actions[(int)TreeAction.Moonfire].Cooldown = 14; // +Talents.Genesis * 2;
             #endregion
 
             ContinuousAction[] factions = new ContinuousAction[(int)TreeAction.Count];
@@ -929,15 +924,15 @@ namespace Rawr.Tree
             bool procNaturesGraceWithCCs = false;
 
             bool naturesGraceHandled = false;
-            if (InsectSwarm)
+            if (Moonfire)
                 naturesGraceHandled = true;
 
             double dhrate = 0;
 
-            double ccrate = spells[(int)TreeSpell.Lifebloom].TPS * 0.02f * Talents.MalfurionsGift;
+            double ccrate = spells[(int)TreeSpell.Lifebloom].TPS * 0.02f; // *Talents.MalfurionsGift;
             if (ccrate != 0.0f)
             {
-                if (procNaturesGraceWithCCs && Talents.NaturesGrace > 0)
+                if (procNaturesGraceWithCCs) // && Talents.NaturesGrace > 0)
                 {
                     naturesGraceHandled = true;
                     dist.AddAction(onTank ? (int)TreeAction.TankClearRegrowth : (int)TreeAction.RaidClearRegrowth, 1.0f / 60.0f * spells[(int)TreeSpell.Regrowth].Action.Time);
@@ -952,7 +947,7 @@ namespace Rawr.Tree
                 }
             }
 
-            if (!naturesGraceHandled && Talents.NaturesGrace > 0)
+            if (!naturesGraceHandled) // && Talents.NaturesGrace > 0)
             {
                 dist.AddAction(onTank ? (int)TreeAction.TankRegrowth : (int)TreeAction.RaidRegrowth, 1.0f / 60.0f * spells[(int)TreeSpell.Regrowth].Action.Time);
                 dhrate += 1.0f / 60.0f;
@@ -970,8 +965,8 @@ namespace Rawr.Tree
         void addPassiveHealing(ActionDistribution dist, TreeStats stats)
         {
             dist.AddPassive((int)TreePassive.HealingTrinkets, stats.Healed * stats.DirectHealMultiplier * getCritMultiplier(stats, 0, 0));
-            if (InsectSwarm)
-                dist.AddActionOnCooldown((int)TreeAction.InsectSwarm);
+            if (Moonfire)
+                dist.AddActionOnCooldown((int)TreeAction.Moonfire);
         }
 
         void addSelfHealing(ActionDistribution dist, ContinuousAction[] actions, ComputedSpell[] spells, double weight)
@@ -990,7 +985,7 @@ namespace Rawr.Tree
                 ComputedSpell[] spells = calc.Spells[div];
                 TreeComputedData data = DivisionData[div];
 
-                bool refreshLBWithDHs = Talents.EmpoweredTouch == 2 && opts.RefreshLifebloomWithDirectHeals;
+                bool refreshLBWithDHs = (!Talents.GlyphofBlooming) && opts.RefreshLifebloomWithDirectHeals; // Talents.EmpoweredTouch == 2 &&
                 ContinuousAction[] actions = calc.Actions[div];
                 ActionDistribution dist = new ActionDistribution(actions, (int)TreePassive.Count);
                 if (!burst)
@@ -1018,7 +1013,7 @@ namespace Rawr.Tree
                 if (opts.RejuvenationTankDuringRaid)
                     dist.AddActionOnCooldown((int)TreeAction.TankRejuvenation);
 
-                if (Talents.WildGrowth > 0)
+//                if (Talents.WildGrowth > 0)
                     dist.AddActionOnCooldown((int)TreeAction.RaidWildGrowth);
 
                 dists[div] = dist;
@@ -1031,8 +1026,8 @@ namespace Rawr.Tree
             candidatesList.Add((int)TreeAction.RaidHealingTouch);
             candidatesList.Add((int)TreeAction.RaidNourish);
             candidatesList.Add((int)TreeAction.RaidRegrowth);
-            if(character.DruidTalents.NaturesBounty > 0)
-                candidatesList.Add(opts.RejuvenationTankDuringRaid ? (int)TreeAction.RaidRj2NourishNB : (int)TreeAction.RaidRj3NourishNB);
+//            if(character.DruidTalents.NaturesBounty > 0)
+//                candidatesList.Add(opts.RejuvenationTankDuringRaid ? (int)TreeAction.RaidRj2NourishNB : (int)TreeAction.RaidRj3NourishNB);
             candidatesList.Add((int)TreeAction.RaidTolLb);
             candidatesList.Add((int)TreeAction.RaidTolLbCcHt);
             candidates = candidatesList.ToArray();
@@ -1057,7 +1052,8 @@ namespace Rawr.Tree
                 addPassiveHealing(dist, stats);
                 addSelfHealing(dist, actions, spells, opts.TankRaidHealingWeight);
 
-                addLifebloomRefresh(dist, actions, spells[(int)TreeSpell.Lifebloom], data, Talents.EmpoweredTouch != 0, true);
+//                addLifebloomRefresh(dist, actions, spells[(int)TreeSpell.Lifebloom], data, Talents.EmpoweredTouch != 0, true);
+                addLifebloomRefresh(dist, actions, spells[(int)TreeSpell.Lifebloom], data, !Talents.GlyphofBlooming, true);
 
                 // assume we will automatically heal the tank enough to refresh lifebloom if we have Empowered Touch
                 addSpecialDirectHeals(dist, spells, stats, true, !burst, 0, false);
@@ -1065,7 +1061,7 @@ namespace Rawr.Tree
                 if (Restoration && opts.TankSwiftmend)
                     dist.AddActionOnCooldown((int)TreeAction.TankSwiftmend);
 
-                if (!burst && opts.TankWildGrowth && Talents.WildGrowth > 0)
+                if (!burst && opts.TankWildGrowth) // && Talents.WildGrowth > 0)
                     dist.AddActionOnCooldown((int)TreeAction.TankWildGrowth);
 
                 dists[div] = dist;
@@ -1078,8 +1074,8 @@ namespace Rawr.Tree
             candidatesList.Add((int)TreeAction.TankHealingTouch);
             candidatesList.Add((int)TreeAction.TankNourish);
             candidatesList.Add((int)TreeAction.TankRegrowth);
-            if(character.DruidTalents.NaturesBounty > 0)
-                candidatesList.Add((int)TreeAction.TankRj2NourishNB);
+//            if(character.DruidTalents.NaturesBounty > 0)
+//                candidatesList.Add((int)TreeAction.TankRj2NourishNB);
             candidatesList.Add((int)TreeAction.TankTolLbCcHt);
             candidates = candidatesList.ToArray();
 

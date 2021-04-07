@@ -56,13 +56,6 @@ namespace Rawr.Enhance
             set { _buffStats = value; }
         }
 
-        private int _targetLevel;
-        public int TargetLevel
-        {
-            get { return _targetLevel; }
-            set { _targetLevel = value; }
-        }
-
         private float _attackPower;
         public float AttackPower
         {
@@ -523,9 +516,9 @@ namespace Rawr.Enhance
             displayFormat += "\r\nMastery rating of {1:0.#} adds {2:0.0#} Mastery";
             displayFormat += "\r\nIncreases all Fire, Frost, and Nature Damage by {3:0.00%}.";
             dictValues.Add("Mastery", string.Format(displayFormat,
-                    8f + StatConversion.GetMasteryFromRating(BasicStats.MasteryRating),
+                    BasicStats.Mastery + StatConversion.GetMasteryFromRating(BasicStats.MasteryRating),
                     BasicStats.MasteryRating, StatConversion.GetMasteryFromRating(BasicStats.MasteryRating),
-                    (8f + StatConversion.GetMasteryFromRating(BasicStats.MasteryRating)) * 0.025f));
+                    (BasicStats.Mastery + StatConversion.GetMasteryFromRating(BasicStats.MasteryRating)) * 0.025f));
             #endregion
             #region Melee
             //dictValues.Add("Damage"

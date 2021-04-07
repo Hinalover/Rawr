@@ -134,6 +134,30 @@ namespace Rawr {
             SpineofDeathwing SpineofDeathwing = new SpineofDeathwing();
             MadnessofDeathwing MadnessofDeathwing = new MadnessofDeathwing();
             #endregion
+            #region ==== Tier 14 Content ====
+            // World Bosses
+            ShaofAnger ShaofAnger = new ShaofAnger();
+            SalyissWarband SalyissWarband = new SalyissWarband();
+            // Mogu'shan Vaults
+            TheStoneGuard TheStoneGuard = new TheStoneGuard();
+            FengtheAccursed FengtheAccursed = new FengtheAccursed();
+            GarajaltheSpiritbinder GarajaltheSpiritbinder = new GarajaltheSpiritbinder();
+            TheSpiritKings TheSpiritKings = new TheSpiritKings();
+            Elegon Elegon = new Elegon();
+            WillOfTheEmperor WillOfTheEmperor = new WillOfTheEmperor();
+            // Heart of Fear
+            ImperialVizierZorlok ImperialVizierZorlok = new ImperialVizierZorlok();
+            BladeLordTayak BladeLordTayak = new BladeLordTayak();
+            Garalon Garalon = new Garalon();
+            WindLordMeljarak WindLordMeljarak = new WindLordMeljarak();
+            AmberShaperUnsok AmberShaperUnsok = new AmberShaperUnsok();
+            GrandEmpressShekzeer GrandEmpressShekzeer = new GrandEmpressShekzeer();
+            // Terrace of Endless Spring
+            ProtectorsOfTheEndless ProtectorsOfTheEndless = new ProtectorsOfTheEndless();
+            Tsulong Tsulong = new Tsulong();
+            LeiShi LeiShi = new LeiShi();
+            ShaOfFear ShaOfFear = new ShaOfFear();
+            #endregion
             #endregion
             list = new BossHandler[] {
                 #region ==== Tier 7 Content ====
@@ -256,6 +280,30 @@ namespace Rawr {
                 WarmasterBlackhorn[0],WarmasterBlackhorn[1],WarmasterBlackhorn[2],WarmasterBlackhorn[3],WarmasterBlackhorn[4],
                 SpineofDeathwing[0],SpineofDeathwing[1],SpineofDeathwing[2],SpineofDeathwing[3],SpineofDeathwing[4],
                 MadnessofDeathwing[0],MadnessofDeathwing[1],MadnessofDeathwing[2],MadnessofDeathwing[3],MadnessofDeathwing[4],
+                #endregion
+                #region ==== Tier 14 Content ====
+                // World Bosses
+                ShaofAnger[0], 
+                SalyissWarband[0],
+                // Mogu'shan Vaults
+                TheStoneGuard[0],TheStoneGuard[1],TheStoneGuard[2],TheStoneGuard[3],TheStoneGuard[4],
+                FengtheAccursed[0],FengtheAccursed[1],FengtheAccursed[2],FengtheAccursed[3],FengtheAccursed[4],
+                GarajaltheSpiritbinder[0],GarajaltheSpiritbinder[1],GarajaltheSpiritbinder[2],GarajaltheSpiritbinder[3],GarajaltheSpiritbinder[4],
+                TheSpiritKings[0],TheSpiritKings[1],TheSpiritKings[2],TheSpiritKings[3],TheSpiritKings[4],
+                Elegon[0],Elegon[1],Elegon[2],Elegon[3],Elegon[4],
+                WillOfTheEmperor[0],WillOfTheEmperor[1],WillOfTheEmperor[2],WillOfTheEmperor[3],WillOfTheEmperor[4],
+                // Heart of Fear
+                ImperialVizierZorlok[0],ImperialVizierZorlok[1],ImperialVizierZorlok[2],ImperialVizierZorlok[3],ImperialVizierZorlok[4],
+                BladeLordTayak[0],BladeLordTayak[1],BladeLordTayak[2],BladeLordTayak[3],BladeLordTayak[4],
+                Garalon[0],Garalon[1],Garalon[2],Garalon[3],Garalon[4],
+                WindLordMeljarak[0],WindLordMeljarak[1],WindLordMeljarak[2],WindLordMeljarak[3],WindLordMeljarak[4],
+                AmberShaperUnsok[0],AmberShaperUnsok[1],AmberShaperUnsok[2],AmberShaperUnsok[3],AmberShaperUnsok[4],
+                GrandEmpressShekzeer[0],GrandEmpressShekzeer[1],GrandEmpressShekzeer[2],GrandEmpressShekzeer[3],GrandEmpressShekzeer[4],
+                // Terrace of Endless Spring
+                ProtectorsOfTheEndless[0],ProtectorsOfTheEndless[1],ProtectorsOfTheEndless[2],ProtectorsOfTheEndless[3],ProtectorsOfTheEndless[4],
+                Tsulong[0],Tsulong[1],Tsulong[2],Tsulong[3],Tsulong[4],
+                LeiShi[0],LeiShi[1],LeiShi[2],LeiShi[3],LeiShi[4],
+                ShaOfFear[0],ShaOfFear[1],ShaOfFear[2],ShaOfFear[3],ShaOfFear[4],
                 #endregion
 
             };
@@ -570,8 +618,8 @@ namespace Rawr {
 
         private void CalculateEZAttack(List<Attack> attacks, int maxPlayers, string name, bool defaultmelee, out Attack toAdd) {
             bool isDot = attacks[0].IsDoT;
-            float perhit = BossHandler.StandardMeleePerHit[(int)BossHandler.TierLevels.T11_25H] * 2, // start at normal attack, some bosses could be less and it will pick that up
-                pertick = BossHandler.StandardMeleePerHit[(int)BossHandler.TierLevels.T11_25H] * 2,
+            float perhit = BossHandler.StandardMeleePerHit[(int)BossHandler.TierLevels.T14_25H] * 2, // start at normal attack, some bosses could be less and it will pick that up
+                pertick = BossHandler.StandardMeleePerHit[(int)BossHandler.TierLevels.T14_25H] * 2,
                 duration = 20*60,
                 //phasestarttime = 0,
                 //phaseendtime = 20*60,
@@ -1217,12 +1265,12 @@ namespace Rawr {
             float value = 0f;
             #region Info
             retboss.Name = "An Easy Boss";
-            value = (int)BossHandler.TierLevels.T11_25H; foreach (BossHandler boss in passedList) { value = Math.Min(value, (int)boss.Content); } retboss.Content = (BossHandler.TierLevels)Math.Floor(value);
+            value = (int)BossHandler.TierLevels.T14_LFR; foreach (BossHandler boss in passedList) { value = Math.Min(value, (int)boss.Content); } retboss.Content = (BossHandler.TierLevels)Math.Floor(value);
             // Instance Skipped
             retboss.Comment = "An Easy Boss is a compilation of every Boss in your current filter. "
                             + "It takes the lightest values from every point of reference such as Health, "
                             + "Attack Damage, Movement and brings them into a single target.\r\nThe "
-                            + "Primary intention of An Easy Boss is to help fresh 85's with getting ready "
+                            + "Primary intention of An Easy Boss is to help fresh 90's with getting ready "
                             + "to raid. Once you have the appropriate ilevels for raiding and can surpass the "
                             + "requirements listed above, you should move on to The Average Boss.";
             #endregion

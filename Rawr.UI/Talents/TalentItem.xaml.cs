@@ -46,7 +46,8 @@ namespace Rawr.UI
 
         public bool CanPutPoints()
         {
-            return TalentTree.PointsBelowRow(talentData.Row) >= (talentData.Row - 1) * 5 &&
+            return TalentTree.PointsBelowRow(talentData.Row) >= (talentData.Row - 1) &&
+                /*TalentTree.PointsInRow(talentData.Row) == 0 &&*/
                 (talentData.Prerequisite < 0
                 || TalentTree.Talents.Data[talentData.Prerequisite] == TalentTree.GetAttribute(talentData.Prerequisite).MaxPoints);
         }

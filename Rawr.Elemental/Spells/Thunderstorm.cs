@@ -46,13 +46,13 @@ public class Thunderstorm : Spell
             {
                 if (manaRestoreGlyphed == null)
                     manaRestoreGlyphed = new SpecialEffect(Trigger.Use, new Stats { }, 0f, 35f, 1f);
-                return manaRestoreGlyphed.GetAverageProcsPerSecond(35f, 1f, 1f, fightDuration);
+                return manaRestoreGlyphed.GetAverageProcsPerSecond(35f, 1f, 1f, 1f, fightDuration); // FIXME: Pass haste for Real PPM effects
             }
             else
             {
                 if (manaRestoreUnglyphed == null)
                     manaRestoreUnglyphed = new SpecialEffect(Trigger.Use, new Stats { }, 0f, 45f, 1f);
-                return manaRestoreUnglyphed.GetAverageProcsPerSecond(45f, 1f, 1f, fightDuration);
+                return manaRestoreUnglyphed.GetAverageProcsPerSecond(45f, 1f, 1f, 1f, fightDuration); // FIXME: Pass haste for Real PPM effects
             }
         }
 

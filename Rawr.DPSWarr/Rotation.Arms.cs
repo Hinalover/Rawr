@@ -402,7 +402,7 @@ namespace Rawr.DPSWarr {
             // Need to add the special effect from Juggernaut to Mortal Strike, not caring about Slam right now
             if (DPSWarrChar.Talents.Juggernaut > 0 && GetWrapper<Charge>().NumActivatesO20 > 0)
             {
-                float uptime = _SE_ChargeUse[DPSWarrChar.Talents.Juggernaut][DPSWarrChar.Talents.GlyphOfRapidCharge ? 1 : 0].GetAverageUptime(FightDuration / GetWrapper<Charge>().NumActivatesO20, 1f, DPSWarrChar.CombatFactors.CMHItemSpeed, FightDuration);
+                float uptime = _SE_ChargeUse[DPSWarrChar.Talents.Juggernaut][DPSWarrChar.Talents.GlyphOfRapidCharge ? 1 : 0].GetAverageUptime(FightDuration / GetWrapper<Charge>().NumActivatesO20, 1f, DPSWarrChar.CombatFactors.CMHItemSpeed, 1f, FightDuration);
                 // I'm not sure if this is gonna work, but hell, who knows
                 (MS.Ability as MortalStrike).JuggernautBonusCritChance = 0.25f * uptime;
                 //MS = new Skills.MortalStrike(Char, stats, CombatFactors, Whiteattacks, CalcOpts);

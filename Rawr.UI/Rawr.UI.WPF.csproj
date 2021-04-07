@@ -348,6 +348,10 @@
     <Compile Include="UIUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Rawr.Brewmaster\Rawr.Brewmaster.WPF.csproj">
+      <Project>{641E9256-698D-4FB4-9A0C-8EB4FE462ED8}</Project>
+      <Name>Rawr.Brewmaster.WPF</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Rawr.DPSWarr\Rawr.DPSWarr.WPF.csproj">
       <Project>{5DB213F4-2B0A-46DC-ABF3-4868E73D99EE}</Project>
       <Name>Rawr.DPSWarr.WPF</Name>
@@ -359,6 +363,14 @@
     <ProjectReference Include="..\Rawr.Enhance\Rawr.Enhance.WPF.csproj">
       <Project>{09E75950-51AB-4248-A4F7-FE928959BFC8}</Project>
       <Name>Rawr.Enhance.WPF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rawr.Feral\Rawr.Feral.WPF.csproj">
+      <Project>{A5B3AAD4-0B20-42E8-AA12-9D3B1FA0507D}</Project>
+      <Name>Rawr.Feral.WPF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rawr.Mistweaver\Rawr.Mistweaver.WPF.csproj">
+      <Project>{E7F36510-1020-4A3B-A51D-57CFFD94D065}</Project>
+      <Name>Rawr.Mistweaver.WPF</Name>
     </ProjectReference>
     <ProjectReference Include="..\Rawr.ShadowPriest\Rawr.ShadowPriest.WPF.csproj">
       <Project>{5895FA29-3131-4C64-9C81-93F1EA139F6A}</Project>
@@ -431,6 +443,10 @@
     <ProjectReference Include="..\Rawr.Warlock\Rawr.Warlock.WPF.csproj">
       <Project>{320CAEFB-813C-487C-8EA0-2B3D347865FC}</Project>
       <Name>Rawr.Warlock.WPF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rawr.Windwalker\Rawr.Windwalker.WPF.csproj">
+      <Project>{4B210BB3-FFF7-4EA7-8C14-917E82B39194}</Project>
+      <Name>Rawr.Windwalker.WPF</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

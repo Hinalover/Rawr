@@ -8,24 +8,25 @@ namespace Rawr.Mage
     public enum StandardEffect
     {
         None = 0,
-        FlameOrb = 0x1,
+        Invocation = 0x1,
         PowerInfusion = 0x2,
         VolcanicPotion = 0x4,
         ArcanePower = 0x8,
         Combustion = 0x10,
         Berserking = 0x20,
-        FlameCap = 0x40,
+        Mage2T15Effect = 0x40,
         Heroism = 0x80,
         IcyVeins = 0x100,
-        MoltenFury = 0x200,
+        IncantersWard = 0x200,
         Evocation = 0x400,
         ManaGemEffect = 0x800,
         MirrorImage = 0x1000,
         BloodFury = 0x2000,
         MageArmor = 0x4000,
         MoltenArmor = 0x8000,
-        FrostArmor = 0x10000, // make sure to update shifting of item based effects if this changes (Solver.standardEffectCount)
-        NonItemBasedMask = PowerInfusion | VolcanicPotion | ArcanePower | Combustion | Berserking | FlameCap | Heroism | IcyVeins | MoltenFury | ManaGemEffect | MirrorImage | FlameOrb | BloodFury | MageArmor | MoltenArmor | FrostArmor
+        FrostArmor = 0x10000,
+        IncantersWardCooldown = 0x20000, // make sure to update shifting of item based effects if this changes (Solver.standardEffectCount)
+        NonItemBasedMask = PowerInfusion | VolcanicPotion | ArcanePower | Combustion | Berserking | Mage2T15Effect | Heroism | IcyVeins | Invocation | ManaGemEffect | MirrorImage | IncantersWard | IncantersWardCooldown | BloodFury | MageArmor | MoltenArmor | FrostArmor
     }
 
     public class CastingState
@@ -60,7 +61,7 @@ namespace Rawr.Mage
         public float StateSpellPower { get; set; }
 
         public float ArcaneSpellPower { get { return Solver.BaseArcaneSpellPower + StateSpellPower; } }
-        public float FireSpellPower { get { return Solver.BaseFireSpellPower + StateSpellPower + (FlameCap ? 80.0f : 0.0f); } }
+        public float FireSpellPower { get { return Solver.BaseFireSpellPower + StateSpellPower; } }
         public float FrostSpellPower { get { return Solver.BaseFrostSpellPower + StateSpellPower; } }
         public float NatureSpellPower { get { return Solver.BaseNatureSpellPower + StateSpellPower; } }
         public float ShadowSpellPower { get { return Solver.BaseShadowSpellPower + StateSpellPower; } }
@@ -68,9 +69,9 @@ namespace Rawr.Mage
         public float HolySpellPower { get { return Solver.BaseHolySpellPower + StateSpellPower; } }
 
         public float SpiritRegen { get { return Solver.SpiritRegen; } }
-        public float ManaRegen { get { return Solver.ManaRegen + StateManaRegen; } }
-        public float ManaRegen5SR { get { return Solver.ManaRegen5SR + StateManaRegen; } }
-        public float ManaRegenDrinking { get { return Solver.ManaRegenDrinking + StateManaRegen; } }
+        public float ManaRegen { get { return (Solver.BaseManaRegen + Solver.SpiritRegen + StateManaRegen) * StateManaRegenMultiplier * CastingSpeed + Solver.FlatManaRegen; } }
+        public float ManaRegen5SR { get { return (Solver.BaseManaRegen + StateManaRegen) * StateManaRegenMultiplier * CastingSpeed + Solver.FlatManaRegen; } }
+        public float ManaRegenDrinking { get { return (Solver.BaseManaRegen + Solver.SpiritRegen + StateManaRegen) * StateManaRegenMultiplier * CastingSpeed + Solver.FlatManaRegenDrinking; } }
         public float HealthRegen { get { return Solver.HealthRegen; } }
         public float HealthRegenCombat { get { return Solver.HealthRegenCombat; } }
         public float HealthRegenEating { get { return Solver.HealthRegenEating; } }
@@ -82,6 +83,7 @@ namespace Rawr.Mage
         public float Dodge { get { return Solver.Dodge; } }
 
         public float StateManaRegen { get; set; }
+        public float StateManaRegenMultiplier { get; set; }
         public float StateSpellModifier { get; set; }
         public float StateAdditiveSpellModifier { get; set; }
         public float StateEffectMaxMana { get; set; }
@@ -110,7 +112,7 @@ namespace Rawr.Mage
         public float Mastery { get { return StateMastery + Solver.Mastery; } }
 
         public float ManaAdeptBonus { get { return Solver.ManaAdeptMultiplier * Mastery; } }
-        public float FlashburnBonus { get { return Solver.FlashburnMultiplier * Mastery; } }
+        public float IgniteBonus { get { return Solver.IgniteMultiplier * Mastery; } }
         public float FrostburnBonus { get { return Solver.FrostburnMultiplier * Mastery; } }
 
         //public float ResilienceCritDamageReduction { get; set; }
@@ -126,14 +128,11 @@ namespace Rawr.Mage
         public bool Evocation { get; private set; }
         public bool ArcanePower { get; private set; }
         public bool IcyVeins { get; private set; }
-        public bool MoltenFury { get; private set; }
         public bool Heroism { get; private set; }
         public bool VolcanicPotion { get; private set; }
-        public bool FlameCap { get; private set; }
         public bool ManaGemEffect { get; private set; }
         public bool Berserking { get; private set; }
         public bool Combustion { get; private set; }
-        public bool FlameOrb { get; private set; }
         public bool WaterElemental { get { return Solver.Specialization == Specialization.Frost; } }
         public bool MirrorImage { get; private set; }
         public bool PowerInfusion { get; private set; }
@@ -141,8 +140,11 @@ namespace Rawr.Mage
         public bool MageArmor { get; private set; }
         public bool MoltenArmor { get; private set; }
         public bool FrostArmor { get; private set; }
+        public bool Invocation { get; private set; }
+        public bool IncantersWard { get; private set; }
+        public bool IncantersWardCooldown { get; private set; }
+        public bool Mage2T15Effect { get; private set; }
         public bool Frozen { get; set; }
-        public bool UseMageWard { get; set; }
 
         private int effects;
         public int Effects
@@ -157,21 +159,21 @@ namespace Rawr.Mage
                 Evocation = (value & (int)StandardEffect.Evocation) != 0;
                 ArcanePower = (value & (int)StandardEffect.ArcanePower) != 0;
                 IcyVeins = (value & (int)StandardEffect.IcyVeins) != 0;
-                MoltenFury = (value & (int)StandardEffect.MoltenFury) != 0;
                 Heroism = (value & (int)StandardEffect.Heroism) != 0;
                 VolcanicPotion = (value & (int)StandardEffect.VolcanicPotion) != 0;
-                FlameCap = (value & (int)StandardEffect.FlameCap) != 0;
                 ManaGemEffect = (value & (int)StandardEffect.ManaGemEffect) != 0;
                 Berserking = (value & (int)StandardEffect.Berserking) != 0;
                 Combustion = (value & (int)StandardEffect.Combustion) != 0;
-                FlameOrb = (value & (int)StandardEffect.FlameOrb) != 0;
-                //WaterElemental = (value & (int)StandardEffect.WaterElemental) != 0;
                 MirrorImage = (value & (int)StandardEffect.MirrorImage) != 0;
                 PowerInfusion = (value & (int)StandardEffect.PowerInfusion) != 0;
                 BloodFury = (value & (int)StandardEffect.BloodFury) != 0;
                 MageArmor = (value & (int)StandardEffect.MageArmor) != 0;
                 MoltenArmor = (value & (int)StandardEffect.MoltenArmor) != 0;
                 FrostArmor = (value & (int)StandardEffect.FrostArmor) != 0;
+                Invocation = (value & (int)StandardEffect.Invocation) != 0;
+                IncantersWard = (value & (int)StandardEffect.IncantersWard) != 0;
+                IncantersWardCooldown = (value & (int)StandardEffect.IncantersWardCooldown) != 0;
+                Mage2T15Effect = (value & (int)StandardEffect.Mage2T15Effect) != 0;
             }
         }
 
@@ -240,21 +242,6 @@ namespace Rawr.Mage
             }
         }
 
-        private CastingState tier10TwoPieceState;
-        public CastingState Tier10TwoPieceState
-        {
-            get
-            {
-                if (tier10TwoPieceState == null)
-                {
-                    tier10TwoPieceState = Clone();
-                    tier10TwoPieceState.CastingSpeed *= 1.12f;
-                    tier10TwoPieceState.ReferenceCastingState = this;
-                }
-                return tier10TwoPieceState;
-            }
-        }
-
         private CastingState[] HasteProcs { get; set; }
 
         public CastingState()
@@ -286,7 +273,6 @@ namespace Rawr.Mage
             CastingState state = solver.NeedsDisplayCalculations ? new CastingState() : solver.ArraySet.NewCastingState();
             state.Solver = solver;
             state.ReferenceCastingState = null;
-            state.UseMageWard = false;
             state.Effects = effects;
             state.buffLabel = null;
             state.SpellsCount = 0;
@@ -308,9 +294,7 @@ namespace Rawr.Mage
                 state = Solver.ArraySet.NewCastingState();
             }
             state.frozenState = null;
-            state.UseMageWard = UseMageWard;
             state.maintainSnareState = null;
-            state.tier10TwoPieceState = null;
             state.ReferenceCastingState = null;
 
             state.buffLabel = null;
@@ -335,6 +319,7 @@ namespace Rawr.Mage
             state.StateSpellModifier = StateSpellModifier;
             state.StateEffectMaxMana = StateEffectMaxMana;
             state.StateManaRegen = StateManaRegen;
+            state.StateManaRegenMultiplier = StateManaRegenMultiplier;
 
             state.SpellsCount = 0;
             state.CyclesCount = 0;
@@ -346,9 +331,7 @@ namespace Rawr.Mage
         public void Initialize(Solver solver, int effects, bool frozen, float procHasteRating)
         {
             frozenState = null;
-            UseMageWard = false;
             maintainSnareState = null;
-            tier10TwoPieceState = null;
             ReferenceCastingState = null;
             ForceT13 = false;
 
@@ -366,8 +349,6 @@ namespace Rawr.Mage
             BaseStats = solver.BaseStats;
 
             HasteProcs = null;
-
-            float levelScalingFactor = CalculationOptions.LevelScalingFactor;
 
             SnaredTime = CalculationOptions.SnaredTime;
             if (CalculationOptions.MaintainSnare) SnaredTime = 1.0f;
@@ -396,38 +377,32 @@ namespace Rawr.Mage
                     StateSpellPower += effect.SpecialEffect.Stats.SpellPower;
                     SpellHasteRating += effect.SpecialEffect.Stats.HasteRating;
                     stateMasteryRating += effect.SpecialEffect.Stats.MasteryRating;
+                    stateCritRating += effect.SpecialEffect.Stats.CritRating;
                     if (effect.SpecialEffect.Stats.Intellect + effect.SpecialEffect.Stats.HighestStat > 0)
                     {
                         float effectIntellect = (effect.SpecialEffect.Stats.Intellect + effect.SpecialEffect.Stats.HighestStat) * (1 + BaseStats.BonusIntellectMultiplier);
                         StateCritRate += 0.01f * (effectIntellect * solver.SpellCritPerInt);
                         StateSpellPower += effectIntellect;
-                        if (!CalculationOptions.ModeMOP)
-                        {
-                            StateEffectMaxMana += effectIntellect * 15 * (1 + BaseStats.BonusManaMultiplier);
-                        }
                     }
                 }
             }
+            if (Mage2T15Effect)
+            {
+                SpellHasteRating += 1800;
+                stateMasteryRating += 1800;
+                stateCritRating += 1800;
+            }
             if (VolcanicPotion)
             {
-                float effectIntellect = 1200 * (1 + BaseStats.BonusIntellectMultiplier);
+                float effectIntellect = 4000 * (1 + BaseStats.BonusIntellectMultiplier);
                 StateCritRate += 0.01f * (effectIntellect * solver.SpellCritPerInt);
                 StateSpellPower += effectIntellect;
-                if (!CalculationOptions.ModeMOP)
-                {
-                    StateEffectMaxMana += effectIntellect * 15 * (1 + BaseStats.BonusManaMultiplier);
-                }
             }
 
-            if (ManaGemEffect)
-            {
-                StateSpellPower += 0.01f * MageTalents.ImprovedManaGem * (BaseStats.Mana + StateEffectMaxMana);
-            }
+            CastingSpeed = (1 + SpellHasteRating * 0.01f / CalculationOptions.HasteRatingMultiplier) * solver.CastingSpeedMultiplier;
 
-            CastingSpeed = (1 + SpellHasteRating / 1000f * levelScalingFactor) * solver.CastingSpeedMultiplier;
-
-            StateCritRate += stateCritRating / 1400f * levelScalingFactor;
-            StateMastery += stateMasteryRating / 14f * levelScalingFactor;
+            StateCritRate += stateCritRating * 0.01f / CalculationOptions.CritRatingMultiplier;
+            StateMastery += stateMasteryRating / CalculationOptions.MasteryRatingMultiplier;
 
             // spell calculations
 
@@ -451,13 +426,18 @@ namespace Rawr.Mage
             }
 
             StateSpellModifier = 1.0f;
+            StateManaRegen = 0;
+            StateManaRegenMultiplier = 1;
             if (ArcanePower)
             {
-                StateAdditiveSpellModifier += 0.2f;
-            }
-            if (MoltenFury)
-            {
-                StateSpellModifier *= (1 + 0.04f * MageTalents.MoltenFury);
+                if (Solver.Mage4T14)
+                {
+                    StateAdditiveSpellModifier += 0.3f;
+                }
+                else
+                {
+                    StateAdditiveSpellModifier += 0.2f;
+                }
             }
             if (MirrorImage && Solver.Mage4T10)
             {
@@ -467,15 +447,32 @@ namespace Rawr.Mage
             {
                 StateAdditiveSpellModifier += FrostburnBonus;
             }
+            if (Invocation)
+            {
+                StateSpellModifier *= 1.15f;
+                StateManaRegenMultiplier *= 0.5f;
+            }
+            if (IncantersWard)
+            {
+                StateSpellModifier *= 1.30f; // TODO modify based on damage absorbed
+            }
+            if (MageTalents.IncantersWard > 0 && !IncantersWardCooldown)
+            {
+                StateSpellModifier *= 1.06f;
+                StateManaRegenMultiplier *= 1.65f;
+            }
 
-            StateManaRegen = 0;
             if (MageArmor)
             {
-                StateManaRegen += 0.006f * (MageTalents.GlyphOfMageArmor ? 1.2f : 1.0f) * BaseStats.Mana;
+                StateMastery += (float)Math.Round(BaseCombatRating.ConstantSpellScaling(CalculationOptions.PlayerLevel) * 1.7545000315f) / CalculationOptions.MasteryRatingMultiplier;
             }
             if (MoltenArmor)
             {
-                StateCritRate += 0.03f + (MageTalents.GlyphOfMoltenArmor ? 0.02f : 0.0f);
+                StateCritRate += 0.05f;
+            }
+            if (FrostArmor)
+            {
+                CastingSpeed *= 1.07f;
             }
 
             SpellsCount = 0;
@@ -568,27 +565,34 @@ namespace Rawr.Mage
             {
                 if (cycleId != CycleId.ArcaneManaNeutral) // if cycle is based on other cycles make sure we don't double count mixins
                 {
-                    if (UseMageWard)
+                    if (IncantersWardCooldown)
                     {
-                        c = MageWardCycle.GetCycle(Solver.NeedsDisplayCalculations, this, c);
+                        c = IncantersWardCycle.GetCycle(Solver.NeedsDisplayCalculations, this, c);
                     }
                     if (CalculationOptions.MirrorImage == 1)
                     {
                         c = MirrorImageCycle.GetCycle(Solver.NeedsDisplayCalculations, this, c);
                     }
-                    if (FlameOrb)
-                    {
-                        // add flame orb mix-in
-                        c = FlameOrbCycle.GetCycle(Solver.NeedsDisplayCalculations, this, c, false);
-                    }
-                    if (CalculationOptions.PlayerLevel >= 81 && CalculationOptions.FlameOrb == 1)
-                    {
-                        c = FlameOrbCycle.GetCycle(Solver.NeedsDisplayCalculations, this, c, true);
-                    }
                     if (Combustion)
                     {
                         // add combustion mix-in
                         c = CombustionCycle.GetCycle(Solver.NeedsDisplayCalculations, this, c);
+                    }
+                    if (MageTalents.NetherTempest == 1)
+                    {
+                        c = NetherTempestCycle.GetCycle(Solver.NeedsDisplayCalculations, this, c);
+                    }
+                    else if (MageTalents.LivingBomb == 1)
+                    {
+                        c = LivingBombCycle.GetCycle(Solver.NeedsDisplayCalculations, this, c);
+                    }
+                    else if (MageTalents.FrostBomb == 1)
+                    {
+                        c = FrostBombCycle.GetCycle(Solver.NeedsDisplayCalculations, this, c);
+                    }
+                    if (MageTalents.RuneOfPower == 1)
+                    {
+                        c = RuneOfPowerCycle.GetCycle(Solver.NeedsDisplayCalculations, this, c);
                     }
                 }
 
@@ -629,9 +633,10 @@ namespace Rawr.Mage
                         {
                             float trigInterval;
                             float trigChance;
-                            if (baseCycle.GetTriggerData(effect, out trigInterval, out trigChance))
+                            float attackSpeed2;
+                            if (baseCycle.GetTriggerData(effect, out trigInterval, out trigChance, out attackSpeed2))
                             {
-                                baseProcHaste += effect.GetAverageStackSize(trigInterval, trigChance, 3.0f, effectCooldown.SpecialEffect.Duration) * effect.Stats.HasteRating;
+                                baseProcHaste += effect.GetAverageStackSize(trigInterval, trigChance, attackSpeed2, CastingSpeed, effectCooldown.SpecialEffect.Duration) * effect.Stats.HasteRating;
                             }
                         }
                     }
@@ -643,11 +648,12 @@ namespace Rawr.Mage
             if (baseProcHaste == 0 && N == 0) return baseCycle;
             float[] triggerInterval = new float[N];
             float[] triggerChance = new float[N];
+            float[] attackSpeed = new float[N];
             float[] offset = new float[N];
             float[] resets = new float[N];
             for (int i = 0; i < N; i++)
             {
-                baseCycle.GetTriggerData(hasteRatingEffects[i], out triggerInterval[i], out triggerChance[i]);
+                baseCycle.GetTriggerData(hasteRatingEffects[i], out triggerInterval[i], out triggerChance[i], out attackSpeed[i]);
                 if (hasteRatingEffects[i].MaxStack > 1)
                 {
                     if (hasteRatingEffects[i] == Solver.SpecialEffect2T13)
@@ -671,7 +677,7 @@ namespace Rawr.Mage
                     }
                 }
             }
-            WeightedStat[] result = SpecialEffect.GetAverageCombinedUptimeCombinations(hasteRatingEffects, triggerInterval, triggerChance, offset, 3.0f, CalculationOptions.FightDuration, AdditiveStat.HasteRating, resets);
+            WeightedStat[] result = SpecialEffect.GetAverageCombinedUptimeCombinations(hasteRatingEffects, triggerInterval, triggerChance, offset, attackSpeed[0], CastingSpeed, CalculationOptions.FightDuration, AdditiveStat.HasteRating, resets); // should attack speed pass the array???
             if (HasteProcs == null)
             {
                 HasteProcs = new CastingState[result.Length];
@@ -719,38 +725,26 @@ namespace Rawr.Mage
             Cycle c = null;
             switch (cycleId)
             {
-                case CycleId.ABSpam234AM:
-                    c = ABSpam234AM.GetCycle(Solver.NeedsDisplayCalculations, this);
+                case CycleId.AB4AM:
+                    c = AB4AM.GetCycle(Solver.NeedsDisplayCalculations, this);
                     break;
-                case CycleId.ABSpam34AM:
-                    c = ABSpam34AM.GetCycle(Solver.NeedsDisplayCalculations, this);
+                case CycleId.AB4ABar4AM:
+                    c = AB4ABar4AM.GetCycle(Solver.NeedsDisplayCalculations, this);
                     break;
-                case CycleId.ABSpam4AM:
-                    c = ABSpam4AM.GetCycle(Solver.NeedsDisplayCalculations, this);
+                case CycleId.AB4ABar34AM:
+                    c = AB4ABar34AM.GetCycle(Solver.NeedsDisplayCalculations, this);
                     break;
-                case CycleId.ABSpam0234AMABar:
-                    c = ABSpam0234AMABar.GetCycle(Solver.NeedsDisplayCalculations, this);
+                case CycleId.AB34ABar34AM:
+                    c = AB34ABar34AM.GetCycle(Solver.NeedsDisplayCalculations, this);
                     break;
-                case CycleId.ABSpam0234AMABABar:
-                    c = ABSpam0234AMABABar.GetCycle(Solver.NeedsDisplayCalculations, this);
+                case CycleId.AB24ABar34AM:
+                    c = AB24ABar34AM.GetCycle(Solver.NeedsDisplayCalculations, this);
                     break;
-                case CycleId.AB2ABar2AMABar0AMABABar:
-                    c = AB2ABar2AMABar0AMABABar.GetCycle(Solver.NeedsDisplayCalculations, this);
+                case CycleId.AB234ABar34AM:
+                    c = AB234ABar34AM.GetCycle(Solver.NeedsDisplayCalculations, this);
                     break;
-                case CycleId.AB3ABar023AM:
-                    c = AB3ABar023AM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB23ABar023AM:
-                    c = AB23ABar023AM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB2ABar02AMABABar:
-                    c = AB2ABar02AMABABar.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABABar1AM:
-                    c = ABABar1AM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB2ABar12AMABABar:
-                    c = AB2ABar12AMABABar.GetCycle(Solver.NeedsDisplayCalculations, this);
+                case CycleId.AB2ABar0AM:
+                    c = AB2ABar0AM.GetCycle(Solver.NeedsDisplayCalculations, this);
                     break;
                 case CycleId.Frostbolt:
                     c = GetSpell(SpellId.Frostbolt);
@@ -758,57 +752,29 @@ namespace Rawr.Mage
                 case CycleId.Fireball:
                     c = GetSpell(SpellId.Fireball);
                     break;
-                case CycleId.FBPyro:
-                    c = FBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, 0);
+                case CycleId.FBIBPyro:
+                    c = FBIBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, 0);
                     c.CalculateEffects();
                     if (c.effectCrit > 0)
                     {
-                        c = FBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, (float)c.effectCrit);
+                        c = FBIBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, (float)c.effectCrit);
                     }
                     break;
-                case CycleId.FBLBPyro:
-                    c = FBLBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, 1, 0);
+                case CycleId.FFBIBPyro:
+                    c = FFBIBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, 0);
                     c.CalculateEffects();
                     if (c.effectCrit > 0)
                     {
-                        c = FBLBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, 1, (float)c.effectCrit);
+                        c = FFBIBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, (float)c.effectCrit);
                     }
                     break;
-                case CycleId.FFBLBPyro:
-                    c = FFBLBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, 1, 0);
+                case CycleId.ScIBPyro:
+                    c = ScIBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, 0);
                     c.CalculateEffects();
                     if (c.effectCrit > 0)
                     {
-                        c = FFBLBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, 1, (float)c.effectCrit);
+                        c = ScIBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, (float)c.effectCrit);
                     }
-                    break;
-                case CycleId.FBLB3Pyro:
-                    c = FBLBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, Math.Min(3, CalculationOptions.AoeTargets), 0);
-                    c.CalculateEffects();
-                    if (c.effectCrit > 0)
-                    {
-                        c = FBLBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, Math.Min(3, CalculationOptions.AoeTargets), (float)c.effectCrit);
-                    }
-                    break;
-                case CycleId.FFBLB3Pyro:
-                    c = FFBLBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, Math.Min(3, CalculationOptions.AoeTargets), 0);
-                    c.CalculateEffects();
-                    if (c.effectCrit > 0)
-                    {
-                        c = FFBLBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, Math.Min(3, CalculationOptions.AoeTargets), (float)c.effectCrit);
-                    }
-                    break;
-                case CycleId.FBScPyro:
-                    c = FBScPyro.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.FFBPyro:
-                    c = FFBPyro.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.FFBScPyro:
-                    c = FFBScPyro.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.FFBScLBPyro:
-                    c = FFBScLBPyro.GetCycle(Solver.NeedsDisplayCalculations, this);
                     break;
                 case CycleId.FrostfireBolt:
                     c = GetSpell(SpellId.FrostfireBolt);
@@ -816,213 +782,12 @@ namespace Rawr.Mage
                 case CycleId.ArcaneBlastSpam:
                     c = GetSpell(SpellId.ArcaneBlast4);
                     break;
-                case CycleId.ABSpam04MBAM:
-                    c = ABSpam04MBAM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABSpam024MBAM:
-                    c = ABSpam024MBAM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABSpam034MBAM:
-                    c = ABSpam034MBAM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABSpam0234MBAM:
-                    c = ABSpam0234MBAM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABSpam4MBAM:
-                    c = ABSpam4MBAM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABSpam24MBAM:
-                    c = ABSpam24MBAM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABSpam234MBAM:
-                    c = ABSpam234MBAM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB4AM234MBAM:
-                    c = AB4AM234MBAM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB3AM23MBAM:
-                    c = AB3AM23MBAM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB4AM0234MBAM:
-                    c = AB4AM0234MBAM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB3AM023MBAM:
-                    c = AB3AM023MBAM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABarAM:
-                    c = new ABarAM(Solver.NeedsDisplayCalculations, this);
-                    break;
-                /*case CycleId.ABP:
-                    c = new ABP(this);
-                    break;*/
-                case CycleId.ABAM:
-                    c = ABAM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABSpamMBAM:
-                    c = new ABSpamMBAM(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABSpam3C:
-                    c = new ABSpam3C(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABSpam03C:
-                    c = new ABSpam03C(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB2ABar3C:
-                    c = new AB2ABar3C(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABABar2C:
-                    c = new ABABar2C(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABABar2MBAM:
-                    c = new ABABar2MBAM(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABABar1MBAM:
-                    c = new ABABar1MBAM(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABABar3C:
-                    c = new ABABar3C(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB3ABar3MBAM:
-                    c = new AB3ABar3MBAM(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB3AM:
-                    c = AB3AM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB2AM:
-                    c = AB2AM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB3AM2MBAM:
-                    c = new AB3AM2MBAM(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB2ABar2MBAM:
-                    c = new AB2ABar2MBAM(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABABar0MBAM:
-                    c = new ABABar0MBAM(Solver.NeedsDisplayCalculations, this);
-                    break;
-                /*case CycleId.ABABar:
-                    c = new ABABar(this);
-                    break;*/
-                case CycleId.ABSpam3MBAM:
-                    c = new ABSpam3MBAM(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABSpam03MBAM:
-                    c = new ABSpam03MBAM(Solver.NeedsDisplayCalculations, this);
-                    break;
-                /*case CycleId.ABAMABar:
-                    c = new ABAMABar(Calculations.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB2AMABar:
-                    c = new AB2AMABar(Calculations.NeedsDisplayCalculations, this);
-                    break;*/
-                case CycleId.AB3AMABar:
-                    c = AB3AMABar.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB3ABar123AM:
-                    c = AB3ABar123AM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB4ABar1234AM:
-                    c = AB4ABar1234AM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB4ABar34AM:
-                    c = AB4ABar34AM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB4ABar4AM:
-                    c = AB4ABar4AM.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB3AMABar2C:
-                    c = new AB3AMABar2C(Solver.NeedsDisplayCalculations, this);
-                    break;
-                /*case CycleId.AB32AMABar:
-                    c = new AB32AMABar(Calculations.NeedsDisplayCalculations, this);
-                    break;*/
-                case CycleId.AB3ABar3C:
-                    c = new AB3ABar3C(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABABar0C:
-                    c = new ABABar0C(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.ABABar1C:
-                    c = new ABABar1C(Solver.NeedsDisplayCalculations, this);
-                    break;
-                /*case CycleId.ABABarY:
-                    c = new ABABarY(Calculations.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB2ABar:
-                    c = new AB2ABar(Calculations.NeedsDisplayCalculations, this);
-                    break;*/
-                case CycleId.AB2ABar2C:
-                    c = new AB2ABar2C(Solver.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB2ABarMBAM:
-                    c = new AB2ABarMBAM(Solver.NeedsDisplayCalculations, this);
-                    break;
                 case CycleId.ArcaneManaNeutral:
                     c = ArcaneManaNeutral.GetCycle(Solver.NeedsDisplayCalculations, this);
                     break;
-                /*case CycleId.AB3ABar:
-                    c = new AB3ABar(Calculations.NeedsDisplayCalculations, this);
+                case CycleId.FFBILFrOFrB:
+                    c = FFBILFrOFrB.GetCycle(Solver.NeedsDisplayCalculations, this);
                     break;
-                case CycleId.AB3ABarX:
-                    c = new AB3ABarX(Calculations.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.AB3ABarY:
-                    c = new AB3ABarY(Calculations.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.FBABar:
-                    c = new FBABar(Calculations.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.FrBABar:
-                    c = new FrBABar(Calculations.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.FFBABar:
-                    c = new FFBABar(Calculations.NeedsDisplayCalculations, this);
-                    break;*/
-                /*case CycleId.ABAMP:
-                    c = new ABAMP(this);
-                    break;
-                case CycleId.AB3AMSc:
-                    c = new AB3AMSc(this);
-                    break;
-                case CycleId.ABAM3Sc:
-                    c = new ABAM3Sc(this);
-                    break;
-                case CycleId.ABAM3Sc2:
-                    c = new ABAM3Sc2(this);
-                    break;
-                case CycleId.ABAM3FrB:
-                    c = new ABAM3FrB(this);
-                    break;
-                case CycleId.ABAM3FrB2:
-                    c = new ABAM3FrB2(this);
-                    break;
-                case CycleId.ABFrB:
-                    c = new ABFrB(this);
-                    break;
-                case CycleId.AB3FrB:
-                    c = new AB3FrB(this);
-                    break;
-                case CycleId.ABFrB3FrB:
-                    c = new ABFrB3FrB(this);
-                    break;
-                case CycleId.ABFrB3FrB2:
-                    c = new ABFrB3FrB2(this);
-                    break;
-                case CycleId.ABFrB3FrBSc:
-                    c = new ABFrB3FrBSc(this);
-                    break;
-                case CycleId.ABFB3FBSc:
-                    c = new ABFB3FBSc(this);
-                    break;
-                case CycleId.AB3Sc:
-                    c = new AB3Sc(this);
-                    break;*/
-                /*case CycleId.FBSc:
-                    c = new FBSc(this);
-                    break;
-                case CycleId.FBFBlast:
-                    c = new FBFBlast(this);
-                    break;*/
                 case CycleId.FrBFBIL:
                     c = FrBFBIL.GetCycle(Solver.NeedsDisplayCalculations, this);
                     break;
@@ -1044,32 +809,6 @@ namespace Rawr.Mage
                 case CycleId.FrBFB:
                     c = FrBFB.GetCycle(Solver.NeedsDisplayCalculations, this);
                     break;
-                case CycleId.FBScLBPyro:
-                    c = FBScLBPyro.GetCycle(Solver.NeedsDisplayCalculations, this);
-                    break;
-                /*case CycleId.FB2ABar:
-                    c = new FB2ABar(Calculations.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.FrB2ABar:
-                    c = new FrB2ABar(Calculations.NeedsDisplayCalculations, this);
-                    break;*/
-                case CycleId.ScLBPyro:
-                    c = ScLBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, 0);
-                    c.CalculateEffects();
-                    if (c.effectCrit > 0)
-                    {
-                        c = ScLBPyro.GetCycle(Solver.NeedsDisplayCalculations, this, (float)c.effectCrit);
-                    }
-                    break;
-                case CycleId.ABABarSlow:
-                    c = new ABABarSlow(Solver.NeedsDisplayCalculations, this);
-                    break;
-                /*case CycleId.FBABarSlow:
-                    c = new FBABarSlow(Calculations.NeedsDisplayCalculations, this);
-                    break;
-                case CycleId.FrBABarSlow:
-                    c = new FrBABarSlow(Calculations.NeedsDisplayCalculations, this);
-                    break;*/
                 case CycleId.CustomSpellMix:
                     c = new SpellCustomMix(Solver.NeedsDisplayCalculations, this);
                     break;
@@ -1161,35 +900,32 @@ namespace Rawr.Mage
                     case SpellId.ArcaneMissiles4:
                         s = Solver.ArcaneMissilesTemplate.GetSpell(this, false, 4);
                         break;
-                    case SpellId.ArcaneMissilesMB:
-                        s = Solver.ArcaneMissilesTemplate.GetSpell(this, true, 0);
+                    case SpellId.ArcaneMissiles5:
+                        s = Solver.ArcaneMissilesTemplate.GetSpell(this, false, 5);
                         break;
-                    case SpellId.ArcaneMissilesMB1:
-                        s = Solver.ArcaneMissilesTemplate.GetSpell(this, true, 1);
+                    case SpellId.ArcaneMissiles6:
+                        s = Solver.ArcaneMissilesTemplate.GetSpell(this, false, 6);
                         break;
-                    case SpellId.ArcaneMissilesMB2:
-                        s = Solver.ArcaneMissilesTemplate.GetSpell(this, true, 2);
+                    case SpellId.NetherTempest:
+                        s = Solver.NetherTempestTemplate.GetSpell(this, false);
                         break;
-                    case SpellId.ArcaneMissilesMB3:
-                        s = Solver.ArcaneMissilesTemplate.GetSpell(this, true, 3);
+                    case SpellId.NetherTempestAOE:
+                        s = Solver.NetherTempestTemplate.GetSpell(this, true);
                         break;
-                    case SpellId.ArcaneMissilesMB4:
-                        s = Solver.ArcaneMissilesTemplate.GetSpell(this, true, 4);
+                    case SpellId.NetherTempestDOT:
+                        s = Solver.NetherTempestTemplate.GetSpellDOT(this, false);
                         break;
-                    case SpellId.ArcaneMissilesNoProc:
-                        s = Solver.ArcaneMissilesTemplate.GetSpell(this, false, true, false, false, 0);
+                    case SpellId.NetherTempestDOTAOE:
+                        s = Solver.NetherTempestTemplate.GetSpellDOT(this, true);
                         break;
                     case SpellId.Frostbolt:
                         s = Solver.FrostboltTemplate.GetSpell(this);
                         break;
-                    case SpellId.FrostboltNoCC:
-                        s = Solver.FrostboltTemplate.GetSpell(this, true, false, false);
-                        break;
                     case SpellId.DeepFreeze:
                         s = Solver.DeepFreezeTemplate.GetSpell(this);
                         break;
-                    case SpellId.FlameOrb:
-                        s = Solver.FlameOrbTemplate.GetSpell(this);
+                    case SpellId.FrozenOrb:
+                        s = Solver.FrozenOrbTemplate.GetSpell(this);
                         break;
                     case SpellId.Fireball:
                         s = Solver.FireballTemplate.GetSpell(this, false, false);
@@ -1212,11 +948,11 @@ namespace Rawr.Mage
                     case SpellId.FireBlast:
                         s = Solver.FireBlastTemplate.GetSpell(this);
                         break;
+                    case SpellId.InfernoBlast:
+                        s = Solver.InfernoBlastTemplate.GetSpell(this);
+                        break;
                     case SpellId.Scorch:
                         s = Solver.ScorchTemplate.GetSpell(this);
-                        break;
-                    case SpellId.ScorchNoCC:
-                        s = Solver.ScorchTemplate.GetSpell(this, false);
                         break;
                     case SpellId.ArcaneBarrage:
                         s = Solver.ArcaneBarrageTemplate.GetSpell(this, 0, false);
@@ -1233,14 +969,11 @@ namespace Rawr.Mage
                     case SpellId.ArcaneBarrage4:
                         s = Solver.ArcaneBarrageTemplate.GetSpell(this, 4, false);
                         break;
-                    case SpellId.ArcaneBlast3:
-                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 3);
+                    case SpellId.ArcaneBarrage5:
+                        s = Solver.ArcaneBarrageTemplate.GetSpell(this, 5, false);
                         break;
-                    case SpellId.ArcaneBlast4:
-                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 4);
-                        break;
-                    case SpellId.ArcaneBlast3NoCC:
-                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 3, true, false, false);
+                    case SpellId.ArcaneBarrage6:
+                        s = Solver.ArcaneBarrageTemplate.GetSpell(this, 6, false);
                         break;
                     case SpellId.ArcaneBlastRaw:
                         s = Solver.ArcaneBlastTemplate.GetSpell(this);
@@ -1248,44 +981,23 @@ namespace Rawr.Mage
                     case SpellId.ArcaneBlast0:
                         s = Solver.ArcaneBlastTemplate.GetSpell(this, 0);
                         break;
-                    case SpellId.ArcaneBlast0NoCC:
-                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 0, true, false, false);
-                        break;
                     case SpellId.ArcaneBlast1:
                         s = Solver.ArcaneBlastTemplate.GetSpell(this, 1);
-                        break;
-                    case SpellId.ArcaneBlast1NoCC:
-                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 1, true, false, false);
                         break;
                     case SpellId.ArcaneBlast2:
                         s = Solver.ArcaneBlastTemplate.GetSpell(this, 2);
                         break;
-                    case SpellId.ArcaneBlast2NoCC:
-                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 2, true, false, false);
+                    case SpellId.ArcaneBlast3:
+                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 3);
                         break;
-                    case SpellId.ArcaneBlast0Hit:
-                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 0, true);
+                    case SpellId.ArcaneBlast4:
+                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 4);
                         break;
-                    case SpellId.ArcaneBlast1Hit:
-                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 1, true);
+                    case SpellId.ArcaneBlast5:
+                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 5);
                         break;
-                    case SpellId.ArcaneBlast2Hit:
-                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 2, true);
-                        break;
-                    case SpellId.ArcaneBlast3Hit:
-                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 3, true);
-                        break;
-                    case SpellId.ArcaneBlast0Miss:
-                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 0, false);
-                        break;
-                    case SpellId.ArcaneBlast1Miss:
-                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 1, false);
-                        break;
-                    case SpellId.ArcaneBlast2Miss:
-                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 2, false);
-                        break;
-                    case SpellId.ArcaneBlast3Miss:
-                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 3, false);
+                    case SpellId.ArcaneBlast6:
+                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 6);
                         break;
                     case SpellId.IceLance:
                         s = Solver.IceLanceTemplate.GetSpell(this);
@@ -1305,6 +1017,12 @@ namespace Rawr.Mage
                     case SpellId.ArcaneExplosion4:
                         s = Solver.ArcaneExplosionTemplate.GetSpell(this, 4);
                         break;
+                    case SpellId.ArcaneExplosion5:
+                        s = Solver.ArcaneExplosionTemplate.GetSpell(this, 5);
+                        break;
+                    case SpellId.ArcaneExplosion6:
+                        s = Solver.ArcaneExplosionTemplate.GetSpell(this, 6);
+                        break;
                     case SpellId.FlamestrikeSpammed:
                         s = Solver.FlamestrikeTemplate.GetSpell(this, true);
                         break;
@@ -1323,17 +1041,11 @@ namespace Rawr.Mage
                     case SpellId.ConeOfCold:
                         s = Solver.ConeOfColdTemplate.GetSpell(this);
                         break;
-                    case SpellId.ArcaneBlast0POM:
-                        s = Solver.ArcaneBlastTemplate.GetSpell(this, 0, false, false, true);
-                        break;
                     case SpellId.FireballPOM:
                         s = Solver.FireballTemplate.GetSpell(this, true, false);
                         break;
                     case SpellId.Slow:
                         s = Solver.SlowTemplate.GetSpell(this);
-                        break;
-                    case SpellId.FrostboltPOM:
-                        s = Solver.FrostboltTemplate.GetSpell(this, false, false, true);
                         break;
                     case SpellId.PyroblastPOM:
                         s = Solver.PyroblastTemplate.GetSpell(this, true, false);
@@ -1350,14 +1062,14 @@ namespace Rawr.Mage
                     case SpellId.LivingBombAOE:
                         s = Solver.LivingBombTemplate.GetSpell(this, true);
                         break;
-                    case SpellId.ArcaneBomb:
-                        s = Solver.ArcaneBombTemplate.GetSpell(this, false);
+                    case SpellId.FrostBomb:
+                        s = Solver.FrostBombTemplate.GetSpell(this, false);
                         break;
-                    case SpellId.ArcaneBombAOE:
-                        s = Solver.ArcaneBombTemplate.GetSpell(this, true);
+                    case SpellId.FrostBombAOE:
+                        s = Solver.FrostBombTemplate.GetSpell(this, true);
                         break;
-                    case SpellId.MageWard:
-                        s = Solver.MageWardTemplate.GetSpell(this);
+                    case SpellId.IncantersWard:
+                        s = Solver.IncantersWardTemplate.GetSpell(this);
                         break;
                 }
             }

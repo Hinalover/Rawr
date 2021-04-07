@@ -16,7 +16,8 @@ namespace Rawr.Enhance
             get
             {
                 // Meta
-                int agile = 68778;
+                int agile = 76884;
+                int fleet = 76887;
 
                 if (_defaultGemmingTemplates == null)
                 {
@@ -185,8 +186,8 @@ namespace Rawr.Enhance
                 if (_subPointNameColors == null)
                 {
                     _subPointNameColors = new Dictionary<string, Color>();
-                    _subPointNameColors.Add("DPS", Color.FromArgb(255, 160, 0, 224));
-                    _subPointNameColors.Add("Survivability", Color.FromArgb(255, 64, 128, 32));
+                    _subPointNameColors.Add("DPS", Color.FromArgb(255, 160, 0, 224));  // 0xFFA000E0
+                    _subPointNameColors.Add("Survivability", Color.FromArgb(255, 64, 128, 32));  // 0xFF408020
                 }
                 return _subPointNameColors;
             }
@@ -220,31 +221,16 @@ namespace Rawr.Enhance
             if (bossOpts == null) { bossOpts = new BossOptions(); }
             
             #region Applied Stats
-            StatsEnhance stats = GetCharacterStats(character, additionalItem, false);
+            StatsEnhance stats = GetCharacterStats(character, additionalItem, true);
             calc.BasicStats = stats;
-            //calc.BuffStats = GetBuffsStats(character.ActiveBuffs, character.SetBonusCount);
-            //Item noBuffs = RemoveAddedBuffs(calc.BuffStats);
-            //calc.EnhSimStats = GetCharacterStats(character, noBuffs, false);
-            calc.EnhSimStats = GetCharacterStats(character, additionalItem, true);
-            calc.TargetLevel = bossOpts.Level;
-            calc.ActiveBuffs = new List<Buff>(character.ActiveBuffs);
+            calc.EnhSimStats = GetCharacterStats(character, additionalItem, false);
+            //calc.ActiveBuffs = new List<Buff>(character.ActiveBuffs);
 
-            float windfuryWeaponBonus = 4430f;  //WFAP
-            float unleashedRage = 0f;
-            switch (character.ShamanTalents.UnleashedRage)
-            {
-                case 1: unleashedRage = .10f; break;
-                case 2: unleashedRage = .20f; break;
-            }
+            float windfuryWeaponBonus = 5090f;  //WFAP
             float flametongueMultiplier = 0.00f;
             if (calcOpts.OffhandImbue == "Flametongue" || calcOpts.MainhandImbue == "Flametongue")
             {
-                flametongueMultiplier = 0.05f;
-                switch (character.ShamanTalents.ElementalWeapons)
-                {
-                    case 1: flametongueMultiplier = 0.06f; break;
-                    case 2: flametongueMultiplier = 0.07f; break;
-                }
+                flametongueMultiplier = 0.07f;
             }
             #endregion
 
@@ -258,14 +244,13 @@ namespace Rawr.Enhance
             // assign basic variables for calcs
             float attackPower = stats.AttackPower;
             float spellPower = stats.SpellPower;
-            float mastery = 1f + ((8f + StatConversion.GetMasteryFromRating(stats.MasteryRating)) * 0.025f);
+            float mastery = 1f + ((stats.Mastery + StatConversion.GetMasteryFromRating(stats.MasteryRating)) * 0.025f); // Check this!!!!
             float wdpsMH = character.MainHand == null ? 46.3f : (stats.WeaponDamage + (character.MainHand.MinDamage + character.MainHand.MaxDamage) / 2f) / character.MainHand.Speed;
             float wdpsOH = character.OffHand == null ? 46.3f : (stats.WeaponDamage + (character.OffHand.MinDamage + character.OffHand.MaxDamage) / 2f) / character.OffHand.Speed;
-            float dualWieldSpecialization = .06f; //Hit portion of Dual Wield
             float bonusPhysicalDamage = (1f + stats.BonusDamageMultiplier) * (1f + stats.BonusPhysicalDamageMultiplier);
-            float bonusFrostDamage    = (1f + stats.BonusDamageMultiplier) * (1f + stats.BonusFrostDamageMultiplier)  * (1f + flametongueMultiplier); //
-            float bonusFireDamage     = (1f + stats.BonusDamageMultiplier) * (1f + stats.BonusFireDamageMultiplier)   * (1f + flametongueMultiplier); //
-            float bonusNatureDamage   = (1f + stats.BonusDamageMultiplier) * (1f + stats.BonusNatureDamageMultiplier) * (1f + flametongueMultiplier); //
+            float bonusFrostDamage    = (1f + stats.BonusDamageMultiplier) * (1f + stats.BonusFrostDamageMultiplier)  * (1f + flametongueMultiplier);
+            float bonusFireDamage     = (1f + stats.BonusDamageMultiplier) * (1f + stats.BonusFireDamageMultiplier)   * (1f + flametongueMultiplier);
+            float bonusNatureDamage   = (1f + stats.BonusDamageMultiplier) * (1f + stats.BonusNatureDamageMultiplier) * (1f + flametongueMultiplier);
             #endregion
 
             #region Individual DPS
@@ -306,10 +291,10 @@ namespace Rawr.Enhance
 
             #region Stormstrike DPS
             float dpsSS = 0f;
-            if (character.ShamanTalents.Stormstrike == 1 && calcOpts.PriorityInUse(EnhanceAbility.StormStrike) && character.MainHand != null)
+            if (calcOpts.PriorityInUse(EnhanceAbility.StormStrike) && character.MainHand != null)
             {
-                float swingDPSMH = damageMHSwing * 2.25f * cs.HitsPerSMHSS;
-                float swingDPSOH = damageOHSwing * 2.25f * cs.HitsPerSOHSS;
+                float swingDPSMH = damageMHSwing * 1.5f * cs.HitsPerSMHSS;
+                float swingDPSOH = damageOHSwing * 1.5f * cs.HitsPerSOHSS;
                 float SSnormal = (swingDPSMH * cs.YellowHitModifierMH) + (swingDPSOH * cs.YellowHitModifierOH);
                 float SScrit = ((swingDPSMH * cs.YellowCritModifierMH) + (swingDPSOH * cs.YellowCritModifierOH)) * cs.CritMultiplierMelee;
                 dpsSS = (SSnormal + SScrit) * cs.DamageReduction * (1f + stats.BonusStormstrikeDamageMultiplier);
@@ -318,7 +303,7 @@ namespace Rawr.Enhance
 
             #region Lavalash DPS
             /* Taken from EnhSim (thank you ziff)
-               Damage = bwd * llb * (1.0 + sfs * (sfb + t12-2p) + ftb) * (1.0 + llt + llg + t11-2p) * fdm
+               Damage = bwd * llb * (1.0 + sfs * (sfb + t12-2p) + ftb) * (1.0 + llg + t11-2p) * fdm
 
                bwd    - Base weapon damage against a target with no armor
                llb    - Lava Lash Bonus, this is the default lava lash damage bonus of 2.0
@@ -326,7 +311,6 @@ namespace Rawr.Enhance
                sfb    - the searing flames bonus from Improved Lava Lash.  Maxed out it is .20
                t12-2p - the 2 piece bonus from T12, which is currently an extra 0.05 per searing flame stack
                ftb    - the bonus if Flametongue weapon is on your off-hand, which is 0.40
-               llt    - the Lava lash damage bonus from Improved Lava Lash.  Maxed out, it is 0.30 //No longer exists...
                llg    - the bonus from Lava Lash glyph, which is 0.20
                t11-2p - the 2 piece bonus from T11, which is 0.10
                fdm    - the fire damage multiplier, which includes the mastery bonus, elemental precision,
@@ -336,27 +320,25 @@ namespace Rawr.Enhance
             float dpsLL = 0f;
             if (calcOpts.PriorityInUse(EnhanceAbility.LavaLash) && character.OffHand != null)
             {
-                //float impLL = character.ShamanTalents.ImprovedLavaLash * 0.15f;
                 float searingFlames = 0f;
                 float flametongue = 0f;
                 float glyphLL = 0f;
-                if (calcOpts.PriorityInUse(EnhanceAbility.SearingTotem) && character.ShamanTalents.SearingFlames != 0)
+                if (calcOpts.PriorityInUse(EnhanceAbility.SearingTotem))
                 {
-                    searingFlames = (character.ShamanTalents.ImprovedLavaLash * 0.1f + stats.BonusSearingFlamesModifier) * 5f; //5f = number of stacks of searing flames (takes app. 8.25s to hit 5 stacks, LL CD is 10s).
+                    searingFlames = (0.2f + stats.BonusSearingFlamesModifier) * 5f; //5f = number of stacks of searing flames (takes app. 8.25s to hit 5 stacks, LL CD is 10s).
                 }
                 if (calcOpts.OffhandImbue == "Flametongue")
                 {
                     flametongue = .4f;
                 }
-                if (character.ShamanTalents.GlyphofLavaLash)
+                /*if (character.ShamanTalents.GlyphofLavaLash)
                 {
                     glyphLL = .2f;
-                }
-                //float lavalashDPS = damageOHSwing * 2f * cs.HitsPerSLL;
-                float lavalashDPS = damageOHSwing * 2.6f * cs.HitsPerSLL;
+                }*/
+                float lavalashDPS = damageOHSwing * 1.3f * cs.HitsPerSLL;
                 float LLnormal = lavalashDPS * cs.YellowHitModifierOH;
                 float LLcrit = lavalashDPS * cs.YellowCritModifierOH * cs.CritMultiplierMelee;
-                dpsLL = (LLnormal + LLcrit) * (1f + searingFlames + flametongue) * (1f/* + impLL*/ + glyphLL + stats.T11BonusLavaLashDamageMultiplier) * mastery * bonusFireDamage;
+                dpsLL = (LLnormal + LLcrit) * (1f + searingFlames + flametongue) * (1f + glyphLL + stats.T11BonusLavaLashDamageMultiplier) * mastery * bonusFireDamage;
             }
             #endregion
 
@@ -364,7 +346,7 @@ namespace Rawr.Enhance
             float dpsES = 0f;
             if (calcOpts.PriorityInUse(EnhanceAbility.EarthShock))
             {
-                float damageESBase = 931f;
+                float damageESBase = 1030f;
                 float coefES = .386f;
                 float damageES = (1f + stats.ConcussionMultiplier) * (damageESBase + coefES * spellPower);
                 float shockdps = damageES / cs.AbilityCooldown(EnhanceAbility.EarthShock);
@@ -379,13 +361,13 @@ namespace Rawr.Enhance
             if (calcOpts.PriorityInUse(EnhanceAbility.FlameShock))
             {
                 float FSBaseNumTick = 18f / 3f;
-                float damageFSBase = 531f;
-                float damageFSDoTTickBase = 852f / FSBaseNumTick;
+                float damageFSBase = 586f;
+                float damageFSDoTTickBase = 1320f / FSBaseNumTick;
                 float FSNumTick = cs.AverageFSDotTime / cs.AverageFSTickTime;
                 float coefFS = 1.5f / 3.5f / 2f;
                 float coefFSDoT = .6f;
-                float damageFS = (damageFSBase + coefFS * spellPower) * (1f + stats.ConcussionMultiplier)/*concussionMultiplier*/;
-                float damageFTDoT = ((damageFSDoTTickBase * FSNumTick) + coefFSDoT * spellPower) * (1f + stats.ConcussionMultiplier)/*concussionMultiplier*/;
+                float damageFS = (damageFSBase + coefFS * spellPower) * (1f + stats.ConcussionMultiplier);
+                float damageFTDoT = ((damageFSDoTTickBase * FSNumTick) + coefFSDoT * spellPower) * (1f + stats.ConcussionMultiplier);
                 float usesCooldown = cs.AbilityCooldown(EnhanceAbility.FlameShock);
                 float flameShockdps = damageFS / usesCooldown;
                 float flameShockDoTdps = damageFTDoT / usesCooldown;
@@ -399,7 +381,7 @@ namespace Rawr.Enhance
             float dpsLB = 0f;
             if (calcOpts.PriorityInUse(EnhanceAbility.LightningBolt))
             {
-                float damageLBBase = 770f;
+                float damageLBBase = 921f;
                 float coefLB = .714f;
                 float damageLB = (1f + stats.ConcussionMultiplier) * (damageLBBase + coefLB * spellPower);
                 float lbdps = damageLB / cs.AbilityCooldown(EnhanceAbility.LightningBolt);
@@ -422,7 +404,7 @@ namespace Rawr.Enhance
                 {
                     coefCL = 0.5714f;
                 }
-                float damageCLBase = 1092f;
+                float damageCLBase = 1230f;
                 float damageCL = (1f + stats.ConcussionMultiplier) * (damageCLBase + coefCL * spellPower);
                 float cldps = (damageCL) / cs.AbilityCooldown(EnhanceAbility.ChainLightning);
                 float clNormal = cldps * cs.NatureSpellHitModifier;
@@ -439,7 +421,7 @@ namespace Rawr.Enhance
                 float WFdps = damageWFHit * cs.HitsPerSWF;
                 float WFnormal = WFdps * cs.YellowHitModifierMH;
                 float WFcrit = WFdps * cs.YellowCritModifierMH * cs.CritMultiplierMelee;
-                dpsWF = (WFnormal + WFcrit) * cs.DamageReduction * bonusPhysicalDamage * (1f + stats.BonusWindfuryDamageMultiplier)/*windfuryDamageBonus*/;
+                dpsWF = (WFnormal + WFcrit) * cs.DamageReduction * bonusPhysicalDamage * (1f + stats.BonusWindfuryDamageMultiplier);
             }
             #endregion
 
@@ -447,7 +429,7 @@ namespace Rawr.Enhance
             float dpsLS = 0f;
             if (calcOpts.PriorityInUse(EnhanceAbility.LightningShield))
             {
-                float damageLSBase = 391f;
+                float damageLSBase = 451f;
                 float damageLSCoef = 0.267f; // co-efficient from EnhSim
                 float damageLS = (1f + stats.ShieldBonus) * (damageLSBase + damageLSCoef * spellPower);
                 float lsdps = damageLS * cs.StaticShockProcsPerS;
@@ -461,7 +443,7 @@ namespace Rawr.Enhance
             float dpsFireTotem = 0f;
             if (calcOpts.PriorityInUse(EnhanceAbility.MagmaTotem))
             {
-                float damageFireTotem = (268f + .067f * spellPower) * (1f + stats.CallofFlameBonus);
+                float damageFireTotem = (289f + .067f * spellPower) * (1f + stats.CallofFlameBonus);
                 float FireTotemdps = damageFireTotem / 2f * cs.FireTotemUptime;
                 float FireTotemNormal = FireTotemdps * cs.SpellHitModifier;
                 float FireTotemCrit = FireTotemdps * cs.SpellCritModifier * cs.CritMultiplierSpell;
@@ -469,7 +451,7 @@ namespace Rawr.Enhance
             }
             else if (calcOpts.PriorityInUse(EnhanceAbility.SearingTotem))
             {
-                float damageFireTotem = (96f + .1669f * spellPower) * (1f + stats.CallofFlameBonus);
+                float damageFireTotem = (129f + .1669f * spellPower) * (1f + stats.CallofFlameBonus);
                 float FireTotemdps = damageFireTotem / 1.65f * cs.FireTotemUptime;
                 float FireTotemNormal = FireTotemdps * cs.SpellHitModifier;
                 float FireTotemCrit = FireTotemdps * cs.SpellCritModifier * cs.CritMultiplierSpell;
@@ -482,7 +464,7 @@ namespace Rawr.Enhance
             float dpsFireNova = 0f;
             if (calcOpts.PriorityInUse(EnhanceAbility.FireNova) && calcOpts.PriorityInUse(EnhanceAbility.FlameShock))
             {
-                float damageFireNova = (686.0f + 0.143f * spellPower) * stats.CallofFlameBonus;
+                float damageFireNova = (844f + 0.143f * spellPower) * stats.CallofFlameBonus;
                 float FireNovadps = (damageFireNova / cs.AbilityCooldown(EnhanceAbility.FireNova));
                 float FireNovaNormal = FireNovadps * cs.SpellHitModifier;
                 float FireNovaCrit = FireNovadps * cs.SpellCritModifier * cs.CritMultiplierSpell;
@@ -559,13 +541,11 @@ namespace Rawr.Enhance
 
             #region Pet calculations
             // needed for pets - spirit wolves and Fire Elemental
-            bool critDebuff = character.ActiveBuffsContains("Heart of the Crusader") ||
-                              character.ActiveBuffsContains("Master Poisioner") ||
-                              character.ActiveBuffsContains("Totem of Wrath");
             bool critBuff = character.ActiveBuffsContains("Leader of the Pack") ||
-                            character.ActiveBuffsContains("Rampage");
-            float critbuffs = (critDebuff ? 0.03f : 0f) + (critBuff ? 0.05f : 0f);
-            float meleeHitBonus = stats.PhysicalHit + StatConversion.GetHitFromRating(stats.HitRating) + dualWieldSpecialization;
+                            character.ActiveBuffsContains("Trueshot Aura (Critical Strike)") ||
+                            character.ActiveBuffsContains("Arcane Brilliance (Critical Strike)");
+            float critbuffs = (critBuff ? 0.05f : 0f);
+            float meleeHitBonus = stats.PhysicalHit + StatConversion.GetHitFromRating(stats.HitRating)/* + dualWieldSpecialization*/;
             float petMeleeMissRate = Math.Max(0f, StatConversion.WHITE_MISS_CHANCE_CAP[bossOpts.Level - character.Level] - meleeHitBonus) + cs.AverageDodge;
             float petMeleeMultipliers = cs.DamageReduction * bonusPhysicalDamage;
             #endregion
@@ -574,14 +554,14 @@ namespace Rawr.Enhance
             // TTT article suggests 300-450 dps while the dogs are up plus 30% of AP
             // my analysis reveals they get 31% of shaman AP + 2 * their STR and base 206.17 dps.
             float dpsDogs = 0f;
-            if (character.ShamanTalents.FeralSpirit == 1 && calcOpts.PriorityInUse(EnhanceAbility.FeralSpirits))
+            if (calcOpts.PriorityInUse(EnhanceAbility.FeralSpirits))
             {
                 float FSglyphAP = character.ShamanTalents.GlyphofFeralSpirit ? attackPower * .3f : 0f;
                 float soeBuff = (character.ActiveBuffsContains("Strength of Earth Totem") || character.ActiveBuffsContains("Horn of Winter") || character.ActiveBuffsContains("Roar of Courage") ||
                     character.ActiveBuffsContains("Battle Shout")) ? 594f : 0f;
                 float dogsStr = 331f + soeBuff;
                 float dogsAgi = 113f + soeBuff;
-                float dogsAP = ((dogsStr * 2f - 20f) + .31f * attackPower + FSglyphAP) * (1f + unleashedRage);
+                float dogsAP = ((dogsStr * 2f - 20f) + .31f * attackPower + FSglyphAP);
                 float dogsCrit = (StatConversion.GetCritFromAgility(dogsAgi, CharacterClass.Shaman) + critbuffs) * (1 + stats.BonusCritDamageMultiplier);
                 float dogsBaseSpeed = 1.5f;
                 float dogsHitsPerS = 1f / (dogsBaseSpeed / (1f + stats.PhysicalHaste));
@@ -696,93 +676,87 @@ namespace Rawr.Enhance
         /// <returns>A Stats object containing the final totaled values of all character stats.</returns>
         public override Stats GetCharacterStats(Character character, Item additionalItem)
         {
-            Stats statsTotal = GetCharacterStats(character, additionalItem, false);
+            Stats statsTotal = GetCharacterStats(character, additionalItem, true) as StatsEnhance;
 
             return statsTotal;
         }
-        private StatsEnhance GetCharacterStats(Character character, Item additionalItem, Boolean nobuffs)
+        private StatsEnhance GetCharacterStats(Character character, Item additionalItem, Boolean buffs)
         {
             CalculationOptionsEnhance calcOpts = character.CalculationOptions as CalculationOptionsEnhance ?? new CalculationOptionsEnhance();
             BossOptions bossOpts = character.BossOptions;
             ShamanTalents talents = character.ShamanTalents;
 
-            bool hasAPBuff = false;
-            foreach (Buff buff in character.ActiveBuffs)
-            {
-                if (buff.Group == "Attack Power (%)")
-                {
-                    hasAPBuff = true;
-                    break;
-                }
-            }
+            StatsEnhance statsRace = new StatsEnhance();
+            statsRace.Accumulate(BaseStats.GetBaseStats(character));
+            StatsEnhance statsItems = new StatsEnhance();
+            AccumulateItemStats(statsItems, character, additionalItem);
+            StatsEnhance statsBuffs = new StatsEnhance();
+            AccumulateBuffsStats(statsBuffs, character.ActiveBuffs);
 
-            StatsEnhance statsTotal = new StatsEnhance()
+            // Talents and Glyphs
+            StatsEnhance statsTalents = new StatsEnhance()
             {
                 BonusAgilityMultiplier = Character.ValidateArmorSpecialization(character, ItemType.Mail) ? 0.05f : 0f,
-                BonusAttackPowerMultiplier = (hasAPBuff ? 0f : 0.10f * talents.UnleashedRage),
-                BonusHealingReceived = 0.05f * talents.SparkOfLife,
-                BonusStaminaMultiplier = 0.03f * talents.Toughness,
 
-                BonusFireDamageMultiplier = 0.01f * talents.ElementalPrecision,
-                BonusFrostDamageMultiplier = 0.01f * talents.ElementalPrecision,
-                BonusNatureDamageMultiplier = 0.01f * talents.ElementalPrecision,
-                //BonusArcaneDamageMultiplier = 0f,
-                //BonusShadowDamageMultiplier = 0f,
-                //BonusHolyDamageMultiplier = 0f,
+                PhysicalHaste = talents.AncestralSwiftness * 0.05f,
+                SpellHaste = talents.AncestralSwiftness * 0.05f,
 
-                BonusLightningBoltDamageMultiplier = talents.GlyphofLightningBolt ? 0.04f : 0f,
-                ConcussionMultiplier = 0.02f * talents.Concussion,
-                ShieldBonus = 0.05f * talents.ImprovedShields,
-                CallofFlameBonus = 0.1f * talents.CallOfFlame,
-                BonusWindfuryDamageMultiplier = 0.2f * talents.ElementalWeapons,
-                BonusStormstrikeDamageMultiplier = 0.15f * talents.FocusedStrikes,
-
-                Expertise = 4f * talents.UnleashedRage,
-                PhysicalHit = 0.06f,  // Enhance has passive 6% Hit from Specialization
-
-                MovementSpeed = 0.15f / 2f * talents.AncestralSwiftness,
+                //BonusLightningBoltDamageMultiplier = talents.GlyphofLightningBolt ? 0.04f : 0f,
             };
 
             #region Set Bonuses
-            int T11Count, T12Count, T13Count;
+            StatsEnhance statsSetBonuses = new StatsEnhance();
+            int T11Count, T12Count, T13Count, T14Count;
             character.SetBonusCount.TryGetValue("Battlegear of the Raging Elements", out T11Count);
             character.SetBonusCount.TryGetValue("Volcanic Battlegear", out T12Count);
             character.SetBonusCount.TryGetValue("Spiritwalker's Battlegear", out T13Count);
+            character.SetBonusCount.TryGetValue("Battlegear of the Firebird", out T14Count);
             if (T11Count >= 2)
             {
-                statsTotal.BonusStormstrikeDamageMultiplier = (1f + statsTotal.BonusStormstrikeDamageMultiplier) * (1f + 0.1f) - 1f;
-                statsTotal.T11BonusLavaLashDamageMultiplier = 0.1f;
+                statsSetBonuses.BonusStormstrikeDamageMultiplier = (1f + statsTalents.BonusStormstrikeDamageMultiplier) * (1f + 0.1f) - 1f;
+                statsSetBonuses.T11BonusLavaLashDamageMultiplier = 0.1f;
             }
             if (T11Count >= 4)
             {
-                //
+                // Implemented in CombatStats.cs for now
             }
             if (T12Count >= 2)
             {
-                statsTotal.BonusSearingFlamesModifier = 0.05f;
+                statsSetBonuses.BonusSearingFlamesModifier = 0.05f;
             }
             if (T12Count >= 4)
             {
-                statsTotal.BonusFireDamageMultiplier = (1f + statsTotal.BonusFireDamageMultiplier) * (1f + 0.06f) - 1f;
+                statsSetBonuses.BonusFireDamageMultiplier = (1f + statsTalents.BonusFireDamageMultiplier) * (1f + 0.06f) - 1f;
             }
             if (T13Count >= 2)
             {
-                statsTotal.BonusLightningBoltDamageMultiplier = (1f + statsTotal.BonusLightningBoltDamageMultiplier) * (1f + 0.2f) - 1f;
+                statsSetBonuses.BonusLightningBoltDamageMultiplier = (1f + statsTalents.BonusLightningBoltDamageMultiplier) * (1f + 0.2f) - 1f;
             }
             if (T13Count >= 4)
             {
-                //
+                // Currently not implemented
+            }
+            if (T14Count >= 2)
+            {
+                // Increases the damage done by your Lava Lash ability by 15%.
+                statsSetBonuses.T14BonusLavaLashDamageMultiplier = 0.15f;
+            }
+            if (T14Count >= 4)
+            {
+                // Increases the critical strike chance bonus from your Stormstrike ability by an additional 15%.
+                // Implemented in CombatStats.cs for now
             }
             #endregion
 
-            statsTotal.Accumulate(BaseStats.GetBaseStats(character.Level, character.Class, character.Race));
-            //statsTotal.Accumulate(GetItemStats(character, additionalItem));
-            AccumulateItemStats(statsTotal, character, additionalItem);
+            StatsEnhance statsTotal = new StatsEnhance();
+            statsTotal.Accumulate(statsRace);
+            statsTotal.Accumulate(statsItems);
+            statsTotal.Accumulate(statsTalents);
+            statsTotal.Accumulate(statsSetBonuses);
 
-            if (nobuffs == false)
+            if (buffs)
             {
-                //statsTotal.Accumulate(GetBuffsStats(character.ActiveBuffs, character.SetBonusCount));
-                AccumulateBuffsStats(statsTotal, character.ActiveBuffs);
+                statsTotal.Accumulate(statsBuffs);
                 StatsSpecialEffects se = new StatsSpecialEffects(character, statsTotal, calcOpts, bossOpts);
                 statsTotal.Accumulate(se.getSpecialEffects());
             }
@@ -791,9 +765,10 @@ namespace Rawr.Enhance
             statsTotal.Strength = (float)Math.Floor(statsTotal.Strength * (1f + statsTotal.BonusStrengthMultiplier));
             statsTotal.Agility = (float)Math.Floor(statsTotal.Agility * (1f + statsTotal.BonusAgilityMultiplier));
             statsTotal.Intellect = (float)Math.Floor(statsTotal.Intellect * (1f + statsTotal.BonusIntellectMultiplier));
+
             statsTotal.Health += (float)Math.Floor(StatConversion.GetHealthFromStamina(statsTotal.Stamina));
             statsTotal.Health = (float)Math.Floor(statsTotal.Health * (1f + statsTotal.BonusHealthMultiplier));
-            statsTotal.Mana += (float)Math.Floor(StatConversion.GetManaFromIntellect(statsTotal.Intellect));
+            //statsTotal.Mana += (float)Math.Floor(StatConversion.GetManaFromIntellect(statsTotal.Intellect));
             statsTotal.Mana = (float)Math.Floor(statsTotal.Mana * (1f + statsTotal.BonusManaMultiplier));
 
             statsTotal.AttackPower += statsTotal.Strength + 2f * statsTotal.Agility;
@@ -804,68 +779,108 @@ namespace Rawr.Enhance
         }
         #endregion
 
-        #region Buff Functions
-        public override void SetDefaults(Character character)
+        #region Relevancy
+        #region Glyphs
+        private static List<string> _relevantGlyphs;
+        public override List<string> GetRelevantGlyphs()
         {
-            // add shaman buffs
-            character.ActiveBuffsAdd("Strength of Earth Totem");
-            character.ActiveBuffsAdd("Windfury Totem");
-
-            // add other raid buffs
-            character.ActiveBuffsAdd("Blessing of Might (AP%)");
-            character.ActiveBuffsAdd("Arcane Tactics");
-            character.ActiveBuffsAdd("Commanding Shout");
-            character.ActiveBuffsAdd("Arcane Brilliance (Mana)");
-            character.ActiveBuffsAdd("Blessing of Might (Mp5)");
-            character.ActiveBuffsAdd("Arcane Tactics");
-            character.ActiveBuffsAdd("Arcane Brilliance (SP%)");
-            character.ActiveBuffsAdd("Leader of the Pack");
-            character.ActiveBuffsAdd("Communion");
-            character.ActiveBuffsAdd("Moonkin Form");
-            character.ActiveBuffsAdd("Mark of the Wild");
-
-            character.ActiveBuffsAdd("Flask of the Winds");
-            character.ActiveBuffsAdd("Agility Food");
-
-            // Debuffs
-            character.ActiveBuffsAdd("Faerie Fire");
-            character.ActiveBuffsAdd("Brittle Bones");
-            character.ActiveBuffsAdd("Critical Mass");
-            character.ActiveBuffsAdd("Earth and Moon");
-
-            if (character.HasProfession(Profession.Alchemy))
+            /*
+             * Major:
+             * Glyph of Capacitor Totem
+             * Glyph of Chain Lightning
+             * Glyph of Chaining
+             * Glyph of Cleansing Waters
+             * Glyph of Feral Spirit
+             * Glyph of Fire Elemental Totem
+             * Glyph of Fire Nova
+             * Glyph of Flame Shock
+             * Glyph of Frost Shock
+             * Glyph of Ghost Wolf
+             * Glyph of Grounding Totem
+             * Glyph of Healing Storm 
+             * Glyph of Healing Stream Totem
+             * Glyph of Healing Wave
+             * Glyph of Hex
+             * Glyph of Purge
+             * Glyph of Riptide
+             * Glyph of Shamanistic Rage
+             * Glyph of Spirit Walk
+             * Glyph of Spiritwalker's Grace
+             * Glyph of Telluric Currents
+             * Glyph of Thunder
+             * Glyph of Totemic Recall
+             * Glyph of Unleashed Lightning
+             * Glyph of Unstable Earth
+             * Glyph of Water Shield
+             * Glyph of Wind Shear
+             * Minor:
+             * Glyph of Astral Recall
+             * Glyph of Far Sight
+             * Glyph of Lava Lash
+             * Glyph of the Lakestrider
+             * Glyph of the Spectral Wolf
+             * Glyph of Thunderstorm
+             * Glyph of Totemic Encirclement
+             */
+            if (_relevantGlyphs == null)
             {
-                character.ActiveBuffsAdd(("Flask of the Winds (Mixology)"));
+                _relevantGlyphs = new List<string>();
+                _relevantGlyphs.Add("Glyph of Fire Elemental Totem");
+                _relevantGlyphs.Add("Glyph of Flame Shock");
+                _relevantGlyphs.Add("Glyph of Lava Lash");
+            }
+            return _relevantGlyphs;
+        }
+        #endregion
+
+        #region Triggers
+        internal static List<Trigger> _relevantTriggers = null;
+        internal static List<Trigger> RelevantTriggers
+        {
+            get
+            {
+                if (_relevantTriggers == null)
+                    _relevantTriggers = new List<Trigger>()
+                    {
+                        Trigger.Use,
+                        Trigger.SpellHit,
+                        Trigger.SpellCrit,
+                        Trigger.SpellCast,
+                        Trigger.DamageSpellHit,
+                        Trigger.DamageSpellCrit,
+                        Trigger.DamageSpellCast,
+                        Trigger.MeleeHit,
+                        Trigger.MeleeCrit,
+                        Trigger.MeleeAttack,
+                        Trigger.PhysicalHit,
+                        Trigger.PhysicalCrit,
+                        Trigger.PhysicalAttack,
+                        Trigger.WhiteHit,
+                        Trigger.WhiteCrit,
+                        Trigger.WhiteAttack,
+                        Trigger.CurrentHandHit,
+                        Trigger.DamageDone,
+                        Trigger.DamageOrHealingDone,
+                        Trigger.ShamanLightningBolt,
+                        Trigger.ShamanLavaLash,
+                        Trigger.ShamanShock,
+                        Trigger.ShamanStormStrike,
+                        Trigger.ShamanShamanisticRage,
+                        Trigger.ShamanFlameShockDoTTick,
+                        Trigger.DoTTick,
+                    };
+
+                return _relevantTriggers;
             }
         }
 
-        /*private Item RemoveAddedBuffs(Stats addedBuffs)
+        public bool HasRelevantTrigger(Trigger trigger)
         {
-            Item result = new Item();
-            result.Stats = addedBuffs * -1;
-            // to this point works fine for additive stats doesn't work for multiplicative ones.
-            result.Stats.BonusAgilityMultiplier = 1 / (1 - result.Stats.BonusAgilityMultiplier) - 1;
-            result.Stats.BonusStrengthMultiplier = 1 / (1 - result.Stats.BonusStrengthMultiplier) - 1;
-            result.Stats.BonusIntellectMultiplier = 1 / (1 - result.Stats.BonusIntellectMultiplier) - 1;
-            result.Stats.BonusSpiritMultiplier = 1 / (1 - result.Stats.BonusSpiritMultiplier) - 1;
-            result.Stats.BonusAttackPowerMultiplier = 1 / (1 - result.Stats.BonusAttackPowerMultiplier) - 1;
-            result.Stats.BonusSpellPowerMultiplier = 1 / (1 - result.Stats.BonusSpellPowerMultiplier) - 1;
-            result.Stats.BonusCritDamageMultiplier = 1 / (1 - result.Stats.BonusCritDamageMultiplier) - 1;
-            result.Stats.BonusSpellCritDamageMultiplier = 1 / (1 - result.Stats.BonusSpellCritDamageMultiplier) - 1;
-            result.Stats.BonusDamageMultiplier = 1 / (1 - result.Stats.BonusDamageMultiplier) - 1;
-            result.Stats.BonusWhiteDamageMultiplier = 1 / (1 - result.Stats.BonusWhiteDamageMultiplier) - 1;
-            result.Stats.BonusPhysicalDamageMultiplier = 1 / (1 - result.Stats.BonusPhysicalDamageMultiplier) - 1;
-            result.Stats.BonusFireDamageMultiplier = 1 / (1 - result.Stats.BonusFireDamageMultiplier) - 1;
-            result.Stats.BonusNatureDamageMultiplier = 1 / (1 - result.Stats.BonusNatureDamageMultiplier) - 1;
-            result.Stats.BonusHealthMultiplier = 1 / (1 - result.Stats.BonusHealthMultiplier) - 1;
-            result.Stats.BonusManaMultiplier = 1 / (1 - result.Stats.BonusManaMultiplier) - 1;
-            result.Stats.PhysicalHaste = 1 / (1 - result.Stats.PhysicalHaste) - 1;
-            result.Stats.SpellHaste = 1 / (1 - result.Stats.SpellHaste) - 1;
-            return result;
-        }*/
+            return RelevantTriggers.Contains(trigger);
+        }
         #endregion
 
-        #region Relevant Stats
+        #region Items
         private List<ItemType> _relevantItemTypes = null;
         public override List<ItemType> RelevantItemTypes
         {
@@ -877,11 +892,15 @@ namespace Rawr.Enhance
                     {
                         ItemType.None,
                         ItemType.Mail,
-                        ItemType.Totem,ItemType.Relic,
-                        //ItemType.Dagger,
                         ItemType.OneHandAxe,
                         ItemType.OneHandMace,
-                        ItemType.FistWeapon
+                        ItemType.FistWeapon,
+                        //// Able to be used, but not recommended
+                        //ItemType.Dagger,
+                        //ItemType.TwoHandAxe,
+                        //ItemType.TwoHandMace,
+                        //ItemType.Staff,
+                        //ItemType.Shield,
                     });
                 }
                 return _relevantItemTypes;
@@ -896,130 +915,215 @@ namespace Rawr.Enhance
                 return false;
             return base.IsItemRelevant(item);
         }
+        #endregion
 
+        #region Buffs
         public override bool IsBuffRelevant(Buff buff, Character character)
         {
-            if (buff.Name.StartsWith("Amplify Magic"))
-                return false;
             if (buff.AllowedClasses.Contains(CharacterClass.Shaman))
                 return base.IsBuffRelevant(buff, character);
             else
                 return false;
         }
 
+        public override void SetDefaults(Character character)
+        {
+            #region Buffs
+            // Stats
+            character.ActiveBuffsAdd("Mark of the Wild");
+            // Stamina
+            character.ActiveBuffsAdd("Power Word: Fortitude");
+            // Attack Power
+            character.ActiveBuffsAdd("Battle Shout");
+            // Attack Speed
+            character.ActiveBuffsAdd("Unleashed Rage");
+            // Critical Strike
+            character.ActiveBuffsAdd("Leader of the Pack");
+            // Mastery
+            character.ActiveBuffsAdd(("Grace of Air"));
+            // Temporary Buffs:
+            // Bloodlust
+            //character.ActiveBuffsAdd("Heroism/Bloodlust");
+            #endregion
+            
+            #region Debuffs
+            // Weakened Armor
+            character.ActiveBuffsAdd("Faerie Fire");
+            // Physical Vulnerability
+            character.ActiveBuffsAdd("Judgments of the Bold");
+            // Magic Vulnerability
+            character.ActiveBuffsAdd("Curse of the Elements");
+            #endregion
+
+            #region Consumables
+            // Flask
+            character.ActiveBuffsAdd("Flask of Spring Blossoms");
+            // Potion
+            character.ActiveBuffsAdd("Virmen's Bite");
+            // Food
+            character.ActiveBuffsAdd("Agility Food");
+            #endregion
+        }
+        #endregion
+
+        #region Stats
         public override Stats GetRelevantStats(Stats stats)
         {
             Stats s = new Stats()
-                {
-                    Agility = stats.Agility,
-                    Strength = stats.Strength,
-                    Intellect = stats.Intellect,
-                    Spirit = stats.Spirit,
-                    AttackPower = stats.AttackPower,
-                    CritRating = stats.CritRating,
-                    HitRating = stats.HitRating,
-                    Stamina = stats.Stamina,
-                    HasteRating = stats.HasteRating,
-                    Expertise = stats.Expertise,
-                    ExpertiseRating = stats.ExpertiseRating,
-                    MasteryRating = stats.MasteryRating,
-                    TargetArmorReduction = stats.TargetArmorReduction,
-                    WeaponDamage = stats.WeaponDamage,
-                    BonusAgilityMultiplier = stats.BonusAgilityMultiplier,
-                    BonusAttackPowerMultiplier = stats.BonusAttackPowerMultiplier,
-                    BonusCritDamageMultiplier = stats.BonusCritDamageMultiplier,
-                    BonusDamageMultiplier = stats.BonusDamageMultiplier,
-                    BonusWhiteDamageMultiplier = stats.BonusWhiteDamageMultiplier,
-                    BonusStrengthMultiplier = stats.BonusStrengthMultiplier,
-                    BonusIntellectMultiplier = stats.BonusIntellectMultiplier,
-                    BonusSpiritMultiplier = stats.BonusSpiritMultiplier,
-                    BonusSpellPowerMultiplier = stats.BonusSpellPowerMultiplier,
-                    BonusSpellCritDamageMultiplier = stats.BonusSpellCritDamageMultiplier,
-                    BonusPhysicalDamageMultiplier = stats.BonusPhysicalDamageMultiplier,
-                    BonusShadowDamageMultiplier = stats.BonusShadowDamageMultiplier,
-                    BonusArcaneDamageMultiplier = stats.BonusArcaneDamageMultiplier,
-                    BonusHolyDamageMultiplier = stats.BonusHolyDamageMultiplier,
-                    BonusNatureDamageMultiplier = stats.BonusNatureDamageMultiplier,
-                    BonusFrostDamageMultiplier = stats.BonusFrostDamageMultiplier,
-                    BonusFireDamageMultiplier = stats.BonusFireDamageMultiplier,
-                    BonusHealthMultiplier = stats.BonusHealthMultiplier,
-                    BonusManaMultiplier = stats.BonusManaMultiplier,
-                    Health = stats.Health,
-                    Mana = stats.Mana,
-                    SpellPower = stats.SpellPower,
-                    HighestStat = stats.HighestStat,
-                    HighestSecondaryStat = stats.HighestSecondaryStat,
-                    Paragon = stats.Paragon,
-                    Enhance_T11_2P = stats.Enhance_T11_2P,
-                    Enhance_T11_4P = stats.Enhance_T11_4P,
-                    PhysicalHit = stats.PhysicalHit,
-                    PhysicalHaste = stats.PhysicalHaste,
-                    PhysicalCrit = stats.PhysicalCrit,
-                    SpellHit = stats.SpellHit,
-                    SpellHaste = stats.SpellHaste,
-                    SpellCrit = stats.SpellCrit,
-                    SpellCritOnTarget = stats.SpellCritOnTarget,
-                    Mp5 = stats.Mp5,
-                    ManaRestoreFromMaxManaPerSecond = stats.ManaRestoreFromMaxManaPerSecond,
-                    NatureSpellsManaCostReduction = stats.NatureSpellsManaCostReduction,
-                    MoteOfAnger = stats.MoteOfAnger,
-                    SnareRootDurReduc = stats.SnareRootDurReduc,
-                    FearDurReduc = stats.FearDurReduc,
-                    StunDurReduc = stats.StunDurReduc,
-                    MovementSpeed = stats.MovementSpeed,
-                    PhysicalDamage = stats.PhysicalDamage,
-                    ShadowDamage = stats.ShadowDamage,
-                    ArcaneDamage = stats.ArcaneDamage,
-                    HolyDamage = stats.HolyDamage,
-                    NatureDamage = stats.NatureDamage,
-                    FrostDamage = stats.FrostDamage,
-                    FireDamage = stats.FireDamage,
-                };
+            {
+                #region Additive Stats
+                #region Core Stats
+                Agility = stats.Agility,
+                Strength = stats.Strength,
+                Intellect = stats.Intellect,
+                Spirit = stats.Spirit,
+                Stamina = stats.Stamina,
+                #endregion
+
+                #region Health Related Stats
+                Health = stats.Health,
+                HealthRestore = stats.HealthRestore,
+                #endregion
+
+                #region Mana Related Stats
+                Mana = stats.Mana,
+                Mp5 = stats.Mp5,
+                ManaRestoreFromMaxManaPerSecond = stats.ManaRestoreFromMaxManaPerSecond,
+                NatureSpellsManaCostReduction = stats.NatureSpellsManaCostReduction,
+                #endregion
+
+                #region Offensive Stats
+                AttackPower = stats.AttackPower,
+                SpellPower = stats.SpellPower,
+                CritRating = stats.CritRating,
+                SpellCrit = stats.SpellCrit,
+                SpellCritOnTarget = stats.SpellCritOnTarget,
+                Expertise = stats.Expertise,
+                ExpertiseRating = stats.ExpertiseRating,
+                HasteRating = stats.HasteRating,
+                HitRating = stats.HitRating,
+                SpellHit = stats.SpellHit,
+                Mastery = stats.Mastery,
+                MasteryRating = stats.MasteryRating,
+                PhysicalCrit = stats.PhysicalCrit,
+                PhysicalHit = stats.PhysicalHit,
+                WeaponDamage = stats.WeaponDamage,
+                #endregion
+
+                #region Defensive Stats
+                ArcaneResistance = stats.ArcaneResistance,
+                FireResistance = stats.FireResistance,
+                FrostResistance = stats.FrostResistance,
+                NatureResistance = stats.NatureResistance,
+                ShadowResistance = stats.ShadowResistance,
+                #endregion
+
+                #region Item Proc Stats
+                MoteOfAnger = stats.MoteOfAnger,
+                Paragon = stats.Paragon,
+                #endregion
+
+                #region Other Stats
+                ArcaneDamage = stats.ArcaneDamage,
+                FireDamage = stats.FireDamage,
+                FrostDamage = stats.FrostDamage,
+                HolyDamage = stats.HolyDamage,
+                NatureDamage = stats.NatureDamage,
+                PhysicalDamage = stats.PhysicalDamage,
+                ShadowDamage = stats.ShadowDamage,
+                #endregion
+                #endregion
+
+                #region Multiplicative Stats
+                #region Core Stats
+                // Primary
+                BonusAgilityMultiplier = stats.BonusAgilityMultiplier,
+                BonusStrengthMultiplier = stats.BonusStrengthMultiplier,
+                BonusIntellectMultiplier = stats.BonusIntellectMultiplier,
+                BonusSpiritMultiplier = stats.BonusSpiritMultiplier,
+                BonusStaminaMultiplier = stats.BonusStaminaMultiplier,
+                // Secondary
+                BonusAttackPowerMultiplier = stats.BonusAttackPowerMultiplier,
+                //BonusSpellPowerMultiplier = stats.BonusSpellPowerMultiplier,
+                BonusCritDamageMultiplier = stats.BonusCritDamageMultiplier,
+                BonusSpellCritDamageMultiplier = stats.BonusSpellCritDamageMultiplier,
+                PhysicalHaste = stats.PhysicalHaste,
+                SpellHaste = stats.SpellHaste,
+                #endregion
+
+                #region Health Related Stats
+                BonusHealthMultiplier = stats.BonusHealthMultiplier,
+                HealingReceivedMultiplier = stats.HealingReceivedMultiplier,
+                #endregion
+
+                #region Mana Related Stats
+                BonusManaMultiplier = stats.BonusManaMultiplier,
+                #endregion
+
+                #region Offensive Stats
+                BonusDamageMultiplier = stats.BonusDamageMultiplier,
+                BonusWhiteDamageMultiplier = stats.BonusWhiteDamageMultiplier,
+                #endregion
+
+                #region Other Stats
+                BonusArcaneDamageMultiplier = stats.BonusArcaneDamageMultiplier,
+                BonusFireDamageMultiplier = stats.BonusFireDamageMultiplier,
+                BonusFrostDamageMultiplier = stats.BonusFrostDamageMultiplier,
+                BonusHolyDamageMultiplier = stats.BonusHolyDamageMultiplier,
+                BonusNatureDamageMultiplier = stats.BonusNatureDamageMultiplier,
+                BonusPhysicalDamageMultiplier = stats.BonusPhysicalDamageMultiplier,
+                BonusShadowDamageMultiplier = stats.BonusShadowDamageMultiplier,
+                #endregion
+                #endregion
+
+                #region Inverse Multiplicative Stats
+                TargetArmorReduction = stats.TargetArmorReduction,
+                #endregion
+
+                #region Non-Stacking Stats
+                #region Resistances
+                ArcaneResistanceBuff = stats.ArcaneResistanceBuff,
+                FireResistanceBuff = stats.FireResistanceBuff,
+                FrostResistanceBuff = stats.FrostResistanceBuff,
+                NatureResistanceBuff = stats.NatureResistanceBuff,
+                ShadowResistanceBuff = stats.ShadowResistanceBuff,
+                #endregion
+
+                #region Boss Handler
+                DisarmDurReduc = stats.DisarmDurReduc,
+                FearDurReduc = stats.FearDurReduc,
+                MovementSpeed = stats.MovementSpeed,
+                SnareRootDurReduc = stats.SnareRootDurReduc,
+                StunDurReduc = stats.StunDurReduc,
+                #endregion
+
+                #region Special Procs
+                HighestSecondaryStat = stats.HighestSecondaryStat,
+                HighestStat = stats.HighestStat,
+                #endregion
+                #endregion
+            };
             foreach (SpecialEffect effect in stats.SpecialEffects())
             {
                 if (HasRelevantTrigger(effect.Trigger))
                 {
-                    if (relevantStats(effect.Stats))
+                    if (HasRelevantStats(effect.Stats))
+                    {
                         s.AddSpecialEffect(effect);
+                    }
                     else
                     {
                         foreach (SpecialEffect subEffect in effect.Stats.SpecialEffects())
-                            if (HasRelevantTrigger(subEffect.Trigger) && relevantStats(subEffect.Stats))
+                        {
+                            if (HasRelevantTrigger(subEffect.Trigger) && HasRelevantStats(subEffect.Stats))
+                            {
                                 s.AddSpecialEffect(effect);
+                            }
+                        }
                     }
                 }
             }
             return s;
-        }
-
-        public bool HasRelevantTrigger(Trigger trigger)
-        {
-            return (trigger == Trigger.Use ||
-                    trigger == Trigger.SpellHit ||
-                    trigger == Trigger.SpellCrit ||
-                    trigger == Trigger.SpellCast ||
-                    trigger == Trigger.DamageSpellHit ||
-                    trigger == Trigger.DamageSpellCrit ||
-                    trigger == Trigger.DamageSpellCast ||
-                    trigger == Trigger.MeleeHit ||
-                    trigger == Trigger.MeleeCrit ||
-                    trigger == Trigger.MeleeAttack ||
-                    trigger == Trigger.PhysicalHit ||
-                    trigger == Trigger.PhysicalAttack ||
-                    trigger == Trigger.PhysicalCrit ||
-                    trigger == Trigger.WhiteHit ||
-                    trigger == Trigger.WhiteCrit ||
-                    trigger == Trigger.WhiteAttack ||
-                    trigger == Trigger.CurrentHandHit ||
-                    trigger == Trigger.DamageDone ||
-                    trigger == Trigger.DamageOrHealingDone ||
-                    trigger == Trigger.ShamanLightningBolt ||
-                    trigger == Trigger.ShamanLavaLash ||
-                    trigger == Trigger.ShamanShock ||
-                    trigger == Trigger.ShamanStormStrike ||
-                    trigger == Trigger.ShamanShamanisticRage ||
-                    trigger == Trigger.ShamanFlameShockDoTTick ||
-                    trigger == Trigger.DoTTick);
         }
 
         public override bool HasRelevantStats(Stats stats)
@@ -1036,8 +1140,8 @@ namespace Rawr.Enhance
                         if (HasRelevantTrigger(subEffect.Trigger) && relevantStats(subEffect.Stats))
                             return true;
                     }
-                    if (relevantStats(effect.Stats))
-                        return true;
+                if (relevantStats(effect.Stats))
+                    return true;
             }
             return false;
         }
@@ -1046,13 +1150,13 @@ namespace Rawr.Enhance
         {
             return (stats.Agility + stats.Intellect + stats.Stamina + stats.Strength + stats.Spirit +
                 stats.AttackPower + stats.SpellPower + stats.Mana + stats.WeaponDamage + stats.Health +
-                stats.MasteryRating + stats.TargetArmorReduction +
+                stats.Mastery + stats.MasteryRating + stats.TargetArmorReduction +
                 stats.Expertise + stats.ExpertiseRating + stats.HasteRating + stats.CritRating + stats.HitRating +
                 stats.BonusAgilityMultiplier + stats.BonusAttackPowerMultiplier + stats.BonusCritDamageMultiplier +
                 stats.BonusStrengthMultiplier + stats.BonusSpellPowerMultiplier + stats.BonusIntellectMultiplier +
                 stats.BonusSpiritMultiplier + stats.BonusDamageMultiplier + stats.BonusWhiteDamageMultiplier + stats.BonusPhysicalDamageMultiplier +
                 stats.BonusNatureDamageMultiplier + stats.BonusFireDamageMultiplier + stats.BonusSpellCritDamageMultiplier +
-                stats.BonusHealthMultiplier + stats.BonusManaMultiplier + 
+                stats.BonusHealthMultiplier + stats.BonusManaMultiplier +
                 stats.PhysicalCrit + stats.PhysicalHaste + stats.PhysicalHit + stats.Paragon + stats.BonusShadowDamageMultiplier +
                 stats.SpellCrit + stats.SpellCritOnTarget + stats.SpellHaste + stats.SpellHit + stats.HighestStat + stats.HighestSecondaryStat +
                 stats.MoteOfAnger + stats.PhysicalDamage +
@@ -1066,27 +1170,6 @@ namespace Rawr.Enhance
             return stats.BonusRageGen != 0;
         }
         #endregion
-
-        #region RelevantGlyphs
-        private static List<string> _relevantGlyphs;
-        public override List<string> GetRelevantGlyphs()
-        {
-            if (_relevantGlyphs == null)
-            {
-                _relevantGlyphs = new List<string>();
-                _relevantGlyphs.Add("Glyph of Feral Spirit");
-                _relevantGlyphs.Add("Glyph of Fire Elemental Totem");
-                _relevantGlyphs.Add("Glyph of Flame Shock");
-                _relevantGlyphs.Add("Glyph of Flametongue Weapon");
-                _relevantGlyphs.Add("Glyph of Lava Lash");
-                _relevantGlyphs.Add("Glyph of Lightning Bolt");
-                _relevantGlyphs.Add("Glyph of Shocking");
-                _relevantGlyphs.Add("Glyph of Stormstrike");
-                _relevantGlyphs.Add("Glyph of Windfury Weapon");
-                _relevantGlyphs.Add("Glyph of Chain Lightning");
-            }
-            return _relevantGlyphs;
-        }
         #endregion
 
         #region Custom Chart Data

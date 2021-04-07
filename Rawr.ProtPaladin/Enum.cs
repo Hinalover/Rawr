@@ -10,13 +10,12 @@ namespace Rawr.ProtPaladin
         AvengersShield,
         HammerOfWrath,
         HolyWrath,
+        Judgment,
+        HammerOfTheRighteousProc,
 
         // Melee & melee procs
         CrusaderStrike,
         HammerOfTheRighteous,
-        HammerOfTheRighteousProc,
-        JudgementOfRighteousness,
-        JudgementOfTruth,
         MeleeSwing,
         SealOfRighteousness,
         SealOfTruth,
@@ -25,9 +24,6 @@ namespace Rawr.ProtPaladin
         // Damage over Time
         CensureTick,
         Consecration,
-
-        // Defensive
-        RetributionAura,
     }
     
     public enum DamageType

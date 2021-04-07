@@ -676,9 +676,21 @@
       <Project>{48170BE2-2CF6-4068-B36C-189072D49093}</Project>
       <Name>Rawr.Base</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Rawr.Brewmaster\Rawr.Brewmaster.csproj">
+      <Project>{219174F0-3873-4D5F-BB7D-6D2CCD4E7BE2}</Project>
+      <Name>Rawr.Brewmaster</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Rawr.Enhance\Rawr.Enhance.csproj">
       <Project>{3D73B646-5271-4E55-9089-CCBD3E26EECD}</Project>
       <Name>Rawr.Enhance</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rawr.Feral\Rawr.Feral.csproj">
+      <Project>{9FBD04B7-1EC2-479D-B275-5AB896667288}</Project>
+      <Name>Rawr.Feral</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rawr.Mistweaver\Rawr.Mistweaver.csproj">
+      <Project>{FCD3A933-DBF9-43A7-B5A7-76FB5A934A32}</Project>
+      <Name>Rawr.Mistweaver</Name>
     </ProjectReference>
     <ProjectReference Include="..\Rawr.ShadowPriest\Rawr.ShadowPriest.csproj">
       <Project>{6E5BC92F-AAA0-4C14-B25A-1A39196291E4}</Project>
@@ -755,6 +767,10 @@
     <ProjectReference Include="..\Rawr.Warlock\Rawr.Warlock.csproj">
       <Project>{EE625724-2A4E-45F7-806D-584449250C11}</Project>
       <Name>Rawr.Warlock</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rawr.Windwalker\Rawr.Windwalker.csproj">
+      <Project>{15DE9FB9-3A6A-4826-B620-97E0C9A722F2}</Project>
+      <Name>Rawr.Windwalker</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />

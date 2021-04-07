@@ -148,9 +148,9 @@ namespace Rawr.Rogue
             else tipCrit += string.Format("exactly at the Crit cap ({0})", capWhiteOHCrit);
 
             string tipMastery = "*";
-            if (Spec == 0) tipMastery += String.Format("{0}% increased Poison damage", BasicStats.MasteryRating * RV.Mastery.PotentPoisonsDmgMultPerMast);
-            else if (Spec == 1) tipMastery += String.Format("{0}% chance on an extra mainhand attack", BasicStats.MasteryRating * RV.Mastery.MainGauchePerMast);
-            else tipMastery += String.Format("{0}% increased finishing move damage and Slice and Dice effectiveness", BasicStats.MasteryRating * RV.Mastery.ExecutionerPerMast);
+            if (Spec == 0) tipMastery += String.Format("{0}% increased Poison damage", BasicStats.Mastery * RV.Mastery.PotentPoisonsDmgMultPerMast);
+            else if (Spec == 1) tipMastery += String.Format("{0}% chance on an extra mainhand attack", BasicStats.Mastery * RV.Mastery.MainGauchePerMast);
+            else tipMastery += String.Format("{0}% increased finishing move damage and Slice and Dice effectiveness", BasicStats.Mastery * RV.Mastery.ExecutionerPerMast);
 
             dictValues.Add("Health", BasicStats.Health.ToString());
             dictValues.Add("Attack Power", BasicStats.AttackPower.ToString());

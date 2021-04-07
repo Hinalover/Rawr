@@ -34,19 +34,5 @@ namespace Rawr.DK
             this.wMH = CS.MH;
             this.wOH = CS.OH;
         }
-
-        public override float DamageMultiplierModifer
-        {
-            get
-            {
-                float DMM = base.DamageMultiplierModifer;
-                DMM += (.15f * CState.m_Talents.RageOfRivendare); // 4.1 raised to 15% per level
-                return DMM;
-            }
-            set
-            {
-                base.DamageMultiplierModifer = value;
-            }
-        }
     }
 }

@@ -45,8 +45,8 @@
         <Button x:Name="BT_SmallView" Content="Small View" Click="BT_SmallView_Click" Width="75" HorizontalAlignment="Right" Grid.Row="3" Margin="0,4,81,4" d:LayoutOverrides="Height, VerticalMargin" Visibility="Collapsed" />
         <Button x:Name="DoneButton" Content="Done" Click="DoneButton_Click" Width="75" HorizontalAlignment="Right" Grid.Row="3" Margin="0,4,4,4" d:LayoutOverrides="Height, VerticalMargin" />
         <data:DataGrid x:Name="ItemGrid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="2" Margin="4,4,4,4"
-          CanUserResizeColumns="True" CanUserSortColumns="True" CanUserReorderColumns="True" AutoGenerateColumns="False" RowDetailsVisibilityMode="VisibleWhenSelected"
-          SelectionChanged="ItemGrid_SelectionChanged" GridLinesVisibility="Horizontal" AreRowDetailsFrozen="True" IsReadOnly="True" RowDetailsTemplate="{StaticResource DataTemplateItemGridRowDetails}">
+        CanUserResizeColumns="True" CanUserSortColumns="True" CanUserReorderColumns="True" AutoGenerateColumns="False" RowDetailsVisibilityMode="VisibleWhenSelected"
+        SelectionChanged="ItemGrid_SelectionChanged" GridLinesVisibility="Horizontal" AreRowDetailsFrozen="True" IsReadOnly="True" RowDetailsTemplate="{StaticResource DataTemplateItemGridRowDetails}">
             <data:DataGrid.Columns>
                 <data:DataGridTemplateColumn Header="Name" CellTemplate="{StaticResource DataTemplateItemGridCellName}" SortMemberPath="Name" />
                 <data:DataGridTextColumn Header="Item ID" Binding="{Binding Id}" IsReadOnly="True" />
@@ -82,17 +82,17 @@
                         <TextBlock Text="Class:" TextWrapping="Wrap" HorizontalAlignment="Left" Margin="2,2,2,2" VerticalAlignment="Center" Width="50" TextAlignment="Right"/>
                         <ComboBox x:Name="ClassCombo" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2,2,2,2" Width="110" SelectionChanged="FilterChanged">
                             <ComboBoxItem Content=" "/>
-                            <ComboBoxItem Content="Warrior"/>
-                            <ComboBoxItem Content="Paladin"/>
-                            <ComboBoxItem Content="Hunter"/>
-                            <ComboBoxItem Content="Rogue"/>
-                            <ComboBoxItem Content="Priest"/>
                             <ComboBoxItem Content="Death Knight"/>
-                            <ComboBoxItem Content="Shaman"/>
-                            <ComboBoxItem Content="Mage"/>
-                            <ComboBoxItem Content="Warlock"/>
-                            <ComboBoxItem Visibility="Collapsed"/>
                             <ComboBoxItem Content="Druid"/>
+                            <ComboBoxItem Content="Hunter"/>
+                            <ComboBoxItem Content="Mage"/>
+                            <ComboBoxItem Content="Monk"/>
+                            <ComboBoxItem Content="Paladin"/>
+                            <ComboBoxItem Content="Priest"/>
+                            <ComboBoxItem Content="Rogue"/>
+                            <ComboBoxItem Content="Shaman"/>
+                            <ComboBoxItem Content="Warlock"/>
+                            <ComboBoxItem Content="Warrior"/>
                         </ComboBox>
                     </StackPanel>
                 </StackPanel>
@@ -119,10 +119,10 @@
                     <ListBoxItem Content="Feet"/>
                     <ListBoxItem Content="Finger"/>
                     <ListBoxItem Content="Trinket"/>
-                    <ListBoxItem Content="One Hand"/>
-                    <ListBoxItem Content="Two Hand"/>
-                    <ListBoxItem Content="Main Hand"/>
-                    <ListBoxItem Content="Off Hand"/>
+                    <ListBoxItem Content="OneHand"/>
+                    <ListBoxItem Content="TwoHand"/>
+                    <ListBoxItem Content="MainHand"/>
+                    <ListBoxItem Content="OffHand"/>
                     <ListBoxItem Content="Ranged"/>
                     <ListBoxItem Content="Meta"/>
                     <ListBoxItem Content="Red"/>
@@ -142,13 +142,13 @@
                     <ListBoxItem Content="Mail"/>
                     <ListBoxItem Content="Plate"/>
                     <ListBoxItem Content="Dagger"/>
-                    <ListBoxItem Content="Fists"/>
-                    <ListBoxItem Content="1H Axe"/>
-                    <ListBoxItem Content="2H Axe"/>
-                    <ListBoxItem Content="1H Mace"/>
-                    <ListBoxItem Content="2H Mace"/>
-                    <ListBoxItem Content="1H Sword"/>
-                    <ListBoxItem Content="2H Sword"/>
+                    <ListBoxItem Content="FistWeapon" />
+                    <ListBoxItem Content="OneHandAxe"/>
+                    <ListBoxItem Content="TwoHandAxe"/>
+                    <ListBoxItem Content="OneHandMace"/>
+                    <ListBoxItem Content="TwoHandMace"/>
+                    <ListBoxItem Content="OneHandSword"/>
+                    <ListBoxItem Content="TwoHandSword"/>
                     <ListBoxItem Content="Polearm"/>
                     <ListBoxItem Content="Staff"/>
                     <ListBoxItem Content="Shield"/>
@@ -156,12 +156,6 @@
                     <ListBoxItem Content="Crossbow"/>
                     <ListBoxItem Content="Gun"/>
                     <ListBoxItem Content="Wand"/>
-                    <ListBoxItem Content="Thrown"/>
-                    <ListBoxItem Content="Relic"/>
-                    <ListBoxItem Content="Arrow"/>
-                    <ListBoxItem Content="Bullet"/>
-                    <ListBoxItem Content="Quiver"/>
-                    <ListBoxItem Content="Ammo Pouch"/>
                 </ListBox>
                 <ListBox x:Name="QualityList" Margin="2,2,2,2" Grid.Column="4" Grid.RowSpan="3" SelectionMode="Multiple" Height="120" SelectionChanged="FilterChanged">
                     <ListBoxItem Content="Temp"/>

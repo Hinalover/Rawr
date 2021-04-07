@@ -95,6 +95,7 @@
     <Compile Include="Abilites\ArcaneShot.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Abilites\Barrage.cs" />
     <Compile Include="Abilites\BestialWrath.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -107,15 +108,21 @@
     <Compile Include="Abilites\CobraShot.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Abilites\DireBeast.cs" />
     <Compile Include="Abilites\ExplosiveShot.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Abilites\Fervor.cs" />
+    <Compile Include="Abilites\GlaiveToss.cs" />
     <Compile Include="Abilites\KillShot.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Abilites\LynxRush.cs" />
+    <Compile Include="Abilites\MurderOfCrows.cs" />
     <Compile Include="Abilites\PiercingShots.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Abilites\Powershot.cs" />
     <Compile Include="Abilites\RapidFire.cs" />
     <Compile Include="Abilites\Readiness.cs">
       <SubType>Code</SubType>
@@ -142,7 +149,6 @@
     <Compile Include="ComparisonCalculationHunter.cs" />
     <Compile Include="HunterEnums.cs" />
     <Compile Include="Rotation.cs" />
-    <Compile Include="RotationTest.cs" />
     <Compile Include="Abilites\ShotData.cs" />
     <Compile Include="ShotPriority.cs" />
     <Compile Include="Abilites\Skills.Base.cs" />

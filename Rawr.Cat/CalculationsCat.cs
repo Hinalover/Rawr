@@ -270,9 +270,12 @@ namespace Rawr.Cat
                         ItemType.Leather,
                         ItemType.Idol, 
                         ItemType.Relic,
-                        ItemType.Staff,
+                        ItemType.Dagger,
+                        ItemType.FistWeapon,
+                        ItemType.OneHandMace,
                         ItemType.TwoHandMace,
-                        ItemType.Polearm
+                        ItemType.Polearm,
+                        ItemType.Staff
                     });
                 }
                 return _relevantItemTypes;
@@ -332,8 +335,8 @@ namespace Rawr.Cat
 
             float hitBonus = stats.PhysicalHit + StatConversion.GetPhysicalHitFromRating(stats.HitRating, CharacterClass.Druid);
             float expertiseBonus = StatConversion.GetDodgeParryReducFromExpertise(StatConversion.GetExpertiseFromRating(stats.ExpertiseRating, CharacterClass.Druid) + stats.Expertise, CharacterClass.Druid);
-            float masteryBonus = StatConversion.GetMasteryFromRating(stats.MasteryRating, CharacterClass.Druid) + 8f;
-            stats.NonShredBleedDamageMultiplier = masteryBonus * 0.031f;
+            stats.Mastery += StatConversion.GetMasteryFromRating(stats.MasteryRating, CharacterClass.Druid);
+            stats.NonShredBleedDamageMultiplier = stats.Mastery * 0.0313f;
 
             float chanceDodge = Math.Max(0f, StatConversion.WHITE_DODGE_CHANCE_CAP[targetLevel - 85] - expertiseBonus);
             float chanceMiss = Math.Max(0f, StatConversion.WHITE_MISS_CHANCE_CAP[targetLevel - 85] - hitBonus);
@@ -746,7 +749,7 @@ namespace Rawr.Cat
                     && triggerIntervals.ContainsKey(effect.Stats._rawSpecialEffectData[0].Trigger))
                 {
                     float upTime = effect.GetAverageUptime(triggerIntervals[effect.Trigger],
-                        triggerChances[effect.Trigger], 1f, bossOpts.BerserkTimer);
+                        triggerChances[effect.Trigger], 1f, 1f, bossOpts.BerserkTimer);
                     statsProcs.Accumulate(effect.Stats._rawSpecialEffectData[0].GetAverageStats(
                         triggerIntervals[effect.Stats._rawSpecialEffectData[0].Trigger],
                         triggerChances[effect.Stats._rawSpecialEffectData[0].Trigger], 1f, bossOpts.BerserkTimer),
@@ -755,11 +758,11 @@ namespace Rawr.Cat
                     // When in effect stats, MoteOfAnger is % of melee hits
                     // When in character stats, MoteOfAnger is average procs per second
                     statsProcs.MoteOfAnger = effect.Stats.MoteOfAnger * effect.GetAverageProcsPerSecond(triggerIntervals[effect.Trigger],
-                        triggerChances[effect.Trigger], 1f, bossOpts.BerserkTimer) / effect.MaxStack;
+                        triggerChances[effect.Trigger], 1f, 1f, bossOpts.BerserkTimer) / effect.MaxStack; // FIXME: Pass haste for Real PPM effects
                 } else if (effect.AttackPowerScaling > 0) {
                     statsProcs.PhysicalDamageProcs = effect.AttackPowerScaling;
                 } else {
-                    statsProcs.Accumulate(effect.GetAverageStats(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger], 1f, bossOpts.BerserkTimer));
+                    statsProcs.Accumulate(effect.GetAverageStats(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger], 1f, 1f, bossOpts.BerserkTimer)); // FIXME: Pass haste for Real PPM effects
                 }
             }
 
@@ -815,7 +818,7 @@ namespace Rawr.Cat
                 //if ((float)effect.MaxStack > 1)
                 //  uptime = effect.GetAverageStackSize(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger], 1f, bossOpts.BerserkTimer) / (float)effect.MaxStack;
                 //else 
-                uptime = effect.GetAverageUptime(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger], 1f, bossOpts.BerserkTimer) * tempCritEffectScales[0];
+                uptime = effect.GetAverageUptime(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger], 1f, 1f, bossOpts.BerserkTimer) * tempCritEffectScales[0];
                 float totalAgi = (float)effect.MaxStack * (effect.Stats.Agility + effect.Stats.HighestStat + effect.Stats.Paragon) * (1f + statsTotal.BonusAgilityMultiplier);
                 statsTotal.TemporaryCritRatingUptimes = new WeightedStat[] { new WeightedStat() { Chance = uptime, Value = 
                             effect.Stats.CritRating + StatConversion.GetCritFromAgility(totalAgi,
@@ -846,7 +849,7 @@ namespace Rawr.Cat
                     offset[0] = calcOpts.TrinketOffset;
                 }
                 WeightedStat[] critWeights = SpecialEffect.GetAverageCombinedUptimeCombinations(tempCritEffects.ToArray(), intervals, chances, offset,
-                    tempCritEffectScales.ToArray(), 1f, bossOpts.BerserkTimer, tempCritEffectsValues.ToArray());
+                    tempCritEffectScales.ToArray(), 1f, 1f, bossOpts.BerserkTimer, tempCritEffectsValues.ToArray()); // FIXME: Pass haste for Real PPM effects
                 statsTotal.TemporaryCritRatingUptimes = critWeights;
             }
 
@@ -912,6 +915,7 @@ namespace Rawr.Cat
                     Stamina = stats.Stamina,
                     HasteRating = stats.HasteRating,
                     ExpertiseRating = stats.ExpertiseRating,
+                    Mastery = stats.Mastery,
                     MasteryRating = stats.MasteryRating,
                     ArmorPenetration = stats.ArmorPenetration,
                     TargetArmorReduction = stats.TargetArmorReduction,
@@ -985,7 +989,7 @@ namespace Rawr.Cat
                 stats.BonusAgilityMultiplier + stats.BonusAttackPowerMultiplier + stats.BonusCritDamageMultiplier +
                 stats.BonusDamageMultiplier + stats.BonusWhiteDamageMultiplier +
                 stats.BonusStaminaMultiplier + stats.BonusStrengthMultiplier + stats.CritRating + stats.ExpertiseRating +
-                stats.HasteRating + stats.MasteryRating + stats.Health + stats.HitRating +
+                stats.HasteRating + stats.Mastery + stats.MasteryRating + stats.Health + stats.HitRating +
                 stats.Strength + stats.WeaponDamage + 
                 stats.PhysicalHit + stats.MoteOfAnger +
                 stats.PhysicalHaste +

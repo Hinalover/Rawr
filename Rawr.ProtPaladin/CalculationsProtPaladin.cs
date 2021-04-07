@@ -181,40 +181,28 @@ namespace Rawr.ProtPaladin
                     "Defensive Stats:Parry",
                     "Defensive Stats:Block",
                     "Defensive Stats:Mastery",
-                    "Defensive Stats:Chance to be Crit",
-                    "Defensive Stats:Resilience",
-                    "Defensive Stats:Block Value",                      
-                    "Defensive Stats:Avoidance",
-                    "Defensive Stats:Avoidance + Block",
-                    "Defensive Stats:Guaranteed Reduction",
-                    "Defensive Stats:Total Mitigation",
                     "Defensive Stats:Attacker Speed",
                     "Defensive Stats:Damage Taken",
+                    "Defensive Stats:Guaranteed Reduction",
+                    "Defensive Stats:Total Mitigation",
 
                     "Offensive Stats:Weapon Speed",
+                    "Offensive Stats:Weapon Damage",
                     "Offensive Stats:Attack Power",
+                    "Offensive Stats:Average Vengeance AP",
                     "Offensive Stats:Spell Power",
                     "Offensive Stats:Hit",
                     "Offensive Stats:Spell Hit",
-                    "Offensive Stats:Physical Haste",
-                    "Offensive Stats:Effective Target Armor",
-                    "Offensive Stats:Effective Armor Penetration",
+                    "Offensive Stats:Expertise",
                     "Offensive Stats:Crit",
                     "Offensive Stats:Spell Crit",
-                    "Offensive Stats:Expertise",
-                    "Offensive Stats:Weapon Damage",
-                    "Offensive Stats:Missed Attacks",
-                    "Offensive Stats:Glancing Attacks",
-                    "Offensive Stats:Total Damage/sec",
-                    "Offensive Stats:Threat/sec",
+                    "Offensive Stats:Haste",
+                    "Offensive Stats:Spell Haste",
+                    "Offensive Stats:Avoided Attacks",
+                    "Offensive Stats:DPS",
+                    "Offensive Stats:TPS",
 
-                    "Resistances:Nature Resist",
-                    "Resistances:Fire Resist",
-                    "Resistances:Frost Resist",
-                    "Resistances:Shadow Resist",
-                    "Resistances:Arcane Resist",
-                    "Complex Stats:Ranking Mode*The currently selected ranking mode. Ranking modes can be changed in the Options tab.",
-                    @"Complex Stats:Overall Points*Overall Points are a sum of Mitigation, Threat and Survival Points. 
+                    @"Complex Stats:Overall Points*Overall Points are a sum of Mitigation, Threat, Survival and Recovery Points. 
 Overall is typically, but not always, the best way to rate gear. 
 For specific encounters, closer attention to Mitigation and 
 Survival Points individually may be important.
@@ -234,11 +222,7 @@ but rather get 'enough' of it, and then focus on Mitigation.
 If you find that you are being killed by burst damage,
 focus on Survival Points.",
                     @"Complex Stats:Threat Points*Threat Points represents the average threat per second accumulated scaled by the threat scale.",
-                    "Complex Stats:Nature Survival",
-                    "Complex Stats:Fire Survival",
-                    "Complex Stats:Frost Survival",
-                    "Complex Stats:Shadow Survival",
-                    "Complex Stats:Arcane Survival",
+                    @"Complex Stats:Recovery Points*Recovery Points represents the average healing per second accumulated scaled by the recovery scale."
                     };
                 return _characterDisplayCalculationLabels;
             }
@@ -249,27 +233,7 @@ focus on Survival Points.",
             get {
                 if (_optimizableCalculationLabels == null)
                     _optimizableCalculationLabels = new string[] {
-                    "Health",
-                    "Threat Per Second",
-                    "% Total Mitigation",
-                    "% Guaranteed Reduction",
-                    "Avoidance Points",
-                    "% Avoid + Block Attacks",
-                    "% Chance to be Crit",
-                    "Block Value",
-                    "% Block Chance",
-                    "Burst Time", 
-                    "TankPoints", 
-                    "Nature Survival",
-                    "Fire Survival",
-                    "Frost Survival",
-                    "Shadow Survival",
-                    "Arcane Survival",
-                    "% Spell Hit Chance",
-                    "% Chance to be Avoided",
-                    "% Chance to be Missed",
-                    "% Chance to be Dodged",
-                    "% Chance to be Parried",
+                    "Health"
                     };
                 return _optimizableCalculationLabels;
             }
@@ -284,7 +248,6 @@ focus on Survival Points.",
                     "Ability Threat",
                     "Combat Table: Defensive Stats",
                     "Combat Table: Offensive Stats",
-                    "Combat Table: Spell Resistance",
                     "Item Budget",
                     };
                 return _customChartNames;
@@ -296,10 +259,10 @@ focus on Survival Points.",
             get {
                 if (_subPointNameColors == null) {
                     _subPointNameColors = new Dictionary<string, Color>();
-                    _subPointNameColors.Add("Survivability", Colors.Blue);
+                    _subPointNameColors.Add("Survival", Colors.Blue);
                     _subPointNameColors.Add("Mitigation", Colors.Red);
-                    //_subPointNameColors.Add("Burst", Colors.Purple); // NYI
                     _subPointNameColors.Add("Threat", Colors.Green);
+                    _subPointNameColors.Add("Recovery", Color.FromArgb(0xFF, 0xDB, 0x70, 0x93));
                 }
                 return _subPointNameColors;
             }
@@ -348,207 +311,70 @@ focus on Survival Points.",
 
             StatsProtPaladin stats = GetCharacterStats(character, additionalItem, calcOpts, bossOpts);
 
-            DefendModel dmDisplay = new DefendModel(character, stats, calcOpts, bossOpts);
-
-            // Defensive stats
-            calc.Mastery = 8f + StatConversion.GetMasteryFromRating(stats.MasteryRating, CharacterClass.Paladin);
-            calc.Miss = dmDisplay.DefendTable.Miss;
-            calc.Dodge = dmDisplay.DefendTable.Dodge;
-            calc.Parry = dmDisplay.DefendTable.Parry;
-            calc.Block = dmDisplay.DefendTable.Block;
-
-            calc.DodgePlusMissPlusParry = calc.Dodge + calc.Miss + calc.Parry;
-            calc.DodgePlusMissPlusParryPlusBlock = calc.Dodge + calc.Miss + calc.Parry + calc.Block;
-            calc.CritReduction = character.PaladinTalents.Sanctuary * 0.02f;
-            calc.CritVulnerability = dmDisplay.DefendTable.Critical;
-
-            stats.Accumulate(GetSpecialEffectStats(character, stats, calcOpts, bossOpts, false));
-
-            DefendModel dm = new DefendModel(character, stats, calcOpts, bossOpts);
-
-            int levelDifference = bossOpts.Level - character.Level;
-            if (levelDifference > 3) { levelDifference = 3; }
-            else if (levelDifference < 0) { levelDifference = 0; }
-            float levelDifferenceAvoidance = levelDifference * 0.002f;
-
-            #region Vengeance
-            { // Vengeance Calc from Bear
-                // == Evaluate damage taken once ahead of time for vengeance ==
-                //Out of 100 attacks, you'll take...
-                float critsVeng = Math.Min(Math.Max(0f, 1f - dm.DefendTable.AnyMiss /*calc.AvoidancePostDR*/), (0.05f + levelDifferenceAvoidance) - calc.CappedCritReduction);
-                //float crushes = targetLevel == 73 ? Math.Max(0f, Math.Min(15f, 100f - (crits + calculatedStats.AvoidancePreDR)) - stats.CritChanceReduction) : 0f;
-                float hitsVeng = Math.Max(0f, 1f - (critsVeng + dm.DefendTable.AnyMiss /*calc.AvoidancePostDR*/));
-                //Apply armor and multipliers for each attack type...
-                critsVeng *= (1f - calc.GuaranteedReduction) * 2f;
-                //crushes *= (100f - calculatedStats.Mitigation) * .015f;
-                hitsVeng *= (1f - calc.GuaranteedReduction);
-                float damageTakenPercent = (hitsVeng + critsVeng) * (1f - stats.BossAttackSpeedReductionMultiplier);
-                float damageTakenPerHit = bossAttack.DamagePerHit * damageTakenPercent - stats.DamageAbsorbed;
-                float damageTakenPerSecond = damageTakenPerHit / bossAttack.AttackSpeed;
-                float damageTakenPerVengeanceTick = damageTakenPerSecond * 2f;
-                float vengeanceCap = stats.Stamina + BaseStats.GetBaseStats(character).Health * 0.1f;
-                float vengeanceAPPreAvoidance = Math.Min(vengeanceCap, damageTakenPerVengeanceTick);
-
-                double chanceHit = 1f - dm.DefendTable.AnyMiss /*calc.AvoidancePostDR*/;
-                double vengeanceMultiplierFromAvoidance = //Best-fit of results from simulation of avoidance effects on vengeance
-                    -46.288470839554d * Math.Pow(chanceHit, 6)
-                    + 143.12528411194400d * Math.Pow(chanceHit, 5)
-                    - 159.9833254324610000d * Math.Pow(chanceHit, 4)
-                    + 74.0451030489808d * Math.Pow(chanceHit, 3)
-                    - 10.8422088672455d * Math.Pow(chanceHit, 2)
-                    + 0.935157126508557d * chanceHit;
-
-                float vengeanceMultiplierFromSwingSpeed = bossAttack.AttackSpeed <= 2f ? 1f :
-                    (1f - 0.1f * (1f - 2f / bossAttack.AttackSpeed)); //A percentage of the ticks will be guaranteed decays for attack speeds longer than 2sec, due to no swings occuring between the current and last tick
-
-                float vengeanceAP = (float)(vengeanceAPPreAvoidance * vengeanceMultiplierFromAvoidance * vengeanceMultiplierFromSwingSpeed);
-
-                calc.AverageVengeanceAP = (float)Math.Floor(vengeanceAP * (1 + stats.BonusAttackPowerMultiplier));
-                stats.AverageVengeanceAP += calc.AverageVengeanceAP;
-            }//*/
-            #endregion
-
-            AttackModel am = new AttackModel(character, stats, calcOpts, bossOpts);
-
-            // Do the 2T13 set bonus
-            if (stats.JudgementAbsorbShield > 0)
-            {
-                Ability judgement = calcOpts.SealChoice == "Seal of Truth" ? Ability.JudgementOfTruth : Ability.JudgementOfRighteousness;
-                stats.DamageAbsorbed += stats.JudgementAbsorbShield * am.Abilities[judgement].Damage / 9.0f;
-                dm = new DefendModel(character, stats, calcOpts, bossOpts);
-            }
-
             calc.BasicStats = stats;
 
-            // Target Info
             calc.TargetLevel = bossOpts.Level;
-            calc.TargetArmor = bossOpts.Armor;
-            calc.EffectiveTargetArmor = bossOpts.Armor * (1 - stats.TargetArmorReduction);
-            calc.TargetArmorDamageReduction = StatConversion.GetArmorDamageReduction(character.Level, bossOpts.Level, bossOpts.Armor, 0, 0);
-            calc.EffectiveTargetArmorDamageReduction = StatConversion.GetArmorDamageReduction(character.Level, bossOpts.Level, bossOpts.Armor, stats.TargetArmorReduction, 0);
             
-            calc.ActiveBuffs = new List<Buff>(character.ActiveBuffs);
-            calc.Abilities = am.Abilities;
+            // Transfer derived stats to calculations
+            calc.Hit = StatConversion.GetHitFromRating(stats.HitRating) + stats.PhysicalHit;
+            calc.Expertise = StatConversion.GetExpertiseFromRating(stats.ExpertiseRating) + stats.Expertise;
+            calc.SpellHit = StatConversion.GetSpellHitFromRating(stats.HitRating + stats.ExpertiseRating) + stats.SpellHit;
+            calc.Crit = Math.Max(0, StatConversion.GetCritFromAgility(stats.Agility, CharacterClass.Paladin) + StatConversion.GetCritFromRating(stats.CritRating) + StatConversion.NPC_LEVEL_CRIT_MOD[bossOpts.Level - character.Level]) + stats.PhysicalCrit;
+            calc.SpellCrit = Math.Max(0, StatConversion.GetSpellCritFromIntellect(stats.Intellect) + StatConversion.GetSpellCritFromRating(stats.CritRating) + StatConversion.NPC_LEVEL_SPELL_CRIT_MOD[bossOpts.Level - character.Level]) + stats.SpellCrit;
+            calc.Haste = StatConversion.GetHasteFromRating(stats.HasteRating, CharacterClass.Paladin);
+            calc.SpellHaste = (1 + StatConversion.GetSpellHasteFromRating(stats.HasteRating)) * (1 + stats.SpellHaste) - 1;
+            calc.Miss = 0.05f - 0.002f * (bossOpts.Level - character.Level);
+            calc.Dodge = StatConversion.GetDRAvoidanceChance(character, stats, HitResult.Dodge, bossOpts.Level);
+            calc.Parry = StatConversion.GetDRAvoidanceChance(character, stats, HitResult.Parry, bossOpts.Level);
+            calc.Mastery = stats.Mastery + StatConversion.GetMasteryFromRating(stats.MasteryRating);
+            calc.Block = stats.Block + calc.Mastery * 0.01f - 0.002f * (bossOpts.Level - character.Level);
+            // Physical haste stat affects swing speed, not actual melee haste
+            calc.WeaponSpeed = (character.MainHand == null ? 2.4f : character.MainHand.Speed) / (1 + calc.Haste) / (1 + stats.PhysicalHaste);
 
-            calc.ArmorReduction = Lookup.ArmorReduction(stats.Armor, calc.TargetLevel, character.Level);
-            calc.GuaranteedReduction = dm.GuaranteedReduction;
-            calc.TotalMitigation = dm.Mitigation;
-            calc.AttackerSpeed = bossOpts.DefaultMeleeAttack.AttackSpeed / (1 - stats.BossAttackSpeedReductionMultiplier);
-            calc.DamageTaken = dm.DamageTaken;
-            calc.DPSTaken = dm.DamagePerSecond;
-            calc.DamageTakenPerHit = dm.DamagePerHit;
-            calc.DamageTakenPerBlock = dm.DamagePerBlock;
-            calc.DamageTakenPerCrit = dm.DamagePerCrit;
-            calc.CappedCritReduction = Math.Min(0.05f + levelDifferenceAvoidance, calc.CritReduction);
+            calc.AvengingWrathUptime = AvengingWrath.GetAverageUptime(0, 1);
 
-            calc.ArcaneReduction = Lookup.MagicReduction(stats, DamageType.Arcane, calc.TargetLevel);
-            calc.FireReduction   = Lookup.MagicReduction(stats, DamageType.Fire, calc.TargetLevel);
-            calc.FrostReduction  = Lookup.MagicReduction(stats, DamageType.Frost, calc.TargetLevel);
-            calc.NatureReduction = Lookup.MagicReduction(stats, DamageType.Nature, calc.TargetLevel);
-            calc.ShadowReduction = Lookup.MagicReduction(stats, DamageType.Shadow, calc.TargetLevel);
-            calc.ArcaneSurvivalPoints = calc.ArcaneReduction == 0 ? 0 : stats.Health * (calc.ArcaneReduction);
-            calc.FireSurvivalPoints = calc.FireReduction == 0 ? 0 : stats.Health * (calc.FireReduction);
-            calc.FrostSurvivalPoints = calc.FrostReduction == 0 ? 0 : stats.Health * (calc.FrostReduction);
-            calc.NatureSurvivalPoints = calc.NatureReduction == 0 ? 0 : stats.Health * (calc.NatureReduction);
-            calc.ShadowSurvivalPoints = calc.ShadowReduction == 0 ? 0 : stats.Health * (calc.ShadowReduction);
+            calc.HolyAvengerUptime = HolyAvenger.GetAverageUptime(0, 1);
 
-            // Offensive Stats
-            calc.Hit = Lookup.HitChance(stats, calc.TargetLevel, character.Level);
-            calc.SpellHit = Lookup.SpellHitChance(character.Level, stats, calc.TargetLevel);
-            calc.Crit = Lookup.CritChance(stats, calc.TargetLevel, character.Level);
-            calc.SpellCrit = Lookup.SpellCritChance(character.Level, stats, calc.TargetLevel);
-            calc.Expertise = Lookup.BonusExpertisePercentage(stats);
-            calc.PhysicalHaste = Lookup.BonusPhysicalHastePercentage(stats);
-            calc.SpellHaste = Lookup.BonusSpellHastePercentage(stats);
-            calc.AvoidedAttacks = am.Abilities[Ability.MeleeSwing].AttackTable.AnyMiss;
-            calc.MissedAttacks = am.Abilities[Ability.MeleeSwing].AttackTable.Miss;
-            calc.DodgedAttacks = am.Abilities[Ability.MeleeSwing].AttackTable.Dodge;
-            calc.ParriedAttacks = am.Abilities[Ability.MeleeSwing].AttackTable.Parry;
-            calc.GlancingAttacks = am.Abilities[Ability.MeleeSwing].AttackTable.Glance;
-            calc.GlancingReduction = Lookup.GlancingReduction(character.Level, calc.TargetLevel);
-            calc.BlockedAttacks = am.Abilities[Ability.MeleeSwing].AttackTable.Block;
-            calc.WeaponSpeed = Lookup.WeaponSpeed(character, stats);
-            calc.TotalDamagePerSecond = am.DamagePerSecond;
-
-            // Ranking Points
-            //calculatedStats.UnlimitedThreat = am.ThreatPerSecond;
-            //am.RageModelMode = RageModelMode.Limited;
-            calc.ThreatPerSecond = am.ThreatPerSecond;
-            calc.ThreatModel = am.Name + "\n" + am.Description;
-
-            calc.TankPoints = dm.TankPoints;
-            calc.BurstTime = dm.BurstTime;
-            calc.RankingMode = calcOpts.RankingMode;
-            calc.ThreatPoints = calcOpts.ThreatScale * calc.ThreatPerSecond;
-            
-            //float scale = 0.0f;
-
-            float VALUE_CAP = 1000000000f;
-
-            switch (calcOpts.RankingMode)
+            ProtPaladinSolver solver = new ProtPaladinSolver();
+            solver.Solve(character, calcOpts, bossOpts, ref calc, bossAttack);
+            // Get averaged special effect stats and apply them to the base stats
+            foreach (SpecialEffect effect in stats.SpecialEffects())
             {
-                #region Alternative Ranking Modes
-                case 1:
-                    // Burst Time Mode
-                    float threatScale = Convert.ToSingle(Math.Pow(Convert.ToDouble(bossOpts.DefaultMeleeAttack.DamagePerHit) / 25000.0d, 4));
-                    calc.SurvivabilityPoints = Math.Min(dm.BurstTime * 100.0f, VALUE_CAP);
-                    calc.MitigationPoints = 0.0f;
-                    calc.ThreatPoints = 0.0f; // Math.Min((calc.ThreatPoints / threatScale) * 2.0f, VALUE_CAP);
-                    break;
-                case 2:
-                    // Combat Table Coverage Mode
-                    calc.SurvivabilityPoints = 0.0f;
-                    calc.MitigationPoints = 0.0f;
-                    calc.ThreatPoints = 0.0f;
-                    //calc.CTCPoints = StatConversion.MitigationScaler / (1f - dm.CTCCovered);
-                    calc.CTCPoints = dm.CTCovered * 10000f;
-                    calc.MitigationPoints = calc.CTCPoints;
-                    calc.OverallPoints = calc.CTCPoints;
-                    break;
-                case 3:
-                    // Damage Output Mode
-                    calc.SurvivabilityPoints = 0.0f;
-                    calc.MitigationPoints = 0.0f;
-                    calc.ThreatPoints = Math.Min(calc.TotalDamagePerSecond, VALUE_CAP);
-                    break;
-                #endregion
-                case 0:
-                default:
-                    // Mitigation Scale Mode
-                    //calc.SurvivalPoints = Math.Min(CapSurvival(dm.EffectiveHealth, calcOpts), VALUE_CAP);
-                    //calc.MitigationPoints = Math.Min(calcOpts.MitigationScale / dm.DamageTaken, VALUE_CAP);
-                    //calc.ThreatPoints = Math.Min(calc.ThreatPoints, VALUE_CAP);
-                    calc.SurvivabilityPoints = CapSurvival(dm.EffectiveHealth, calcOpts, bossOpts);
-                    calc.MitigationPoints = StatConversion.MitigationScaler / (1f - dm.Mitigation);
-                    //calc.MitigationPoints = Math.Min(dm.Mitigation * bossOpts.DefaultMeleeAttack.DamagePerHit /** calcOpts.MitigationScale*/ * 10.0f, VALUE_CAP);
-                    calc.ThreatPoints = Math.Min(calc.ThreatPoints / 10.0f, VALUE_CAP);
-                    break;
+                Stats effectStats = effect.GetAverageStats(solver.TriggerIntervals, solver.TriggerChances, calc.WeaponSpeed, calc.Haste, bossOpts.BerserkTimer, 1f);
+                // Handle effects for highest stat/highest secondary stat
+                if (effectStats.HighestStat > 0)
+                    effectStats.Strength = effectStats.HighestStat;
+                else if (effectStats.HighestSecondaryStat > 0)
+                {
+                    if (calc.BasicStats.MasteryRating > calc.BasicStats.HasteRating)
+                        effectStats.MasteryRating = effectStats.HighestSecondaryStat;
+                    else
+                        effectStats.HasteRating = effectStats.HighestSecondaryStat;
+                }
+                calc.BasicStats.Accumulate(effectStats);
             }
-            calc.OverallPoints = calc.MitigationPoints + calc.SurvivabilityPoints + calc.ThreatPoints;
+
+            // Transfer derived stats to calculations
+            calc.Hit = StatConversion.GetHitFromRating(stats.HitRating) + stats.PhysicalHit;
+            calc.Expertise = StatConversion.GetExpertiseFromRating(stats.ExpertiseRating) + stats.Expertise;
+            calc.SpellHit = StatConversion.GetSpellHitFromRating(stats.HitRating + stats.ExpertiseRating) + stats.SpellHit;
+            calc.Crit = Math.Max(0, StatConversion.GetCritFromAgility(stats.Agility, CharacterClass.Paladin) + StatConversion.GetCritFromRating(stats.CritRating) + StatConversion.NPC_LEVEL_CRIT_MOD[bossOpts.Level - character.Level]) + stats.PhysicalCrit;
+            calc.SpellCrit = Math.Max(0, StatConversion.GetSpellCritFromIntellect(stats.Intellect) + StatConversion.GetSpellCritFromRating(stats.CritRating) + StatConversion.NPC_LEVEL_SPELL_CRIT_MOD[bossOpts.Level - character.Level]) + stats.SpellCrit;
+            calc.Haste = StatConversion.GetHasteFromRating(stats.HasteRating, CharacterClass.Paladin);
+            calc.SpellHaste = (1 + StatConversion.GetSpellHasteFromRating(stats.HasteRating)) * (1 + stats.SpellHaste) - 1;
+            calc.Miss = 0.05f - 0.002f * (bossOpts.Level - character.Level);
+            calc.Dodge = StatConversion.GetDRAvoidanceChance(character, stats, HitResult.Dodge, bossOpts.Level);
+            calc.Parry = StatConversion.GetDRAvoidanceChance(character, stats, HitResult.Parry, bossOpts.Level);
+            calc.Mastery = stats.Mastery + StatConversion.GetMasteryFromRating(stats.MasteryRating);
+            calc.Block = stats.Block + calc.Mastery * 0.01f - 0.002f * (bossOpts.Level - character.Level);
+            // Physical haste stat affects swing speed, not actual melee haste
+            calc.WeaponSpeed = (character.MainHand == null ? 2.4f : character.MainHand.Speed) / (1 + calc.Haste) / (1 + stats.PhysicalHaste);
+
+            solver.Solve(character, calcOpts, bossOpts, ref calc, bossAttack);
+            
+            calc.OverallPoints = calc.MitigationPoints + calc.SurvivabilityPoints + calc.ThreatPoints + calc.RecoveryPoints;
 
             return calc;
-        }
-
-        // Original code from CalculationsBear, thanks Astrylian!
-        private float CapSurvival(float survivalScore, CalculationOptionsProtPaladin calcOpts, BossOptions bossOpts)
-        {
-            double survivalCap = (double)(bossOpts.DefaultMeleeAttack.DamagePerHit * calcOpts.HitsToSurvive) / 1000d;
-            double survivalRaw = (double)survivalScore / 1000d;
-
-            //Implement Survival Soft Cap
-            if (survivalRaw <= survivalCap) {
-                return survivalScore;
-            } else {
-                double x = survivalRaw;
-                double cap = survivalCap;
-                double fourToTheNegativeFourThirds = Math.Pow(4d, -4d / 3d);
-                double topLeft = Math.Pow(((x - cap) / cap) + fourToTheNegativeFourThirds, 1d / 4d);
-                double topRight = Math.Pow(fourToTheNegativeFourThirds, 1d / 4d);
-                double fracTop = topLeft - topRight;
-                double fraction = fracTop / 2d;
-                double y = (cap * fraction + cap);
-                return 1000f * (float)y;
-            }
         }
 
         public override Stats GetItemStats(Character character, Item additionalItem)
@@ -594,6 +420,12 @@ focus on Survival Points.",
             return GetCharacterStats(character, additionalItem, calcOpts, bossOpts);
         }
 
+        public SpecialEffect DivineProtection = new SpecialEffect(Trigger.Use, new Stats { DamageTakenReductionMultiplier = 0.2f }, 10, 60);
+        public SpecialEffect ArdentDefender = new SpecialEffect(Trigger.Use, new Stats { DamageTakenReductionMultiplier = 0.2f }, 10, 180);
+        public SpecialEffect GuardianOfAncientKings = new SpecialEffect(Trigger.Use, new Stats { DamageTakenReductionMultiplier = 0.5f }, 12f, 180f);
+        public SpecialEffect AvengingWrath = new SpecialEffect(Trigger.Use, new Stats { BonusDamageMultiplier = 0.2f, BonusHealingDoneMultiplier = 0.2f }, 20, 180f);
+        public SpecialEffect HolyAvenger = new SpecialEffect(Trigger.Use, new Stats {  }, 18, 120f);
+
         public StatsProtPaladin GetCharacterStats(Character character, Item additionalItem, CalculationOptionsProtPaladin calcOpts, BossOptions bossOpts)
         {
             PaladinTalents talents = character.PaladinTalents;
@@ -601,47 +433,33 @@ focus on Survival Points.",
             Stats statsBase = BaseStats.GetBaseStats(character.Level, CharacterClass.Paladin, character.Race);
             statsBase.Expertise += BaseStats.GetRacialExpertise(character, ItemSlot.MainHand);
 
-            SpecialEffect DivineProtection = new SpecialEffect(Trigger.Use, new Stats { DamageTakenReductionMultiplier = 0.2f }, 10, 60);
-            SpecialEffect ArdentDefender = new SpecialEffect(Trigger.Use, new Stats { DamageTakenReductionMultiplier = 0.2f }, 10, 180);
-            SpecialEffect GuardianOfAncientKings = new SpecialEffect(Trigger.Use, new Stats { DamageTakenReductionMultiplier = 0.5f }, 12f, 300f);
-            SpecialEffect AvengingWrath = new SpecialEffect(Trigger.Use, new Stats { BonusDamageMultiplier = 0.2f }, 20, 180f);
-
             Stats statsBuffs = GetBuffsStats(character, calcOpts);
             Stats statsItems = GetItemStats(character, additionalItem, calcOpts);
             Stats statsTalents = new Stats()
             {
-                BaseArmorMultiplier = talents.Toughness * 0.1f / 3f,
-                BonusStaminaMultiplier = 0.15f, // Touched by the Light
-                SpellHit = 0.08f,
-                DamageTakenReductionMultiplier = talents.Sanctuary * 0.1f / 3f
+                // Guarded by the Light
+                BonusStaminaMultiplier = 0.15f,
+                Block = 0.1f,
+                // Sanctuary
+                BaseArmorMultiplier = 0.1f,
+                DamageTakenReductionMultiplier = 0.15f,
+                Dodge = 0.02f
             };
             StatsProtPaladin statsTotal = new StatsProtPaladin();
 
-            int T11count;
-            character.SetBonusCount.TryGetValue("Reinforced Sapphirium Battlearmor", out T11count);
-            if (T11count >= 2) { statsTotal.BonusDamageMultiplierCrusaderStrike = 0.05f; }
-            if (T11count >= 4) { GuardianOfAncientKings.Duration *= 1.5f; }
-            int T12count;
-            character.SetBonusCount.TryGetValue("Battlearmor of Immolation", out T12count);
-            if (T12count >= 2) { statsTotal.BonusDamageShieldofRighteous = 0.20f; }
-            if (T12count >= 4) {
-                statsBuffs.AddSpecialEffect(new SpecialEffect(Trigger.DivineProtection,
-                    new Stats() { Parry = 0.12f, },
-                    10f, 60f));
-            }
-            int T13count;
-            character.SetBonusCount.TryGetValue("Armor of Radiant Glory", out T13count);
-            if (T13count >= 2) { statsTotal.JudgementAbsorbShield = 0.25f; }
-            // 4-piece affects Divine Guardian, which does not affect the paladin
-
-            GuardianOfAncientKings.Cooldown -= 40f * talents.ShieldOfTheTemplar;
-            AvengingWrath.Cooldown -= 20f * talents.ShieldOfTheTemplar;
+            // Avenging Wrath lasts 50% longer with Sanctified Wrath
+            if (character.PaladinTalents.SanctifiedWrath > 0)
+                AvengingWrath.Duration = 30;
+            else
+                AvengingWrath.Duration = 20;
 
             // Add paladin-specific tank cooldowns
             statsBase.AddSpecialEffect(GuardianOfAncientKings);
-            statsBase.AddSpecialEffect(DivineProtection);
-            if (talents.ArdentDefender > 0) statsTalents.AddSpecialEffect(ArdentDefender);
             statsBase.AddSpecialEffect(AvengingWrath);
+            if (character.PaladinTalents.GlyphOfDivineProtection)
+                statsTalents.AddSpecialEffect(DivineProtection);
+            if (character.PaladinTalents.ArdentDefender > 0)
+                statsTalents.AddSpecialEffect(ArdentDefender);
 
             statsTotal.Accumulate(statsBase);
             statsTotal.Accumulate(statsItems);
@@ -670,193 +488,18 @@ focus on Survival Points.",
             /// Derived stats: Health, mana, spell power, attack power
             statsTotal.Health = (float)Math.Round(statsTotal.Health + StatConversion.GetHealthFromStamina(statsTotal.Stamina));
             statsTotal.Health = (float)Math.Floor(statsTotal.Health * (1f + statsTotal.BonusHealthMultiplier));
-            statsTotal.Mana = (float)Math.Round(statsTotal.Mana + StatConversion.GetManaFromIntellect(statsTotal.Intellect));
-            statsTotal.Mana = (float)Math.Floor(statsTotal.Mana * (1f + statsTotal.BonusManaMultiplier));
+            //statsTotal.Mana = (float)Math.Round(statsTotal.Mana + StatConversion.GetManaFromIntellect(statsTotal.Intellect));
+            //statsTotal.Mana = (float)Math.Floor(statsTotal.Mana * (1f + statsTotal.BonusManaMultiplier));
             statsTotal.MaxHealthDamageProc = statsTotal.Health * statsTotal.MaxHealthDamageProc;
 
-            statsTotal.SpellPower += (float)Math.Floor(statsTotal.Strength * 0.60f) + statsTotal.Intellect - 10f; // Touched by the Light
-            statsTotal.SpellPower = (float)Math.Floor(statsTotal.SpellPower * (1 + statsTotal.BonusSpellPowerMultiplier));
             statsTotal.AttackPower += statsTotal.Strength * 2f;
             statsTotal.AttackPower = (float)Math.Floor(statsTotal.AttackPower * (1f + statsTotal.BonusAttackPowerMultiplier));
-            statsTotal.NatureResistance += statsTotal.NatureResistanceBuff;
-            statsTotal.FireResistance += statsTotal.FireResistanceBuff;
-            statsTotal.FrostResistance += statsTotal.FrostResistanceBuff;
-            statsTotal.ShadowResistance += statsTotal.ShadowResistanceBuff;
-            statsTotal.ArcaneResistance += statsTotal.ArcaneResistanceBuff;
+            statsTotal.SpellPower = (float)Math.Floor(statsTotal.AttackPower / 2.0f);
 
-            // Ratings stats: Hit, expertise, crit, haste, parry, dodge, mastery
-            if (talents.GlyphOfSealOfTruth && calcOpts.SealChoice == "Seal of Truth")
-            {
-                statsTotal.Expertise += 10.0f;
-            }
-            statsTotal.ParryRating += (float)Math.Floor((statsTotal.Strength - statsBase.Strength) * 0.27f);
-            statsTotal.WeaponDamage += Lookup.WeaponDamage(character, statsTotal.AttackPower, false);
-
-            // Calculate Always-up Procs and Special Effects
-            statsTotal.Accumulate(GetSpecialEffectStats(character, statsTotal, calcOpts, bossOpts, true));
+            // Weapon damage
+            statsTotal.WeaponDamage = (character.MainHand == null ? 0f : (character.MainHand.MinDamage + character.MainHand.MaxDamage) / 2f);
 
             return statsTotal;
-        }
-
-        private void CreateTriggers(AttackModel am, Character character, Stats stats, CalculationOptionsProtPaladin calcOpts, BossOptions bossOpts, out Dictionary<Trigger, float> triggerIntervals, out Dictionary<Trigger, float> triggerChances)
-        {
-            triggerIntervals = new Dictionary<Trigger, float>();
-            triggerChances = new Dictionary<Trigger, float>();
-
-            float intervalRotation = 9.0f;
-
-            triggerIntervals[Trigger.MeleeAttack] =
-            triggerIntervals[Trigger.PhysicalAttack] =
-            triggerIntervals[Trigger.MeleeHit] = 
-            triggerIntervals[Trigger.PhysicalHit]                        = 
-            triggerIntervals[Trigger.MainHandHit]                        =
-            triggerIntervals[Trigger.CurrentHandHit]                     =
-            triggerIntervals[Trigger.MeleeCrit]                          = 
-            triggerIntervals[Trigger.PhysicalCrit]                       = Lookup.WeaponSpeed(character, stats); // + calcOptsTargetsHotR / intervalHotR;
-            // 939 has 1 direct damage spell cast in 9 seconds.
-            triggerIntervals[Trigger.DamageSpellCast]                    =
-            triggerIntervals[Trigger.DamageSpellHit]                     =
-            triggerIntervals[Trigger.DamageSpellCrit]                    = 1f / intervalRotation;
-            triggerIntervals[Trigger.DoTTick]                            = 1f;
-            triggerIntervals[Trigger.SpellCast]                          = 1.5f;
-            // 939 assumes casting a spell every gcd. Changing auras, and casting a blessing is disregarded.
-            triggerIntervals[Trigger.DamageOrHealingDone]                =
-            triggerIntervals[Trigger.DamageDone]                         = 1f / (1f / triggerIntervals[Trigger.MeleeHit] + 1f / triggerIntervals[Trigger.SpellCast]);
-            triggerIntervals[Trigger.JudgementHit]                       = 9.0f;
-            triggerIntervals[Trigger.DamageTakenPhysical]                =
-            triggerIntervals[Trigger.DamageTakenPutsMeBelow35PercHealth] = 
-            triggerIntervals[Trigger.DamageTaken]                        = (1.0f / am.AttackerHitsPerSecond);
-            triggerIntervals[Trigger.DivineProtection] = 60f;
-            triggerIntervals[Trigger.Use] = 0f;
-
-            // temporary combat table, used for the implementation of special effects.
-            float hitBonusPhysical = StatConversion.GetPhysicalHitFromRating(stats.HitRating, CharacterClass.Paladin) + stats.PhysicalHit;
-            float hitBonusSpell = StatConversion.GetSpellHitFromRating(stats.HitRating, CharacterClass.Paladin) + stats.SpellHit;
-            float expertiseBonus = StatConversion.GetDodgeParryReducFromExpertise(StatConversion.GetExpertiseFromRating(stats.ExpertiseRating, CharacterClass.Paladin) + stats.Expertise, CharacterClass.Paladin);
-            float chanceMissSpell = Math.Max(0f, StatConversion.GetSpellMiss(character.Level - bossOpts.Level, false) - hitBonusSpell);
-            float chanceMissPhysical = Math.Max(0f, StatConversion.WHITE_MISS_CHANCE_CAP[bossOpts.Level - character.Level] - hitBonusPhysical);
-            float chanceMissDodge = Math.Max(0f, StatConversion.WHITE_DODGE_CHANCE_CAP[bossOpts.Level - character.Level] - expertiseBonus);
-            float chanceMissParry = Math.Max(0f, StatConversion.WHITE_PARRY_CHANCE_CAP[bossOpts.Level - character.Level] - expertiseBonus);
-            float chanceMissPhysicalAny = chanceMissPhysical + chanceMissDodge + chanceMissParry;
-
-            triggerChances[Trigger.MeleeAttack] =
-            triggerChances[Trigger.MainHandHit] =
-            triggerChances[Trigger.CurrentHandHit] =
-            triggerChances[Trigger.PhysicalAttack] = 1.0f;
-            triggerChances[Trigger.MeleeHit] = 
-            triggerChances[Trigger.PhysicalHit] = 1.0f - chanceMissPhysicalAny;
-            triggerChances[Trigger.MeleeCrit] = 
-            triggerChances[Trigger.PhysicalCrit] = Math.Min(1f, Math.Max(0, StatConversion.GetPhysicalCritFromRating(stats.CritRating, CharacterClass.Paladin)
-                                                 + StatConversion.GetPhysicalCritFromAgility(stats.Agility, CharacterClass.Paladin)
-                                                 + stats.PhysicalCrit
-                                                 + StatConversion.NPC_LEVEL_CRIT_MOD[bossOpts.Level - character.Level]));
-            triggerChances[Trigger.DamageSpellCrit] = StatConversion.GetSpellCritFromRating(stats.CritRating, CharacterClass.Paladin)
-                                       + StatConversion.GetSpellCritFromIntellect(stats.Intellect, CharacterClass.Paladin)
-                                       + stats.SpellCrit + stats.SpellCritOnTarget
-                                       - (0.006f * (bossOpts.Level - character.Level) + (bossOpts.Level == 88 ? 0.03f : 0.0f));
-            triggerChances[Trigger.DamageSpellHit] = 1.0f - chanceMissSpell;
-            triggerChances[Trigger.DoTTick] = triggerChances[Trigger.DamageSpellHit] * (character.PaladinTalents.GlyphOfConsecration ? 1.0f : 16.0f / 18.0f); // 16 ticks in 18 seconds of 9696 rotation. cba with cons. glyph atm.
-            triggerChances[Trigger.DamageOrHealingDone] =
-            triggerChances[Trigger.DamageDone] = (triggerIntervals[Trigger.MeleeHit] * triggerChances[Trigger.PhysicalHit] + triggerIntervals[Trigger.SpellCast] * triggerChances[Trigger.DamageSpellHit])
-                                               / (triggerIntervals[Trigger.MeleeHit] + triggerIntervals[Trigger.SpellCast]);
-            triggerChances[Trigger.JudgementHit] =
-            triggerChances[Trigger.SpellCast] =
-            triggerChances[Trigger.DamageSpellCast] = 
-            triggerChances[Trigger.DamageTaken] =
-            triggerChances[Trigger.DamageTakenPhysical] = 1f;
-            triggerChances[Trigger.DamageTakenPutsMeBelow35PercHealth] = 0.35f;
-            triggerChances[Trigger.DivineProtection] = 1f;
-            triggerChances[Trigger.Use] = 1f;
-        }
-
-        private Stats GetSpecialEffectStats(Character character, StatsProtPaladin stats, CalculationOptionsProtPaladin calcOpts, BossOptions bossOpts, bool getConstant)
-        {
-            StatsProtPaladin statsSpecialEffects = new StatsProtPaladin();
-
-            float weaponSpeed = 1.0f;
-            if (character.MainHand != null)
-                weaponSpeed = character.MainHand.Speed;
-
-            AttackModel am = new AttackModel(character, stats, calcOpts, bossOpts);
-
-            Dictionary<Trigger, float> triggerIntervals;
-            Dictionary<Trigger, float> triggerChances;
-            CreateTriggers(am, character, stats, calcOpts, bossOpts, out triggerIntervals, out triggerChances);
-
-            GetSpecialEffectsStats_Child(triggerIntervals, triggerChances, weaponSpeed, calcOpts, bossOpts, stats, getConstant, ref statsSpecialEffects);
-
-            // Darkmoon card greatness & Paragon procs
-            // These should always increase strength, which is going to be the Paladin's top stat outside of stamina
-            statsSpecialEffects.Strength += statsSpecialEffects.HighestStat + statsSpecialEffects.Paragon;
-            statsSpecialEffects.HighestStat = 0;
-            statsSpecialEffects.Paragon = 0;
-            if (statsSpecialEffects.HighestSecondaryStat > 0) {
-                float paragon = statsSpecialEffects.HighestSecondaryStat;
-                statsSpecialEffects.HighestSecondaryStat = 0;
-                if ((statsSpecialEffects.CritRating > statsSpecialEffects.HasteRating) && (statsSpecialEffects.CritRating > statsSpecialEffects.MasteryRating))
-                    statsSpecialEffects.CritRating += paragon;
-                else if ((statsSpecialEffects.HasteRating > statsSpecialEffects.CritRating) && (statsSpecialEffects.HasteRating > statsSpecialEffects.MasteryRating))
-                    statsSpecialEffects.HasteRating += paragon;
-                else
-                    statsSpecialEffects.MasteryRating += paragon;
-            }
-
-            // Base Stats
-            statsSpecialEffects.Stamina = (float)Math.Floor(statsSpecialEffects.Stamina * (1.0f + stats.BonusStaminaMultiplier));
-            statsSpecialEffects.Strength = (float)Math.Floor(statsSpecialEffects.Strength * (1.0f + stats.BonusStrengthMultiplier));
-            statsSpecialEffects.Agility = (float)Math.Floor(statsSpecialEffects.Agility * (1.0f + stats.BonusAgilityMultiplier));
-            statsSpecialEffects.Health += (float)Math.Floor(statsSpecialEffects.Stamina * 10.0f) + (float)Math.Floor(statsSpecialEffects.BattlemasterHealthProc);
-
-            // Defensive Stats
-            statsSpecialEffects.Armor = (float)Math.Floor(statsSpecialEffects.Armor * (1f + stats.BaseArmorMultiplier + statsSpecialEffects.BaseArmorMultiplier));
-            statsSpecialEffects.BonusArmor = (float)Math.Floor(statsSpecialEffects.BonusArmor * (1.0f + stats.BonusArmorMultiplier + statsSpecialEffects.BonusArmorMultiplier));
-            statsSpecialEffects.Armor += statsSpecialEffects.BonusArmor;
- 
-            // Offensive Stats
-            statsSpecialEffects.AttackPower += statsSpecialEffects.Strength * 2.0f;
-            statsSpecialEffects.AttackPower = (float)Math.Floor(statsSpecialEffects.AttackPower * (1.0f + stats.BonusAttackPowerMultiplier + statsSpecialEffects.BonusAttackPowerMultiplier));
-            statsSpecialEffects.MaxHealthDamageProc = statsSpecialEffects.Health * statsSpecialEffects.MaxHealthDamageProc;
-
-            return statsSpecialEffects;
-        }
-        private void GetSpecialEffectsStats_Child(Dictionary<Trigger, float> triggerIntervals, Dictionary<Trigger, float> triggerChances,
-            float weaponSpeed, CalculationOptionsProtPaladin calcOpts, BossOptions bossOpts, StatsProtPaladin stats, bool getConstant, ref StatsProtPaladin statsSpecialEffects)
-        {
-            StatsProtPaladin effectsToAdd = new StatsProtPaladin();
-            float uptime = 0f;
-            foreach (SpecialEffect effect in stats.SpecialEffects()) {
-                switch (effect.Trigger) {
-                    case Trigger.Use:
-                    case Trigger.MeleeAttack:
-                    case Trigger.MainHandHit:
-                    case Trigger.CurrentHandHit:
-                    case Trigger.PhysicalAttack:
-                    case Trigger.MeleeHit:
-                    case Trigger.PhysicalHit:
-                    case Trigger.MeleeCrit:
-                    case Trigger.PhysicalCrit:
-                    case Trigger.DamageSpellCrit:
-                    case Trigger.DamageSpellHit:
-                    case Trigger.DoTTick:
-                    case Trigger.DamageOrHealingDone: // Need to add Self-Heals
-                    case Trigger.DamageDone:
-                    case Trigger.JudgementHit:
-                    case Trigger.SpellCast:
-                    case Trigger.DamageSpellCast:
-                    case Trigger.DamageTaken:
-                    case Trigger.DamageTakenPhysical:
-                    case Trigger.DamageTakenPutsMeBelow35PercHealth:
-                    case Trigger.DivineProtection:
-                        if (effect.MaxStack != 1) {
-                            uptime = effect.GetAverageStackSize(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger], weaponSpeed, bossOpts.BerserkTimer);
-                        } else {
-                            uptime = effect.GetAverageUptime(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger], weaponSpeed, bossOpts.BerserkTimer);
-                        }
-                        if ((getConstant && uptime >= 1) || (!getConstant && uptime < 1))
-                            statsSpecialEffects.Accumulate(effect.Stats, uptime);
-                        break;
-                }
-            }
         }
 
         public override ComparisonCalculationBase[] GetCustomChartData(Character character, string chartName)
@@ -873,16 +516,23 @@ focus on Survival Points.",
                         int j = 0;
                         foreach (var abilities in calculations.Abilities)
                         {
-                            AbilityModel ability = (AbilityModel)abilities.Value;
+                            string abilityName = abilities.Key;
+                            float abilityDamage = abilities.Value;
                             ComparisonCalculationProtPaladin comparison = new ComparisonCalculationProtPaladin();
 
-                            comparison.Name = ability.Name;
+                            comparison.Name = abilityName;
                             if (chartName == "Ability Damage")
-                                comparison.MitigationPoints = ability.Damage;
+                            {
+                                comparison.MitigationPoints = abilityDamage;
+                                comparison.SurvivalPoints = (abilityName == "CS" || abilityName == "J" || abilityName == "SotR") ? calculations.Abilities["SoT"] : 0;
+                            }
                             if (chartName == "Ability Threat")
-                                comparison.ThreatPoints = ability.Threat;
+                            {
+                                comparison.ThreatPoints = abilityDamage * 5;
+                                comparison.RecoveryPoints = (abilityName == "CS" || abilityName == "J" || abilityName == "SotR") ? calculations.Abilities["SoT"] * 5 : 0;
+                            }
 
-                            comparison.OverallPoints = comparison.SurvivalPoints + comparison.ThreatPoints + comparison.MitigationPoints;
+                            comparison.OverallPoints = comparison.SurvivalPoints + comparison.ThreatPoints + comparison.MitigationPoints + comparison.RecoveryPoints;
                             comparisons[j] = comparison;
                             j++;
                         }
@@ -896,27 +546,23 @@ focus on Survival Points.",
                         ComparisonCalculationProtPaladin calcDodge = new ComparisonCalculationProtPaladin();
                         ComparisonCalculationProtPaladin calcParry = new ComparisonCalculationProtPaladin();
                         ComparisonCalculationProtPaladin calcBlock = new ComparisonCalculationProtPaladin();
-                        ComparisonCalculationProtPaladin calcCrit = new ComparisonCalculationProtPaladin();
-                        ComparisonCalculationProtPaladin calcCrush = new ComparisonCalculationProtPaladin();
                         ComparisonCalculationProtPaladin calcHit = new ComparisonCalculationProtPaladin();
                         if (calculations != null)
                         {
+                            float chanceToBeHit = 1.0f - (calculations.Dodge + calculations.Miss + calculations.Parry);
                             calcMiss.Name  = "1 Miss";
                             calcDodge.Name = "2 Dodge";
                             calcParry.Name = "3 Parry";
-                            calcBlock.Name = "4 Block";
-                            calcCrit.Name  = "5 Crit";
-                            calcCrush.Name = "6 Crush";
-                            calcHit.Name   = "7 Hit";
+                            calcHit.Name = "4 Hit";
+                            calcBlock.Name = "5 Block";
 
                             calcMiss.OverallPoints = calcMiss.MitigationPoints = calculations.Miss * 100.0f;
                             calcDodge.OverallPoints = calcDodge.MitigationPoints = calculations.Dodge * 100.0f;
                             calcParry.OverallPoints = calcParry.MitigationPoints = calculations.Parry * 100.0f;
-                            calcBlock.OverallPoints = calcBlock.MitigationPoints = calculations.Block * 100.0f;
-                            calcCrit.OverallPoints = calcCrit.SurvivalPoints = calculations.CritVulnerability * 100.0f;
-                            calcHit.OverallPoints = calcHit.SurvivalPoints = (1.0f - (calculations.DodgePlusMissPlusParryPlusBlock + calculations.CritVulnerability)) * 100.0f;
+                            calcHit.OverallPoints = calcHit.SurvivalPoints = chanceToBeHit * (1 - calculations.Block) * 100.0f;
+                            calcBlock.OverallPoints = calcBlock.MitigationPoints = chanceToBeHit * calculations.Block * 100.0f;
                         }
-                        return new ComparisonCalculationBase[] { calcMiss, calcDodge, calcParry, calcBlock, calcCrit, calcCrush, calcHit };
+                        return new ComparisonCalculationBase[] { calcMiss, calcDodge, calcParry, calcBlock, calcHit };
                     }
                 #endregion
                 #region Combat Table: Offensive Stats
@@ -935,17 +581,17 @@ focus on Survival Points.",
                             calcDodge.Name  = "2 Dodge";
                             calcParry.Name  = "3 Parry";
                             calcGlance.Name = "4 Glancing";
-                            calcBlock.Name  = "5 Block";
-                            calcCrit.Name   = "6 Crit";
-                            calcHit.Name    = "7 Hit";
+                            calcCrit.Name   = "5 Crit";
+                            calcHit.Name = "6 Hit";
+                            calcBlock.Name = "7 Block";
 
                             calcMiss.OverallPoints = calcMiss.MitigationPoints = calculations.MissedAttacks * 100.0f;
                             calcDodge.OverallPoints = calcDodge.MitigationPoints = calculations.DodgedAttacks * 100.0f;
                             calcParry.OverallPoints = calcParry.MitigationPoints = calculations.ParriedAttacks * 100.0f;
                             calcGlance.OverallPoints = calcGlance.MitigationPoints = calculations.GlancingAttacks * 100.0f;
-                            calcBlock.OverallPoints = calcBlock.MitigationPoints = calculations.BlockedAttacks * 100.0f;
                             calcCrit.OverallPoints = calcCrit.SurvivalPoints = calculations.Crit * 100.0f;
                             calcHit.OverallPoints = calcHit.SurvivalPoints = (1.0f - (calculations.AvoidedAttacks + calculations.GlancingAttacks + calculations.BlockedAttacks + calculations.Crit)) * 100.0f;
+                            calcBlock.OverallPoints = calcBlock.MitigationPoints = calculations.BlockedAttacks * 100.0f;
                         }
                         return new ComparisonCalculationBase[] { calcMiss, calcDodge, calcParry, calcGlance, calcBlock, calcCrit, calcHit };
                     }
@@ -1125,50 +771,6 @@ focus on Survival Points.",
                             ThreatPoints = (calcMasteryValue.ThreatPoints - calcBaseValue.ThreatPoints)},
                     };
                 #endregion 
-                #region Spell Resistance
-                case "Combat Table: Spell Resistance":
-                    {
-                        ComparisonCalculationProtPaladin calcSpellRes0   = new ComparisonCalculationProtPaladin();
-                        ComparisonCalculationProtPaladin calcSpellRes10  = new ComparisonCalculationProtPaladin();
-                        ComparisonCalculationProtPaladin calcSpellRes20  = new ComparisonCalculationProtPaladin();
-                        ComparisonCalculationProtPaladin calcSpellRes30  = new ComparisonCalculationProtPaladin();
-                        ComparisonCalculationProtPaladin calcSpellRes40  = new ComparisonCalculationProtPaladin();
-                        ComparisonCalculationProtPaladin calcSpellRes50  = new ComparisonCalculationProtPaladin();
-                        ComparisonCalculationProtPaladin calcSpellRes60  = new ComparisonCalculationProtPaladin();
-                        ComparisonCalculationProtPaladin calcSpellRes70  = new ComparisonCalculationProtPaladin();
-                        ComparisonCalculationProtPaladin calcSpellRes80  = new ComparisonCalculationProtPaladin();
-                        ComparisonCalculationProtPaladin calcSpellRes90  = new ComparisonCalculationProtPaladin();
-                        ComparisonCalculationProtPaladin calcSpellRes100 = new ComparisonCalculationProtPaladin();
-                        
-                        if (calculations != null)
-                        {
-                            calcSpellRes0.Name   = "0.00";
-                            calcSpellRes10.Name  = "0.10";
-                            calcSpellRes20.Name  = "0.20";
-                            calcSpellRes30.Name  = "0.30";
-                            calcSpellRes40.Name  = "0.40";
-                            calcSpellRes50.Name  = "0.50";
-                            calcSpellRes60.Name  = "0.60";
-                            calcSpellRes70.Name  = "0.70";
-                            calcSpellRes80.Name  = "0.80";
-                            calcSpellRes90.Name  = "0.90";
-                            calcSpellRes100.Name = "1.00";
-
-                            calcSpellRes0.OverallPoints   = calcSpellRes0.MitigationPoints = calculations.ResistanceTable[0] * 100.0f;
-                            calcSpellRes10.OverallPoints  = calcSpellRes10.MitigationPoints = calculations.ResistanceTable[1] * 100.0f;
-                            calcSpellRes20.OverallPoints  = calcSpellRes20.MitigationPoints = calculations.ResistanceTable[2] * 100.0f;
-                            calcSpellRes30.OverallPoints  = calcSpellRes30.MitigationPoints = calculations.ResistanceTable[3] * 100.0f;
-                            calcSpellRes40.OverallPoints  = calcSpellRes40.MitigationPoints = calculations.ResistanceTable[4] * 100.0f;
-                            calcSpellRes50.OverallPoints  = calcSpellRes50.MitigationPoints = calculations.ResistanceTable[5] * 100.0f;
-                            calcSpellRes60.OverallPoints  = calcSpellRes60.MitigationPoints = calculations.ResistanceTable[6] * 100.0f;
-                            calcSpellRes70.OverallPoints  = calcSpellRes70.MitigationPoints = calculations.ResistanceTable[7] * 100.0f;
-                            calcSpellRes80.OverallPoints  = calcSpellRes80.MitigationPoints = calculations.ResistanceTable[8] * 100.0f;
-                            calcSpellRes90.OverallPoints  = calcSpellRes90.MitigationPoints = calculations.ResistanceTable[9] * 100.0f;
-                            calcSpellRes100.OverallPoints = calcSpellRes100.MitigationPoints = calculations.ResistanceTable[10] * 100.0f;
-                        }
-                        return new ComparisonCalculationBase[] { calcSpellRes0, calcSpellRes10, calcSpellRes20, calcSpellRes30, calcSpellRes40, calcSpellRes50, calcSpellRes60, calcSpellRes70, calcSpellRes80, calcSpellRes90, calcSpellRes100 };
-                    }
-                #endregion
                 default:
                     return new ComparisonCalculationBase[0];
             }
@@ -1183,8 +785,6 @@ focus on Survival Points.",
                         ItemType.Plate,
                         ItemType.None,
                         ItemType.Shield,
-                        ItemType.Libram,
-                        ItemType.Relic,
                         ItemType.OneHandAxe,
                         ItemType.OneHandMace,
                         ItemType.OneHandSword,
@@ -1198,21 +798,21 @@ focus on Survival Points.",
         public override List<string> GetRelevantGlyphs() {
             if (_relevantGlyphs == null) {
                 _relevantGlyphs = new List<string>();
-                _relevantGlyphs.Add("Glyph of Crusader Strike");
-                _relevantGlyphs.Add("Glyph of Hammer of the Righteous");
-                _relevantGlyphs.Add("Glyph of Judgement");
-                _relevantGlyphs.Add("Glyph of Seal of Truth");
-                _relevantGlyphs.Add("Glyph of Shield of the Righteous");
-
-                _relevantGlyphs.Add("Glyph of Consecration");
+                _relevantGlyphs.Add("Glyph of the Alabaster Shield");
+                _relevantGlyphs.Add("Glyph of Final Wrath");
                 _relevantGlyphs.Add("Glyph of Focused Shield");
+                _relevantGlyphs.Add("Glyph of Avenging Wrath");
+                _relevantGlyphs.Add("Glyph of Hammer of the Righteous");
+                _relevantGlyphs.Add("Glyph of Word of Glory");
             }
             return _relevantGlyphs;
         }
 
         public override bool EnchantFitsInSlot(Enchant enchant, Character character, ItemSlot slot) {
+            // No ranged enchants allowed
+            if (enchant.Slot == ItemSlot.Ranged) return false;
             // Filters out Non-Shield Offhand Enchants and Ranged Enchants
-            if ((slot == ItemSlot.OffHand && enchant.Slot != ItemSlot.OffHand) || slot == ItemSlot.Ranged) return false;
+            if (slot == ItemSlot.OffHand && enchant.Slot != ItemSlot.OffHand) return false;
             // Filters out Death Knight and Two-Hander Enchants
             if (enchant.Name.StartsWith("Rune of the") || enchant.Slot == ItemSlot.TwoHand) return false;
 
@@ -1250,8 +850,8 @@ focus on Survival Points.",
                 DodgeRating = stats.DodgeRating,
                 ParryRating = stats.ParryRating,
                 BlockRating = stats.BlockRating,
+                Mastery = stats.Mastery,
                 MasteryRating = stats.MasteryRating,
-                Resilience = stats.Resilience,
                 BonusAgilityMultiplier = stats.BonusAgilityMultiplier,
                 BonusStrengthMultiplier = stats.BonusStrengthMultiplier,
                 BonusAttackPowerMultiplier = stats.BonusAttackPowerMultiplier,
@@ -1263,16 +863,6 @@ focus on Survival Points.",
                 BonusHealthMultiplier = stats.BonusHealthMultiplier,
                 DamageTakenReductionMultiplier = stats.DamageTakenReductionMultiplier,
                 Miss = stats.Miss,
-                ArcaneResistance = stats.ArcaneResistance,
-                NatureResistance = stats.NatureResistance,
-                FireResistance = stats.FireResistance,
-                FrostResistance = stats.FrostResistance,
-                ShadowResistance = stats.ShadowResistance,
-                ArcaneResistanceBuff = stats.ArcaneResistanceBuff,
-                NatureResistanceBuff = stats.NatureResistanceBuff,
-                FireResistanceBuff = stats.FireResistanceBuff,
-                FrostResistanceBuff = stats.FrostResistanceBuff,
-                ShadowResistanceBuff = stats.ShadowResistanceBuff,
                 HighestStat = stats.HighestStat,
                 HighestSecondaryStat = stats.HighestSecondaryStat,
                 Paragon = stats.Paragon,
@@ -1297,6 +887,7 @@ focus on Survival Points.",
                 ThreatIncreaseMultiplier = stats.ThreatIncreaseMultiplier,
                 BonusDamageMultiplier = stats.BonusDamageMultiplier,
                 BonusWhiteDamageMultiplier = stats.BonusWhiteDamageMultiplier,
+                BonusHolyDamageMultiplier = stats.BonusHolyDamageMultiplier,
                 BonusBlockValueMultiplier = stats.BonusBlockValueMultiplier,
                 BossPhysicalDamageDealtReductionMultiplier = stats.BossPhysicalDamageDealtReductionMultiplier,
                 BossAttackSpeedReductionMultiplier = stats.BossAttackSpeedReductionMultiplier,
@@ -1334,13 +925,13 @@ focus on Survival Points.",
                 stats.BonusArmor +
                 stats.Block +
                 stats.BlockRating +
+                stats.Mastery + 
                 stats.MasteryRating +
                 stats.Dodge +
                 stats.DodgeRating +
                 stats.Miss +
                 stats.Parry +
                 stats.ParryRating +
-                stats.Resilience +
 
                 stats.BaseArmorMultiplier +
                 stats.BonusArmorMultiplier +
@@ -1388,18 +979,6 @@ focus on Survival Points.",
                 stats.BonusHolyDamageMultiplier +
                 stats.DamageTakenReductionMultiplier +
                 stats.BossPhysicalDamageDealtReductionMultiplier +
-
-                // Resistances
-                stats.ArcaneResistance + 
-                stats.NatureResistance + 
-                stats.FireResistance +
-                stats.FrostResistance + 
-                stats.ShadowResistance + 
-                stats.ArcaneResistanceBuff +
-                stats.NatureResistanceBuff + 
-                stats.FireResistanceBuff +
-                stats.FrostResistanceBuff + 
-                stats.ShadowResistanceBuff +
 
                 // BossHandler
                 stats.SnareRootDurReduc +

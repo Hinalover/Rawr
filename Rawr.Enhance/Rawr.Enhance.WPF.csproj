@@ -105,6 +105,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abilities\AbilityEnhance_Base.cs" />
+    <Compile Include="Abilities\AbilityEnhance_EarthElemental.cs" />
+    <Compile Include="Abilities\AbilityEnhance_EarthShock.cs" />
+    <Compile Include="Abilities\AbilityEnhance_ElementalBlast.cs" />
+    <Compile Include="Abilities\AbilityEnhance_FeralSpirit.cs" />
+    <Compile Include="Abilities\AbilityEnhance_FireElemental.cs" />
+    <Compile Include="Abilities\AbilityEnhance_FlameShock.cs" />
+    <Compile Include="Abilities\AbilityEnhance_Flametongue.cs" />
+    <Compile Include="Abilities\AbilityEnhance_LavaLash.cs" />
+    <Compile Include="Abilities\AbilityEnhance_LightningBolt.cs" />
+    <Compile Include="Abilities\AbilityEnhance_LightningShield.cs" />
+    <Compile Include="Abilities\AbilityEnhance_Melee.cs" />
+    <Compile Include="Abilities\AbilityEnhance_SearingTotem.cs" />
+    <Compile Include="Abilities\AbilityEnhance_Stormblast.cs" />
+    <Compile Include="Abilities\AbilityEnhance_Stormstrike.cs" />
+    <Compile Include="Abilities\AbilityEnhance_UnleashElements.cs" />
+    <Compile Include="Abilities\AbilityEnhance_Windfury.cs" />
+    <Compile Include="Abilities\AbilityEnhance_Windlash.cs" />
     <Compile Include="Ability.cs" />
     <Compile Include="CalculationOptionsEnhance.cs" />
     <Compile Include="CalculationOptionsPanelEnhance.xaml.cs">
@@ -113,6 +131,7 @@
     <Compile Include="CalculationsEnhance.cs" />
     <Compile Include="CharacterCalculationsEnhance.cs" />
     <Compile Include="CombatStats.cs" />
+    <Compile Include="CombatTable.cs" />
     <Compile Include="ComparisonCalculationsEnhance.cs" />
     <Compile Include="EnhSim.cs" />
     <Compile Include="FireElemental.cs" />
@@ -162,6 +181,7 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

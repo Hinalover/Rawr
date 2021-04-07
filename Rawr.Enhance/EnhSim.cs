@@ -216,20 +216,6 @@ namespace Rawr.Enhance
             catch { }
         }
 
-        /*public void copyToClipboard()
-        {
-            try
-            {
-                System.Windows.Clipboard.SetText(_configText);
-            }
-            catch { }
-            if (_calcOpts.ShowExportMessageBox)
-                System.Windows.MessageBox.Show("EnhSim config data copied to clipboard.\n" +
-                    "Use the 'Copy from Clipboard' option in EnhSimGUI v1.9.6.0 or higher, to import it\n" +
-                    "Or paste the config data into your EnhSim config file in a decent text editor (not Notepad)!",
-                    "Enhance Module");
-        }*/
-
         #region Buffs & Debuffs
         private void addBuffs(Character character, StringBuilder sb)
         {
@@ -493,10 +479,9 @@ namespace Rawr.Enhance
 
         private void getSpecialsNames(Character character, Stats stats)
         {
-            // this routine now just gets the names of the meta gem, enchants, trinkets and totems
+            // this routine now just gets the names of the meta gem, enchants, and trinkets
             _trinket1name = character.Trinket1 == null ? "-" : character.Trinket1.Id.ToString();
             _trinket2name = character.Trinket2 == null ? "-" : character.Trinket2.Id.ToString();
-            _totemname = character.Ranged == null ? "-" : character.Ranged.Id.ToString();
             _mhEnchant = character.MainHandEnchant == null ? "-" : character.MainHandEnchant.Id.ToString();
             _ohEnchant = character.OffHandEnchant == null ? "-" : character.OffHandEnchant.Id.ToString();
             _metagem = character.Head == null ? "-" : (character.Head.Gem1Id == 0 ? "-" : character.Head.Gem1Id.ToString());

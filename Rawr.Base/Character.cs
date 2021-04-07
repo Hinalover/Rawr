@@ -57,10 +57,12 @@ namespace Rawr
         Fox = 50,
         Hyena = 25,
         Moth = 37,
+        Quilen = 128,
         Raptor = 11,
         SpiritBeast = 46,
         Tallstrider = 12,
         Wasp = 44,
+        WaterStrider = 126,
         Wolf = 1,
         #endregion
     }
@@ -75,7 +77,7 @@ namespace Rawr
         /// The number of slots where items could go, but that we would
         /// actually optimize against
         /// </summary>
-        public const int OptimizableSlotCount = 19;
+        public const int OptimizableSlotCount = 17;
         private static readonly List<int> zeroSuffixList = new List<int>(new int[] { 0 });
         private static ItemSlot[] _itemSlots;
         public static ItemSlot[] ItemSlots
@@ -110,7 +112,7 @@ namespace Rawr
             }
         }
         public static CharacterSlot[] EquippableCharacterSlots = {
-            CharacterSlot.Projectile,
+            CharacterSlot.None,
             CharacterSlot.Head,
             CharacterSlot.Neck,
             CharacterSlot.Shoulders,
@@ -127,8 +129,8 @@ namespace Rawr
             CharacterSlot.Back,
             CharacterSlot.MainHand,
             CharacterSlot.OffHand,
-            CharacterSlot.Ranged,
-            CharacterSlot.ProjectileBag,
+            CharacterSlot.None,
+            CharacterSlot.None,
             CharacterSlot.Tabard,
             CharacterSlot.Shirt,
         };
@@ -186,7 +188,7 @@ namespace Rawr
         public CharacterFaction Faction { get { return _faction; } }
         private void SetFaction()
         {
-            if (_race == CharacterRace.Draenei || _race == CharacterRace.Dwarf || _race == CharacterRace.Gnome || _race == CharacterRace.Human || _race == CharacterRace.NightElf || _race == CharacterRace.Worgen)
+            if (_race == CharacterRace.Draenei || _race == CharacterRace.Dwarf || _race == CharacterRace.Gnome || _race == CharacterRace.Human || _race == CharacterRace.NightElf || _race == CharacterRace.Worgen || _race == CharacterRace.PandarenAlliance)
                 _faction = CharacterFaction.Alliance;
             else
             {
@@ -213,23 +215,137 @@ namespace Rawr
         public string CurrentModel {
             get {
                 if (string.IsNullOrEmpty(_currentModel)) {
-                    foreach (KeyValuePair<string, Type> kvp in Calculations.Models) {
+                    /*foreach (KeyValuePair<string, Type> kvp in Calculations.Models) {
                         if (kvp.Value == Calculations.Instance.GetType()) {
                             _currentModel = kvp.Key;
                             Class = Calculations.ModelClasses[_currentModel];
                         }
-                    }
+                    }*/
+                    UpdateCurrentModel();
                 }
                 return _currentModel;
             }
-            set { _currentModel = value; }
+            //set { _currentModel = value; }
+        }
+        public void UpdateCurrentModel()
+        {
+            switch (Class)
+            {
+                case CharacterClass.DeathKnight:
+                    switch (DeathKnightTalents.Specialization)
+                    {
+                        case 0:
+                            _currentModel = "TankDK";
+                            break;
+                        case 1:
+                        case 2:
+                            _currentModel = "DPSDK";
+                            break;
+                    }
+                    break;
+                case CharacterClass.Druid:
+                    switch (DruidTalents.Specialization)
+                    {
+                        case 0:
+                            _currentModel = "Moonkin";
+                            break;
+                        case 1:
+                            _currentModel = "Feral";
+                            break;
+                        case 2:
+                            _currentModel = "Bear";
+                            break;
+                        case 3:
+                            _currentModel = "Tree";
+                            break;
+                    }
+                    break;
+                case CharacterClass.Hunter:
+                    _currentModel = "Hunter";
+                    break;
+                case CharacterClass.Mage:
+                    _currentModel = "Mage";
+                    break;
+                case CharacterClass.Monk:                    
+                    switch (MonkTalents.Specialization)
+                    {
+                        case 0:
+                            _currentModel = "Brewmaster";
+                            break;
+                        case 1:
+                            _currentModel = "Mistweaver";
+                            break;
+                        case 2:
+                            _currentModel = "Windwalker";
+                            break;
+                    }
+                    break;
+                case CharacterClass.Paladin:
+                    switch (PaladinTalents.Specialization)
+                    {
+                        case 0:
+                            _currentModel = "Healadin";
+                            break;
+                        case 1:
+                            _currentModel = "ProtPaladin";
+                            break;
+                        case 2:
+                            _currentModel = "Retribution";
+                            break;
+                    }
+                    break;
+                case CharacterClass.Priest:
+                    switch (PriestTalents.Specialization)
+                    {
+                        case 0:
+                        case 1:
+                            _currentModel = "HealPriest";
+                            break;
+                        case 2:
+                            _currentModel = "ShadowPriest";
+                            break;
+                    }
+                    break;
+                case CharacterClass.Rogue:
+                    _currentModel = "Rogue";
+                    break;
+                case CharacterClass.Shaman:
+                    switch (ShamanTalents.Specialization)
+                    {
+                        case 0:
+                            _currentModel = "Elemental";
+                            break;
+                        case 1:
+                            _currentModel = "Enhance";
+                            break;
+                        case 2:
+                            _currentModel = "RestoSham";
+                            break;
+                    }
+                    break;
+                case CharacterClass.Warlock:
+                    _currentModel = "Warlock";
+                    break;
+                case CharacterClass.Warrior:
+                    switch (WarriorTalents.Specialization)
+                    {
+                        case 0:
+                        case 1:
+                            _currentModel = "DPSWarr";
+                            break;
+                        case 2:
+                            _currentModel = "ProtWarr";
+                            break;
+                    }
+                    break;
+            }
         }
         #endregion
         #region Character Level (Always 85)
         /// <summary>The level of the Character. In Cataclysm, we support level 85.<br />
         /// Note that some models (Mage, Warlock) allow for alternate Character levels.
         /// They implement their own level set function rather than utilizing this variable.</summary>
-        public int Level { get { return 85; } }
+        public int Level { get { return 90; } }
         #endregion
         #region Professions
         /// <summary>The Character's Primary Profession</summary>
@@ -409,34 +525,37 @@ namespace Rawr
         #region Talents
         [DefaultValue("")]
         [XmlElement("WarriorTalents")]
-        public string SerializableWarriorTalents { get { return (string.IsNullOrWhiteSpace(WarriorTalents.ToString().Replace("0", "").Replace(".", ""))) ? "" : WarriorTalents.ToString(); } set { WarriorTalents = new WarriorTalents(value); } }
+        public string SerializableWarriorTalents { get { return (Class != CharacterClass.Warrior) ? "" : WarriorTalents.ToString(); } set { WarriorTalents = new WarriorTalents(value); } }
         [DefaultValue("")]
         [XmlElement("PaladinTalents")]
-        public string SerializablePaladinTalents { get { return (string.IsNullOrWhiteSpace(PaladinTalents.ToString().Replace("0", "").Replace(".", ""))) ? "" : PaladinTalents.ToString(); } set { PaladinTalents = new PaladinTalents(value); } }
+        public string SerializablePaladinTalents { get { return (Class != CharacterClass.Paladin) ? "" : PaladinTalents.ToString(); } set { PaladinTalents = new PaladinTalents(value); } }
         [DefaultValue("")]
         [XmlElement("HunterTalents")]
-        public string SerializableHunterTalents { get { return (string.IsNullOrWhiteSpace(HunterTalents.ToString().Replace("0", "").Replace(".", ""))) ? "" : HunterTalents.ToString(); } set { HunterTalents = new HunterTalents(value); } }
+        public string SerializableHunterTalents { get { return (Class != CharacterClass.Hunter) ? "" : HunterTalents.ToString(); } set { HunterTalents = new HunterTalents(value); } }
         [DefaultValue("")]
         [XmlElement("RogueTalents")]
-        public string SerializableRogueTalents { get { return (string.IsNullOrWhiteSpace(RogueTalents.ToString().Replace("0", "").Replace(".", ""))) ? "" : RogueTalents.ToString(); } set { RogueTalents = new RogueTalents(value); } }
+        public string SerializableRogueTalents { get { return (Class != CharacterClass.Rogue) ? "" : RogueTalents.ToString(); } set { RogueTalents = new RogueTalents(value); } }
         [DefaultValue("")]
         [XmlElement("PriestTalents")]
-        public string SerializablePriestTalents { get { return (string.IsNullOrWhiteSpace(PriestTalents.ToString().Replace("0", "").Replace(".", ""))) ? "" : PriestTalents.ToString(); } set { PriestTalents = new PriestTalents(value); } }
+        public string SerializablePriestTalents { get { return (Class != CharacterClass.Priest) ? "" : PriestTalents.ToString(); } set { PriestTalents = new PriestTalents(value); } }
         [DefaultValue("")]
         [XmlElement("ShamanTalents")]
-        public string SerializableShamanTalents { get { return (string.IsNullOrWhiteSpace(ShamanTalents.ToString().Replace("0", "").Replace(".", ""))) ? "" : ShamanTalents.ToString(); } set { ShamanTalents = new ShamanTalents(value); } }
+        public string SerializableShamanTalents { get { return (Class != CharacterClass.Shaman) ? "" : ShamanTalents.ToString(); } set { ShamanTalents = new ShamanTalents(value); } }
         [DefaultValue("")]
         [XmlElement("MageTalents")]
-        public string SerializableMageTalents { get { return (string.IsNullOrWhiteSpace(MageTalents.ToString().Replace("0", "").Replace(".", ""))) ? "" : MageTalents.ToString(); } set { MageTalents = new MageTalents(value); } }
+        public string SerializableMageTalents { get { return (Class != CharacterClass.Mage) ? "" : MageTalents.ToString(); } set { MageTalents = new MageTalents(value); } }
         [DefaultValue("")]
         [XmlElement("WarlockTalents")]
-        public string SerializableWarlockTalents { get { return (string.IsNullOrWhiteSpace(WarlockTalents.ToString().Replace("0", "").Replace(".", ""))) ? "" : WarlockTalents.ToString(); } set { WarlockTalents = new WarlockTalents(value); } }
+        public string SerializableWarlockTalents { get { return (Class != CharacterClass.Warlock) ? "" : WarlockTalents.ToString(); } set { WarlockTalents = new WarlockTalents(value); } }
         [DefaultValue("")]
         [XmlElement("DruidTalents")]
-        public string SerializableDruidTalents { get { return (string.IsNullOrWhiteSpace(DruidTalents.ToString().Replace("0", "").Replace(".", ""))) ? "" : DruidTalents.ToString(); } set { DruidTalents = new DruidTalents(value); } }
+        public string SerializableDruidTalents { get { return (Class != CharacterClass.Druid) ? "" : DruidTalents.ToString(); } set { DruidTalents = new DruidTalents(value); } }
         [DefaultValue("")]
         [XmlElement("DeathKnightTalents")]
-        public string SerializableDeathKnightTalents { get { return (string.IsNullOrWhiteSpace(DeathKnightTalents.ToString().Replace("0", "").Replace(".", ""))) ? "" : DeathKnightTalents.ToString(); } set { DeathKnightTalents = new DeathKnightTalents(value); } }
+        public string SerializableDeathKnightTalents { get { return (Class != CharacterClass.DeathKnight) ? "" : DeathKnightTalents.ToString(); } set { DeathKnightTalents = new DeathKnightTalents(value); } }
+        [DefaultValue("")]
+        [XmlElement("MonkTalents")]
+        public string SerializableMonkTalents { get { return (Class != CharacterClass.Monk) ? "" : MonkTalents.ToString(); } set { MonkTalents = new MonkTalents(value); } }
 
         [XmlIgnore]
         private WarriorTalents _warriorTalents = null;
@@ -458,6 +577,8 @@ namespace Rawr
         private DruidTalents _druidTalents = null;
         [XmlIgnore]
         private DeathKnightTalents _deathKnightTalents = null;
+        [XmlIgnore]
+        private MonkTalents _monkTalents = null;
 
         [XmlIgnore]
         public WarriorTalents WarriorTalents { get { return _warriorTalents ?? (_warriorTalents = new WarriorTalents()); } set { _warriorTalents = value; } }
@@ -479,6 +600,8 @@ namespace Rawr
         public DruidTalents DruidTalents { get { return _druidTalents ?? (_druidTalents = new DruidTalents()); } set { _druidTalents = value; } }
         [XmlIgnore]
         public DeathKnightTalents DeathKnightTalents { get { return _deathKnightTalents ?? (_deathKnightTalents = new DeathKnightTalents()); } set { _deathKnightTalents = value; } }
+        [XmlIgnore]
+        public MonkTalents MonkTalents { get { return _monkTalents ?? (_monkTalents = new MonkTalents()); } set { _monkTalents = value; } }
 
         [XmlIgnore]
         public TalentsBase CurrentTalents
@@ -497,6 +620,7 @@ namespace Rawr
                     case CharacterClass.Warlock: return WarlockTalents;
                     case CharacterClass.Druid: return DruidTalents;
                     case CharacterClass.DeathKnight: return DeathKnightTalents;
+                    case CharacterClass.Monk: return MonkTalents;
                     default: return DruidTalents;
                 }
             }
@@ -514,6 +638,7 @@ namespace Rawr
                     case CharacterClass.Warlock: WarlockTalents = value as WarlockTalents; break;
                     case CharacterClass.Druid: DruidTalents = value as DruidTalents; break;
                     case CharacterClass.DeathKnight: DeathKnightTalents = value as DeathKnightTalents; break;
+                    case CharacterClass.Monk: MonkTalents = value as MonkTalents; break;
                     default: DruidTalents = value as DruidTalents; break;
                 }
             }
@@ -599,12 +724,12 @@ namespace Rawr
         public string _mainHand { get { return GetGemmedId(CharacterSlot.MainHand); } set { SetGemmedId(CharacterSlot.MainHand, value); } }
         [XmlElement("OffHand")]
         public string _offHand { get { return GetGemmedId(CharacterSlot.OffHand); } set { SetGemmedId(CharacterSlot.OffHand, value); } }
-        [XmlElement("Ranged")]
-        public string _ranged { get { return GetGemmedId(CharacterSlot.Ranged); } set { SetGemmedId(CharacterSlot.Ranged, value); } }
-        [XmlElement("Projectile")]
-        public string _projectile { get { return GetGemmedId(CharacterSlot.Projectile); } set { SetGemmedId(CharacterSlot.Projectile, value); } }
-        [XmlElement("ProjectileBag")]
-        public string _projectileBag { get { return GetGemmedId(CharacterSlot.ProjectileBag); } set { SetGemmedId(CharacterSlot.ProjectileBag, value); } }
+        //[XmlElement("Ranged")]
+        //public string _ranged { get { return GetGemmedId(CharacterSlot.Ranged); } set { SetGemmedId(CharacterSlot.Ranged, value); } }
+        //[XmlElement("Projectile")]
+        //public string _projectile { get { return GetGemmedId(CharacterSlot.Projectile); } set { SetGemmedId(CharacterSlot.Projectile, value); } }
+        //[XmlElement("ProjectileBag")]
+        //public string _projectileBag { get { return GetGemmedId(CharacterSlot.ProjectileBag); } set { SetGemmedId(CharacterSlot.ProjectileBag, value); } }
         #endregion
         #endregion
         #region Character Information: Saved Item Sets Lists for Comparing Sets
@@ -723,8 +848,9 @@ namespace Rawr
         public ItemSet GetItemSetByName(String name) {
             if (name == "Current") {
                 ItemSet current = new ItemSet();
-                foreach (CharacterSlot cs in Character.EquippableCharacterSlots) {
-                    current.Add(this[cs]);
+                for (int index = 0; index < SlotCount; index++)
+                {
+                    current.Add(this[(CharacterSlot)index]);
                 }
                 current.Name = "Current";
                 return current;
@@ -814,17 +940,23 @@ namespace Rawr
             new RangeValue { Min = 000, Max = 001 }, // 0
             new RangeValue { Min = 002, Max = 199 }, // 1
             new RangeValue { Min = 200, Max = 284 }, // 2
-            new RangeValue { Min = 285, Max = 333 }, // 3
-            new RangeValue { Min = 334, Max = 352 }, // 4
-            new RangeValue { Min = 353, Max = 358 }, // 5
-            new RangeValue { Min = 359, Max = 364 }, // 6
-            new RangeValue { Min = 365, Max = 371 }, // 7
-            new RangeValue { Min = 372, Max = 377 }, // 8
-            new RangeValue { Min = 378, Max = 383 }, // 9
-            new RangeValue { Min = 384, Max = 390 }, // 10
-            new RangeValue { Min = 391, Max = 396 }, // 11
-            new RangeValue { Min = 397, Max = 409 }, // 12
-            new RangeValue { Min = 410, Max = 416 }, // 13
+            new RangeValue { Min = 285, Max = 410 }, // 3
+            new RangeValue { Min = 411, Max = 462 }, // 4
+            new RangeValue { Min = 463, Max = 475 }, // 5
+            new RangeValue { Min = 476, Max = 488 }, // 6
+            new RangeValue { Min = 489, Max = 501 }, // 7
+            new RangeValue { Min = 502, Max = 516 }, // 8
+            new RangeValue { Min = 502, Max = 521 }, // 9
+            new RangeValue { Min = 522, Max = 534 }, // 10
+            new RangeValue { Min = 535, Max = 540 }, // 11
+            new RangeValue { Min = 541, Max = 555 }, // 12
+            new RangeValue { Min = 528, Max = 539 }, // 13
+            new RangeValue { Min = 540, Max = 552 }, // 14
+            new RangeValue { Min = 553, Max = 558 }, // 15
+            new RangeValue { Min = 559, Max = 565 }, // 16
+            new RangeValue { Min = 566, Max = 571 }, // 17
+            new RangeValue { Min = 572, Max = 584 }, // 18
+            new RangeValue { Min = 600, Max = 612 }, // 19
         };
         private readonly static PercRangeValue[] DropRangeValues = new PercRangeValue[] {
             new PercRangeValue { Min = 0.00f, Max = 0.01f },
@@ -889,18 +1021,24 @@ namespace Rawr
             true, // 0 000-001 (Heirloom)
             true, // 1 002-199 (Tier 01-06)
             true, // 2 200-284 (Tier 07-10)
-            true, // 3 285-333 (Cata Dungeons)
-            true, // 4 334-358 (Cata Heroics)
-            true, // 5 353-358 (Rise of Zandalar)
-            true, // 6 359-364 (Tier 11.0)
-            true, // 7 365-371 (Molten Front)
-            true, // 8 372 - 377 (Tier 11.5)
-            true, // 9 378 - 383 (Tier 12.0)
-            true, // 10 384 - 390 (Tier 13.LFR)
-            true, // 11 391 - 396 (Tier 12.5)
-            true, // 12 397 - 409 (Tier 13.0)
-            true, // 13 410 - 416 (Tier 13.5)
-        };
+            true, // 3 285-410 (Tier 11-13)
+            true, // 4 411-462 (MoP Dungeons)
+            true, // 5 463-475 (MoP Heroics)
+            true, // 6 476-488 (Tier 14.LFR)
+            true, // 7 489-501 (Tier 14.0)
+            true, // 8 502-516 (Tier 14.5)
+            true, // 9 502 - 502 (Tier 15 LFR)
+            true, // 10 522 - 522 (Tier 15)
+            true, // 11 535 - 535 (Tier 15.5)
+            true, // 12 541 - 541 (Tier 15 Thunderforged)
+            true, // 13 528-528 (Tier 16 LFR)
+            true, // 14 540-540 (Tier 16 Flex)
+            true, // 15 553 - 553 (Tier 16)
+            true, // 16 559 - 559 (Tier 16 Warforged)
+            true, // 17 566 - 566 (Tier 16.5)
+            true, // 18 572 - 572 (Tier 16.5 Warforged)
+            true, // 19 600-600 (Legendaries)
+       };
         [XmlIgnore]
         public bool[] iLvl {
             get {
@@ -909,17 +1047,23 @@ namespace Rawr
                         true, // 0 000 - 001 (Heirloom)
                         true, // 1 002 - 199 (Tier 01-06)
                         true, // 2 200 - 284 (Tier 07-10)
-                        true, // 3 285 - 333 (Cata Dungeons)
-                        true, // 4 334 - 358 (Cata Heroics)
-                        true, // 5 353-358 (Rise of Zandalar)
-                        true, // 6 359-364 (Tier 11.0)
-                        true, // 7 365-371 (Molten Front)
-                        true, // 8 372 - 377 (Tier 11.5)
-                        true, // 9 378 - 383 (Tier 12.0)
-                        true, // 10 384 - 390 (Tier 13.LFR)
-                        true, // 11 391 - 396 (Tier 12.5)
-                        true, // 12 397 - 409 (Tier 13.0)
-                        true, // 13 410 - 416 (Tier 13.5)
+                        true, // 3 285 - 410 (Tier 11-13)
+                        true, // 4 411 - 462 (MoP Dungeons)
+                        true, // 5 463 - 475 (MoP Heroics)
+                        true, // 6 476 - 488 (Tier 14.LFR)
+                        true, // 7 489 - 501 (Tier 14.0)
+                        true, // 8 502 - 516 (Tier 14.5)
+                        true, // 9 502 - 502 (Tier 15 LFR)
+                        true, // 10 522 - 522 (Tier 15)
+                        true, // 11 535 - 535 (Tier 15.5)
+                        true, // 12 541 - 541 (Tier 15 Thunderforged)
+                        true, // 13 528-528 (Tier 16 LFR)
+                        true, // 14 540-540 (Tier 16 Flex)
+                        true, // 15 553 - 553 (Tier 16)
+                        true, // 16 559 - 559 (Tier 16 Warforged)
+                        true, // 17 566 - 566 (Tier 16.5)
+                        true, // 18 572 - 572 (Tier 16.5 Warforged)
+                        true, // 19 600-600 (Legendaries)
                     };
                 }
                 return _iLvl;
@@ -930,17 +1074,23 @@ namespace Rawr
                         true, // 0 000 - 001 (Heirloom)
                         true, // 1 002 - 199 (Tier 01-06)
                         true, // 2 200 - 284 (Tier 07-10)
-                        true, // 3 285 - 333 (Cata Dungeons)
-                        true, // 4 334 - 358 (Cata Heroics)
-                        true, // 5 353-358 (Rise of Zandalar)
-                        true, // 6 359-364 (Tier 11.0)
-                        true, // 7 365-371 (Molten Front)
-                        true, // 8 372 - 377 (Tier 11.5)
-                        true, // 9 378 - 383 (Tier 12.0)
-                        true, // 10 384 - 390 (Tier 13.LFR)
-                        true, // 11 391 - 396 (Tier 12.5)
-                        true, // 12 397 - 409 (Tier 13.0)
-                        true, // 13 410 - 416 (Tier 13.5)
+                        true, // 3 285 - 410 (Tier 11-13)
+                        true, // 4 411 - 462 (MoP Dungeons)
+                        true, // 5 463 - 475 (MoP Heroics)
+                        true, // 6 476 - 488 (Tier 14.LFR)
+                        true, // 7 489 - 501 (Tier 14.0)
+                        true, // 8 502 - 516 (Tier 14.5)
+                        true, // 9 502 - 502 (Tier 15 LFR)
+                        true, // 10 522 - 522 (Tier 15)
+                        true, // 11 535 - 535 (Tier 15.5)
+                        true, // 12 541 - 541 (Tier 15 Thunderforged)
+                        true, // 13 528-528 (Tier 16 LFR)
+                        true, // 14 540-540 (Tier 16 Flex)
+                        true, // 15 553 - 553 (Tier 16)
+                        true, // 16 559 - 559 (Tier 16 Warforged)
+                        true, // 17 566 - 566 (Tier 16.5)
+                        true, // 18 572 - 572 (Tier 16.5 Warforged)
+                        true, // 19 600-600 (Legendaries)
                     };
                 } else {
                     _iLvl = value;
@@ -976,14 +1126,26 @@ namespace Rawr
         public bool ilvlF_12 { get { return _iLvl[12]; } set { _iLvl[12] = value; OnFiltersChanged(); } }
         [XmlElement("ItemFiltersSettings_13")][DefaultValue(true)]
         public bool ilvlF_13 { get { return _iLvl[13]; } set { _iLvl[13] = value; OnFiltersChanged(); } }
+        [XmlElement("ItemFiltersSettings_14")][DefaultValue(true)]
+        public bool ilvlF_14 { get { return _iLvl[14]; } set { _iLvl[14] = value; OnFiltersChanged(); } }
+        [XmlElement("ItemFiltersSettings_15")][DefaultValue(true)]
+        public bool ilvlF_15 { get { return _iLvl[15]; } set { _iLvl[15] = value; OnFiltersChanged(); } }
+        [XmlElement("ItemFiltersSettings_16")][DefaultValue(true)]
+        public bool ilvlF_16 { get { return _iLvl[16]; } set { _iLvl[16] = value; OnFiltersChanged(); } }
+        [XmlElement("ItemFiltersSettings_17")][DefaultValue(true)]
+        public bool ilvlF_17 { get { return _iLvl[17]; } set { _iLvl[17] = value; OnFiltersChanged(); } }
+        [XmlElement("ItemFiltersSettings_18")][DefaultValue(true)]
+        public bool ilvlF_18 { get { return _iLvl[18]; } set { _iLvl[18] = value; OnFiltersChanged(); } }
+        [XmlElement("ItemFiltersSettings_19")][DefaultValue(true)]
+        public bool ilvlF_19 { get { return _iLvl[19]; } set { _iLvl[19] = value; OnFiltersChanged(); } }
 
         [XmlIgnore]
-        private double _ilvlF_SLMin = 285;
-        [XmlElement("ItemFiltersSettings_SLMin")][DefaultValue(285)]
+        private double _ilvlF_SLMin = 404;
+        [XmlElement("ItemFiltersSettings_SLMin")][DefaultValue(404)]
         public double ilvlF_SLMin { get { return _ilvlF_SLMin; } set { _ilvlF_SLMin = value; OnFiltersChanged(); } }
         [XmlIgnore]
-        private double _ilvlF_SLMax = 416;
-        [XmlElement("ItemFiltersSettings_SLMax")][DefaultValue(416)]
+        private double _ilvlF_SLMax = 600;
+        [XmlElement("ItemFiltersSettings_SLMax")][DefaultValue(600)]
         public double ilvlF_SLMax { get { return _ilvlF_SLMax; } set { _ilvlF_SLMax = value; OnFiltersChanged(); } }
         #endregion
 
@@ -1956,7 +2118,7 @@ namespace Rawr
             switch (slot)
             {
                
-                case Rawr.ItemSlot.Projectile: return CharacterSlot.Projectile;
+                //case Rawr.ItemSlot.Projectile: return CharacterSlot.Projectile;
                 case Rawr.ItemSlot.Head: return CharacterSlot.Head;
                 case Rawr.ItemSlot.Neck: return CharacterSlot.Neck;
                 case Rawr.ItemSlot.Shoulders: return CharacterSlot.Shoulders;
@@ -1975,8 +2137,8 @@ namespace Rawr
                 case Rawr.ItemSlot.TwoHand: return CharacterSlot.MainHand;
                 case Rawr.ItemSlot.MainHand: return CharacterSlot.MainHand;
                 case Rawr.ItemSlot.OffHand: return CharacterSlot.OffHand;
-                case Rawr.ItemSlot.Ranged: return CharacterSlot.Ranged;
-                case Rawr.ItemSlot.ProjectileBag: return CharacterSlot.ProjectileBag;
+                case Rawr.ItemSlot.Ranged: return CharacterSlot.MainHand;
+                //case Rawr.ItemSlot.ProjectileBag: return CharacterSlot.ProjectileBag;
                 case Rawr.ItemSlot.Tabard: return CharacterSlot.Tabard;
                 case Rawr.ItemSlot.Shirt: return CharacterSlot.Shirt;
                 case Rawr.ItemSlot.Red: return CharacterSlot.Gems;
@@ -2011,8 +2173,7 @@ namespace Rawr
             get {
                 int retVal = 0;
                 foreach (CharacterSlot slot in EquippableCharacterSlots) {
-                    if (slot == CharacterSlot.Tabard || slot == CharacterSlot.Shirt
-                        || slot == CharacterSlot.ProjectileBag || slot == CharacterSlot.Projectile) { continue; }
+                    if (slot == CharacterSlot.Tabard || slot == CharacterSlot.Shirt) { continue; }
                     if (this[slot] != null && this[slot].Item.ItemLevel > retVal) {
                         retVal = this[slot].Item.ItemLevel;
                     }
@@ -2024,8 +2185,7 @@ namespace Rawr
             get {
                 int retVal = 10000;
                 foreach (CharacterSlot slot in EquippableCharacterSlots) {
-                    if (slot == CharacterSlot.Tabard || slot == CharacterSlot.Shirt
-                        || slot == CharacterSlot.ProjectileBag || slot == CharacterSlot.Projectile) { continue; }
+                    if (slot == CharacterSlot.Tabard || slot == CharacterSlot.Shirt) { continue; }
                     if (this[slot] != null && this[slot].Item.ItemLevel < retVal)
                     {
                         retVal = this[slot].Item.ItemLevel;
@@ -2039,8 +2199,7 @@ namespace Rawr
                 int retVal = 0;
                 int count = 0;
                 foreach (CharacterSlot slot in EquippableCharacterSlots) {
-                    if (slot == CharacterSlot.Tabard || slot == CharacterSlot.Shirt
-                        || slot == CharacterSlot.ProjectileBag || slot == CharacterSlot.Projectile) { continue; }
+                    if (slot == CharacterSlot.Tabard || slot == CharacterSlot.Shirt) { continue; }
                     if (this[slot] != null)
                     {
                         retVal += this[slot].Item.ItemLevel;
@@ -2088,12 +2247,12 @@ namespace Rawr
         public ItemInstance MainHand { get { return this[CharacterSlot.MainHand]; } set { this[CharacterSlot.MainHand] = value; } }
         [XmlIgnore]
         public ItemInstance OffHand { get { return this[CharacterSlot.OffHand]; } set { this[CharacterSlot.OffHand] = value; } }
-        [XmlIgnore]
-        public ItemInstance Ranged { get { return this[CharacterSlot.Ranged]; } set { this[CharacterSlot.Ranged] = value; } }
-        [XmlIgnore]
-        public ItemInstance Projectile { get { return this[CharacterSlot.Projectile]; } set { this[CharacterSlot.Projectile] = value; } }
-        [XmlIgnore]
-        public ItemInstance ProjectileBag { get { return this[CharacterSlot.ProjectileBag]; } set { this[CharacterSlot.ProjectileBag] = value; } }
+        //[XmlIgnore]
+        //public ItemInstance Ranged { get { return this[CharacterSlot.Ranged]; } set { this[CharacterSlot.Ranged] = value; } }
+        //[XmlIgnore]
+        //public ItemInstance Projectile { get { return this[CharacterSlot.Projectile]; } set { this[CharacterSlot.Projectile] = value; } }
+        //[XmlIgnore]
+        //public ItemInstance ProjectileBag { get { return this[CharacterSlot.ProjectileBag]; } set { this[CharacterSlot.ProjectileBag] = value; } }
         //[XmlIgnore]
         //public Item ExtraWristSocket { get { return this[CharacterSlot.ExtraWristSocket]; } set { this[CharacterSlot.ExtraWristSocket] = value; } }
         //[XmlIgnore]
@@ -2126,8 +2285,8 @@ namespace Rawr
         public Enchant MainHandEnchant { get { return GetEnchantBySlot(CharacterSlot.MainHand); } set { SetEnchantBySlot(CharacterSlot.MainHand, value); } }
         [XmlIgnore]
         public Enchant OffHandEnchant { get { return GetEnchantBySlot(CharacterSlot.OffHand); } set { SetEnchantBySlot(CharacterSlot.OffHand, value); } }
-        [XmlIgnore]
-        public Enchant RangedEnchant { get { return GetEnchantBySlot(CharacterSlot.Ranged); } set { SetEnchantBySlot(CharacterSlot.Ranged, value); } }
+        //[XmlIgnore]
+        //public Enchant RangedEnchant { get { return GetEnchantBySlot(CharacterSlot.Ranged); } set { SetEnchantBySlot(CharacterSlot.Ranged, value); } }
 
         [XmlIgnore]
         public Tinkering BackTinkering { get { return GetTinkeringBySlot(CharacterSlot.Back); } set { SetTinkeringBySlot(CharacterSlot.Back, value); } }
@@ -2160,8 +2319,8 @@ namespace Rawr
         public Reforging MainHandReforging { get { return GetReforgingBySlot(CharacterSlot.MainHand); } set { SetReforgingBySlot(CharacterSlot.MainHand, value); } }
         [XmlIgnore]
         public Reforging OffHandReforging { get { return GetReforgingBySlot(CharacterSlot.OffHand); } set { SetReforgingBySlot(CharacterSlot.OffHand, value); } }
-        [XmlIgnore]
-        public Reforging RangedReforging { get { return GetReforgingBySlot(CharacterSlot.Ranged); } set { SetReforgingBySlot(CharacterSlot.Ranged, value); } }
+        //[XmlIgnore]
+        //public Reforging RangedReforging { get { return GetReforgingBySlot(CharacterSlot.Ranged); } set { SetReforgingBySlot(CharacterSlot.Ranged, value); } }
         #endregion
 
         public void InvalidateItemInstances()
@@ -2211,35 +2370,41 @@ namespace Rawr
                         }
                         foreach (int randomSuffix in suffixList)
                         {
-                            foreach (Reforging reforging in CurrentCalculations.GetReforgingOptions(item, randomSuffix))
+                            List<int> upgradeLevelList = new List<int>() { 0 };
+                            upgradeLevelList.AddRange(item.UpgradeLevels);
+                            foreach (int upgrade in upgradeLevelList)
                             {
-                                List<Tinkering> t = CurrentCalculations.GetTinkeringOptions(item, this);
-                                foreach (Tinkering tinkering in t)
+                                foreach (Reforging reforging in CurrentCalculations.GetReforgingOptions(item, randomSuffix, upgrade))
                                 {
-                                    List<Enchant> e = CurrentCalculations.GetEnchantingOptions(item, this);
-                                    foreach (Enchant enchant in e)
+                                    List<Tinkering> t = CurrentCalculations.GetTinkeringOptions(item, this);
+                                    foreach (Tinkering tinkering in t)
                                     {
-                                        List<ItemInstance> itemInstances = new List<ItemInstance>();
-                                        // Built in Gemming Templates
-                                        foreach (GemmingTemplate template in CurrentGemmingTemplates)
+                                        List<Enchant> e = CurrentCalculations.GetEnchantingOptions(item, this);
+                                        foreach (Enchant enchant in e)
                                         {
-                                            if (template.Enabled)
+                                            List<ItemInstance> itemInstances = new List<ItemInstance>();
+                                            // Built in Gemming Templates
+                                            foreach (GemmingTemplate template in CurrentGemmingTemplates)
                                             {
-                                                ItemInstance instance =
-                                                    template.GetItemInstance(item, randomSuffix, enchant, reforging, tinkering, blacksmithingSocket);
-                                                if (!itemInstances.Contains(instance)) itemInstances.Add(instance);
+                                                if (template.Enabled)
+                                                {
+                                                    ItemInstance instance =
+                                                        template.GetItemInstance(item, randomSuffix, enchant, reforging, tinkering, blacksmithingSocket, upgrade);
+                                                    if (!itemInstances.Contains(instance)) itemInstances.Add(instance);
+                                                }
                                             }
-                                        }
-                                        // Gemming Templates the User added
-                                        foreach (GemmingTemplate template in CustomGemmingTemplates)
-                                        {
-                                            if (template.Enabled && template.Model == CurrentModel)
+                                            // Gemming Templates the User added
+                                            foreach (GemmingTemplate template in CustomGemmingTemplates)
                                             {
-                                                ItemInstance instance = template.GetItemInstance(item, randomSuffix, enchant, reforging, tinkering, blacksmithingSocket);
-                                                if (!itemInstances.Contains(instance)) itemInstances.Add(instance);
+                                                if (template.Enabled && template.Model == CurrentModel)
+                                                {
+                                                    ItemInstance instance =
+                                                        template.GetItemInstance(item, randomSuffix, enchant, reforging, tinkering, blacksmithingSocket, upgrade);
+                                                    if (!itemInstances.Contains(instance)) itemInstances.Add(instance);
+                                                }
                                             }
+                                            items.AddRange(itemInstances);
                                         }
-                                        items.AddRange(itemInstances);
                                     }
                                 }
                             }
@@ -2284,21 +2449,23 @@ namespace Rawr
                                 Tinkering tinkering = GetTinkeringBySlot(slot);
                                 List<ItemInstance> itemInstances = new List<ItemInstance>();
                                 int randomSuffix = ids.Length < 2 ? 0 : int.Parse(ids[1], System.Globalization.CultureInfo.InvariantCulture);
-                                foreach (Reforging reforging in CurrentCalculations.GetReforgingOptions(item, randomSuffix))
+                                List<int> upgradeLevelList = new List<int>() { 0 };
+                                upgradeLevelList.AddRange(item.UpgradeLevels);
+                                foreach (int upgrade in upgradeLevelList)
                                 {
-                                    foreach (GemmingTemplate template in CurrentGemmingTemplates)
+                                    foreach (Reforging reforging in CurrentCalculations.GetReforgingOptions(item, randomSuffix, upgrade))
                                     {
-                                        if (template.Enabled)
+                                        foreach (GemmingTemplate template in CurrentGemmingTemplates)
                                         {
-                                            ItemInstance instance = template.GetItemInstance(item, randomSuffix, GetEnchantBySlot(slot), reforging, GetTinkeringBySlot(slot), blacksmithingSocket);
-                                            if (!itemInstances.Contains(instance)) itemInstances.Add(instance);
+                                            if (template.Enabled)
+                                            {
+                                                ItemInstance instance = template.GetItemInstance(item, randomSuffix, GetEnchantBySlot(slot), reforging, GetTinkeringBySlot(slot), blacksmithingSocket, upgrade);
+                                                if (!itemInstances.Contains(instance)) itemInstances.Add(instance);
+                                            }
                                         }
-                                    }
-                                    foreach (GemmingTemplate template in CustomGemmingTemplates)
-                                    {
-                                        if (template.Enabled && template.Model == CurrentModel)
+                                        foreach (GemmingTemplate template in CustomGemmingTemplates)
                                         {
-                                            ItemInstance instance = template.GetItemInstance(item, randomSuffix, GetEnchantBySlot(slot), reforging, GetTinkeringBySlot(slot), blacksmithingSocket);
+                                            ItemInstance instance = template.GetItemInstance(item, randomSuffix, GetEnchantBySlot(slot), reforging, GetTinkeringBySlot(slot), blacksmithingSocket, upgrade);
                                             if (!itemInstances.Contains(instance)) itemInstances.Add(instance);
                                         }
                                     }
@@ -2350,8 +2517,9 @@ namespace Rawr
                 {
                     if (item.FitsInSlot(slot, this))
                     {
-                        if(!item.IsJewelersGem || !Rawr.Properties.GeneralSettings.Default.HideProfEnchants ||
-                           (item.IsJewelersGem && this.HasProfession(Profession.Jewelcrafting)))
+                        if(!item.IsJewelersGem || !item.IsJewelersFacet || !Rawr.Properties.GeneralSettings.Default.HideProfEnchants ||
+                           (item.IsJewelersGem && this.HasProfession(Profession.Jewelcrafting)) ||
+                           (item.IsJewelersFacet && this.HasProfession(Profession.Jewelcrafting)))
                         {
                             if ((gemColour == ItemSlot.None) ||
                                 (gemColour == ItemSlot.Red && item.IsRedGem) ||
@@ -2458,11 +2626,10 @@ namespace Rawr
                 case Rawr.ItemSlot.MainHand:
                 case Rawr.ItemSlot.OneHand:
                 case Rawr.ItemSlot.TwoHand:
+                case Rawr.ItemSlot.Ranged:
                     return MainHandEnchant;
                 case Rawr.ItemSlot.OffHand:
                     return OffHandEnchant;
-                case Rawr.ItemSlot.Ranged:
-                    return RangedEnchant;
                 default:
                     return null;
             }
@@ -2488,6 +2655,13 @@ namespace Rawr
             ItemInstance item = this[slot];
             if ((object)item == null) return null;
             return item.Enchant;
+        }
+
+        public int GetUpgradeBySlot(CharacterSlot slot)
+        {
+            ItemInstance item = this[slot];
+            if ((object)item == null) return 0;
+            return item.UpgradeLevel;
         }
 
         public Tinkering GetTinkeringBySlot(CharacterSlot slot)
@@ -2520,7 +2694,6 @@ namespace Rawr
                 case CharacterSlot.Finger2:
                 case CharacterSlot.MainHand:
                 case CharacterSlot.OffHand:
-                case CharacterSlot.Ranged:
                     return true;
                 default:
                     return false;
@@ -2592,7 +2765,6 @@ namespace Rawr
                 case Rawr.ItemSlot.OneHand:
                 case Rawr.ItemSlot.TwoHand: MainHandReforging = reforge; break;
                 case Rawr.ItemSlot.OffHand: OffHandReforging = reforge; break;
-                case Rawr.ItemSlot.Ranged: RangedReforging = reforge; break;
             }
         }
         public void SetReforgingBySlot(CharacterSlot slot, Reforging reforge)
@@ -2638,13 +2810,11 @@ namespace Rawr
                 case Rawr.ItemSlot.MainHand:
                 case Rawr.ItemSlot.OneHand:
                 case Rawr.ItemSlot.TwoHand:
+                case Rawr.ItemSlot.Ranged:
                     MainHandEnchant = enchant;
                     break;
                 case Rawr.ItemSlot.OffHand:
                     OffHandEnchant = enchant;
-                    break;
-                case Rawr.ItemSlot.Ranged:
-                    RangedEnchant = enchant;
                     break;
             }
         }
@@ -2654,6 +2824,15 @@ namespace Rawr
             if (i < 0 || i >= SlotCount) return;
             ItemInstance item = this[slot];
             if ((object)item != null) item.Enchant = enchant;
+            OnCalculationsInvalidated();
+        }
+
+        public void SetUpgradeBySlot(CharacterSlot slot, int upgradeLevel)
+        {
+            int i = (int)slot;
+            if (i < 0 || i >= SlotCount) return;
+            ItemInstance item = this[slot];
+            if ((object)item != null) item.UpgradeLevel = upgradeLevel;
             OnCalculationsInvalidated();
         }
 
@@ -2684,6 +2863,7 @@ namespace Rawr
         private int yellowGemCount;
         private int blueGemCount;
         private int jewelersGemCount;
+        private int jewelersFacetCount;
         private int gemRequirementsInvalid;
         private int nonjewelerGemRequirementsInvalid;
 
@@ -2720,6 +2900,15 @@ namespace Rawr
             {
                 ComputeGemCount();
                 return jewelersGemCount;
+            }
+        }
+
+        public int JewelersFacetCount
+        {
+            get
+            {
+                ComputeGemCount();
+                return jewelersFacetCount;
             }
         }
 
@@ -2761,6 +2950,7 @@ namespace Rawr
                 yellowGemCount = 0;
                 blueGemCount = 0;
                 jewelersGemCount = 0;
+                jewelersFacetCount = 0;
                 Dictionary<int, bool> uniqueMap = null;
                 gemRequirementsInvalid = 0;
                 nonjewelerGemRequirementsInvalid = 0;
@@ -2779,6 +2969,7 @@ namespace Rawr
                                 if (gem.IsYellowGem) yellowGemCount++;
                                 if (gem.IsBlueGem) blueGemCount++;
                                 if (gem.IsJewelersGem) jewelersGemCount++;
+                                if (gem.IsJewelersFacet) jewelersFacetCount++;
                                 else if (gem.Unique) // needs else, it seems jewelers gems are marked as unique
                                 {
                                     if (uniqueMap == null)
@@ -2803,6 +2994,10 @@ namespace Rawr
                 {
                     gemRequirementsInvalid += jewelersGemCount - 3;
                 }
+                if (jewelersFacetCount > 2)
+                {
+                    gemRequirementsInvalid += jewelersFacetCount - 2;
+                }
 
                 gemCountValid = true;
             }
@@ -2819,7 +3014,7 @@ namespace Rawr
                     for (int gemIndex = 1; gemIndex <= 3; gemIndex++)
                     {
                         Item gem = item.GetGem(gemIndex);
-                        if (gem != null && !gem.IsJewelersGem)
+                        if ((gem != null && !gem.IsJewelersGem) || (gem != null && !gem.IsJewelersFacet))
                         {
                             if (gem.Unique && gem == testGem) 
                                 return true;
@@ -2957,9 +3152,6 @@ namespace Rawr
             if (_mainHand != null) _ids[_mainHand] = true;
             if (_neck != null) _ids[_neck] = true;
             if (_offHand != null) _ids[_offHand] = true;
-            if (_projectile != null) _ids[_projectile] = true;
-            if (_projectileBag != null) _ids[_projectileBag] = true;
-            if (_ranged != null) _ids[_ranged] = true;
             if (_shirt != null) _ids[_shirt] = true;
             if (_shoulders != null) _ids[_shoulders] = true;
             if (_tabard != null) _ids[_tabard] = true;
@@ -2983,9 +3175,6 @@ namespace Rawr
             if (_mainHand != null) _ids[_mainHand] = true;
             if (_neck != null) _ids[_neck] = true;
             if (_offHand != null) _ids[_offHand] = true;
-            if (_projectile != null) _ids[_projectile] = true;
-            if (_projectileBag != null) _ids[_projectileBag] = true;
-            if (_ranged != null) _ids[_ranged] = true;
             if (_shirt != null) _ids[_shirt] = true;
             if (_shoulders != null) _ids[_shoulders] = true;
             if (_tabard != null) _ids[_tabard] = true;
@@ -3075,7 +3264,7 @@ namespace Rawr
                 case 17:
                     cslot = CharacterSlot.OffHand;
                     break;
-                case 18:
+                /*case 18:
                     cslot = CharacterSlot.Ranged;
                     break;
                 case 0:
@@ -3083,7 +3272,7 @@ namespace Rawr
                     break;
                 case 102:
                     cslot = CharacterSlot.ProjectileBag;
-                    break;
+                    break;*/
             }
             return cslot;
         }
@@ -3112,11 +3301,7 @@ namespace Rawr
             IsLoading = true;
         }
 
-        public Character(string name, string realm, CharacterRegion region, CharacterRace race, BossOptions boss,
-            string head, string neck, string shoulders, string back, string chest, string shirt, string tabard,
-                string wrist, string hands, string waist, string legs, string feet, string finger1, string finger2, 
-            string trinket1, string trinket2, string mainHand, string offHand, string ranged, string projectile, 
-            string projectileBag)
+        public Character(string name, string realm, CharacterRegion region, CharacterRace race, BossOptions boss, string head, string neck, string shoulders, string back, string chest, string shirt, string tabard, string wrist, string hands, string waist, string legs, string feet, string finger1, string finger2, string trinket1, string trinket2, string mainHand, string offHand)
         {
             Initialize();
             IsLoading = true;
@@ -3142,9 +3327,6 @@ namespace Rawr
             _trinket2 = trinket2;
             _mainHand = mainHand;
             _offHand = offHand;
-            _ranged = ranged;
-            _projectile = projectile;
-            _projectileBag = projectileBag;
 
             WaistBlacksmithingSocketEnabled = true;
             _activeBuffs = new List<Buff>();
@@ -3155,11 +3337,7 @@ namespace Rawr
             BossOptions = boss.Clone();
         }
 
-        public Character(string name, string realm, CharacterRegion region, CharacterRace race, BossOptions boss,
-            ItemInstance head, ItemInstance neck, ItemInstance shoulders, ItemInstance back, ItemInstance chest, ItemInstance shirt, ItemInstance tabard,
-                ItemInstance wrist, ItemInstance hands, ItemInstance waist, ItemInstance legs, ItemInstance feet, ItemInstance finger1, ItemInstance finger2,
-            ItemInstance trinket1, ItemInstance trinket2, ItemInstance mainHand, ItemInstance offHand, ItemInstance ranged, ItemInstance projectile,
-            ItemInstance projectileBag)
+        public Character(string name, string realm, CharacterRegion region, CharacterRace race, BossOptions boss, ItemInstance head, ItemInstance neck, ItemInstance shoulders, ItemInstance back, ItemInstance chest, ItemInstance shirt, ItemInstance tabard, ItemInstance wrist, ItemInstance hands, ItemInstance waist, ItemInstance legs, ItemInstance feet, ItemInstance finger1, ItemInstance finger2, ItemInstance trinket1, ItemInstance trinket2, ItemInstance mainHand, ItemInstance offHand)
         {
             Initialize();
             //_trackEquippedItemChanges = trackEquippedItemChanges;
@@ -3186,9 +3364,6 @@ namespace Rawr
             Trinket2 = trinket2;
             MainHand = mainHand;
             OffHand = offHand;
-            Ranged = ranged;
-            Projectile = projectile;
-            ProjectileBag = projectileBag;
             _activeBuffs = new List<Buff>();
             SetFaction();
             IsLoading = false;
@@ -3197,11 +3372,7 @@ namespace Rawr
         }
 
         // The following are special contructors used by optimizer, they assume the cached items/enchant are always used, and the underlying gemmedid/enchantid are never used
-        public Character(string name, string realm, CharacterRegion region, CharacterRace race, BossOptions boss,
-            ItemInstance head, ItemInstance neck, ItemInstance shoulders, ItemInstance back, ItemInstance chest, ItemInstance shirt, ItemInstance tabard,
-                ItemInstance wrist, ItemInstance hands, ItemInstance waist, ItemInstance legs, ItemInstance feet, ItemInstance finger1, ItemInstance finger2, 
-            ItemInstance trinket1, ItemInstance trinket2, ItemInstance mainHand, ItemInstance offHand, ItemInstance ranged, ItemInstance projectile,
-            ItemInstance projectileBag, List<Buff> activeBuffs, string model)
+        public Character(string name, string realm, CharacterRegion region, CharacterRace race, BossOptions boss, ItemInstance head, ItemInstance neck, ItemInstance shoulders, ItemInstance back, ItemInstance chest, ItemInstance shirt, ItemInstance tabard, ItemInstance wrist, ItemInstance hands, ItemInstance waist, ItemInstance legs, ItemInstance feet, ItemInstance finger1, ItemInstance finger2, ItemInstance trinket1, ItemInstance trinket2, ItemInstance mainHand, ItemInstance offHand, List<Buff> activeBuffs, string model)
         {
             Initialize();
             IsLoading = true;
@@ -3227,13 +3398,10 @@ namespace Rawr
             _item[(int)CharacterSlot.Trinket2] = trinket2;
             _item[(int)CharacterSlot.MainHand] = mainHand;
             _item[(int)CharacterSlot.OffHand] = offHand;
-            _item[(int)CharacterSlot.Ranged] = ranged;
-            _item[(int)CharacterSlot.Projectile] = projectile;
-            _item[(int)CharacterSlot.ProjectileBag] = projectileBag;
             IsLoading = false;
             ActiveBuffs = new List<Buff>(activeBuffs);
             SetFaction();
-            CurrentModel = model;
+            _currentModel = model;
             RecalculateSetBonuses();
 
             BossOptions = boss.Clone();
@@ -3291,7 +3459,7 @@ namespace Rawr
             IsLoading = false;
             ActiveBuffs = new List<Buff>(activeBuffs);
             SetFaction();
-            CurrentModel = model;
+            _currentModel = model;
             RecalculateSetBonuses();
 
             BossOptions = boss.Clone();
@@ -3587,10 +3755,12 @@ namespace Rawr
             {PETFAMILY.Fox, PETFAMILYTREE.Ferocity},
             {PETFAMILY.Hyena, PETFAMILYTREE.Ferocity},
             {PETFAMILY.Moth, PETFAMILYTREE.Ferocity},
+            {PETFAMILY.Quilen, PETFAMILYTREE.Ferocity},
             {PETFAMILY.Raptor, PETFAMILYTREE.Ferocity},
             {PETFAMILY.SpiritBeast, PETFAMILYTREE.Ferocity},
             {PETFAMILY.Tallstrider, PETFAMILYTREE.Ferocity},
             {PETFAMILY.Wasp, PETFAMILYTREE.Ferocity},
+            {PETFAMILY.WaterStrider, PETFAMILYTREE.Ferocity},
             {PETFAMILY.Wolf, PETFAMILYTREE.Ferocity},
             #endregion
         };
@@ -3622,11 +3792,18 @@ namespace Rawr
             set 
             { 
                 // value could either be string number or string name.
+                if (string.IsNullOrEmpty(value))
+                {
+                    FamilyID = PETFAMILY.None;
+                }
+                else
+                {
 #if SILVERLIGHT
-                FamilyID = (PETFAMILY)Enum.Parse(typeof(PETFAMILY), value, true);
+                    FamilyID = (PETFAMILY)Enum.Parse(typeof(PETFAMILY), value, true);
 #else
-                FamilyID = (PETFAMILY)Enum.Parse(typeof(PETFAMILY), value);
+                    FamilyID = (PETFAMILY)Enum.Parse(typeof(PETFAMILY), value);
 #endif
+                }
             }
         }
             
@@ -3635,7 +3812,7 @@ namespace Rawr
         public string SpecKey {
             get 
             {
-                if (FamilyTree == PETFAMILYTREE.None) { FamilyTree = ArmoryPet.FamilyToTree[FamilyID]; }
+                if (FamilyTree == PETFAMILYTREE.None) { ArmoryPet.FamilyToTree.TryGetValue(FamilyID, out FamilyTree); }
                 return Enum.GetName(typeof(PETFAMILYTREE),FamilyTree);
             }
         }

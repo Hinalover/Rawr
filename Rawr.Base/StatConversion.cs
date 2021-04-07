@@ -4,109 +4,64 @@ using System.Text;
 
 namespace Rawr
 {
-    public static class StatConversion
-    {   // Class only works for Level 80 Characters (Level 85 if you are in the Rawr4 projects)
+   public static class StatConversion
+    {   // Class only works for Level 85 Characters (Level 90 if you are in the Rawr5 projects)
         // Numbers reverse engineered by Whitetooth (hotdogee [at] gmail [dot] com)
 
         #region Character Constants
-        public const int DEFAULTPLAYERLEVEL = 85;
-
-        /*  Here are the values data-mined from build 12942 and imported into SimulationCraft:
-
-            Base Chance to Melee Crit%: 2.9219999909401%
-            Base Chance to Spell Crit%: 2.2010000422597%
-
-            Spell Scaling Multiplier: 1004.489990234375000 (level 80 value is 900.120300292968750. i.e. Level 85 base damage of abilities is 1004.49/900.12 or *1.12 more than at level 80 and so is the damage range.)
-            Agi to +Melee Crit%: 0.0030780898669%
-            Int to +Spell Crit%: 0.0015410500055%
-            Int/Spirit regen coefficient: 0.003345000091940
-
-            Ratings:
-
-            Dodge: 176.718994140625000
-            Parry: 176.718994140625000
-            Block: 88.359397888183594
-            Melee Hit: 120.109001159667969
-            Ranged Hit: 120.109001159667969
-            Spell Hit: 102.445999145507812
-            Melee Crit: 179.279998779296875
-            Ranged Crit: 179.279998779296875
-            Spell Crit: 179.279998779296875
-            Melee Haste: 128.057006835937500
-            Ranged Haste: 128.057006835937500
-            Spell Haste: 128.057006835937500
-            Expertise: 30.027200698852539
-            Mastery: 179.279998779296875
-
-            The following is from in-game testing:
-            Chance to Dodge Base%: 1.67%
-            
-         */
+        public const int DEFAULTPLAYERLEVEL = 90;
 
         // These are set based on the values above
-        public const float RATING_PER_DODGE         = 17671.8994140625000f;
-        public const float RATING_PER_PARRY         = 17671.8994140625000f;
-        public const float RATING_PER_BLOCK         =  8835.9397888183594f;
-        public const float RATING_PER_PHYSICALHIT   = 12010.9001159667969f;
-        public const float RATING_PER_SPELLHIT      = 10244.5999145507812f;
-        public const float RATING_PER_PHYSICALCRIT  = 17927.9998779296875f; 
-        public const float RATING_PER_SPELLCRIT     = 17927.9998779296875f; 
-        public const float RATING_PER_PHYSICALHASTE = 12805.7006835937500f; 
-        public const float RATING_PER_SPELLHASTE    = 12805.7006835937500f; 
-        public const float RATING_PER_EXPERTISE     =  30.027200698852539f; // Not a Perc, so decimal over
-        public const float RATING_PER_MASTERY       = 179.279998779296875f; // Not a Perc, so decimal over
+        public static float RATING_PER_DODGE            = BaseCombatRating.DodgeRatingMultiplier(DEFAULTPLAYERLEVEL) * 100;
+        public static float RATING_PER_PARRY            = BaseCombatRating.ParryRatingMultiplier(DEFAULTPLAYERLEVEL) * 100;
+        public static float RATING_PER_BLOCK            = BaseCombatRating.BlockRatingMultiplier(DEFAULTPLAYERLEVEL) * 100;
+        public static float RATING_PER_PHYSICALHIT      = BaseCombatRating.MeleeHitRatingMultiplier(DEFAULTPLAYERLEVEL) * 100;
+        public static float RATING_PER_RANGEHIT         = BaseCombatRating.RangedHitRatingMultiplier(DEFAULTPLAYERLEVEL) * 100;
+        public static float RATING_PER_SPELLHIT         = BaseCombatRating.SpellHitRatingMultiplier(DEFAULTPLAYERLEVEL) * 100;
+        public static float RATING_PER_PHYSICALCRIT     = BaseCombatRating.MeleeCritRatingMultiplier(DEFAULTPLAYERLEVEL) * 100;
+        public static float RATING_PER_RANGECRIT        = BaseCombatRating.RangeCritRatingMultiplier(DEFAULTPLAYERLEVEL) * 100;
+        public static float RATING_PER_SPELLCRIT        = BaseCombatRating.SpellCritRatingMultiplier(DEFAULTPLAYERLEVEL) * 100;
+        public static float RATING_PER_PHYSICALHASTE    = BaseCombatRating.MeleeHasteRatingMultiplier(DEFAULTPLAYERLEVEL) * 100;
+        public static float RATING_PER_RANGEHASTE       = BaseCombatRating.RangedHasteRatingMultiplier(DEFAULTPLAYERLEVEL) * 100;
+        public static float RATING_PER_SPELLHASTE       = BaseCombatRating.SpellHasteRatingMultiplier(DEFAULTPLAYERLEVEL) * 100;
+        public static float RATING_PER_EXPERTISE        = BaseCombatRating.ExpertiseRatingMultiplier(DEFAULTPLAYERLEVEL) * 100;
+        public static float RATING_PER_MASTERY          = BaseCombatRating.MasteryRatingMultiplier(DEFAULTPLAYERLEVEL); // Not a Perc, so decimal over
         // These shouldn't be changing
-        public const float RATING_PER_HEALTH        = 14.00f; //14 Health per 1 STA;
-        public const float RATING_PER_MANA          = 15.00f; //15 Mana per 1 INT;
-        public const float BLOCKVALUE_PER_STR       =  2.00f;
+        public static float RATING_PER_HEALTH            = BaseCombatRating.HPPerStamina(DEFAULTPLAYERLEVEL);
+        public const float RATING_PER_MANA              = 0; // MoP - Mana is static
+        public const float BLOCKVALUE_PER_STR           =  2.00f;
         // These have not been provided Cata values yet, some could be removed as no longer valid
         //public const float LEVEL_85_COMBATRATING_MODIFIER      = 3.2789987789987789987789987789988f;
-        public const float RATING_PER_RESILIENCE =      9520.6611570247933884297520661157f;
-        public const float RATING_PER_DODGEPARRYREDUC          = 0.0025f; //4 Exp per 1% Dodge/Parry Reduction;
+        public static float RATING_PER_RESILIENCE              = BaseCombatRating.PvPResilienceRatingRatingMultiplier(DEFAULTPLAYERLEVEL) * 100;
+        public static float RATING_PER_PVP_POWER               = BaseCombatRating.PvPPowerRatingRatingMultiplier(DEFAULTPLAYERLEVEL) * 100;
+        public const float RATING_PER_DODGEPARRYREDUC          = 1f; // Expertise is converted directly to % now
         public const float LEVEL_AVOIDANCE_MULTIPLIER          = 0.20f;
 
-        // Attack Table for players attacking mobs                                           85       86        87      88
-        public static readonly float[] WHITE_MISS_CHANCE_CAP                = new float[] { 0.0500f, 0.0520f, 0.0540f, 0.0800f };
-        // MoP change // public static readonly float[] WHITE_MISS_CHANCE_CAP               = new float[] { 0.0300f, 0.0450f, 0.0600f, 0.0750f };
-        public static readonly float[] WHITE_MISS_CHANCE_CAP_DW             = new float[] { 0.2400f, 0.2420f, 0.2440f, 0.2700f }; //  WHITE_MISS_CHANCE_CAP + 19%
-        // MoP change (guess) // public static readonly float[] WHITE_MISS_CHANCE_CAP_DW          = new float[] { 0.2200f, 0.2350f, 0.2500f, 0.2650f }; //  WHITE_MISS_CHANCE_CAP + 19%
+        // Attack Table for players attacking mobs                                            90       91        92      93
+        public static readonly float[] WHITE_MISS_CHANCE_CAP                = new float[] { 0.0300f, 0.0450f, 0.0600f, 0.0750f };
+        public static readonly float[] WHITE_MISS_CHANCE_CAP_DW             = new float[] { 0.2200f, 0.2350f, 0.2500f, 0.2650f }; //  WHITE_MISS_CHANCE_CAP + 19%
         
-        //public static readonly float[] WHITE_MISS_CHANCE_CAP_BEHIND       = WHITE_MISS_CHANCE_CAP;
-        //public static readonly float[] WHITE_MISS_CHANCE_CAP_DW_BEHIND    = WHITE_MISS_CHANCE_CAP_DW;
         public static readonly float[] YELLOW_MISS_CHANCE_CAP               = WHITE_MISS_CHANCE_CAP;
-        //public static readonly float[] YELLOW_MISS_CHANCE_CAP_BEHIND      = WHITE_MISS_CHANCE_CAP_BEHIND;
 
-        public static readonly float[] WHITE_DODGE_CHANCE_CAP               = new float[] { 0.0500f, 0.0550f, 0.0600f, 0.0650f }; //  6.5%
-        // MoP change // public static readonly float[] WHITE_DODGE_CHANCE_CAP              = new float[] { 0.0300f, 0.0450f, 0.0600f, 0.0750f };
-        //public static readonly float[] WHITE_DODGE_CHANCE_CAP_BEHIND      = WHITE_DODGE_CHANCE_CAP; // 6.5% Attacks from behind *can* be dodged
+        public static readonly float[] WHITE_DODGE_CHANCE_CAP               = new float[] { 0.0300f, 0.0450f, 0.0600f, 0.0750f };
         public static readonly float[] YELLOW_DODGE_CHANCE_CAP              = WHITE_DODGE_CHANCE_CAP;
-        //public static readonly float[] YELLOW_DODGE_CHANCE_CAP_BEHIND     = WHITE_DODGE_CHANCE_CAP_BEHIND;
 
-        public static readonly float[] WHITE_PARRY_CHANCE_CAP               = new float[] { 0.0500f, 0.0550f, 0.0600f, 0.14f }; // 14%
-        // MoP change // public static readonly float[] WHITE_PARRY_CHANCE_CAP              = new float[] { 0.0300f, 0.0450f, 0.0600f, 0.0750f };
-        //public static readonly float[] WHITE_PARRY_CHANCE_CAP_BEHIND      = new float[] { 0.0000f, 0.0000f, 0.0000f, 0.0000f }; //  0% Attacks from behind can't be parried
+        public static readonly float[] WHITE_PARRY_CHANCE_CAP               = new float[] { 0.0300f, 0.0450f, 0.0600f, 0.0750f };
         public static readonly float[] YELLOW_PARRY_CHANCE_CAP              = WHITE_PARRY_CHANCE_CAP;
-        //public static readonly float[] YELLOW_PARRY_CHANCE_CAP_BEHIND     = WHITE_PARRY_CHANCE_CAP_BEHIND;
 
         public static readonly float[] WHITE_GLANCE_CHANCE_CAP              = new float[] { 0.1000f, 0.1500f, 0.2000f, 0.2400f }; // 25%
-        //public static readonly float[] WHITE_GLANCE_CHANCE_CAP_BEHIND     = WHITE_GLANCE_CHANCE_CAP;
         public static readonly float[] YELLOW_GLANCE_CHANCE_CAP             = new float[] { 0.0000f, 0.0000f, 0.0000f, 0.0000f }; //  0% Yellows don't glance
-        //public static readonly float[] YELLOW_GLANCE_CHANCE_CAP_BEHIND    = YELLOW_GLANCE_CHANCE_CAP;
 
-        public static readonly float[] WHITE_BLOCK_CHANCE_CAP               = new float[] { 0.0500f, 0.0520f, 0.0540f, 0.0650f }; //  6.5%
-        // MoP change // public static readonly float[] WHITE_BLOCK_CHANCE_CAP              = new float[] { 0.0300f, 0.0450f, 0.0600f, 0.0750f };
-        //public static readonly float[] WHITE_BLOCK_CHANCE_CAP_BEHIND      = new float[] { 0.0000f, 0.0000f, 0.0000f, 0.0000f }; //  0% Attacks from behind can't be blocked
+        public static readonly float[] WHITE_BLOCK_CHANCE_CAP               = new float[] { 0.0300f, 0.0450f, 0.0600f, 0.0750f };
         public static readonly float[] YELLOW_BLOCK_CHANCE_CAP              = WHITE_BLOCK_CHANCE_CAP;
-        //public static readonly float[] YELLOW_BLOCK_CHANCE_CAP_BEHIND     = WHITE_BLOCK_CHANCE_CAP_BEHIND;
 
-        public static readonly float[] SPELL_MISS_CHANCE_CAP                = new float[] { 0.0400f, 0.0500f, 0.0600f, 0.1700f };
-        // MoP change // public static readonly float[] SPELL_MISS_CHANCE_CAP                = new float[] { 0.0600f, 0.0900f, 0.1200f, 0.1500f };
+        public static readonly float[] SPELL_MISS_CHANCE_CAP                = new float[] { 0.0600f, 0.0900f, 0.1200f, 0.1500f };
 
         /// <summary>
         /// You need to *add* this to your current crit value as it's a negative number.
-        /// <para>[85: 0, 86: -0.006, 87: -0.012, 88: -0.048]</para>
+        /// <para>[85: 0, 86: -0.01, 87: -0.02, 88: -0.03]</para>
         /// </summary>
-        public static readonly float[] NPC_LEVEL_CRIT_MOD                   = new float[] { -0.0000f, -0.0060f, -0.0120f, -0.0480f }; //  -4.8%
+        public static readonly float[] NPC_LEVEL_CRIT_MOD                   = new float[] { -0.0000f, -0.010f, -0.0200f, -0.0300f }; //  -3.0%
 
         // http://elitistjerks.com/f75/t110187-cataclysm_mage_simulators_formulators/p4/#post1834778
         // Level+3 has now been confirmed as being -1.8% (-0.0180)
@@ -116,52 +71,87 @@ namespace Rawr
         /// <para>Note: Level+1 and Level+2 values are just guesstimates based on trends
         /// from NPC_LEVEL_CRIT_MOD. We don't currently have solid values for these.</para>
         /// </summary>
-        public static readonly float[] NPC_LEVEL_SPELL_CRIT_MOD             = new float[] { -0.0000f, -0.002625f, -0.00525f, -0.0180f }; //  -1.8%
+        public static readonly float[] NPC_LEVEL_SPELL_CRIT_MOD             = new float[] { -0.0000f, -0.0100f, -0.0200f, -0.0300f }; //  -1.8%
+        //public static readonly float[] NPC_LEVEL_SPELL_CRIT_MOD             = new float[] { -0.0000f, -0.002625f, -0.00525f, -0.0180f }; //  -1.8%
 
-        //source: http://code.google.com/p/simulationcraft/source/browse/branches/cataclysm/engine/sc_target.cpp
-        public static readonly float[] NPC_ARMOR                            = new float[] { 11161f, 11441f, 11682f, 11977f };
+        //source: https://code.google.com/p/simulationcraft/source/browse/trunk/engine/sc_target.cpp
+        public static readonly float[] NPC_ARMOR                            = new float[] { BaseCombatRating.Get_BossArmor(DEFAULTPLAYERLEVEL),
+                                                                                BaseCombatRating.Get_BossArmor(DEFAULTPLAYERLEVEL + 1),
+                                                                                BaseCombatRating.Get_BossArmor(DEFAULTPLAYERLEVEL + 2),
+                                                                                BaseCombatRating.Get_BossArmor(DEFAULTPLAYERLEVEL + 3) };
 
         // Same for all classes
-        public const float INT_PER_SPELLCRIT = 648.91f;
-        public const float REGEN_CONSTANT = 0.003345f;
+        public const float INT_PER_SPELLCRIT = 2533.66f;
+//        public const float REGEN_CONSTANT = 0.200000002980232f;  
+        public const float REGEN_CONSTANT = 1.1287f;  // Saw a slightly different value for shammy regen on EJ, but for now assuming all classes are identical
 
         /// <summary>
         /// Source: http://elitistjerks.com/f15/t29453-combat_ratings_level_85_cataclysm/
         /// </summary>
         public static readonly float[] AGI_PER_PHYSICALCRIT = { 0.0f, // CharacterClass starts at 1
-            243.60f, //3.905f * 62.500f,  // Warrior 1
-            203.08f, //3.905f * 52.083f,  // Paladin 2
-            324.85f, //3.905f * 83.333f,  // Hunter 3
-            324.72f, //3.905f * 83.333f,  // Rogue 4
-            203.46f, //3.905f * 52.083f,  // Priest 5
-            243.70f, //3.905f * 62.500f,  // Death Knight 6
-            324.88f, //3.905f * 83.333f,  // Shaman 7
-            199.87f, //3.905f * 51.0204f, // Mage 8
-            197.08f, //3.905f * 50.505f,  // Warlock 9
-              0.00f, //3.905f *  0.000f,  // Empty 10
-            324.85f, //3.905f * 83.333f,  // Druid 11
+            BaseCombatRating.WarriorChanceToMeleeCrit(DEFAULTPLAYERLEVEL),      // Warrior 1
+            BaseCombatRating.PaladinChanceToMeleeCrit(DEFAULTPLAYERLEVEL),      // Paladin 2
+            BaseCombatRating.HunterChanceToMeleeCrit(DEFAULTPLAYERLEVEL),       // Hunter 3
+            BaseCombatRating.RogueChanceToMeleeCrit(DEFAULTPLAYERLEVEL),        // Rogue 4
+            BaseCombatRating.PriestChanceToMeleeCrit(DEFAULTPLAYERLEVEL),       // Priest 5
+            BaseCombatRating.DeathKnightChanceToMeleeCrit(DEFAULTPLAYERLEVEL),  // Death Knight 6
+            BaseCombatRating.ShamanChanceToMeleeCrit(DEFAULTPLAYERLEVEL),       // Shaman 7
+            BaseCombatRating.MageChanceToMeleeCrit(DEFAULTPLAYERLEVEL),         // Mage 8
+            BaseCombatRating.WarriorChanceToMeleeCrit(DEFAULTPLAYERLEVEL),      // Warlock 9
+            BaseCombatRating.MonkChanceToMeleeCrit(DEFAULTPLAYERLEVEL),         // Monk 10
+            BaseCombatRating.DruidChanceToMeleeCrit(DEFAULTPLAYERLEVEL),        // Druid 11
         };
 
         /// <summary>
         /// Source: http://elitistjerks.com/f15/t29453-combat_ratings_level_85_cataclysm/
         /// </summary>
         public static readonly float[] AGI_PER_DODGE = { 0.0f, // Starts at 0
-            0, // Patch 4.2 removed Agility to Dodge for Warriors //5.309f * 84.74576271f, // Warrior 1
-            0, // Patch 4.2 removed Agility to Dodge for Paladins //5.309f * 59.88023952f, // Paladin 2
-            439.99947200f, //5.309f * 86.20689655f, // Hunter 3
-            243.51637648f, //5.309f * 47.84688995f, // Rogue 4
-            304.00034048f, //5.309f * 59.88023952f, // Priest 5
-            0, // Patch 4.2 removed Agility to Dodge for DKs //5.309f * 84.74576271f, // Death Knight 6
-            304.00034048f, //5.309f * 59.88023952f, // Shaman 7
-            300.16238785f, //5.309f * 58.82352941f, // Mage 8
-            304.35470715f, //5.309f * 59.88023952f, // Warlock 9
-              0.00000000f, //5.309f *  0.0f,        // Empty 10
-            243.58281085f, //5.309f * 47.84688995f, // Druid 11
+            10000f, // Patch 4.2 removed Agility to Dodge for Warriors //5.309f * 84.74576271f, // Warrior 1
+            10000f, // Patch 4.2 removed Agility to Dodge for Paladins //5.309f * 59.88023952f, // Paladin 2
+            951.158596f, // Hunter 3
+            951.158596f, // Rogue 4
+            951.158596f, // Priest 5
+            10000f, // Patch 4.2 removed Agility to Dodge for DKs //5.309f * 84.74576271f, // Death Knight 6
+            951.158596f, // Shaman 7
+            951.158596f, // Mage 8
+            951.158596f, // Warlock 9
+            951.158596f, // Monk 10
+            951.158596f, // Druid 11
+        };
+
+        public static readonly float[] PARRY_PER_STR = { 0.0f, // Stats at 0
+            951.158596f, // Warrior 1
+            951.158596f, // Paladin 2
+              0.0f, // Hunter 3
+              0.0f, // Rogue 4
+              0.0f, // Priest 5
+            951.158596f, // Death Knight 6
+              0.0f, // Shaman 7
+              0.0f, // Mage 8
+              0.0f, // Warlock 9
+              10000f, // Monk 10
+              0.0f, // Druid 11
+        };
+
+        public static readonly float STR_PER_PARRY_PERCENT = 95115.8596f;
+
+        public static readonly float[] MASTERY_PER_BLOCK = { 0.0f, // Starts at 0
+            0.015f, // Warrior 1
+            0.01125f, // Paladin 2
+            0f, // Hunter 3
+            0f, // Rogue 4
+            0f, // Priest 5
+            0f, // Death Knight 6
+            0f, // Shaman 7
+            0f, // Mage 8
+            0f, // Warlock 9
+            0f, // Monk 10
+            0f, // Druid 11
         };
 
         public static readonly float[] DR_COEFFIENT = { 0.0f, // Starts at 0
             0.9560f, // Warrior 1
-            0.9560f, // Paladin 2
+            0.8860f, // Paladin 2
             0.9880f, // Hunter 3
             0.9880f, // Rogue 4
             0.9530f, // Priest 5
@@ -169,54 +159,54 @@ namespace Rawr
             0.9880f, // Shaman 7
             0.9530f, // Mage 8
             0.9530f, // Warlock 9
-            0.0f,    // Empty 10
-            0.9720f, // Druid 11
+            1.4220f, // Monk 10
+            1.2220f, // Druid 11
         };
 
         // This is the cap value for DODGE PERCENTAGE.
         public static readonly float[] CAP_DODGE = { 0.0f, // Starts at 0
-             65.631440f, // Warrior 1
-             65.631440f, // Paladin 2
+             90.6425465f, // Warrior 1
+             66.5674462f, // Paladin 2
             145.560408f, // Hunter 3
             145.560408f, // Rogue 4
             150.375940f, // Priest 5
-             65.631440f, // Death Knight 6
+             90.642574f, // Death Knight 6
             145.560408f, // Shaman 7
             150.375940f, // Mage 8
             150.375940f, // Warlock 9
-              0f,        // Empty 10
-            116.890707f, // Druid 11
+            501.25313283208020050125313283208f, // Monk 10
+            150.37593984962406015037593984962f, // Druid 11
         };
 
         /// <summary>
         /// This is the 1/CAP_DODGE to cut down the ammount of math going on.
         /// </summary>
         public static readonly float[] CAP_DODGE_INV = { 0.0f, // Starts at 0
-            0.01523660f, // Warrior 1
-            0.01523660f, // Paladin 2
+            0.01103234671369255937662783999565f, // Warrior 1
+            0.01502235788038988943517559788857f, // Paladin 2
             0.00687000f, // Hunter 3
             0.00687000f, // Rogue 4
             0.00665000f, // Priest 5
-            0.01523660f, // Death Knight 6
+            0.01103234336659503954510382725892f, // Death Knight 6
             0.00687000f, // Shaman 7
             0.00665000f, // Mage 8
             0.00665000f, // Warlock 9
-            0f,          // Empty 10
-            0.00855500f, // Druid 11
+            0.001995f, // Monk 10
+            0.006650f, // Druid 11
         };
 
         // This is the cap value for PARRY PERCENTAGE.
         public static readonly float[] CAP_PARRY = { 0.0f, // Starts at 0
-             65.631440f, // Warrior 1
-             65.631440f, // Paladin 2
+            237.1860812566308333841306857358f, // Warrior 1
+            237.1860812566308333841306857358f, // Paladin 2
             145.560408f, // Hunter 3
             145.560408f, // Rogue 4
               0f,        // Priest 5
-             65.631440f, // Death Knight 6
+            237.1860812566308333841306857358f, // Death Knight 6
             145.560408f, // Shaman 7
-              0f,        // Mage 8
+              0f,        // Mage 8w
               0f,        // Warlock 9
-              0f,        // Empty 10
+             90.64244f,  // Monk 10
               0f,        // Druid 11
         };
 
@@ -225,17 +215,50 @@ namespace Rawr
         /// And prevent divide by 0 errors.
         /// </summary>
         public static readonly float[] CAP_PARRY_INV = { 0.0f, // Starts at 0
-            0.01523660f, // Warrior 1
-            0.01523660f, // Paladin 2
+            0.004216099f, // Warrior 1
+            0.004216099f, // Paladin 2
             0.00687000f, // Hunter 3
             0.00687000f, // Rogue 4
             0f,          // Priest 5
-            0.01523660f, // Death Knight 6
-            0.00687000f, // Shaman 7
+            0.004216099f, // Death Knight 6
+            0.00687000f, // Shaman 74
             0f,          // Mage 8
             0f,          // Warlock 9
-            0f,          // Empty 10
+            0.01103235967610757168496346744417f, // Monk 10
             0f,          // Druid 11
+        };
+
+       // This is the cap value for BLOCK PERCENTAGE.
+        public static readonly float[] CAP_BLOCK = { 0.0f, // Starts at 0
+            150.37593984962406015037593984962f,     // Warrior 1
+            150.37593984962406015037593984962f,     // Paladin 2
+            0f,         // Hunter 3
+            0f,         // Rogue 4
+            0f,         // Priest 5
+            0f,         // Death Knight 6
+            0f,         // Shaman 7
+            0f,         // Mage 8
+            0f,         // Warlock 9
+            0f,         // Monk 10
+            0f,         // Druid 11
+        };
+
+       /// <summary>
+       /// This is 1/CAP_BLOCK to cut down the amount of math going on,
+       /// and prevent divide by 0 errors.
+       /// </summary>
+        public static readonly float[] CAP_BLOCK_INV = { 0.0f, // Starts at 0
+            0.00665f,     // Warrior 1
+            0.00665f,     // Paladin 2
+            0f,         // Hunter 3
+            0f,         // Rogue 4
+            0f,         // Priest 5
+            0f,         // Death Knight 6
+            0f,         // Shaman 7
+            0f,         // Mage 8
+            0f,         // Warlock 9
+            0f,         // Monk 10
+            0f,         // Druid 11
         };
 
         /// <summary>This is the cap value for MISS PERCENTAGE on NPC attacks against a Player</summary>
@@ -249,7 +272,7 @@ namespace Rawr
              0f, // Shaman 7
              0f, // Mage 8
              0f, // Warlock 9
-             0f, // Empty 10
+             0f, // Monk 10
              0f, // Druid 11
         };
 
@@ -257,6 +280,7 @@ namespace Rawr
 
         #region Functions for Plain Rating Conversions
 
+        #region Health
         public static float GetHealthFromStamina(float Rating, CharacterClass Class) { return GetHealthFromStamina(Rating); }
         /// <summary>
         /// Returns a Value (1000 = 1000 extra Health)
@@ -266,7 +290,13 @@ namespace Rawr
         public static float GetHealthFromStamina(float Rating) {
             return Rating <= 20 ? Rating : (Rating - 20) * RATING_PER_HEALTH + 20; // first 20 stamina is 1 health
         }
+        public static float GetHealthFromStamina(float Rating, int Level)
+        {
+            return Rating <= 20 ? Rating : (Rating - 20) * BaseCombatRating.HPPerStamina(Level) + 20; // first 20 stamina is 1 health
+        }
+        #endregion
 
+        #region Mana
         public static float GetManaFromIntellect(float Rating, CharacterClass Class) { return GetManaFromIntellect(Rating); }
         /// <summary>
         /// Returns a Value (1000 = 1000 extra Mana)
@@ -277,7 +307,9 @@ namespace Rawr
         {
             return Rating <= 20 ? Rating : (Rating - 20) * RATING_PER_MANA + 20; // first 20 intellect is 1 mana
         }
+        #endregion
 
+        #region Block
         public static float GetBlockFromRating(float Rating, CharacterClass Class) { return GetBlockFromRating(Rating); }
         /// <summary>
         /// Returns a Percentage (0.05 = 5% added chance to Block)
@@ -288,6 +320,10 @@ namespace Rawr
         {
             return Rating / RATING_PER_BLOCK;
         }
+        public static float GetBlockFromRating(float Rating, int Level)
+        {
+            return Rating / (BaseCombatRating.BlockRatingMultiplier(Level) * 100);
+        }
 
         public static float GetBlockValueFromStrength(float str, CharacterClass Class) { return GetBlockValueFromStrength(str); }
         /// <summary>
@@ -296,18 +332,35 @@ namespace Rawr
         /// <param name="Rating">Block Rating</param>
         /// <returns>A Percentage (0.05 = 5% added chance to Block)</returns>
         public static float GetBlockValueFromStrength(float str) { return str / BLOCKVALUE_PER_STR; }
+        #endregion
 
+        #region Dodge
         public static float GetDodgeFromRating(float Rating, CharacterClass Class) { return GetDodgeFromRating(Rating); }
         /// <summary>
         /// Returns a Percentage (0.05 = 5% extra Dodge)
         /// </summary>
         /// <param name="Rating">Dodge Rating</param>
         /// <returns>A Percentage (0.05 = 5% extra Dodge)</returns>
-        public static float GetDodgeFromRating(float Rating)
-        {
-            return Rating / RATING_PER_DODGE;
-        }
+        public static float GetDodgeFromRating(float Rating) { return Rating / RATING_PER_DODGE; }
+        public static float GetDodgeFromRating(float Rating, int Level) { return Rating / (BaseCombatRating.DodgeRatingMultiplier(Level) * 100); }
 
+        #region Agility
+        /// <summary>
+        /// Returns a Percentage (0.05 = 5% extra Dodge)
+        /// </summary>
+        /// <param name="Agility">Agility</param>
+        /// <param name="Class">CharacterClass</param>
+        /// <returns>A Percentage (0.05 = 5% extra Dodge)</returns>
+        public static float GetDodgeFromAgility(float Agility, CharacterClass Class)
+        {
+            if (AGI_PER_DODGE[(int)Class] > 0)
+                return Agility / AGI_PER_DODGE[(int)Class] * 0.01f;
+            return 0;
+        }
+        #endregion
+        #endregion
+
+        #region Mastery
         public static float GetMasteryFromRating(float Rating, CharacterClass Class) { return GetMasteryFromRating(Rating); }
         /// <summary>
         /// Returns a Value (6.34 = 6.34 extra Mastery)
@@ -315,7 +368,10 @@ namespace Rawr
         /// <param name="Rating">Mastery Rating</param>
         /// <returns>A Value (6.34 = 6.34 extra Mastery)</returns>
         public static float GetMasteryFromRating(float Rating) { return Rating / RATING_PER_MASTERY; }
-        
+        public static float GetMasteryFromRating(float Rating, int Level) { return Rating / BaseCombatRating.MasteryRatingMultiplier(Level); }
+        #endregion
+
+        #region Expertise
         public static float GetExpertiseFromRating(float Rating, CharacterClass Class) { return GetExpertiseFromRating(Rating); }
         /// <summary>
         /// Returns a Value (6.34 = 6.34 extra Expertise)
@@ -323,6 +379,8 @@ namespace Rawr
         /// <param name="Rating">Expertise Rating</param>
         /// <returns>A Value (6.34 = 6.34 extra Expertise)</returns>
         public static float GetExpertiseFromRating(float Rating) { return Rating / RATING_PER_EXPERTISE; }
+        public static float GetExpertiseFromRating(float Rating, int Level) { return Rating / (BaseCombatRating.ExpertiseRatingMultiplier(Level) * 100); }
+
         public static float GetRatingFromExpertise(float value, CharacterClass Class) { return GetRatingFromExpertise(value); }
         /// <summary>
         /// Returns a Value (6.34 = 6.34 extra Expertise)
@@ -330,6 +388,7 @@ namespace Rawr
         /// <param name="Rating">Expertise Rating</param>
         /// <returns>A Value (6.34 = 6.34 extra Expertise)</returns>
         public static float GetRatingFromExpertise(float value) { return value * RATING_PER_EXPERTISE; }
+        public static float GetRatingFromExpertise(float value, int Level) { return value * BaseCombatRating.ExpertiseRatingMultiplier(Level); }
 
         public static float GetDodgeParryReducFromExpertise(float Rating, CharacterClass Class) { return GetDodgeParryReducFromExpertise(Rating); }
         /// <summary>
@@ -345,7 +404,9 @@ namespace Rawr
         /// <param name="Rating">DodgeParryReduc %</param>
         /// <returns>A Value (1 = 1 extra Expertise)</returns>
         public static float GetExpertiseFromDodgeParryReduc(float value) { return value / RATING_PER_DODGEPARRYREDUC; }
+        #endregion
 
+        #region Parry
         public static float GetParryFromRating(float Rating, CharacterClass Class) { return GetParryFromRating(Rating); }
         /// <summary>
         /// Returns a Percentage (0.05 = 5% extra Parry)
@@ -353,7 +414,13 @@ namespace Rawr
         /// <param name="Rating">Parry Rating</param>
         /// <returns>A Percentage (0.05 = 5% extra Parry)</returns>
         public static float GetParryFromRating(float Rating) { return Rating / RATING_PER_PARRY; }
+        public static float GetParryFromRating(float Rating, int Level) { return Rating / (BaseCombatRating.ParryRatingMultiplier(Level) * 100); }
 
+        public static float GetParryFromStrength(float Strength) { return Strength / STR_PER_PARRY_PERCENT; }
+        #endregion
+
+        #region Crit
+        #region Physical Crit
         public static float GetCritFromRating(float Rating, CharacterClass Class) { return GetPhysicalCritFromRating(Rating); }
         public static float GetCritFromRating(float Rating) { return GetPhysicalCritFromRating(Rating); }
         public static float GetPhysicalCritFromRating(float Rating, CharacterClass Class) { return GetPhysicalCritFromRating(Rating); }
@@ -363,6 +430,7 @@ namespace Rawr
         /// <param name="Rating">Crit Rating</param>
         /// <returns>A Percentage (0.05 = 5% extra chance to Crit)</returns>
         public static float GetPhysicalCritFromRating(float Rating) { return Rating / RATING_PER_PHYSICALCRIT; }
+        public static float GetPhysicalCritFromRating(float Rating, int Level) { return Rating / (BaseCombatRating.MeleeCritRatingMultiplier(Level) * 100); }
 
         public static float GetRatingFromCrit(float Rating, CharacterClass Class) { return GetRatingFromPhysicalCrit(Rating); }
         public static float GetRatingFromCrit(float Rating) { return GetRatingFromPhysicalCrit(Rating); }
@@ -373,16 +441,136 @@ namespace Rawr
         /// <param name="Rating">Crit Percent</param>
         /// <returns>A Value (1 = 1 Crit Rating)</returns>
         public static float GetRatingFromPhysicalCrit(float Rating) { return Rating * RATING_PER_PHYSICALCRIT; }
+        public static float GetRatingFromPhysicalCrit(float Rating, int Level) { return Rating * BaseCombatRating.MeleeCritRatingMultiplier(Level); }
+        #endregion
 
+        #region Range Crit
+        public static float GetRangeCritFromRating(float Rating, CharacterClass Class) { return GetRangeCritFromRating(Rating); }
+        /// <summary>
+        /// Returns a Percentage (0.05 = 5% extra chance to Crit)
+        /// </summary>
+        /// <param name="Rating">Crit Rating</param>
+        /// <returns>A Percentage (0.05 = 5% extra chance to Crit)</returns>
+        public static float GetRangeCritFromRating(float Rating) { return Rating / RATING_PER_RANGECRIT; }
+        public static float GetRangeCritFromRating(float Rating, int Level) { return Rating / (BaseCombatRating.RangeCritRatingMultiplier(Level) * 100); }
+
+        public static float GetRatingFromRangeCrit(float Rating, CharacterClass Class) { return GetRatingFromRangeCrit(Rating); }
+        /// <summary>
+        /// Returns a Value (1 = 1 Crit Rating)
+        /// </summary>
+        /// <param name="Rating">Crit Percent</param>
+        /// <returns>A Value (1 = 1 Crit Rating)</returns>
+        public static float GetRatingFromRangeCrit(float Rating) { return Rating * RATING_PER_RANGECRIT; }
+        public static float GetRatingFromRangeCrit(float Rating, int Level) { return Rating * BaseCombatRating.RangeCritRatingMultiplier(Level); }
+        #endregion
+
+        #region Spell Crit
+        public static float GetSpellCritFromRating(float Rating, CharacterClass Class) { return GetSpellCritFromRating(Rating); }
+        /// <summary>
+        /// Returns a Percentage (0.05 = 5% extra chance to Crit)
+        /// </summary>
+        /// <param name="Rating">Crit Rating</param>
+        /// <returns>A Percentage (0.05 = 5% extra chance to Crit)</returns>
+        public static float GetSpellCritFromRating(float Rating) { return Rating / RATING_PER_SPELLCRIT; }
+        public static float GetSpellCritFromRating(float Rating, int Level) { return Rating / (BaseCombatRating.SpellCritRatingMultiplier(Level) * 100); }
+
+        public static float GetSpellCritFromIntellect(float Intellect, CharacterClass Class, int Level)
+        {
+            switch (Class)
+            {
+                case CharacterClass.Warrior:
+                    return Intellect / BaseCombatRating.WarriorChanceToSpellCrit(Level) * 0.01f;
+                case CharacterClass.Paladin:
+                    return Intellect / BaseCombatRating.PaladinChanceToSpellCrit(Level) * 0.01f;
+                case CharacterClass.Hunter:
+                    return Intellect / BaseCombatRating.HunterChanceToSpellCrit(Level) * 0.01f;
+                case CharacterClass.Rogue:
+                    return Intellect / BaseCombatRating.RogueChanceToSpellCrit(Level) * 0.01f;
+                case CharacterClass.Priest:
+                    return Intellect / BaseCombatRating.PriestChanceToSpellCrit(Level) * 0.01f;
+                case CharacterClass.DeathKnight:
+                    return Intellect / BaseCombatRating.DeathKnightChanceToSpellCrit(Level) * 0.01f;
+                case CharacterClass.Shaman:
+                    return Intellect / BaseCombatRating.ShamanChanceToSpellCrit(Level) * 0.01f;
+                case CharacterClass.Mage:
+                    return Intellect / BaseCombatRating.MageChanceToSpellCrit(Level) * 0.01f;
+                case CharacterClass.Warlock:
+                    return Intellect / BaseCombatRating.WarlockChanceToSpellCrit(Level) * 0.01f;
+                case CharacterClass.Monk:
+                    return Intellect / BaseCombatRating.MonkChanceToSpellCrit(Level) * 0.01f;
+                case CharacterClass.Druid:
+                    return Intellect / BaseCombatRating.DruidChanceToSpellCrit(Level) * 0.01f;
+                default:
+                    return 0;
+            }
+
+        }
+        public static float GetSpellCritFromIntellect(float Intellect, CharacterClass Class) { return GetSpellCritFromIntellect(Intellect, Class, DEFAULTPLAYERLEVEL); }
+        /// <summary>
+        /// Returns a Percentage (0.05 = 5% extra chance to Crit)
+        /// </summary>
+        /// <param name="Intellect">Intellect</param>
+        /// <returns>A Percentage (0.05 = 5% extra chance to Crit)</returns>
+        public static float GetSpellCritFromIntellect(float Intellect) { return Intellect / INT_PER_SPELLCRIT * 0.01f; }
+        #endregion
+
+        #region Agility
+        public static float GetCritFromAgility(float Agility, CharacterClass Class) { return GetPhysicalCritFromAgility(Agility, Class); }
+        /// <summary>
+        /// Returns a Percentage (0.05 = 5% extra chance to Crit)
+        /// </summary>
+        /// <param name="Agility">Agility</param>
+        /// <param name="Class">CharacterClass</param>
+        /// <returns>A Percentage (0.05 = 5% extra chance to Crit)</returns>
+        public static float GetPhysicalCritFromAgility(float Agility, CharacterClass Class)
+        {
+            return Agility / AGI_PER_PHYSICALCRIT[(int)Class] * 0.01f;
+        }
+        public static float GetPhysicalCritFromAgility(float Agility, CharacterClass Class, int Level)
+        {
+            switch (Class)
+            {
+                case CharacterClass.Warrior:
+                    return Agility / BaseCombatRating.WarriorChanceToMeleeCrit(Level) * 0.01f;
+                case CharacterClass.Paladin:
+                    return Agility / BaseCombatRating.PaladinChanceToMeleeCrit(Level) * 0.01f;
+                case CharacterClass.Hunter:
+                    return Agility / BaseCombatRating.HunterChanceToMeleeCrit(Level) * 0.01f;
+                case CharacterClass.Rogue:
+                    return Agility / BaseCombatRating.RogueChanceToMeleeCrit(Level) * 0.01f;
+                case CharacterClass.Priest:
+                    return Agility / BaseCombatRating.PriestChanceToMeleeCrit(Level) * 0.01f;
+                case CharacterClass.DeathKnight:
+                    return Agility / BaseCombatRating.DeathKnightChanceToMeleeCrit(Level) * 0.01f;
+                case CharacterClass.Shaman:
+                    return Agility / BaseCombatRating.ShamanChanceToMeleeCrit(Level) * 0.01f;
+                case CharacterClass.Mage:
+                    return Agility / BaseCombatRating.MageChanceToMeleeCrit(Level) * 0.01f;
+                case CharacterClass.Warlock:
+                    return Agility / BaseCombatRating.WarlockChanceToMeleeCrit(Level) * 0.01f;
+                case CharacterClass.Monk:
+                    return Agility / BaseCombatRating.MonkChanceToMeleeCrit(Level) * 0.01f;
+                case CharacterClass.Druid:
+                    return Agility / BaseCombatRating.DruidChanceToMeleeCrit(Level) * 0.01f;
+                default:
+                    return 0;
+            }
+        }
+        #endregion
+        #endregion
+
+        #region Haste
+        #region Physical Haste
         // Returns a Percentage
-        public static float GetHasteFromRating(float Rating, CharacterClass Class) { return GetPhysicalHasteFromRating(Rating, Class); }
+        public static float GetHasteFromRating(float Rating, CharacterClass Class) { return GetPhysicalHasteFromRating(Rating); }
+        public static float GetPhysicalHasteFromRating(float Rating, CharacterClass Class) { return GetPhysicalHasteFromRating(Rating); }
         /// <summary>
         /// Returns a Percentage (0.05 = 5% extra Haste)
         /// </summary>
         /// <param name="Rating">Haste Rating</param>
         /// <param name="Class">CharacterClass</param>
         /// <returns>A Percentage (0.05 = 5% extra Haste)</returns>
-        public static float GetPhysicalHasteFromRating(float Rating, CharacterClass Class) {
+        public static float GetPhysicalHasteFromRating(float Rating) {
             //Removed in Cata (Patch 4.0.3)
             /*if (Class == CharacterClass.DeathKnight
                 || Class == CharacterClass.Druid
@@ -391,7 +579,35 @@ namespace Rawr
                 return Rating / RATING_PER_PHYSICALHASTE * 1.3f;*/    // Patch 3.1: Hybrids gain 30% more Physical Haste from Haste Rating.
             return Rating / RATING_PER_PHYSICALHASTE;
         }
+        public static float GetPhysicalHasteFromRating(float Rating, int Level) { return Rating / (BaseCombatRating.MeleeHasteRatingMultiplier(Level) * 100); }
+        #endregion
 
+        #region Range Haste
+        public static float GetRangeHasteFromRating(float Rating, CharacterClass Class) { return GetRangeHasteFromRating(Rating); }
+        /// <summary>
+        /// Returns a Percentage (0.05 = 5% extra Haste)
+        /// </summary>
+        /// <param name="Rating">Haste Rating</param>
+        /// <param name="Class">CharacterClass</param>
+        /// <returns>A Percentage (0.05 = 5% extra Haste)</returns>
+        public static float GetRangeHasteFromRating(float Rating) { return Rating / RATING_PER_RANGEHASTE; }
+        public static float GetRangeHasteFromRating(float Rating, int Level) { return Rating / (BaseCombatRating.RangedHasteRatingMultiplier(Level) * 100); }
+        #endregion
+
+        #region Spell Haste
+        public static float GetSpellHasteFromRating(float Rating, CharacterClass Class) { return GetSpellHasteFromRating(Rating); }
+        /// <summary>
+        /// Returns a Percentage (0.05 = 5% extra Haste)
+        /// </summary>
+        /// <param name="Rating">Haste Rating</param>
+        /// <returns>A Percentage (0.05 = 5% extra Haste)</returns>
+        public static float GetSpellHasteFromRating(float Rating) { return Rating / RATING_PER_SPELLHASTE; }
+        public static float GetSpellHasteFromRating(float Rating, int Level) { return Rating / (BaseCombatRating.SpellHasteRatingMultiplier(Level) * 100); }
+        #endregion
+        #endregion
+
+        #region Hit
+        #region Physical Hit
         public static float GetHitFromRating(float Rating, CharacterClass Class) { return GetPhysicalHitFromRating(Rating); }
         public static float GetHitFromRating(float Rating) { return GetPhysicalHitFromRating(Rating); }
         public static float GetPhysicalHitFromRating(float Rating, CharacterClass Class) { return GetPhysicalHitFromRating(Rating); }
@@ -401,6 +617,8 @@ namespace Rawr
         /// <param name="Rating">Hit Rating</param>
         /// <returns>A Percentage (0.05 = 5% extra Hit)</returns>
         public static float GetPhysicalHitFromRating(float Rating){return Rating / RATING_PER_PHYSICALHIT;}
+        public static float GetPhysicalHitFromRating(float Rating, int Level) { return Rating / (BaseCombatRating.MeleeHitRatingMultiplier(Level) * 100); }
+
         public static float GetRatingFromHit(float value, CharacterClass Class) { return GetRatingFromHit(value); }
         /// <summary>
         /// Returns a Percentage (0.05 = 5% extra Hit)
@@ -408,7 +626,30 @@ namespace Rawr
         /// <param name="Rating">Hit Rating</param>
         /// <returns>A Percentage (0.05 = 5% extra Hit)</returns>
         public static float GetRatingFromHit(float value) { return value * RATING_PER_PHYSICALHIT; }
+        public static float GetRatingFromHit(float value, int Level) { return value * (BaseCombatRating.MeleeHitRatingMultiplier(Level) * 100); }
+        #endregion
 
+        #region Range Hit
+        public static float GetRangeHitFromRating(float Rating, CharacterClass Class) { return GetRangeHitFromRating(Rating); }
+        /// <summary>
+        /// Returns a Percentage (0.05 = 5% extra Hit)
+        /// </summary>
+        /// <param name="Rating">Hit Rating</param>
+        /// <returns>A Percentage (0.05 = 5% extra Hit)</returns>
+        public static float GetRangeHitFromRating(float Rating) { return Rating / RATING_PER_RANGEHIT; }
+        public static float GetRangeHitFromRating(float Rating, int Level) { return Rating / (BaseCombatRating.RangedHitRatingMultiplier(Level) * 100); }
+
+        public static float GetRatingFromRangeHit(float value, CharacterClass Class) { return GetRatingFromRangeHit(value); }
+        /// <summary>
+        /// Returns a Percentage (0.05 = 5% extra Hit)
+        /// </summary>
+        /// <param name="Rating">Hit Rating</param>
+        /// <returns>A Percentage (0.05 = 5% extra Hit)</returns>
+        public static float GetRatingFromRangeHit(float value) { return value * RATING_PER_RANGEHIT; }
+        public static float GetRatingFromRangeHit(float value, int Level) { return value * BaseCombatRating.RangedHitRatingMultiplier(Level); }
+        #endregion
+
+        #region Spell Hit
         /// <summary>
         /// Returns a Percentage (0.05 = 5% extra Hit)
         /// </summary>
@@ -421,28 +662,7 @@ namespace Rawr
         /// <param name="Rating">Hit Rating</param>
         /// <returns>A Percentage (0.05 = 5% extra Hit)</returns>
         public static float GetRatingFromSpellHit(float value) { return value * RATING_PER_SPELLHIT; }
-        
-        public static float GetSpellCritFromRating(float Rating, CharacterClass Class) { return GetSpellCritFromRating(Rating); }
-        /// <summary>
-        /// Returns a Percentage (0.05 = 5% extra chance to Crit)
-        /// </summary>
-        /// <param name="Rating">Crit Rating</param>
-        /// <returns>A Percentage (0.05 = 5% extra chance to Crit)</returns>
-        public static float GetSpellCritFromRating(float Rating)
-        {
-            return Rating / RATING_PER_SPELLCRIT;
-        }
-
-        public static float GetSpellHasteFromRating(float Rating, CharacterClass Class) { return GetSpellHasteFromRating(Rating); }
-        /// <summary>
-        /// Returns a Percentage (0.05 = 5% extra Haste)
-        /// </summary>
-        /// <param name="Rating">Haste Rating</param>
-        /// <returns>A Percentage (0.05 = 5% extra Haste)</returns>
-        public static float GetSpellHasteFromRating(float Rating)
-        {
-            return Rating / RATING_PER_SPELLHASTE;
-        }
+        public static float GetRatingFromSpellHit(float value, int Level) { return value * BaseCombatRating.SpellHitRatingMultiplier(Level); }
 
         public static float GetSpellHitFromRating(float Rating, CharacterClass Class) { return GetSpellHitFromRating(Rating); }
         /// <summary>
@@ -450,47 +670,12 @@ namespace Rawr
         /// </summary>
         /// <param name="Rating">Hit Rating</param>
         /// <returns>A Percentage (0.05 = 5% extra chance to Hit)</returns>
-        public static float GetSpellHitFromRating(float Rating)
-        {
-            return Rating / RATING_PER_SPELLHIT;
-        }
+        public static float GetSpellHitFromRating(float Rating) { return Rating / RATING_PER_SPELLHIT; }
+        public static float GetSpellHitFromRating(float Rating, int Level) { return Rating / (BaseCombatRating.SpellHitRatingMultiplier(Level) * 100); }
+        #endregion
+        #endregion
 
-        public static float GetSpellCritFromIntellect(float Intellect, CharacterClass Class) { return GetSpellCritFromIntellect(Intellect); }
-        /// <summary>
-        /// Returns a Percentage (0.05 = 5% extra chance to Crit)
-        /// </summary>
-        /// <param name="Intellect">Intellect</param>
-        /// <returns>A Percentage (0.05 = 5% extra chance to Crit)</returns>
-        public static float GetSpellCritFromIntellect(float Intellect)
-        {
-            return Intellect / INT_PER_SPELLCRIT * 0.01f;
-        }
-
-        public static float GetCritFromAgility(float Agility, CharacterClass Class) { return GetPhysicalCritFromAgility(Agility, Class); }
-        /// <summary>
-        /// Returns a Percentage (0.05 = 5% extra chance to Crit)
-        /// </summary>
-        /// <param name="Agility">Agility</param>
-        /// <param name="Class">CharacterClass</param>
-        /// <returns>A Percentage (0.05 = 5% extra chance to Crit)</returns>
-        public static float GetPhysicalCritFromAgility(float Agility, CharacterClass Class)
-        {
-            return Agility / AGI_PER_PHYSICALCRIT[(int)Class] * 0.01f;
-        }
-
-        /// <summary>
-        /// Returns a Percentage (0.05 = 5% extra Dodge)
-        /// </summary>
-        /// <param name="Agility">Agility</param>
-        /// <param name="Class">CharacterClass</param>
-        /// <returns>A Percentage (0.05 = 5% extra Dodge)</returns>
-        public static float GetDodgeFromAgility(float Agility, CharacterClass Class)
-        {
-            if (AGI_PER_DODGE[(int)Class] > 0) 
-                return Agility / AGI_PER_DODGE[(int)Class] * 0.01f;
-            return 0;
-        }
-
+        #region Spirit
         public static float GetSpiritRegenSec(float Spirit, float Intellect, CharacterClass Class) { return GetSpiritRegenSec(Spirit, Intellect); }
         /// <summary>
         /// Returns a Number, How much mana is gained each Second. (Multiply by 5 to get MP5)
@@ -500,17 +685,30 @@ namespace Rawr
         /// <returns>A Number, How much mana is gained each Second. (Multiply by 5 to get MP5)</returns>
         public static float GetSpiritRegenSec(float Spirit, float Intellect)
         {
-            return 0.001f + Spirit * REGEN_CONSTANT * (float)Math.Sqrt(Intellect);
+//            return 0.001f + Spirit * REGEN_CONSTANT * (float)Math.Sqrt(Intellect);
+            // Patch 5.0 doesn't seem to be using Int for mana regen
+            return 0.001f + Spirit * REGEN_CONSTANT / 5.0f;
+        }
+        #endregion
+
+        /// <summary>
+        /// Returns the % Damage reduction based on amount of PvP Resilience
+        /// </summary>
+        /// <param name="resilience">Amount of PvP Resilience</param>
+        /// <returns>% Damage reduction on attacks from other players</returns>
+        public static float GetDamageReductionFromResilience(float pvpResilience)
+        {
+            return pvpResilience / RATING_PER_RESILIENCE;
         }
 
         /// <summary>
-        /// Returns the % Damage reduction based on amount of Resilience
+        /// Returns the % Damage reduction based on amount of PvP Power
         /// </summary>
-        /// <param name="resilience">Amount of Resilience</param>
-        /// <returns>% Damage reduction on attacks from other players</returns>
-        public static float GetDamageReductionFromResilience(float resilience)
+        /// <param name="resilience">Amount of PvP Power</param>
+        /// <returns>% Damage reduction on attacks to other players</returns>
+        public static float GetDamageReductionFromPvPPower(float pvpPower)
         {
-            return resilience / RATING_PER_RESILIENCE;
+            return pvpPower / RATING_PER_PVP_POWER;
         }
 
 
@@ -527,9 +725,21 @@ namespace Rawr
         #region Functions for More complex things.
 
         /// <summary>Originally from Bear. This should be updated once per expansion</summary>
-        public const float MitigationScaler         = 78591f;
+        public const float MitigationScaler         = 138772.5f; // value is 75% Armor Reduction at the character level
         public const double SurvivalScalerBase      = 0.1574901d; // fourToTheNegativeFourThirds = Math.Pow(4d, -4d / 3d)
         public const double SurvivalScalerTopRight  = 0.6299605d; // topRight = Math.Pow(fourToTheNegativeFourThirds, 1d / 4d)
+
+        public static float getMitigationScaler(int characterLevel)
+        {
+            if (characterLevel > 85)
+                return (12112.5f * characterLevel) - 951352.5f;
+            else if (characterLevel > 80)
+                return (6502.5f * characterLevel) - 474502.5f;
+            else if (characterLevel > 59)
+                return (1402.5f * characterLevel) - 66502.5f;
+            else
+                return (255f * characterLevel) - 1200f;
+        }
 
         /// <summary>
         /// Returns how much physical damage is reduced from Armor. (0.095 = 9.5% reduction)
@@ -566,78 +776,25 @@ namespace Rawr
         /// <returns>How much physical damage is reduced from Armor. (0.095 = 9.5% reduction)</returns>
         public static float GetArmorDamageReduction(int AttackerLevel, int TargetLevel, float TargetArmor, float ArmorIgnoreDebuffs, float ArmorIgnoreBuffs)
         {
-            #region Rawr WotLK
-            /* This is what we were using before. This formula is now out of date
-            float ArmorConstant = 400 + 85 * TargetLevel + 4.5f * 85 * (TargetLevel - 59);
-            TargetArmor *= (1f - ArmorIgnoreDebuffs);
-            float ArPCap = Math.Min((TargetArmor + ArmorConstant) / 3f, TargetArmor);
-            TargetArmor -= ArPCap * Math.Min(1f, ArmorIgnoreBuffs);
-
-            return 1f - ArmorConstant / (ArmorConstant + TargetArmor);
-            */
-            #endregion
-            #region SimCraft Cata Trunk
             /*
-            *************************
-            * The Armor Function
-            *************************
-            double action_t::armor() SC_CONST
-            {
-                target_t* t = target;
-
-                double adjusted_armor =  t -> base_armor(); // this calls to the NPC target level armor list, at 88 it's 11977 armor, we are using the same values in Rawr
-                double armor_reduction = std::max( t -> debuffs.sunder_armor -> stack() * 0.04,
-                                         std::max( t -> debuffs.faerie_fire  -> stack() * t -> debuffs.faerie_fire -> value(),
-                                                   t -> debuffs.expose_armor -> value() ) );
-                // TO-DO: Also need to add the Hunter Pets Raptor and Serpent
-
-                armor_reduction += t -> debuffs.shattering_throw -> stack() * 0.20;
-
-                adjusted_armor *= 1.0 - armor_reduction;
-
-                return adjusted_armor;
-            }
-            *************************
-            * The Restance Table
-            *************************
-            else if ( school == SCHOOL_PHYSICAL )
-            {
-                double temp_armor = armor();
-                resist = temp_armor / ( temp_armor + player -> armor_coeff );
-
-                if ( resist < 0.0 )
-                    resist = 0.0;
-                else if ( resist > 0.75 )
-                    resist = 0.75;
-
-            */
-            #endregion
-            #region LibStatLogic-1.2.lua file in Rating Buster
-            /*
-            local levelModifier = attackerLevel
-            if ( levelModifier > 80 ) then
-                levelModifier = levelModifier + (4.5 * (levelModifier - 59)) + (20 * (levelModifier - 80));
-            elseif ( levelModifier > 59 ) then
-                levelModifier = levelModifier + (4.5 * (levelModifier - 59))
-            end
-            local temp = armor / (85 * levelModifier + 400)
-            local armorReduction = temp / (1 + temp)
-            -- caps at 0.75
-            if armorReduction > 0.75 then
-                armorReduction = 0.75
-            end
+             * float ArmorConstant = 0;
+             * if ( AttackerLevel > 85 )
+		     *    ArmorConstant = AttackerLevel + (4.5f * (AttackerLevel - 59)) + (20 * (AttackerLevel - 80)) + (22 * (AttackerLevel - 85));
+	         *else if ( AttackerLevel > 80 ) 
+        	 *	ArmorConstant = AttackerLevel + (4.5f * (AttackerLevel - 59)) + (20 * (AttackerLevel - 80));
+	         *else if ( AttackerLevel > 59 )
+             *    ArmorConstant = AttackerLevel + (4.5f * (AttackerLevel - 59));
+             *else
+             *    ArmorConstant = AttackerLevel;
              */
-            #endregion
-            #region Rawr Cata
-            float ArmorConstant = AttackerLevel + (4.5f * (AttackerLevel - 59f)) + (20f * (AttackerLevel - 80f));
             TargetArmor *= (1f - ArmorIgnoreDebuffs);
-            float ArPCap = Math.Min((TargetArmor + ArmorConstant) / 3f, TargetArmor);
-            TargetArmor -= ArPCap * Math.Min(1f, ArmorIgnoreBuffs);
-            float temp = TargetArmor / (85 * ArmorConstant + 400);
-            float armorReduction = temp / (1f + temp);
-            if (armorReduction > 0.75f) { armorReduction = 0.75f; }
+            //float ArPCap = Math.Min((TargetArmor + ArmorConstant) / 3f, TargetArmor);
+            //TargetArmor -= ArPCap * Math.Min(1f, ArmorIgnoreBuffs);
+            //float temp = TargetArmor / (85 * ArmorConstant + 400);
+            //float armorReduction = temp / (1f + temp);
+            float armorReduction = GetDamageReductionFromArmor(AttackerLevel, TargetArmor);
+            //if (armorReduction > 0.75f) { armorReduction = 0.75f; }
             return armorReduction;
-            #endregion
         }
 
         /// <summary>
@@ -649,7 +806,34 @@ namespace Rawr
         /// <returns>How much physical damage is reduced from Armor. (0.095 = 9.5% reduction)</returns>
         public static float GetDamageReductionFromArmor(int AttackerLevel, float TargetArmor)
         {
-            return Math.Min(0.75f, (TargetArmor) / (TargetArmor + 2167.5f * AttackerLevel - 158167.5f));
+            // 5.4 chanced the armor cap to 85% in PvE; 75% in PvP
+            if (AttackerLevel > 85)
+                return Math.Min( (AttackerLevel == DEFAULTPLAYERLEVEL ? 0.75f : 0.85f), (TargetArmor) / (TargetArmor + 4037.5f * AttackerLevel - 317117.5f));
+            else if (AttackerLevel > 80)
+                return Math.Min(0.85f, (TargetArmor) / (TargetArmor + 2167.5f * AttackerLevel - 158167.5f));
+            else if (AttackerLevel > 59)
+                return Math.Min(0.85f, (TargetArmor) / (TargetArmor + 467.5f * AttackerLevel - 22167.5f));
+            else
+                return Math.Min(0.85f, (TargetArmor) / (TargetArmor + 85f * AttackerLevel - 400f));
+            #region LibStatLogic-1.2.lua file in Rating Buster
+            // Above is a simplified version of what is in LUA code
+            /*
+            local levelModifier = attackerLevel
+            if ( levelModifier > 85 ) then
+                levelModifier = levelModifier + (4.5 * (levelModifier - 59)) + (20 * (levelModifier - 80)) + (22 * (levelModifier - 85));
+            elseif ( levelModifier > 80 ) then
+                levelModifier = levelModifier + (4.5 * (levelModifier - 59)) + (20 * (levelModifier - 80));
+            elseif ( levelModifier > 59 ) thenf
+                levelModifier = levelModifier + (4.5 * (levelModifier - 59))
+            end
+            local temp = armor / (85 * levelModifier + 400)
+            local armorReduction = temp / (1 + temp)
+            -- caps at 0.75
+            if armorReduction > 0.75 then
+                armorReduction = 0.75
+            end
+             */
+            #endregion
         }
 
         /// <summary>
@@ -661,6 +845,7 @@ namespace Rawr
         /// <returns>The chance to miss (0.09 = 9% chance to miss)</returns>
         public static float GetSpellMiss(int LevelDelta, bool bPvP)
         {
+            /*
             if (-LevelDelta <= 2)
                 return (float)Math.Min(0.0f, (-LevelDelta + 4) * 0.01f);
 
@@ -669,6 +854,11 @@ namespace Rawr
                     return (float)Math.Min(0.62f, (-LevelDelta * 7 - 8) * 0.01f);
 
             return (float)Math.Min(0.94f, (-LevelDelta * 11 - 16) * 0.01f);
+             */
+            if (LevelDelta > 3 || LevelDelta < 0)
+                return Math.Max(0, (LevelDelta * 0.06f) + 0.06f);
+            else
+                return SPELL_MISS_CHANCE_CAP[LevelDelta];
         }
 
         private static float AttackerResistancePenalty(int LevelDelta)
@@ -828,9 +1018,10 @@ namespace Rawr
                     break;
                 case HitResult.Parry:
                     baseAvoid += stats.Parry * 100f;
+                    baseAvoid += GetParryFromStrength(stats.Strength) * 100f;
                     // Assuring we don't run off the bottom w/ negative parry rating.
                     stats.ParryRating = Math.Max(stats.ParryRating, 0f);
-                    if (character.Class == CharacterClass.DeathKnight) stats.ParryRating += (stats.Strength - BaseStats.GetBaseStats(character).Strength) * 0.25f;
+                    //if (character.Class == CharacterClass.DeathKnight) stats.ParryRating += (stats.Strength - BaseStats.GetBaseStats(character).Strength) * 0.25f;
                     modifiedAvoid += (GetParryFromRating(stats.ParryRating) * 100f);
                     modifiedAvoid = DRMath(CAP_PARRY_INV[iClass], DR_COEFFIENT[iClass], modifiedAvoid);
                     finalAvoid = Math.Max(baseAvoid + modifiedAvoid, 0);
@@ -847,12 +1038,17 @@ namespace Rawr
                     finalAvoid = Math.Min(finalAvoid, CAP_MISSED[iClass]);
                     break;
                 case HitResult.Block:
-                    // Base Block is 5%
+                    // Base Block is 3%
                     baseAvoid += stats.Block * 100f;
                     // Assuring we don't run off the bottom w/ negative block rating.
-                    stats.BlockRating = Math.Max(stats.BlockRating, 0f);
-                    modifiedAvoid += (GetBlockFromRating(stats.BlockRating) * 100f);
+                    if (MASTERY_PER_BLOCK[iClass] > 0)
+                    {
+                        stats.MasteryRating = Math.Max(stats.MasteryRating, 0f);
+                        modifiedAvoid += (stats.Mastery + GetMasteryFromRating(stats.MasteryRating)) * MASTERY_PER_BLOCK[iClass] * 100f;
+                    }
+                    modifiedAvoid = DRMath(CAP_BLOCK_INV[iClass], DR_COEFFIENT[iClass], modifiedAvoid);
                     finalAvoid = Math.Max(baseAvoid + modifiedAvoid, 0);
+                    finalAvoid = Math.Min(finalAvoid, CAP_BLOCK[iClass]);
                     break;
                 case HitResult.Crit:
                     // Resilience doesn't change crit chance anymore.

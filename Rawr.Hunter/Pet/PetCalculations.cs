@@ -41,6 +41,10 @@ namespace Rawr.Hunter
             this.Talents = character.HunterTalents;
             this.HunterStats = hunterStats;
 
+            PetChanceToMiss = StatConversion.YELLOW_MISS_CHANCE_CAP[bossOpts.Level - character.Level];
+            PetChanceToSpellMiss = StatConversion.GetSpellMiss(bossOpts.Level - character.Level, false);
+            PetChanceToBeDodged = StatConversion.YELLOW_DODGE_CHANCE_CAP[bossOpts.Level - character.Level];
+
             PetStats = new StatsHunter();
         }
 
@@ -163,12 +167,12 @@ namespace Rawr.Hunter
                     case Trigger.Use:
                         _stats = new StatsHunter();
                         if (effect.Stats._rawSpecialEffectDataSize == 1 && statsToProcess == null) {
-                            float uptime = effect.GetAverageUptime(0f, 1f, atkspeed, fightDuration);
+                            float uptime = effect.GetAverageUptime(0f, 1f, atkspeed, 1f, fightDuration);
                             _stats.AddSpecialEffect(effect.Stats._rawSpecialEffectData[0]);
                             _stats2 = GetSpecialEffectsStats(Char, triggerIntervals, triggerChances, attemptedAtkIntervals, hitRates, critRates, bleedHitInterval, dmgDoneInterval, statsTotal, _stats);
                             _stats = _stats2 * uptime;
                         } else {
-                            _stats.Accumulate(effect.GetAverageStats(triggerIntervals, triggerChances, atkspeed, fightDuration, 1f) as StatsHunter);
+                            _stats.Accumulate(effect.GetAverageStats(triggerIntervals, triggerChances, atkspeed, 1f, fightDuration, 1f) as StatsHunter);
                         }
                         statsProcs.Accumulate(_stats);
                         break;
@@ -176,25 +180,25 @@ namespace Rawr.Hunter
                     case Trigger.PhysicalHit:
                     case Trigger.PhysicalAttack:
                         if (attemptedAtkIntervals[0] > 0f) {
-                            statsProcs.Accumulate(effect.GetAverageStats(triggerIntervals, triggerChances, atkspeed, fightDuration, 1f) as StatsHunter);
+                            statsProcs.Accumulate(effect.GetAverageStats(triggerIntervals, triggerChances, atkspeed, 1f, fightDuration, 1f) as StatsHunter);
                         }
                         break;
                     case Trigger.MeleeCrit:
                     case Trigger.PhysicalCrit:
                         if (attemptedAtkIntervals[0] > 0f) {
-                            statsProcs.Accumulate(effect.GetAverageStats(triggerIntervals, triggerChances, atkspeed, fightDuration, 1f) as StatsHunter);
+                            statsProcs.Accumulate(effect.GetAverageStats(triggerIntervals, triggerChances, atkspeed, 1f, fightDuration, 1f) as StatsHunter);
                         }
                         break;
                     case Trigger.DoTTick:
-                        if (bleedHitInterval > 0f) { statsProcs.Accumulate(effect.GetAverageStats(triggerIntervals, triggerChances, atkspeed, fightDuration, 1f) as StatsHunter); } // 1/sec DeepWounds, 1/3sec Rend
+                        if (bleedHitInterval > 0f) { statsProcs.Accumulate(effect.GetAverageStats(triggerIntervals, triggerChances, atkspeed, 1f, fightDuration, 1f) as StatsHunter); } // 1/sec DeepWounds, 1/3sec Rend
                         break;
                     case Trigger.DamageDone: // physical and dots
-                        if (dmgDoneInterval > 0f) { statsProcs.Accumulate(effect.GetAverageStats(triggerIntervals, triggerChances, atkspeed, fightDuration, 1f) as StatsHunter); }
+                        if (dmgDoneInterval > 0f) { statsProcs.Accumulate(effect.GetAverageStats(triggerIntervals, triggerChances, atkspeed, 1f, fightDuration, 1f) as StatsHunter); }
                         break;
                     case Trigger.PetClawBiteSmackCrit:
                         if (attemptedAtkIntervals[3] > 0f) {
 //                            Stats add = effect.GetAverageStats(triggerIntervals[3], critRates[1], atkspeed, fightDuration, 1f); // this needs to be fixed to read steady shot frequencies
-                            statsProcs.Accumulate(effect.GetAverageStats(triggerIntervals, triggerChances, atkspeed, fightDuration, 1f) as StatsHunter); ;
+                            statsProcs.Accumulate(effect.GetAverageStats(triggerIntervals, triggerChances, atkspeed, 1f, fightDuration, 1f) as StatsHunter); ;
                         }
                         break;
                 }
@@ -254,14 +258,18 @@ namespace Rawr.Hunter
             StatsHunter petStatsBase = BasePetStats;
             #region From Hunter
             StatsHunter petStatsFromHunter = new StatsHunter() {
-                AttackPower = (HunterStats.RangedAttackPower * 0.424f),
-                SpellPower = HunterStats.RangedAttackPower * 0.211807381f,
-                Stamina = HunterStats.Stamina,
-                Agility = HunterStats.Agility,
+                AttackPower = HunterStats.RangedAttackPower,
+                SpellPower = HunterStats.RangedAttackPower,
+                Stamina = HunterStats.Stamina * .70f,
                 CritRating = HunterStats.CritRating,
+                PhysicalHaste = HunterStats.PhysicalHaste,
+                HitRating = HunterStats.HitRating,
+                ExpertiseRating = HunterStats.ExpertiseRating,
+
+                //MOP: Don't know about what's after this, or if it matters (haven't tested)
+                Agility = HunterStats.Agility,
                 Strength = HunterStats.Strength,
                 Spirit = HunterStats.PetSpirit,
-                PhysicalHaste = HunterStats.PhysicalHaste,
                 ArcaneResistance = HunterStats.ArcaneResistance * 0.4f,
                 FireResistance   = HunterStats.FireResistance   * 0.4f,
                 NatureResistance = HunterStats.NatureResistance * 0.4f,
@@ -277,50 +285,80 @@ namespace Rawr.Hunter
                 BonusPetAttackPowerMultiplier = HunterStats.BonusPetAttackPowerMultiplier,
 //                PetAttackPower = HunterStats.PetAttackPower,
             };
+
+            //Frenzy
+            //if (character.HunterTalents.Specialization == (int)Specialization.BeastMastery && character.Level >= 30)
+            //{
+            //    if (frenzy == null)
+            //    {
+            //        frenzy = new SpecialEffect(Trigger.WhiteAttack, new Stats() { Has, }, 8f, 1f, Talents.Frenzy * 0.20f);
+            //    }
+            //    petStatsTalents.AddSpecialEffect(frenzy);
+            //}
+
+
             #endregion
             #region From Talents (Pet or Hunter)
             Stats petStatsTalents = new Stats() {
-                BonusStaminaMultiplier = PetTalents.GreatStamina * 0.04f,
-                MovementSpeed = PetTalents.BoarsSpeed * 0.30f,
-                PhysicalHaste = PetTalents.SerpentSwiftness * 0.05f,
-                PhysicalCrit = PetTalents.SpidersBite * 0.03f
-                             ,
-                BaseArmorMultiplier = (1f + PetTalents.NaturalArmor * 0.05f)
-                                    * (1f + PetTalents.PetBarding * 0.05f)
-                                    * (1.05f) // Base 5% Armor Bonus
-                                    - 1f,
-                Dodge = PetTalents.PetBarding * 0.01f,
-                CritChanceReduction = PetTalents.GraceOfTheMantis * 0.03f,
-                ArcaneResistance = PetTalents.GreatResistance * 0.05f,
-                FireResistance = PetTalents.GreatResistance * 0.05f,
-                NatureResistance = PetTalents.GreatResistance * 0.05f,
-                ShadowResistance = PetTalents.GreatResistance * 0.05f,
-                FrostResistance = PetTalents.GreatResistance * 0.05f,
-                FearDurReduc = PetTalents.Lionhearted * 0.15f,
-                StunDurReduc = PetTalents.Lionhearted * 0.15f,
-                BonusDamageMultiplier = (1 + (PetTalents.SharkAttack * 0.03f)) * (1.05f) - 1f, // Base 5% Damage
-                //BonusAttackPowerMultiplier = calculatedStats.aspectBonusAPBeast,
-                BonusHealthMultiplier = 0.05f, // Base 5% Health
+                //MoP - Talents have been removed
+                //BonusStaminaMultiplier = PetTalents.GreatStamina * 0.04f,
+                //MovementSpeed = PetTalents.BoarsSpeed * 0.30f,
+                //PhysicalHaste = 0f,
+                //PhysicalCrit = 0f,
+                //             ,
+                //BaseArmorMultiplier = (1f + PetTalents.NaturalArmor * 0.05f)
+                //                    * (1f + PetTalents.PetBarding * 0.05f)
+                //                    * (1.05f) // Base 5% Armor Bonus
+                //                    - 1f,
+                //Dodge = PetTalents.PetBarding * 0.01f,
+                //CritChanceReduction = PetTalents.GraceOfTheMantis * 0.03f,
+                //ArcaneResistance = PetTalents.GreatResistance * 0.05f,
+                //FireResistance = PetTalents.GreatResistance * 0.05f,
+                //NatureResistance = PetTalents.GreatResistance * 0.05f,
+                //ShadowResistance = PetTalents.GreatResistance * 0.05f,
+                //FrostResistance = PetTalents.GreatResistance * 0.05f,
+                //FearDurReduc = PetTalents.Lionhearted * 0.15f,
+                //StunDurReduc = PetTalents.Lionhearted * 0.15f,
+                //BonusDamageMultiplier = 0.00f, // Base 5% Damage
+                
             };
-            float LongevityCdAdjust = 1f - Talents.Longevity * 0.10f;
-            if (PetTalents.Rabid > 0) {
-                float rabidCooldown = 45f * LongevityCdAdjust;
-                SpecialEffect primary = new SpecialEffect(Trigger.Use, new Stats() { }, 20f, rabidCooldown);
-                SpecialEffect secondary = new SpecialEffect(Trigger.MeleeHit,
-                    new Stats() { BonusAttackPowerMultiplier = 0.05f }, 20f, 0f, 0.50f, 5);
-                primary.Stats.AddSpecialEffect(secondary);
-                petStatsTalents.AddSpecialEffect(primary);
+
+
+            //for Ferocity
+            //Rabid
+            if (false) //(CalcOpts.PetTalents == PETFAMILYTREE.Ferocity)
+            {
+                petStatsTalents.PhysicalHaste = .10f;
+                petStatsTalents.BonusDamageMultiplier = .10f;
+                petStatsTalents.PhysicalCrit = .10f;
+
+                float rabidCooldown = 120f;
+                SpecialEffect rabid = new SpecialEffect(Trigger.Use, new Stats() { BonusAttackPowerMultiplier = 0.25f }, 20f, rabidCooldown);
+                petStatsTalents.AddSpecialEffect(rabid);
+
             }
-            if (Talents.Frenzy > 0) {
-                if (frenzy == null) {
-                    frenzy = new SpecialEffect(Trigger.MeleeCrit, new Stats() { PhysicalHaste = 0.30f, }, 8f, 1f, Talents.Frenzy * 0.20f);
-                }
-                petStatsTalents.AddSpecialEffect(frenzy);
+            else if (false) //(CalcOpts.PetTalents == PETFAMILYTREE.Tenacity)
+            {
+                petStatsTalents.HealingReceivedMultiplier = .40f;
+                petStatsTalents.BonusArmorMultiplier = .20f;
+                petStatsTalents.CritChanceReduction = .06f;
+
+                petStatsTalents.BonusStaminaMultiplier = .12f;
+
+                //TODO: Implement Charge, Thunderstomp
+
             }
-            if (PetTalents.LastStand > 0) {
-                SpecialEffect laststand = new SpecialEffect(Trigger.Use, new Stats() { BonusHealthMultiplier = 0.30f, }, 20f, (1f * 60f) * LongevityCdAdjust);
-                petStatsTalents.AddSpecialEffect(laststand);
-            }
+            
+            //float LongevityCdAdjust = 1f - Talents.Longevity * 0.10f;
+            
+            
+            //if (Talents.Frenzy > 0) {
+            //    if (frenzy == null) {
+            //        frenzy = new SpecialEffect(Trigger.MeleeCrit, new Stats() { PhysicalHaste = 0.30f, }, 8f, 1f, Talents.Frenzy * 0.20f);
+            //    }
+            //    petStatsTalents.AddSpecialEffect(frenzy);
+            //}
+            
             #endregion
             #region From Options
             Stats petStatsOptionsPanel = new Stats() {
@@ -402,7 +440,6 @@ namespace Rawr.Hunter
                 StatsPetBuffs.PhysicalHaste *= (1f + add.PhysicalHaste);
             }*/
             #endregion
-
             #region Armor
             petStatsTotal.Armor = (float)Math.Floor((petStatsTotal.Armor - petStatsFromHunter.Armor) * (1f + petStatsTotal.BaseArmorMultiplier) + petStatsFromHunter.Armor);
 //            petStatsTotal.BonusArmor += petStatsTotal.Agility * 2f;
@@ -972,8 +1009,8 @@ namespace Rawr.Hunter
 
             //calculatedStats.petSpecialDPS = priorityRotation.dps;
 
-            calculatedStats.PetDpsPoints = 0f;//(float)(calculatedStats.petWhiteDPS 
-                                           //     + calculatedStats.petSpecialDPS 
+            calculatedStats.PetDpsPoints = (float)(calculatedStats.petWhiteDPS
+                                                + calculatedStats.petSpecialDPS);
                                            //     + calculatedStats.petKillCommandDPS);
         }
     }

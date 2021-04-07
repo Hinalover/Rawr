@@ -21,8 +21,7 @@ namespace Rawr.DK
         {
             get
             {
-                if (m_Stats.b2T12_Tank) _uDiseaseCount = 2;
-                return Math.Min(2, _uDiseaseCount); 
+                return Math.Max(Math.Min(2, _uDiseaseCount), 0); 
             } 
             set{ _uDiseaseCount = value; }
         }

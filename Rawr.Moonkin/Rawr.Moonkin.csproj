@@ -84,6 +84,7 @@
     <Reference Include="System.Xml.Serialization, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CastDistributions.cs" />
     <Compile Include="MoonkinConverters.cs" />
     <Compile Include="CalculationOptionsMoonkin.cs" />
     <Compile Include="CalculationOptionsPanelMoonkin.xaml.cs">
@@ -94,6 +95,7 @@
     <Compile Include="ComparisonCalculationMoonkin.cs" />
     <Compile Include="MoonkinSolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PTRCastDistributions.cs" />
     <Compile Include="Spell.cs" />
     <Compile Include="SpellRotation.cs" />
     <Compile Include="StatsMoonkin.cs" />

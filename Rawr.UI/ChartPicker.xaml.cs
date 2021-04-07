@@ -35,18 +35,18 @@ namespace Rawr.UI
             InitializeComponent();
             PopupUtilities.RegisterPopup(this, PopupChartPicker, Toggle, Close);
             Items = new ObservableCollection<ChartPickerItem>();
-            Items.Add(new ChartPickerItem("Gear", "All (This is Slow to Calc)", "Head", "Neck", "Shoulders", "Back", "Chest", "Wrist", "Hands", "Waist", "Legs", "Feet", "Finger 1", "Finger 2", "Trinket 1", "Trinket 2", "Main Hand", "Off Hand", "Ranged"/*, "Projectile", "Projectile Bag"*/));
-            Items.Add(new ChartPickerItem("Enchants", "All (This is Slow to Calc)", "Head", "Shoulders", "Back", "Chest", "Wrist", "Hands", "Legs", "Feet", "Finger 1", "Finger 2", "Main Hand", "Off Hand", "Ranged"));
-            Items.Add(new ChartPickerItem("Reforgings", "All (This is Slow to Calc)", "Head", "Shoulders", "Back", "Chest", "Wrist", "Hands", "Waist", "Legs", "Feet", "Finger 1", "Finger 2", "Main Hand", "Off Hand", "Ranged", "Trinket 1", "Trinket 2"));
+            Items.Add(new ChartPickerItem("Gear", "All (This is Slow to Calc)", "Head", "Neck", "Shoulders", "Back", "Chest", "Wrist", "Hands", "Waist", "Legs", "Feet", "Finger 1", "Finger 2", "Trinket 1", "Trinket 2", "Main Hand", "Off Hand"/*, "Ranged", "Projectile", "Projectile Bag"*/));
+            Items.Add(new ChartPickerItem("Enchants", "All (This is Slow to Calc)", "Head", "Shoulders", "Back", "Chest", "Wrist", "Hands", "Legs", "Feet", "Finger 1", "Finger 2", "Main Hand", "Off Hand"));
             Items.Add(new ChartPickerItem("Tinkerings", "All (This is Slow to Calc)", "Back", "Hands", "Waist"));
             Items.Add(new ChartPickerItem("Gems", "All Normal", "Red", "Blue", "Yellow", "Meta", "Cogwheel", "Hydraulic"));
             Items.Add(new ChartPickerItem("Buffs", "All", "Food", "Elixirs and Flasks", "Scrolls", "Potion", "Raid Buffs", "Raid Debuffs", "Set Bonuses"));
-            Items.Add(new ChartPickerItem("Talents and Glyphs", "Individual Talents", "Individual Talents (Full)", "Talent Specs", "Glyphs : All", "Glyphs : Prime", "Glyphs : Major", "Glyphs : Minor"));
+            Items.Add(new ChartPickerItem("Talents and Glyphs", "Individual Talents", "Talent Specs", "Glyphs : All", "Glyphs : Major", "Glyphs : Minor"));
             Items.Add(new ChartPickerItem("Races", "Races"));
             Items.Add(new ChartPickerItem("Item Sets", "Item Sets"));
             Items.Add(new ChartPickerItem("Equipped", "All", "Gear", "Enchants", "Tinkerings", "Buffs"));
             Items.Add(new ChartPickerItem("Available", "All", "Gear", "Enchants", "Tinkerings"));
-            Items.Add(new ChartPickerItem("Direct Upgrades", "Gear", "Gear / Cost", "Enchants", "Reforgings", "Tinkerings"));
+            Items.Add(new ChartPickerItem("Direct Upgrades", "Gear", "Gear / Cost", "Enchants", "Tinkerings"));
+            Items.Add(new ChartPickerItem("Item Upgrades", "All", "Head", "Neck", "Shoulders", "Back", "Chest", "Wrist", "Hands", "Waist", "Legs", "Feet", "Finger 1", "Finger 2", "Trinket 1", "Trinket 2", "Main Hand", "Off Hand"));
             //Items.Add(new ChartPickerItem("Bosses", "All (This is Slow to Calc)", "Tier 11 10N", "Tier 11 25N", "Tier 11 10H", "Tier 11 25H")); // These charts don't work yet
             Items.Add(new ChartPickerItem("Stat Values", "Relative Stat Values"));
             Items.Add(new ChartPickerItem("Search Results", "Search Results"));

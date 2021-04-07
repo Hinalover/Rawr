@@ -289,7 +289,7 @@ namespace Rawr.UI
             {
                 //if (Properties.GeneralSettings.Default.DisplayExtraItemInfo) {
                 if (actualItem.ItemLevel > 0)
-                    liTypes.Add(string.Format("[{0}]", actualItem.ItemLevel));
+                    liTypes.Add(string.Format("[{0}]", actualItem.ItemLevel + (ItemInstance != null ? ItemInstance.UpgradeLevel : 0)));
 
                 liTypes.Add(string.Format("[{0}]", actualItem.Id));
 
@@ -322,6 +322,12 @@ namespace Rawr.UI
                     stats = stats.Clone();
                     RandomSuffix.AccumulateStats(stats, actualItem, ItemInstance.RandomSuffixId);
                 }
+                // Also pull upgraded stats
+                if (ItemInstance != null && ItemInstance.UpgradeLevel > 0)
+                {
+                    stats = stats.Clone();
+                    ItemInstance.AccumulateUpgradeStats(stats, actualItem, ItemInstance.RandomSuffixId, ItemInstance.UpgradeLevel);
+                }
                 // Relevant Stats
                 Stats relevantStats = Calculations.GetRelevantStats(stats);
                 var nonzeroStats = relevantStats.Values(x => x != 0);
@@ -332,7 +338,15 @@ namespace Rawr.UI
                     string text = string.Format("{0}{1}", value, Extensions.DisplayName(info));
                     statsList.Add(text);
                 }
-                if (actualItem.DPS > 0) {
+                if (ItemInstance != null && ItemInstance.DPS > 0)
+                {
+                    float dps = (float)Math.Round(ItemInstance.DPS * 100f) / 100f;
+                    string text = dps + " DPS";
+                    statsList.Add(text);
+                    text = actualItem.Speed + " Speed";
+                    statsList.Add(text);
+                }
+                else if (actualItem.DPS > 0) {
                     float dps = (float)Math.Round(actualItem.DPS * 100f) / 100f;
                     string text = dps + " DPS";
                     statsList.Add(text);
@@ -554,6 +568,20 @@ namespace Rawr.UI
                 ReforgingLabel.Visibility = Visibility.Collapsed;
             }
 #endif
+            #endregion
+
+            #region Upgrade
+
+            if (ItemInstance != null && actualItem != null && actualItem.UpgradeLevels.Count > 0)
+            {
+                UpgradeLabel.Text = string.Format("Upgraded {0}/{1}", actualItem.UpgradeLevels.IndexOf(ItemInstance.UpgradeLevel) + 1, actualItem.UpgradeLevels.Count);
+                UpgradeLabel.Visibility = System.Windows.Visibility.Visible;
+            }
+            else
+            {
+                UpgradeLabel.Visibility = System.Windows.Visibility.Collapsed;
+            }
+
             #endregion
 
             #region Location Section

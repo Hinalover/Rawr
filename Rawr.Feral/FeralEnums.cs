@@ -11,7 +11,7 @@ namespace Rawr.Feral
     /// Castime, Cooldown, and Duration
     /// </summary>
     public enum FeralCostTypes : int
-    {
+    { 
         None = 0,
         Energy,
         Rage,
@@ -72,25 +72,28 @@ namespace Rawr.Feral
         FeralChargeCat,
         ThrashCatForm, // Added in MoP
         StampedingRoarCatForm,
+        Pounce,
+        SavageRoar,
         #endregion
 
         #region Guardian Abilities
         MangleBearForm,
-        DemoralizingRoar,
+        Lacerate,
         Maul,
         SwipeBearForm,
         Enrage,
         SkullBashBearForm,
-        ChallengingRoar,
         Bash,
         FrenziedRegeneration,
-        SavageRoar,
+        SavageDefense,
         FeralChargeBear,
         ThrashBearForm,
         StampedingRoarBearForm,
+        SurvivalInstincts,
         #endregion
 
         #region Feral and Guardian Abilities
+        LeaderofthePack,
         FaerieFormFeral,
         OmenOfClarity,
         FurySwipe,
@@ -98,7 +101,7 @@ namespace Rawr.Feral
         Berserk,
         FieryClaws,
         BearHug, // Added in MoP
-        MightofUrsoc, // Added in Mop
+        MightofUrsoc, // Added in MoP
         #endregion
 
         #region Caster Abilities
@@ -118,48 +121,48 @@ namespace Rawr.Feral
 
         #region Symbiosis - MoP
         #region Feral Abilities gained
-        SymbiosisFeralMonkBrewmaster,   // Brewmaster Monk -> Feral Druid
-        SymbiosisFeralMonkMistweaver,   // Mistweaver Monk -> Feral Druid
-        SymbiosisFeralMonkWindwalker,   // Windwalker Monk -> Feral Druid
-        SymbiosisFeralBloodDK,          // Blood DK -> Feral Druid
-        SymbiosisFeralDPSDK,            // DPS DK -> Feral Druid
-        FeignDeath,                     // Hunter -> Feral Duid
+        DeathCoil,                      // DK -> Feral Druid
+        PlayDead,                       // Hunter -> Feral Duid
         FrostNova,                      // Mage -> Feral Druid
-        SymbiosisFeralHolyPaladin,      // Holy Paladin -> Feral Druid
-        SymbiosisFeralProtPaladin,      // Protection Paladin -> Feral Druid
-        SymbiosisFeralRetPaladin,       // Retrebution Paladin -> Feral Druid
-        SymbiosisFeralHealingPriest,    // Healing Priest -> Feral Druid
-        SymbiosisFeralShadowPriest,     // Shadow Priest -> Feral Druid
-        SymbiosisFeralRogue,            // Rogue -> Feral Druid
-        SymbiosisFeralEleShaman,        // Elemental Shaman -> Feral Druid
-        SymbiosisFeralEnhanceShaman,    // Enhancement Shaman -> Feral Druid
-        SymbiosisFeralRestoShaman,      // Restoration Shaman -> Feral Druid
+        Clash,                          // Monk -> Feral Druid
+        DivineShield,                   // Paladin -> Feral Druid
+        Dispersion,                     // Priest -> Feral Druid
+        Redirect,                       // Rogue -> Feral Druid
+        FeralSpirit,                    // Shaman -> Feral Druid
         SoulSwap,                       // Warlock -> Feral Druid
-        SymbiosisFeralProtWarrior,      // Protection Warrior -> Feral Druid
-        SymbiosisFeralDPSWarrior,       // DPS Warrior -> Feral Druid
+        ShatteringBlow,                 // Warrior -> Feral Druid
         #endregion
 
         #region Guardian Abilities gained
-        SymbiosisGuardianMonkBrewmaster,    // Brewmaster Monk -> Guardian Druid
-        SymbiosisGuardianMonkMistweaver,    // Mistweaver Monk -> Guardian Druid
-        SymbiosisGuardianMonkWindwalker,    // Windwalker Monk -> Guardian Druid
-        SymbiosisGuardianBloodDK,           // Blood DK -> Guardian Druid
-        SymbiosisGuardianDPSDK,             // DPS DK -> Guardian Druid
+        BoneShield,                         // DK -> Guardian Druid
         IceTrap,                            // Hunter -> Guardian Duid
-        SymbiosisGuardianMage,              // Mage -> Guardian Druid
-        SymbiosisGuardianHolyPaladin,       // Holy Paladin -> Guardian Druid
-        Consecration,                       // Protection Paladin -> Guardian Druid
-        SymbiosisGuardianRetPaladin,        // Retrebution Paladin -> Guardian Druid
-        FearWard,                           // Healing Priest -> Guardian Druid
-        SymbiosisGuardianShadowPriest,      // Shadow Priest -> Guardian Druid
-        SymbiosisGuardianRogue,             // Rogue -> Guardian Druid
-        SymbiosisGuardianEleShaman,         // Elemental Shaman -> Guardian Druid
-        SymbiosisGuardianEnhanceShaman,     // Enhancement Shaman -> Guardian Druid
-        SymbiosisGuardianRestoShaman,       // Restoration Shaman -> Guardian Druid
-        SymbiosisGuardianWarlock,           // Warlock -> Guardian Druid
-        SymbiosisGuardianProtWarrior,       // Protection Warrior -> Feral Druid
-        SymbiosisGuardianDPSWarrior,        // DPS Warrior -> Guardian Druid
+        MageWard,                           // Mage -> Guardian Druid
+        ElusiveBrew,                        // Monk -> Guardian Druid
+        Consecration,                       // Paladin -> Guardian Druid
+        FearWard,                           // Priest -> Guardian Druid
+        Feint,                              // Rogue -> Guardian Druid
+        LightningShield,                    // Shaman -> Guardian Druid
+        LifeTap,                            // Warlock -> Guardian Druid
+        SpellReflection,                    // Warrior -> Feral Druid
         #endregion
+        #endregion
+
+        #region Talents
+        DisplacerBeast,
+        WildCharge,
+        NaturesSwiftness,
+        Renewal,
+        CenarionWard,
+        MassEntanglement,
+        Typhoon,
+        Incarnation,
+        ForceOfNature,
+        DisorientingRoar,
+        UrsolsVortex,
+        MighyBash,
+        HeartOfTheWild,
+        DreamOfCenarius,
+        NaturesVigil,
         #endregion
 
         #region Other Abilities
@@ -171,5 +174,35 @@ namespace Rawr.Feral
         OtherNature,
         OtherShadow,
         #endregion
+    }
+
+    public enum FeralSymbiosis
+    {
+        None = 0,
+        DeathCoil = 1,                       // DK -> Feral Druid
+        PlayDead = 2,                        // Hunter -> Feral Duid
+        FrostNova = 3,                       // Mage -> Feral Druid
+        Clash = 4,                           // Monk -> Feral Druid
+        DivineShield = 5,                    // Paladin -> Feral Druid
+        Dispersion = 6,                      // Priest -> Feral Druid
+        Redirect = 7,                        // Rogue -> Feral Druid
+        FeralSpirit = 8,                     // Shaman -> Feral Druid
+        SoulSwap = 9,                        // Warlock -> Feral Druid
+        ShatteringBlow = 10,                 // Warrior -> Feral Druid
+    }
+
+    public enum GuardianSymbiosis
+    {
+        None = 0,
+        BoneShield = 1,                          // DK -> Guardian Druid
+        IceTrap = 2,                             // Hunter -> Guardian Duid
+        MageWard = 3,                            // Mage -> Guardian Druid
+        ElusiveBrew = 4,                         // Monk -> Guardian Druid
+        Consecration = 5,                        // Paladin -> Guardian Druid
+        FearWard = 6,                            // Priest -> Guardian Druid
+        Feint = 7,                               // Rogue -> Guardian Druid
+        LightningShield = 8,                     // Shaman -> Guardian Druid
+        LifeTap = 9,                             // Warlock -> Guardian Druid
+        SpellReflection = 10,                    // Warrior -> Feral Druid
     }
 }

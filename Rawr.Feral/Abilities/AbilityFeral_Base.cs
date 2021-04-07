@@ -13,129 +13,13 @@ namespace Rawr.Feral
     /// </summary>
     abstract public class AbilityFeral_Base
     {
-
         #region Constants
-        public const uint MIN_GCD_MS = 1500;
+        public const float MIN_GCD_MS = 1f;
+        public const float AVG_GCD_MS = 1.5f;
         public const uint INSTANT = 1;
         public const uint MELEE_RANGE = 5;
         public const uint CRIT_MULTIPLIER = 2;
         #endregion
-
-        #region Constructors
-        /// <summary>
-        /// Default constructor for the DK's abilities.
-        /// </summary>
-        public AbilityFeral_Base()
-        {
-            this.Name = "";
-            this.CombatState = new FeralCombatState();
-            this.Energy = 0;
-            this.Rage = 0;
-            this.Mana = 0;
-            this.ComboPoint = 0;
-            this.BaseDamage = 0;
-            this.Range = MELEE_RANGE;
-            this.DamageType = ItemDamageType.Physical;
-            this.Cooldown = MIN_GCD_MS; // GCD
-            this.MustBeProwling = false;
-            this.CastTime = INSTANT;
-            this.TickRate = INSTANT;
-            this.Duration = INSTANT;
-            this.useSpellHit = false;
-            this.isDoT = false;
-            this.feralDoT = new FeralDoT();
-            this.Formula_CP = 0;
-            this.Formula_Energy = 0;
-        }
-        public AbilityFeral_Base(string sName)
-        {
-            this.Name = sName;
-            this.CombatState = new FeralCombatState();
-            this.Energy = 0;
-            this.Rage = 0;
-            this.Mana = 0;
-            this.ComboPoint = 0;
-            this.BaseDamage = 0;
-            this.Range = MELEE_RANGE;
-            this.DamageType = ItemDamageType.Physical;
-            this.Cooldown = MIN_GCD_MS; // GCD
-            this.MustBeProwling = false;
-            this.CastTime = INSTANT;
-            this.TickRate = INSTANT;
-            this.Duration = INSTANT;
-            this.useSpellHit = false;
-            this.isDoT = false;
-            this.feralDoT = new FeralDoT();
-            this.Formula_CP = 0;
-            this.Formula_Energy = 0;
-        }
-        public AbilityFeral_Base(FeralCombatState CS)
-        {
-            this.CombatState = CS;
-            this.Name = "";
-            this.Energy = 0;
-            this.Rage = 0;
-            this.Mana = 0;
-            this.ComboPoint = 0;
-            this.BaseDamage = 0;
-            this.Range = MELEE_RANGE;
-            this.DamageType = ItemDamageType.Physical;
-            this.Cooldown = MIN_GCD_MS; // GCD
-            this.MustBeProwling = false;
-            this.CastTime = INSTANT;
-            this.TickRate = INSTANT;
-            this.Duration = INSTANT;
-            this.useSpellHit = false;
-            this.isDoT = false;
-            this.feralDoT = new FeralDoT();
-            this.Formula_CP = 0;
-            this.Formula_Energy = 0;
-        }
-        public AbilityFeral_Base(FeralCombatState CS, float CP)
-        {
-            this.CombatState = CS;
-            this.Name = "";
-            this.Energy = 0;
-            this.Rage = 0;
-            this.Mana = 0;
-            this.ComboPoint = 0;
-            this.BaseDamage = 0;
-            this.Range = MELEE_RANGE;
-            this.DamageType = ItemDamageType.Physical;
-            this.Cooldown = MIN_GCD_MS; // GCD
-            this.MustBeProwling = false;
-            this.CastTime = INSTANT;
-            this.TickRate = INSTANT;
-            this.Duration = INSTANT;
-            this.useSpellHit = false;
-            this.isDoT = false;
-            this.feralDoT = new FeralDoT();
-            this.Formula_CP = CP;
-            this.Formula_Energy = 0;
-        }
-        public AbilityFeral_Base(FeralCombatState CS, float CP, float energy)
-        {
-            this.CombatState = CS;
-            this.Name = "";
-            this.Energy = 0;
-            this.Rage = 0;
-            this.Mana = 0;
-            this.ComboPoint = 0;
-            this.BaseDamage = 0;
-            this.Range = MELEE_RANGE;
-            this.DamageType = ItemDamageType.Physical;
-            this.Cooldown = MIN_GCD_MS; // GCD
-            this.MustBeProwling = false;
-            this.CastTime = INSTANT;
-            this.TickRate = INSTANT;
-            this.Duration = INSTANT;
-            this.useSpellHit = false;
-            this.isDoT = false;
-            this.feralDoT = new FeralDoT();
-            this.Formula_CP = CP;
-            this.Formula_Energy = energy;
-        }
-        #endregion 
 
         /// <summary>
         /// Any Feral ability triggered by this ability.  
@@ -172,9 +56,8 @@ namespace Rawr.Feral
         /// </summary>
         public DruidForm[] druidForm = new DruidForm[EnumHelper.GetCount(typeof(DruidForm))];
 
-
         #region Cost Type
-        private float[] _AbilityCost = new float[EnumHelper.GetCount(typeof(FeralCostTypes))];
+        public float[] _AbilityCost = new float[EnumHelper.GetCount(typeof(FeralCostTypes))];
 
         /// <summary>
         /// How much Cat Energy the Ability requires
@@ -187,16 +70,16 @@ namespace Rawr.Feral
             }
             set
             {
-                _AbilityCost[(int)FeralCostTypes.Energy] = (float)value * -1;
+                _AbilityCost[(int)FeralCostTypes.Energy] = (float)value;
             }
         }
 
         /// <summary>
         /// 80% of the energy cost is refunded every time the ability misses
         /// </summary>
-        public void EnergyRefunded()
+        protected void EnergyRefunded()
         {
-            Energy -= (HitChance * Energy * .20f);
+            Energy = (Energy - ((Energy * 0.2f) * (1 - HitChance))) / HitChance;
         }
 
         /// <summary>
@@ -210,7 +93,7 @@ namespace Rawr.Feral
             }
             set
             {
-                _AbilityCost[(int)FeralCostTypes.Rage] = (float)value * -1;
+                _AbilityCost[(int)FeralCostTypes.Rage] = (float)value;
             }
         }
 
@@ -225,7 +108,7 @@ namespace Rawr.Feral
             }
             set
             {
-                _AbilityCost[(int)FeralCostTypes.Mana] = (float)value * -1;
+                _AbilityCost[(int)FeralCostTypes.Mana] = (float)value;
             }
         }
 
@@ -247,14 +130,6 @@ namespace Rawr.Feral
             }
         }
 
-        /// <summary>
-        /// Primal Fury allows for players to get double the combo points whenever the player crits
-        /// </summary>
-        /// <returns></returns>
-        public float PrimalFury()
-        {
-            return (CritChance * (CombatState.Talents.PrimalFury * 0.5f));
-        }
         #endregion
 
         public FeralCombatState CombatState { get; set; }
@@ -285,12 +160,7 @@ namespace Rawr.Feral
         {
             get
             {
-                float BWDM = _WeaponPercentDamage;
-                if (MainHand == null)
-                {
-                    BWDM = 0f;
-                }
-                return BWDM;
+                return _WeaponPercentDamage;
             }
             set
             {
@@ -306,26 +176,21 @@ namespace Rawr.Feral
         {
             get
             {
-                float AvgDam = (this.MinDamage + this.MaxDamage) / 2;
-                float WDam = 0;
-                // Handle non-weapon based effects:
-                if ( null != this.MainHand)
-                {
-                    WDam = (float)(this.MainHand.WeaponDamage * this.WeaponDamageModifier);
-                }
-                // Average out the min & max damage, then add in baseDamage from the weapon.
-                // Miss rate factored in GetTotalDamage()
-
-                return (AvgDam + WDam);
+                return (this.MinDamage + this.MaxDamage) / 2;
             }
             set
             {
                 // Setup so that we can just set a base damage w/o having to 
                 // manually set Min & Max all the time.
-                MaxDamage = MinDamage = (float)value;
+                this.MaxDamage = (float)value;
+                this.MinDamage = (float)value;
             }
         }
 
+        /// <summary>
+        /// Number used to multiply with the Spell Scale Modifier in the BaseCombatRating file to get the BaseDamage
+        /// </summary>
+        public float BaseSpellScaleModifier { get; set; }
         public uint Range { get; set; }
 
         /// <summary>
@@ -431,10 +296,10 @@ namespace Rawr.Feral
         }
         /// <summary>
         /// Cooldown in seconds
-        /// Default = 1500 millisecs == Global Cooldown
-        /// GCD min == 1000 millisecs.
+        /// Default = 1.5 sec == Global Cooldown
+        /// GCD min == 1 sec.
         /// </summary>
-        public float Cooldown
+        virtual public float Cooldown
         {
             get
             {
@@ -444,8 +309,6 @@ namespace Rawr.Feral
                 {
                     if (this.TriggersGCD)
                         return Math.Max(MIN_GCD_MS, cd);
-                    if (CombatState.Stats != null)
-                        cd = (uint)(cd / (1 + CombatState.Stats.PhysicalHaste));
                 }
                 return cd;
             }
@@ -504,14 +367,14 @@ namespace Rawr.Feral
             }
         }
 
-        private float _TickRate;
+        public float _TickRate;
         /// <summary>
         /// How often does the effect proc for?
         /// Tick rate is millisecs.
         /// Ensure that we don't have a 0 value.  
         /// 1 ms == instant.
         /// </summary>
-        public float TickRate 
+        virtual public float TickRate 
         {
             get
             {
@@ -523,6 +386,8 @@ namespace Rawr.Feral
             }
             set
             {
+                if (feralDoT == null)
+                    feralDoT = new FeralDoT();
                 feralDoT.Interval = (float)Math.Max(INSTANT, value);
                 _TickRate = Math.Max(INSTANT, value);
             }
@@ -547,9 +412,8 @@ namespace Rawr.Feral
             {
                     float crit = 0f;
                     if (CombatState != null && CombatState.Stats != null)
-                        crit += CombatState.Stats.PhysicalCrit;
+                        crit += CombatState.MainHand.CriticalStrike;
                     crit += StatConversion.NPC_LEVEL_CRIT_MOD[3];
-                    crit *= HitChance;
                     return Math.Max(0, Math.Min(1, crit));
             }
         }
@@ -564,25 +428,8 @@ namespace Rawr.Feral
             get
             {
                 // Determine Miss Chance
-                float ChanceToHit = 1 - MissChance; // Ensure that crit is no lower than 0.
-                if (useSpellHit != true)
-                {
-                    // Determine Dodge chance
-                    float DodgeChanceForTarget = StatConversion.WHITE_DODGE_CHANCE_CAP[3];
-                    if (MainHand != null) DodgeChanceForTarget = Math.Max(Math.Min(MainHand.chanceDodged, DodgeChanceForTarget), 0);
-                    // Determine Parry Chance  (Only for Tank... Since only they should be in front of the target.)
-                    float ParryChanceForTarget = StatConversion.WHITE_PARRY_CHANCE_CAP[3];
-                    if (MainHand != null) ParryChanceForTarget = Math.Max(Math.Min(MainHand.chanceParried, ParryChanceForTarget), 0);
-                    ChanceToHit -= DodgeChanceForTarget;
-                    if (CombatState != null && !CombatState.AttackingFromBehind)
-                        ChanceToHit -= ParryChanceForTarget;
-#if DEBUG
-                    if (ChanceToHit < 0 || ChanceToHit > 1
-                        || DodgeChanceForTarget < 0
-                        || ParryChanceForTarget < 0)
-                        throw new Exception("Chance to hit out of range.");
-#endif
-                }
+                float ChanceToHit = 1 - CombatState.MainHand.chanceMissed - CombatState.MainHand.chanceDodged; // Ensure that crit is no lower than 0.
+                //ChanceToHit -= CombatState.MainHand.chanceDodged;
                 return Math.Max(0, Math.Min(1, ChanceToHit));
             }
         }
@@ -600,9 +447,9 @@ namespace Rawr.Feral
                 if (CombatState != null && CombatState.Stats != null)
                 {
                     if (useSpellHit == true)
-                        MissChance = Math.Max(0, (StatConversion.SPELL_MISS_CHANCE_CAP[3] - CombatState.Stats.SpellHit));
+                        MissChance = Math.Max(0, (CombatState.MainHand.chanceMissed + CombatState.MainHand.chanceDodged));
                     else
-                        MissChance = Math.Max(0, (StatConversion.YELLOW_MISS_CHANCE_CAP[3] - CombatState.Stats.PhysicalHit));
+                        MissChance = Math.Max(0, CombatState.MainHand.chanceMissed);
                 }   
                 return MissChance;
             }
@@ -610,7 +457,7 @@ namespace Rawr.Feral
 
         #region Damage
         public bool isDoT;
-        public FeralDoT feralDoT;
+        public FeralDoT feralDoT = new FeralDoT();
         /// <summary>
         /// Get the single instance damage of this ability.
         /// </summary>
@@ -619,7 +466,7 @@ namespace Rawr.Feral
         {
             float _tickDamage = 0;
             // Start w/ getting the base damage values.
-            _tickDamage = feralDoT.TickSize();
+            _tickDamage = feralDoT.BaseDamage;
             // Apply modifiers.
             _tickDamage += DamageAdditiveModifer;
             _tickDamage *= DamageMultiplierModifer;
@@ -657,8 +504,8 @@ namespace Rawr.Feral
             }
 
             Damage *= DamageCount;
-            float CritDamage = 2 * Damage * CritChance;
-            Damage = (Damage * (Math.Min(1, HitChance) - CritChance)) + CritDamage;
+            float CritDamage = (CombatState.MainHand.CritDamageMultiplier * Damage) * CritChance;
+            Damage = (Damage * (HitChance - CritChance)) + CritDamage;
 
             return Damage;
         }
@@ -672,7 +519,7 @@ namespace Rawr.Feral
                 sub = MIN_GCD_MS;
             }
             sub = Math.Max(sub, (Duration + CastTime));
-            float dps = (float)(TotalDamage * 1000) / sub;
+            float dps = (float)(TotalDamage / sub);
             return dps;
         }
 
@@ -685,7 +532,7 @@ namespace Rawr.Feral
                 sub = MIN_GCD_MS;
             }
             sub = Math.Max(sub, (Duration + CastTime));
-            float dps = (float)(TotalThreat * 1000) / sub;
+            float dps = (float)(TotalThreat / sub);
             return dps;
         }
 
@@ -754,7 +601,7 @@ namespace Rawr.Feral
 
         #region Threat
         /// <summary>How much to multiply the damage by to generate threat.</summary>
-        public float ThreatMultiplier { get { return 1f; } }
+        virtual public float ThreatMultiplier { get { return 1f; } }
 
         private float _ThreatAdditiveModifier;
         /// <summary>

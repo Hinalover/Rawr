@@ -458,7 +458,7 @@ namespace Rawr.DK
             fDamage = (fDamage * (Math.Min(1, HitChance) - CritChance)) + fCritDamage;
 
             if (bWeaponRequired && wMH.twohander && CState != null)
-                fDamage = (fDamage * (1 + .04f * CState.m_Talents.MightOfTheFrozenWastes));
+                fDamage = (fDamage * (1 + (CState.m_Spec == Rotation.Type.Frost ? .1f : 0f)));
             return fDamage;
         }
 
@@ -535,7 +535,7 @@ namespace Rawr.DK
                             break;
                         case ItemDamageType.Physical:
                             DMM += CState.m_Stats.BonusPhysicalDamageMultiplier;
-                            DMM -= Math.Max(0f, StatConversion.GetArmorDamageReduction(85, CState.fBossArmor,0,0));
+                            DMM -= Math.Max(0f, StatConversion.GetArmorDamageReduction(90, CState.fBossArmor,0,0));
                             break;
                         case ItemDamageType.Shadow:
                             DMM += CState.m_Stats.BonusShadowDamageMultiplier + CState.m_Stats.BonusShadowDamageMultiplierFromMastery;
@@ -552,10 +552,8 @@ namespace Rawr.DK
         #endregion
 
         #region Threat
-        /// <summary>How much to multiply the damage by to generate threat.</summary>
-        // TODO: Update for DRW uptime.
-        // JOTHAY NOTE: You are handling the Dancing Rune Threat increase in with the DRW SpecialEffect, see _SE_DRW
-        public float ThreatMultiplier { get { return 0f /*+ (CState.m_Talents.GlyphofDancingRuneWeapon ? 0.50f : 0f)*/; } }
+        /// <summary>How much to multiply the damage by to generate threat.  Threat Modified by DRW handled in SEs</summary>
+        public float ThreatMultiplier { get { return 0f; } }
 
         private float _ThreatAdditiveModifier;
         /// <summary>

@@ -10,18 +10,17 @@ namespace Rawr.Elemental
     public class CombatFactors : ISpellArgs, IRotationOptions
     {
 
-        public CombatFactors(ShamanTalents talents, Stats stats, int additionalTargets, float latencyCast, float latencyGcd) : this(talents, stats, additionalTargets, latencyCast, latencyGcd, true, true, false)
+        public CombatFactors(ShamanTalents talents, Stats stats, int additionalTargets, float latencyCast, float latencyGcd) : this(talents, stats, additionalTargets, latencyCast, latencyGcd, true, false)
         {
         }
 
-        public CombatFactors(ShamanTalents talents, Stats stats, int additionalTargets, float latencyCast, float latencyGcd, bool useFireNova, bool useChainLightning, bool useDpsFireTotem)
+        public CombatFactors(ShamanTalents talents, Stats stats, int additionalTargets, float latencyCast, float latencyGcd, bool useChainLightning, bool useDpsFireTotem)
         {
             Talents = talents;
             Stats = stats;
             AdditionalTargets = additionalTargets;
             LatencyCast = latencyCast;
             LatencyGCD = latencyGcd;
-            UseFireNova = useFireNova;
             UseChainLightning = useChainLightning;
             UseDpsFireTotem = useDpsFireTotem;
         }

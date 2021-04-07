@@ -492,7 +492,7 @@ namespace Rawr.Optimizer
                 upgrades = new Dictionary<CharacterSlot, List<ComparisonCalculationUpgrades>>();
 
                 SuffixItem[] items = ItemCache.GetRelevantSuffixItems(modelList[0], batchList[0]);
-                CharacterSlot[] slots = new CharacterSlot[] { CharacterSlot.Back, CharacterSlot.Chest, CharacterSlot.Feet, CharacterSlot.Finger1, CharacterSlot.Hands, CharacterSlot.Head, CharacterSlot.Legs, CharacterSlot.MainHand, CharacterSlot.Neck, CharacterSlot.OffHand, CharacterSlot.Projectile, CharacterSlot.ProjectileBag, CharacterSlot.Ranged, CharacterSlot.Shoulders, CharacterSlot.Trinket1, CharacterSlot.Waist, CharacterSlot.Wrist };
+                CharacterSlot[] slots = new CharacterSlot[] { CharacterSlot.Back, CharacterSlot.Chest, CharacterSlot.Feet, CharacterSlot.Finger1, CharacterSlot.Hands, CharacterSlot.Head, CharacterSlot.Legs, CharacterSlot.MainHand, CharacterSlot.Neck, CharacterSlot.OffHand, CharacterSlot.Shoulders, CharacterSlot.Trinket1, CharacterSlot.Waist, CharacterSlot.Wrist };
                 foreach (CharacterSlot slot in slots)
                     upgrades[slot] = new List<ComparisonCalculationUpgrades>();
 
@@ -949,7 +949,7 @@ namespace Rawr.Optimizer
                 }
             } while (tries < 100 && !successful);
 
-            if (successful && (mutation1.Gem.IsJewelersGem || mutation2.Gem.IsJewelersGem))
+            if (successful && (mutation1.Gem.IsJewelersGem || mutation2.Gem.IsJewelersGem || mutation1.Gem.IsJewelersFacet || mutation2.Gem.IsJewelersFacet))
             {
                 // jeweler preserving mutation
                 // by making the swap the character at c will remain at 3 jewelers, but characters that don't have that item
@@ -957,7 +957,7 @@ namespace Rawr.Optimizer
                 // heuristic we use is that jeweler gems are better than any other
                 // and that by replacing an existing gem will increase value, specially if we can do it at
                 // a spot that doesn't match color
-                if (mutation2.Gem.IsJewelersGem)
+                if (mutation2.Gem.IsJewelersGem || mutation2.Gem.IsJewelersFacet)
                 {
                     GemInformation tmp = mutation1;
                     mutation1 = mutation2;
@@ -1119,7 +1119,7 @@ namespace Rawr.Optimizer
             for (int g = 1; g <= 3; g++)
             {
                 Item gem = item.GetGem(g);
-                if (gem != null && gem.IsJewelersGem)
+                if (gem != null && (gem.IsJewelersGem || gem.IsJewelersFacet))
                 {
                     return true;
                 }
@@ -1146,11 +1146,11 @@ namespace Rawr.Optimizer
             for (int g = 1; g <= 3; g++)
             {
                 Item gem = item.GetGem(g);
-                if (gem != null && gem.IsJewelersGem)
+                if (gem != null && (gem.IsJewelersGem || gem.IsJewelersFacet))
                 {
                     return false;
                 }
-                if (gem != null && gem.Slot != ItemSlot.Meta && !gem.IsJewelersGem)
+                if (gem != null && gem.Slot != ItemSlot.Meta && !gem.IsJewelersGem && !gem.IsJewelersFacet)
                 {
                     ok = true;
                 }

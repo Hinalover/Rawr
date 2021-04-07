@@ -63,26 +63,27 @@ namespace Rawr.ProtPaladin
             // Parry
             Parry = Math.Min(CTCap - tableSize, Lookup.AvoidanceChance(Character, Stats, HitResult.Parry, targetLevel));
             tableSize += Parry;
+            // Critical Hit
+            Critical = Math.Min(CTCap - tableSize, Lookup.TargetCritChance(Character, Stats, targetLevel));
+            tableSize += Critical;
+            // Normal Hit and Block are now on a two-roll system
             // Block
             if (Character.OffHand != null && Character.OffHand.Type == ItemType.Shield)
             {
-                //Block = Math.Min(1.0f - tableSize, Lookup.AvoidanceChance(Character, Stats, HitResult.Block, targetLevel));
                 Block = Lookup.AvoidanceChance(Character, Stats, HitResult.Block, targetLevel);
-                if (Block > (CTCap - tableSize))
+                if (Block > 1)
                 {
-                    BlockOverCap = Block - CTCap + tableSize;
+                    BlockOverCap = Block - 1;
                 }
                 else
                 {
                     BlockOverCap = 0.0f;
                 }
-                EffectiveBlock = Block - BlockOverCap;
-                tableSize += Math.Min(CTCap - tableSize, Block);
+                // Effective block is a multiplier on the remaining combat table size beyond Critical
+                EffectiveBlock = (CTCap - tableSize) * (Block - BlockOverCap);
+                tableSize += EffectiveBlock;
             }
-            // Critical Hit
-            Critical = Math.Min(CTCap - tableSize, Lookup.TargetCritChance(Character, Stats, targetLevel));
-            tableSize += Critical;
-            // Normal Hit
+            // Hit
             Hit = Math.Max(0.0f, CTCap - tableSize);
         }
 
@@ -124,22 +125,22 @@ namespace Rawr.ProtPaladin
                 if (Lookup.IsAvoidable(Ability))
                 {
                     // Dodge
-                    Dodge = Math.Min(1.0f - tableSize, Math.Max(0.0f, Lookup.TargetAvoidanceChance(Character.Level, Stats.SpellPenetration, HitResult.Dodge, targetLevel) - bonusExpertise));
+                    Dodge = Math.Min(1.0f - tableSize, Math.Max(0.0f, Lookup.TargetAvoidanceChance(Character.Level, HitResult.Dodge, targetLevel) - bonusExpertise));
                     tableSize += Dodge;
                     // Parry
-                    Parry = Math.Min(1.0f - tableSize, Math.Max(0.0f, Lookup.TargetAvoidanceChance(Character.Level, Stats.SpellPenetration, HitResult.Parry, targetLevel) - bonusExpertise));
+                    Parry = Math.Min(1.0f - tableSize, Math.Max(0.0f, Lookup.TargetAvoidanceChance(Character.Level, HitResult.Parry, targetLevel) - bonusExpertise));
                     tableSize += Parry;
                 }
                 // Glancing Blow
                 if (Ability == Ability.MeleeSwing)
                 {
-                    Glance = Math.Min(1.0f - tableSize, Math.Max(0.0f, Lookup.TargetAvoidanceChance(Character.Level, Stats.SpellPenetration, HitResult.Glance, targetLevel)));
+                    Glance = Math.Min(1.0f - tableSize, Math.Max(0.0f, Lookup.TargetAvoidanceChance(Character.Level, HitResult.Glance, targetLevel)));
                     tableSize += Glance;
                 }
                 // Block
                 if (Ability == Ability.MeleeSwing || Ability == Ability.HammerOfTheRighteous)
                 {
-                    Block = Math.Min(1.0f - tableSize, Math.Max(0.0f, Lookup.TargetAvoidanceChance(Character.Level, Stats.SpellPenetration, HitResult.Block, targetLevel)));
+                    Block = Math.Min(1.0f - tableSize, Math.Max(0.0f, Lookup.TargetAvoidanceChance(Character.Level, HitResult.Block, targetLevel)));
                     tableSize += Block;
                 }
                 // Critical Hit

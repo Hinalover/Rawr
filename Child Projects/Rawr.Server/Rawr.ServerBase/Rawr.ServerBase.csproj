@@ -54,9 +54,24 @@
   <ItemGroup>
     <Compile Include="..\..\..\Rawr.Base\Algorithms\ArrayPool.cs" />
     <Compile Include="..\..\..\Rawr.Base\Algorithms\CalculationCache.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Algorithms\LP.cs">
+      <Link>LP.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\Rawr.Base\Algorithms\LU.cs" />
     <Compile Include="..\..\..\Rawr.Base\Algorithms\MarkovProcess.cs" />
+    <Compile Include="..\..\..\Rawr.Base\Algorithms\SparseMatrix.cs">
+      <Link>SparseMatrix.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\Rawr.Base\Algorithms\StateSpace.cs" />
+    <Compile Include="..\..\..\Rawr.Base\BaseCombatRating.cs">
+      <Link>BaseCombatRating.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Rawr.Base\Bosses\BossesT13.cs">
+      <Link>BossesT13.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Rawr.Base\Bosses\BossesT14.cs">
+      <Link>BossesT14.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\Rawr.Base\Bosses\BossesT7.cs" />
     <Compile Include="..\..\..\Rawr.Base\Bosses\BossesT8.cs" />
     <Compile Include="..\..\..\Rawr.Base\Bosses\BossesT9.cs" />
@@ -74,7 +89,6 @@
     <Compile Include="..\..\..\Rawr.Base\Networking\AltoholicImporter.cs" />
     <Compile Include="..\..\..\Rawr.Base\Networking\Armory.cs" />
     <Compile Include="..\..\..\Rawr.Base\Networking\CharacterProfilerData.cs" />
-    <Compile Include="..\..\..\Rawr.Base\Networking\ElitistArmoryService.cs" />
     <Compile Include="..\..\..\Rawr.Base\Networking\JsonParser.cs" />
     <Compile Include="..\..\..\Rawr.Base\Networking\NetworkUtils.cs" />
     <Compile Include="..\..\..\Rawr.Base\Networking\Rawr4ArmoryService.cs" />

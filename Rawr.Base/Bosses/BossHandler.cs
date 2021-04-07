@@ -63,8 +63,9 @@ namespace Rawr {
                         _MyModelSupportsThis.Add("DPSDK", custom);
                         _MyModelSupportsThis.Add("Enhance", custom);
                         _MyModelSupportsThis.Add("Rogue", custom);
-                        _MyModelSupportsThis.Add("Retribution", custom);
                         _MyModelSupportsThis.Add("Feral", custom);
+                        _MyModelSupportsThis.Add("Retribution", custom);
+                        _MyModelSupportsThis.Add("Windwalker", custom);
                     }
                     { // Ranged DPS
                         Dictionary<string, bool> custom = DuplicateDefaultSupports();
@@ -80,6 +81,8 @@ namespace Rawr {
                         custom["InBack_Melee"] = custom["InBack_Ranged"] = false; // The boss is focused on you
                         _MyModelSupportsThis.Add("ProtWarr", custom);
                         _MyModelSupportsThis.Add("TankDK", custom);
+                        _MyModelSupportsThis.Add("Guardian", custom);
+                        _MyModelSupportsThis.Add("Brewmaster", custom);
                     }
                     { // Heals
                         Dictionary<string, bool> custom = DuplicateDefaultSupports();
@@ -94,6 +97,7 @@ namespace Rawr {
                         _MyModelSupportsThis.Add("HealPriest", custom);
                         _MyModelSupportsThis.Add("RestoSham", custom);
                         _MyModelSupportsThis.Add("Tree", custom);
+                        _MyModelSupportsThis.Add("Mistweaver", custom);
                     }
                     #region Bear
                     {
@@ -356,7 +360,7 @@ namespace Rawr {
     [Serializable]
 #endif
     public partial class BossHandler {
-        public const int NormCharLevel = (int)POSSIBLE_LEVELS.LVLP0;
+        public const int NormCharLevel = (int)POSSIBLE_LEVELS.LVLP90;
         public BossHandler() { }
         public BossHandler Clone() {
             BossHandler clone = (BossHandler)this.MemberwiseClone();
@@ -415,25 +419,37 @@ namespace Rawr {
             "Tier 13 10N",
             "Tier 13 25N",
             "Tier 13 10H",
-            "Tier 13 25H"
+            "Tier 13 25H",
+            "",
+            "",
+            "Tier 14 LFR",
+            "Tier 14 10N",
+            "Tier 14 25N",
+            "Tier 14 10H",
+            "Tier 14 25H"
         };
-        public enum TierLevels : int { T11_10 = 0, T11_25, T11_10H, T11_25H, T12_10, T12_25, T12_10H, T12_25H, T13_LFR, T13_10, T13_25, T13_10H, T13_25H, T11_LFR, T12_LFR }
+        public enum TierLevels : int { T11_10 = 0, T11_25, T11_10H, T11_25H, T12_10, T12_25, T12_10H, T12_25H, T13_LFR, T13_10, T13_25, T13_10H, T13_25H, T11_LFR, T12_LFR, T14_LFR, T14_10N, T14_25N, T14_10H, T14_25H }
         public static readonly float[] StandardMeleePerHit = new float[] {
-             93750f, // T11_10       // 4.2 lowered the base damage on all T11 Normal mode damage by 20%
-            104000f, // T11_25       // 4.2 lowered the base damage on all T11 Normal mode damage by 20%
-            163333.333f, // T11_10H  // Not tested and verified, assumed based on other values
-            182000f, // T11_25H      //     Tested and verified, Used a Magmaw Kill from April, 2011
-            131250f, // T12_10,      // Not Tested and verified, initial numbers
-            146250f, // T12_25,      // Not Tested and verified, initial numbers
-            208250f, // T12_10H,     // Not Tested and verified, initial numbers
-            232050f, // T12_25H,     // Not Tested and verified, initial numbers
-            231000f, // T13_LFR,     // Not Tested and verified, initial numbers
-            262500f, // T13_10,      // Not Tested and verified, initial numbers
-            292500f, // T13_25,      // Not Tested and verified, initial numbers
-            367500f, // T13_10H,     // Not Tested and verified, initial numbers
-            409500f, // T13_25H,     // Not Tested and verified, initial numbers
+             90000f, // T11_10       // 4.2 lowered the base damage on all T11 Normal mode damage by 20%
+            100000f, // T11_25       // 4.2 lowered the base damage on all T11 Normal mode damage by 20%
+            110000f, // T11_10H  // Not tested and verified, assumed based on other values
+            120000f, // T11_25H      //     Tested and verified, Used a Magmaw Kill from April, 2011
+            130000f, // T12_10,      // Not Tested and verified, initial numbers
+            150000f, // T12_25,      // Not Tested and verified, initial numbers
+            170000f, // T12_10H,     // Not Tested and verified, initial numbers
+            190000f, // T12_25H,     // Not Tested and verified, initial numbers
+            180000f, // T13_LFR,     // Not Tested and verified, initial numbers
+            210000f, // T13_10,      // Not Tested and verified, initial numbers
+            230000f, // T13_25,      // Not Tested and verified, initial numbers
+            250000f, // T13_10H,     // Not Tested and verified, initial numbers
+            270000f, // T13_25H,     // Not Tested and verified, initial numbers
                  0f, // T11_LFR      // This is just a placeholder and only being used so that the T11 boss handler can compile with the increase in boss difficulty level introduced by the Looking For Raid Feature
                  0f, // T12_LFR      // This is just a placeholder and only being used so that the T12 boss handler can compile with the increase in boss difficulty level introduced by the Looking For Raid Feature
+            350000f, // T14_LFR      // Not Tested and verified, initial numbers
+            375000f, // T14_10N      // Not Tested and verified, initial numbers
+            400000f, // T14_25N      // Not Tested and verified, initial numbers
+            425000f, // T14_10H      // Not Tested and verified, initial numbers
+            450000f, // T14_25H      // Not Tested and verified, initial numbers
         };
         #endregion
         #region ==== Info ====
@@ -460,19 +476,19 @@ namespace Rawr {
         private string _comment = "No comments have been written for this Boss.";
         #endregion
         #region ==== Basics ====
-        [DefaultValue(20000000f)]
+        [DefaultValue(200000000f)]
         public float Health { get { return _health; } set { _health = value; OnPropertyChanged("Health"); } }
-        private float _health = 20000000f;
+        private float _health = 200000000f;
         [DefaultValue(10 * 60)]
         public int BerserkTimer { get { return _berserkTimer; } set { _berserkTimer = value; OnPropertyChanged("BerserkTimer"); } }
         private int _berserkTimer = 10 * 60;
         [DefaultValue(5 * 60)]
         public int SpeedKillTimer { get { return _speedKillTimer; } set { _speedKillTimer = value; OnPropertyChanged("SpeedKillTimer"); } }
         private int _speedKillTimer = 5 * 60;
-        [DefaultValue(88)]
+        [DefaultValue(93)]
         public int Level { get { return _level; } set { _level = value; OnPropertyChanged("Level"); } }
-        private int _level = (int)POSSIBLE_LEVELS.LVLP3;
-        [DefaultValue(11977f)]//(int)StatConversion.NPC_ARMOR[3])]
+        private int _level = (int)POSSIBLE_LEVELS.LVLP93;
+        [DefaultValue(24835f)]//(int)StatConversion.NPC_ARMOR[3])]
         public int Armor { get { return _armor; } set { _armor = value; OnPropertyChanged("Armor"); } }
         private int _armor = (int)StatConversion.NPC_ARMOR[3];
         [DefaultValue((int)MOB_TYPES.HUMANOID)]
@@ -1712,10 +1728,10 @@ namespace Rawr {
                         // Basics
                         Name = "Generated Default Melee Attack",
                         DamageType = ItemDamageType.Physical,
-                        DamagePerHit = StandardMeleePerHit[(int)TierLevels.T11_25],
+                        DamagePerHit = StandardMeleePerHit[(int)TierLevels.T14_LFR],
                         DamageIsPerc = false,
                         MaxNumTargets = 1f,
-                        AttackSpeed = 2.0f,
+                        AttackSpeed = 1.5f,
                         AttackType = ATTACK_TYPES.AT_MELEE,
                         Interruptable = false,
                         // Player Avoidances
@@ -1747,7 +1763,7 @@ namespace Rawr {
             this.Add(new BossHandler());
             this.Add(new BossHandler());
             // Basic Setups we don't want to repeat over and over again
-            Content = new BossHandler.TierLevels[] { BossHandler.TierLevels.T11_10, BossHandler.TierLevels.T11_25, BossHandler.TierLevels.T11_10H, BossHandler.TierLevels.T11_25H, BossHandler.TierLevels.T11_LFR };
+            Content = new BossHandler.TierLevels[] { BossHandler.TierLevels.T14_10N, BossHandler.TierLevels.T14_25N, BossHandler.TierLevels.T14_10H, BossHandler.TierLevels.T14_25H, BossHandler.TierLevels.T14_LFR };
             // Fight Requirements
             Min_Tanks = new int[] { 2, 2, 2, 2, 2 };
             Min_Healers = new int[] { 2, 5, 2, 5, 6 };

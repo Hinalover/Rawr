@@ -36,6 +36,30 @@ namespace Rawr
             }
         }
 
+        private static Dictionary<string, CharacterClass> _characterClasses = null;
+        public static Dictionary<string, CharacterClass> CharacterClasses
+        {
+            get
+            {
+                if (_characterClasses == null)
+                {
+                    _characterClasses = new Dictionary<string, CharacterClass>();
+                    _characterClasses["Death Knight"] = CharacterClass.DeathKnight;
+                    _characterClasses["Druid"] = CharacterClass.Druid;
+                    _characterClasses["Hunter"] = CharacterClass.Hunter;
+                    _characterClasses["Mage"] = CharacterClass.Mage;
+                    _characterClasses["Monk"] = CharacterClass.Monk;
+                    _characterClasses["Paladin"] = CharacterClass.Paladin;
+                    _characterClasses["Priest"] = CharacterClass.Priest;
+                    _characterClasses["Rogue"] = CharacterClass.Rogue;
+                    _characterClasses["Shaman"] = CharacterClass.Shaman;
+                    _characterClasses["Warlock"] = CharacterClass.Warlock;
+                    _characterClasses["Warrior"] = CharacterClass.Warrior;
+                }
+                return _characterClasses;
+            }
+        }
+
         public static void RegisterModel(Type type)
         {
             if (type.IsSubclassOf(typeof(CalculationsBase)))
@@ -131,17 +155,9 @@ namespace Rawr
             private set { _instance = value; }
         }
 
-        //public static Character CachedCharacter
-        //{
-        //    get { return Instance.CachedCharacter; } 
-        //}
         public static bool SupportsMultithreading
         {
             get { return Instance.SupportsMultithreading; }
-        }
-        public static bool CanUseAmmo
-        {
-            get { return Instance.CanUseAmmo; }
         }
         public static string[] CharacterDisplayCalculationLabels
         {
@@ -208,9 +224,13 @@ namespace Rawr
         {
             return Instance.GetTinkeringCalculations(slot, character, currentCalcs, equippedOnly, forceSlotName);
         }
-        public static List<ComparisonCalculationBase> GetReforgeCalculations(CharacterSlot slot, Character character, CharacterCalculationsBase currentCalcs, bool equippedOnly, bool forceSlotName = false)
+        public static List<ComparisonCalculationBase> GetReforgeCalculations(CharacterSlot slot, Character character, CharacterCalculationsBase currentCalcs, bool equippedOnly)
         {
-            return Instance.GetReforgeCalculations(slot, character, currentCalcs, equippedOnly, forceSlotName);
+            return Instance.GetReforgeCalculations(slot, character, currentCalcs, equippedOnly);
+        }
+        public static List<ComparisonCalculationBase> GetUpgradeCalculations(CharacterSlot slot, Character character, CharacterCalculationsBase currentCalcs, bool equippedOnly)
+        {
+            return Instance.GetUpgradeCalculations(slot, character, currentCalcs, equippedOnly);
         }
         public static List<ComparisonCalculationBase> GetBuffCalculations(Character character, CharacterCalculationsBase currentCalcs, string filter)
         {
@@ -354,6 +374,12 @@ namespace Rawr
         {
             if (Instance != null)
                 return Instance.IsItemEligibleForTinkering(Tinkering, item);
+            return false;
+        }
+        public static bool IsItemEligibleForUpgrade(int upgradeLevel, Item item)
+        {
+            if (Instance != null)
+                return Instance.IsItemEligibleForUpgrade(upgradeLevel, item);
             return false;
         }
         public static bool IncludeOffHandInCalculations(Character character)
@@ -637,7 +663,7 @@ namespace Rawr
             #endregion
             for (int i = 0; i < character.CurrentGemmingTemplates.Count; i++)
             {
-                if (character.CurrentGemmingTemplates[i].Group.Contains("Jewelcrafter"))
+                if (character.CurrentGemmingTemplates[i].Group.Contains("Jewelcrafter") && !character.CurrentGemmingTemplates[i].Group.Contains("Epic") && !character.CurrentGemmingTemplates[i].Group.Contains("Uncommon")) // TODO update when epic gems become available
                 {
                     character.CurrentGemmingTemplates[i].Enabled = character.HasProfession(Profession.Jewelcrafting);
                 }
@@ -716,9 +742,9 @@ namespace Rawr
             return GetReforgeStats();
         }
 
-        public virtual List<Reforging> GetReforgingOptions(Item baseItem, int randomSuffixId)
+        public virtual List<Reforging> GetReforgingOptions(Item baseItem, int randomSuffixId, int upgradeItemLevel)
         {
-            return Reforging.GetReforgingOptions(baseItem, randomSuffixId, GetStatsToReforgeFrom(), GetStatsToReforgeTo());
+            return Reforging.GetReforgingOptions(baseItem, randomSuffixId, upgradeItemLevel, GetStatsToReforgeFrom(), GetStatsToReforgeTo());
         }
 
         public virtual List<Enchant> GetEnchantingOptions(Item baseItem, Character character)
@@ -959,7 +985,50 @@ namespace Rawr
             return itemCalc;
         }
 
-        public virtual List<ComparisonCalculationBase> GetEnchantCalculations(ItemSlot slot, Character character, CharacterCalculationsBase currentCalcs, bool equippedOnly, bool forceSlotName=false)
+        public virtual List<ComparisonCalculationBase> GetUpgradeCalculations(CharacterSlot slot, Character character, CharacterCalculationsBase currentCalcs, bool equippedOnly)
+        {
+            ClearCache();
+            List<ComparisonCalculationBase> upgradeCalcs = new List<ComparisonCalculationBase>();
+            CharacterCalculationsBase calcsEquipped = null;
+            CharacterCalculationsBase calcsUnequipped = null;
+            Character charUnequipped = character.Clone();
+            charUnequipped.SetUpgradeBySlot(slot, 0);
+            if (character[slot] == null) return upgradeCalcs;
+            Item upgradeItem = character[slot].Item;
+            if (upgradeItem == null || upgradeItem.UpgradeLevels.Count == 0) return upgradeCalcs;
+            calcsUnequipped = GetCharacterCalculations(charUnequipped, null, false, false, false);
+            int currentIndex = 0;
+            foreach (int upgrade in upgradeItem.UpgradeLevels)
+            {
+                ++currentIndex;
+                bool isEquipped = character.GetUpgradeBySlot(slot) == upgrade;
+                if (equippedOnly && !isEquipped) continue;
+                Character charEquipped = character.Clone();
+                charEquipped.SetUpgradeBySlot(slot, upgrade);
+                calcsEquipped = GetCharacterCalculations(charEquipped, null, false, false, false);
+                ComparisonCalculationBase upgradeCalc = CreateNewComparisonCalculation();
+                Stats diffStats = charEquipped[slot].GetTotalStats() - charUnequipped[slot].GetTotalStats();
+                upgradeCalc.Name = string.Format("{0} ({1}/{2})", slot, currentIndex, upgradeItem.UpgradeLevels.Count);
+                upgradeCalc.Item = new Item(upgradeCalc.Name, ItemQuality.Temp, ItemType.None, -((int)slot + ((int)CharacterSlot.Tabard)) * currentIndex, null, ItemSlot.None, null,
+                    false, diffStats, null, ItemSlot.None, ItemSlot.None, ItemSlot.None, 0, 0, ItemDamageType.Physical, 0, null);
+                upgradeCalc.Item.Name = upgradeCalc.Name;
+                upgradeCalc.Item.Stats = diffStats;
+                upgradeCalc.Equipped = isEquipped;
+                upgradeCalc.OverallPoints = calcsEquipped.OverallPoints - calcsUnequipped.OverallPoints;
+                float[] subPoints = new float[calcsEquipped.SubPoints.Length];
+                for (int i = 0; i < calcsEquipped.SubPoints.Length; i++)
+                {
+                    subPoints[i] = calcsEquipped.SubPoints[i] - calcsUnequipped.SubPoints[i];
+                }
+                upgradeCalc.SubPoints = subPoints;
+                upgradeCalc.ImageSource = null;
+                upgradeCalcs.Add(upgradeCalc);
+                if (equippedOnly && isEquipped) break;
+            }
+            return upgradeCalcs;
+        }
+
+        public virtual List<ComparisonCalculationBase> GetEnchantCalculations(ItemSlot slot, Character character, CharacterCalculationsBase currentCalcs, bool equippedOnly, bool forceSlotName = false)
         {
             ClearCache();
             List<ComparisonCalculationBase> enchantCalcs = new List<ComparisonCalculationBase>();
@@ -1032,7 +1101,7 @@ namespace Rawr
             return bossCalc;
         }
 
-        public virtual List<ComparisonCalculationBase> GetReforgeCalculations(CharacterSlot slot, Character character, CharacterCalculationsBase currentCalcs, bool equippedOnly, bool forceSlotName = false)
+        public virtual List<ComparisonCalculationBase> GetReforgeCalculations(CharacterSlot slot, Character character, CharacterCalculationsBase currentCalcs, bool equippedOnly)
         {
             ClearCache();
             List<ComparisonCalculationBase> reforgeCalcs = new List<ComparisonCalculationBase>();
@@ -1047,7 +1116,7 @@ namespace Rawr
                 Item toReforge = character[slot] != null ? character[slot].Item : null;
                 int toReforgeSuffix = character[slot] != null ? character[slot].RandomSuffixId : 0;
                 if (toReforge == null) return reforgeCalcs;
-                List<Reforging> possibleReforges = GetReforgingOptions(toReforge, toReforgeSuffix);
+                List<Reforging> possibleReforges = GetReforgingOptions(toReforge, toReforgeSuffix, character[slot].UpgradeLevel);
                 foreach (Reforging reforge in possibleReforges)
                 {
                     Reforging origReforge = character.GetReforgingBySlot(slot);
@@ -1060,7 +1129,7 @@ namespace Rawr
                     ComparisonCalculationBase reforgeCalc = CreateNewComparisonCalculation();
                     if (reforge != null)
                     {
-                        reforgeCalc.Name = forceSlotName ? slot.ToString()+" "+reforge.ToString() : reforge.ToString();
+                        reforgeCalc.Name = reforge.ToString();
                         reforgeCalc.Item = new Item(reforge.ToString(), ItemQuality.Temp, ItemType.None,
                             -(int)AvailableItemIDModifiers.Reforges - reforge.Id, null, ItemSlot.None, null,
                             false, new Stats(), null, ItemSlot.None, ItemSlot.None, ItemSlot.None,
@@ -1070,7 +1139,7 @@ namespace Rawr
                     }
                     else
                     {
-                        reforgeCalc.Name = (forceSlotName ? slot.ToString() : "") + " Not Reforged";
+                        reforgeCalc.Name = "Not Reforged";
                         reforgeCalc.Item = new Item("Not Reforged", ItemQuality.Temp, ItemType.None,
                             -(int)AvailableItemIDModifiers.Reforges, null, ItemSlot.None, null,
                             false, new Stats(), null, ItemSlot.None, ItemSlot.None, ItemSlot.None,
@@ -1103,7 +1172,7 @@ namespace Rawr
                 Character charEquipped = character;
                 calcsEquipped = GetCharacterCalculations(charEquipped, null, false, false, false);
                 ComparisonCalculationBase reforgeCalc = CreateNewComparisonCalculation();
-                if ((reforge != null)&&((int) reforge.ReforgeTo != -1))
+                if (reforge != null)
                 {
                     reforgeCalc.Name = reforge.ToString();
                     reforgeCalc.Item = new Item(reforge.ToString(), ItemQuality.Temp, ItemType.None,
@@ -1788,11 +1857,12 @@ namespace Rawr
                                         item.Type != ItemType.Shield &&
                                         item.Type != ItemType.None) ||
                                     item.Slot == ItemSlot.MainHand ||
-                                    item.Slot == ItemSlot.TwoHand);
+                                    item.Slot == ItemSlot.TwoHand ||
+                                    item.Slot == ItemSlot.Ranged);
             }
             else if (enchant.Slot == ItemSlot.OffHand)
             {
-                eligibleForEnchant = (item.Type == ItemType.Shield || (item.Type == ItemType.None && enchant.Id == 4091));
+                eligibleForEnchant = (item.Type == ItemType.Shield || (item.Type == ItemType.None && (enchant.Id == 4091 || enchant.Id == 4434)));
             }
             else
             {
@@ -1825,6 +1895,11 @@ namespace Rawr
             return eligibleForTinkering;
         }
 
+        public virtual bool IsItemEligibleForUpgrade(int upgradeLevel, Item item)
+        {
+            return item.UpgradeLevels.Count > 0 && item.UpgradeLevels.Contains(upgradeLevel);
+        }
+
         /// <summary>
         /// Hide an enchant that is tie to a profession when:
         /// <para>- You have the Option active in the General Settings</para>
@@ -1837,7 +1912,9 @@ namespace Rawr
         public virtual bool IsProfEnchantRelevant(Enchant enchant, Character character) {
             try {
                 #region Enchants related to Professions to Hide/Show
-                string name = enchant.Name;
+                
+                string name = enchant.Name.Trim();
+
                 if (Rawr.Properties.GeneralSettings.Default.HideProfEnchants) {
                     if (!character.HasProfession(Profession.Enchanting)) 
                     {
@@ -1848,20 +1925,26 @@ namespace Rawr
                     }
                     if (!character.HasProfession(Profession.Engineering))
                     {
-                        if (name.Contains("Frag Belt") ||
-                            name.Contains("Mind Amplification Dish")   ||
-                            name.Contains("Flexweave Underlay")        ||
-                            name.Contains("Hyperspeed Accelerators")   ||
-                            name.Contains("Reticulated Armor Webbing") ||
-                            name.Contains("Nitro Boosts") ||
-                            name.Contains("Springy Arachnoweave") ||
-                            name.Contains("Hand-Mounted") ||
-                            name.Contains("Grounded Plasma Shield") ||
-                            name.Contains("Quickflip Deflection Plates") ||
-                            name.Contains("Spinal Healing Injector") ||
-                            name.Contains("Synapse Springs") ||
-                            name.Contains("Tazik Shocker") ||
-                            name.Contains("Z50 Mana Gulper")
+                        /*Dev Note (OpOv): 
+                         * Performance testing shows that this function is a relative hotpoint (~8% in my testing spent doing the String.Contains.
+                         * Items below which do not include rank or partial words have been substituted out for String.Equals which results in 
+                         * an improvement of ~4% in my testing.  Note that items which have ranks (such as Leatherworking) or those with keywords 
+                         * such as "Master's" must be left as .Contains
+                         */
+                        if (name.Equals("Frag Belt", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Mind Amplification Dish", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Flexweave Underlay", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Hyperspeed Accelerators", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Reticulated Armor Webbing", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Nitro Boosts", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Springy Arachnoweave", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Hand-Mounted", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Grounded Plasma Shield", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Quickflip Deflection Plates", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Spinal Healing Injector", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Synapse Springs", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Tazik Shocker", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Z50 Mana Gulper", StringComparison.OrdinalIgnoreCase)
                             )
                         {
                             return false;
@@ -1870,10 +1953,14 @@ namespace Rawr
                     if (!character.HasProfession(Profession.Inscription))
                     {
                         if ((name.Contains("Master's") && !name.Contains("Spellthread")) ||
-                            name.Contains("Felfire Inscription") ||
-                            name.Contains("Inscription of the Earth Prince") ||
-                            name.Contains("Lionsmane Inscription") ||
-                            name.Contains("Swiftsteel Inscription"))
+                            name.Equals("Felfire Inscription", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Inscription of the Earth Prince", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Lionsmane Inscription", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Swiftsteel Inscription", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Secret Crane Wing Inscription", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Secret Ox Horn Inscription", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Secret Tiger Claw Inscription", StringComparison.OrdinalIgnoreCase) ||
+                            name.Equals("Secret Tiger Fang Inscription", StringComparison.OrdinalIgnoreCase))
                         {
                             return false;
                         }
@@ -1881,11 +1968,14 @@ namespace Rawr
                     if (!character.HasProfession(Profession.Leatherworking))
                     {
                         if (name.Contains("Fur Lining") ||
-                            name.Contains("Nerubian Leg Reinforcements") ||
                             name.Contains("Draconic Embossment") ||
+                            name.Contains("Nerubian Leg Reinforcements") ||
                             name.Contains("Charscale Leg Reinforcements") ||
                             name.Contains("Dragonbone Leg Reinforcements") ||
-                            name.Contains("Drakehide Leg Reinforcements"))
+                            name.Contains("Drakehide Leg Reinforcements") ||
+                            name.Contains("Draconic Leg Reinforcements") ||
+                            name.Contains("Heavy Leg Reinforcements") ||
+                            name.Contains("Primal Leg Reinforcements"))
                         {
                             return false;
                         }
@@ -2023,12 +2113,7 @@ namespace Rawr
 
         public virtual bool IncludeOffHandInCalculations(Character character)
         {
-            return (object)character.MainHand == null || character.MainHand.Slot != ItemSlot.TwoHand;
-        }
-
-        public virtual bool CanUseAmmo
-        {
-            get { return false; }
+            return (object)character.MainHand == null || (character.MainHand.Slot != ItemSlot.TwoHand && (character.MainHand.Slot != ItemSlot.Ranged || character.MainHand.Item.Type == ItemType.Wand));
         }
 
         /// <summary>

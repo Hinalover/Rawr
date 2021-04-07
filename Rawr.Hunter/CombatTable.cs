@@ -21,7 +21,11 @@ namespace Rawr.Hunter
         public float Parry { get; protected set; }
         public float Block { get; protected set; }
         public float Glance { get; protected set; }
-        public float Crit { get; protected set; }
+        public float Crit 
+        { 
+            get; 
+            protected set; 
+        }
         public float Hit { get; protected set; }
 
         private float _anyLand = 0f;
@@ -121,27 +125,27 @@ namespace Rawr.Hunter
                 Miss = Math.Min(1f - tableSize, isWhite ? combatFactors._c_wmiss : combatFactors._c_ymiss);
             }
             tableSize += Miss;
-/*            // Dodge
+           // Dodge
             if (isWhite || Abil.CanBeDodged) {
-                Dodge = 0f; //Math.Min(1f - tableSize, combatFactors._c_rwdodge);
+                Dodge = Math.Min(1f - tableSize, combatFactors._c_rwdodge);
                 tableSize += Dodge;
             } else { Dodge = 0f; }
-            // Parry
-            if (isWhite || Abil.CanBeParried) {
-                Parry = 0f; // Math.Min(1f - tableSize, combatFactors._c_rwparry);
-                tableSize += Parry;
-            } else { Parry = 0f; }
-            // Block
-            if (isWhite || Abil.CanBeBlocked) {
-                Block = 0f; // Math.Min(1f - tableSize, combatFactors._c_rwblock);
-                tableSize += Block;
-            } else { Block = 0f; }
-          // Glancing Blow
-            if (isWhite) {
-                Glance = Math.Min(1f - tableSize, combatFactors._c_glance);
-                tableSize += Glance;
-            } else { Glance = 0f; }
-*/          // Critical Hit
+            /*             // Parry
+                        if (isWhite || Abil.CanBeParried) {
+                            Parry = 0f; // Math.Min(1f - tableSize, combatFactors._c_rwparry);
+                            tableSize += Parry;
+                        } else { Parry = 0f; }
+                        // Block
+                        if (isWhite || Abil.CanBeBlocked) {
+                            Block = 0f; // Math.Min(1f - tableSize, combatFactors._c_rwblock);
+                            tableSize += Block;
+                        } else { Block = 0f; }
+                      // Glancing Blow
+                        if (isWhite) {
+                            Glance = Math.Min(1f - tableSize, combatFactors._c_glance);
+                            tableSize += Glance;
+                        } else { Glance = 0f; }
+            */          // Critical Hit
             if (isWhite) {
                 Crit = Math.Min(1f - tableSize, combatFactors._c_rwycrit);
                 tableSize += Crit;
@@ -151,6 +155,11 @@ namespace Rawr.Hunter
             } else {
                 Crit = 0f;
             }
+            
+            //Crit cannot subtract from damage done
+            if (Crit < 0)
+                Crit = 0f;
+
             // Normal Hit
             Hit = Math.Max(0f, 1f - tableSize);
             base.Calculate();

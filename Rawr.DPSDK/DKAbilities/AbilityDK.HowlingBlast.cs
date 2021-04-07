@@ -35,34 +35,16 @@ namespace Rawr.DK
                 this.ml_TriggeredAbility = new AbilityDK_Base[1];
                 this.ml_TriggeredAbility[0] = new AbilityDK_FrostFever(CS);
             }
-            this.AbilityCost[(int)DKCostTypes.RunicPower] = -10 + (CS.m_Talents.ChillOfTheGrave * -5);
+            this.AbilityCost[(int)DKCostTypes.RunicPower] = -10;
         }
 
         private int _DamageAdditiveModifer = 0;
         /// <summary>Setup the modifier formula for a given ability</summary>
         public override int DamageAdditiveModifer { get { return (int)(this.CState.m_Stats.AttackPower * 0.48f); } set { _DamageAdditiveModifer = value; } }
 
-        public override float DamageMultiplierModifer
-        {
-            get
-            {
-                float DMM = base.DamageMultiplierModifer;
-                if (CState.m_Talents.MercilessCombat > 0)
-                {
-                    DMM = DMM * (1 + ((CState.m_Talents.MercilessCombat * .06f) * .35f));
-                }
-                return DMM;
-            }
-            set
-            {
-                base.DamageMultiplierModifer = value;
-            }
-        }
-
-
         public override float GetTotalDamage()
         {
-            if (CState.m_Talents.HowlingBlast > 0)
+            if (CState.m_Spec == Rotation.Type.Frost)
             {
                 // Start w/ getting the base damage values.
                 float iDamage = GetTickDamage();

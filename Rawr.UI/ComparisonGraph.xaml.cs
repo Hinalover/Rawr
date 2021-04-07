@@ -358,7 +358,7 @@ namespace Rawr.UI
                 else item = comparisonItems[i];
                 bool isGem = c.Item != null && c.Item.IsGem;
                 string s = c.Name;
-                if (c.Item != null && c.Item.ItemLevel != 0 && !isGem) { s += string.Format(" [{0}]", c.Item.ItemLevel); }
+                if (c.Item != null && c.Item.ItemLevel != 0 && !isGem) { s += string.Format(" [{0}]", c.Item.ItemLevel + (c.ItemInstance != null ? c.ItemInstance.UpgradeLevel : 0)); }
                 item.Title = s;
                 item.Equipped = c.Equipped;
                 item.PartEquipped = c.PartEquipped;

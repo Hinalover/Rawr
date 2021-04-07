@@ -10,55 +10,51 @@ namespace Rawr.Enhance
         // { Uncommon, Rare, Epic, Jeweler }
 
         //Red
-        private int[] delicate  = { 52082, 52212, 71879, 52258 };         // Agility
-        private int[] precise   = { 52085, 52230, 71880, 52260 };         // Expertise
+        private int[] delicate  = { 76560, 76692, 76692, 83151 };         // Agility
+        private int[] precise   = { 76561, 76693, 76693, 83147 };         // Expertise
 
         //Yellow
-        private int[] fractured = { 52094, 52219, 71877, 52269 };         // Mastery
-        private int[] smooth    = { 52091, 52241, 71874, 52266 };         // Crit
-        private int[] quick     = { 52093, 52232, 71876, 52268 };         // Haste
+        private int[] fractured = { 76568, 76700, 76700, 83143 };         // Mastery
+        private int[] smooth    = { 76565, 76697, 76697, 83146 };         // Crit
+        private int[] quick     = { 76567, 76699, 76699, 83142 };         // Haste
 
         //Orange (R&Y)
-        private int[] deadly    = { 52109, 52209, 71840, 52209 };         // Agi/Crit
-        private int[] deft      = { 52112, 52211, 71848, 52211 };         // Agi/Haste
-        private int[] adept     = { 52115, 52204, 71852, 52204 };         // Agi/Mast
-        private int[] keen      = { 52118, 52224, 71853, 52224 };         // Exp/Mast
+        private int[] deadly    = { 76526, 76658, 76658, 88934 };         // Agi/Crit
+        private int[] deft      = { 76534, 76666, 76666, 88935 };         // Agi/Haste
+        private int[] adept     = { 76538, 76670, 76670, 88930 };         // Agi/Mast
+        private int[] crafty    = { 76527, 76659, 76659, 88933 };         // Exp/Crit
+        private int[] wicked    = { 76535, 76667, 76667, 88950 };         // Exp/Haste
+        private int[] keen      = { 76539, 76671, 76671, 88939 };         // Exp/Mast
 
         //Blue
-        private int[] rigid     = { 52089, 52235, 71817, 52264 };         // Hit
+        private int[] rigid     = { 76502, 76636, 76636, 83144 };         // Hit
 
         //Purple (B&R)
-        private int[] glinting  = { 52102, 52220, 71862, 52220 };         // Agi/Hit
-        private int[] accurate  = { 52105, 52203, 71863, 52203 };         // Exp/Hit
-        private int[] shifting  = { 52096, 52238, 71869, 52238 };         // Agi/Sta
-        private int[] guardian  = { 52099, 52221, 71870, 52221 };         // Exp/Sta
+        private int[] glinting  = { 76548, 76680, 76680, 88955 };         // Agi/Hit
+        private int[] accurate  = { 76549, 76681, 76681, 88952 };         // Exp/Hit
+        private int[] shifting  = { 76555, 76687, 76687, 88960 };         // Agi/Sta
+        private int[] guardian  = { 76556, 76688, 76688, 88956 };         // Exp/Sta
 
         //Green (B&Y)
-        private int[] lightning = { 52125, 52225, 71824, 52225 };         // Haste/Hit
-        private int[] senseis   = { 52128, 52237, 71825, 52237 };         // Mast/Hit
-        private int[] piercing  = { 52122, 52228, 71823, 52228 };         // Crit/Hit
-        private int[] forceful  = { 52124, 52218, 71836, 52218 };         // Haste/Sta
-        private int[] puissant  = { 52126, 52231, 71838, 52231 };         // Mast/Sta
-        private int[] jagged    = { 52121, 52223, 71834, 52223 };         // Crit/Sta
-
-        //Prismatic
-        private int[] tear      = { 42701, 42702, 49110, 49110 };         // +X to all stats
+        private int[] lightning = { 76509, 76642, 76642, 88916 };         // Haste/Hit
+        private int[] senseis   = { 76510, 76643, 76643, 88923 };         // Mast/Hit
+        private int[] piercing  = { 76508, 76641, 76641, 88919 };         // Crit/Hit
+        private int[] forceful  = { 76522, 76654, 76654, 88914 };         // Haste/Sta
+        private int[] puissant  = { 76524, 76656, 76656, 88920 };         // Mast/Sta
+        private int[] jagged    = { 76520, 76652, 76652, 88915 };         // Crit/Sta
+        private int[] nimble    = { 76523, 76655, 76655, 88918 };         //Hit/Sta
 
         //Cogwheel
-        private int[] cog_fractured = { 59480 };                          // Mastery
-        private int[] cog_precise   = { 59489 };                          // Expertise
-        private int[] cog_quick     = { 59479 };                          // Haste
-        private int[] cog_rigid     = { 59493 };                          // Hit
-        private int[] cog_smooth    = { 59478 };                          // Crit
+        private int[] cog_fractured = { 77547 };                          // Mastery
+        private int[] cog_precise   = { 77543 };                          // Expertise
+        private int[] cog_quick     = { 77542 };                          // Haste
+        private int[] cog_rigid     = { 77545 };                          // Hit
+        private int[] cog_smooth    = { 77541 };                          // Crit
 
         public List<GemmingTemplate> addTemplates(String group, int rarity, int metagem, bool enabled)
         {
             return new List<GemmingTemplate>() 
             {
-
-            	/*new GemmingTemplate() { Model = "Enhance", Group = group, Enabled = enabled, // Stats
-					RedId = tear[rarity], YellowId = tear[rarity], BlueId = tear[rarity], PrismaticId = tear[rarity], MetaId = metagem },*/
-
             	new GemmingTemplate() { Model = "Enhance", Group = group, Enabled = enabled, //Max Expertise - colour match
 					RedId = precise[rarity], YellowId = keen[rarity], BlueId = accurate[rarity], PrismaticId = precise[rarity], MetaId = metagem },
             	new GemmingTemplate() { Model = "Enhance", Group = group, Enabled = enabled, //Max Expertise - no colour match

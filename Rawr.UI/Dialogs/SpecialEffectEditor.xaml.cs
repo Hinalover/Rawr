@@ -53,9 +53,10 @@ namespace Rawr.UI
             }
             else
             {
-                ChanceCombo.SelectedIndex = 1;
+                ChanceCombo.SelectedIndex = SpecialEffect.RealPPM ? 2 : 1;
                 ChanceNum.Value = -SpecialEffect.Chance;
             }
+            ChanceModifiedBy.Text = SpecialEffect.ModifiedBy;
             SpellPowerScaling.Text = SpecialEffect.SpellPowerScaling.ToString();
             AttackPowerScaling.Text = SpecialEffect.AttackPowerScaling.ToString();
         }
@@ -69,6 +70,8 @@ namespace Rawr.UI
             SpecialEffect.Stats = EffectStats.CurrentStats;
             if (ChanceCombo.SelectedIndex == 0) SpecialEffect.Chance = (float)(ChanceNum.Value / 100);
             else SpecialEffect.Chance = -(float)ChanceNum.Value;
+            SpecialEffect.RealPPM = ChanceCombo.SelectedIndex == 2;
+            SpecialEffect.ModifiedBy = string.IsNullOrWhiteSpace(ChanceModifiedBy.Text) ? null : ChanceModifiedBy.Text;
             try
             {
                 SpecialEffect.SpellPowerScaling = float.Parse(SpellPowerScaling.Text);

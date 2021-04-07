@@ -28,6 +28,10 @@ namespace Rawr
         DamageSpellCrit,
         /// <summary>Any Damage spell (non-heal) is cast, regardless of result</summary>
         DamageSpellCast,
+        /// <summary>Any Damage spell that hits or ticks</summary>
+        DamageSpellHitorDoTTick,
+        /// <summary>Any Damage spell that crits or has a critical tick</summary>
+        DamageSpellOrDoTCrit,
         #endregion
         #region Healing Spells
         /// <summary>Any Heal spell (non-damage) lands on the target (hit or crit)</summary>
@@ -38,6 +42,8 @@ namespace Rawr
         HealingSpellCast,
         /// <summary>The tick of a player's HoT on the target</summary>
         HoTTick,
+        /// <summary>Any heal that lands or HoT tick</summary>
+        HealingSpellHitorHoTTick,
         #endregion
 
         #region General Physical Attacks
@@ -47,6 +53,8 @@ namespace Rawr
         PhysicalCrit,
         /// <summary>Any physical damage (melee or ranged) whether it lands or not</summary>
         PhysicalAttack,
+        /// <summary>Any physical damage hit or DoT Tick</summary>
+        PhysicalHitorDoTTick,
         #endregion
         #region Melee Physical Attacks
         /// <summary>Any melee lands on the target (hit or crit)</summary>
@@ -55,6 +63,8 @@ namespace Rawr
         MeleeCrit,
         /// <summary>Any melee attack lands (special trigger for 'Tiny Abobination in a Jar' (Icecrown Citadel) and Shadowmourne (Icecrown Citadel). Identical to Meleehit for some, may have additional procs happening for other classes (Retribution is one)</summary>
         MeleeAttack,
+        /// <summary>Any melee hit or DoT Tick</summary>
+        MeleeHitorDoTTick,
         #endregion
         #region Melee White Physical Attacks
         /// <summary>Any white melee lands on the target (hit or crit)</summary>
@@ -84,8 +94,12 @@ namespace Rawr
         DamageTaken,
         /// <summary>The player blocks, parries or dodges a melee attack</summary>
         DamageAvoided,
+        /// <summary>The player dodges a melee attack</summary>
+        DamageDodged,
         /// <summary>The player parries a melee attack</summary>
         DamageParried,
+        /// <summary>The player blocks a melee attack</summary>
+        DamageBlocked,
         /// <summary>The player deals any form of damage, regardless of where it comes from</summary>
         DamageDone,
         /// <summary>The tick of a player's DoT on the target</summary>
@@ -213,6 +227,10 @@ namespace Rawr
         public float Duration { get; set; }
         public float Cooldown { get; set; }
         public float Chance { get; set; }
+        [System.Xml.Serialization.XmlIgnore]
+        public float ChanceModifier { get; set; }
+        [DefaultValueAttribute(null)]
+        public string ModifiedBy { get; set; }
         public int MaxStack { get; set; }
         public bool LimitedToExecutePhase { get; set; }
         public bool BypassCache { get; set; }
@@ -221,6 +239,9 @@ namespace Rawr
         public float SpellPowerScaling { get; set; }
         [DefaultValueAttribute(0f)]
         public float AttackPowerScaling { get; set; }
+        [DefaultValueAttribute(false)]
+        // set to true to enable real PPM mode
+        public bool RealPPM { get; set; }
 
         private class UptimeInterpolator : Interpolator
         {
@@ -466,6 +487,23 @@ namespace Rawr
             AttackPowerScaling = apscaling;
         }
 
+        public SpecialEffect(SpecialEffect copy)
+        {
+            Trigger = copy.Trigger;
+            Stats = copy.Stats.Clone();
+            Duration = copy.Duration;
+            Cooldown = copy.Cooldown;
+            Chance = copy.Chance;
+            ChanceModifier = copy.ChanceModifier;
+            ModifiedBy = copy.ModifiedBy;
+            MaxStack = copy.MaxStack;
+            LimitedToExecutePhase = copy.LimitedToExecutePhase;
+            BypassCache = copy.BypassCache;
+            SpellPowerScaling = copy.SpellPowerScaling;
+            AttackPowerScaling = copy.AttackPowerScaling;
+            RealPPM = copy.RealPPM;
+        }
+
         /// <summary>
         /// Computes average stats given the frequency of triggers.
         /// DEPRECATED: use the versions taking Dictionary<Trigger, float> parameters, for support of nested effects
@@ -477,10 +515,10 @@ namespace Rawr
         /// <param name="attackSpeed">Average unhasted attack speed, used in PPM calculations.</param>
         /// <param name="fightDuration">Duration of fight in seconds.</param>
         [Obsolete("Use the the version accepting dictionaries of trigger interval/chance values for nested effect support")]
-        public Stats GetAverageStats(float triggerInterval = 0.0f, float triggerChance = 1.0f, float attackSpeed = 3.0f, float fightDuration = 0.0f)
+        public Stats GetAverageStats(float triggerInterval = 0.0f, float triggerChance = 1.0f, float attackSpeed = 3.0f, float haste = 1.0f, float fightDuration = 0.0f)
         {
             Stats stats = new Stats();
-            AccumulateAverageStats(stats, triggerInterval, triggerChance, attackSpeed, fightDuration);
+            AccumulateAverageStats(stats, triggerInterval, triggerChance, attackSpeed, haste, fightDuration);
             return stats;
         }
 
@@ -496,10 +534,10 @@ namespace Rawr
         /// <param name="attackSpeed">Average unhasted attack speed, used in PPM calculations.</param>
         /// <param name="fightDuration">Duration of fight in seconds.</param>
         [Obsolete("Use the the version accepting dictionaries of trigger interval/chance values for nested effect support")]
-        public float AccumulateAverageStats(Stats stats, float triggerInterval = 0.0f, float triggerChance = 1.0f, float attackSpeed = 3.0f, float fightDuration = 0.0f)
+        public float AccumulateAverageStats(Stats stats, float triggerInterval = 0.0f, float triggerChance = 1.0f, float attackSpeed = 3.0f, float haste = 1.0f, float fightDuration = 0.0f)
         {
             Stats.GenerateSparseData();
-            float factor = GetAverageFactor(triggerInterval, triggerChance, attackSpeed, fightDuration);
+            float factor = GetAverageFactor(triggerInterval, triggerChance, attackSpeed, haste, fightDuration);
             stats.Accumulate(Stats, factor);
             return factor;
         }
@@ -514,10 +552,10 @@ namespace Rawr
         /// <param name="attackSpeed">Average unhasted attack speed, used in PPM calculations.</param>
         /// <param name="fightDuration">Duration of fight in seconds.</param>
         /// <param name="scale">Scale factor.</param>
-        public Stats GetAverageStats(Dictionary<Trigger, float> triggerIntervals, Dictionary<Trigger, float> triggerChances, float attackSpeed = 3.0f, float fightDuration = 0.0f, float scale = 1.0f)
+        public Stats GetAverageStats(Dictionary<Trigger, float> triggerIntervals, Dictionary<Trigger, float> triggerChances, float attackSpeed = 3.0f, float haste = 1.0f, float fightDuration = 0.0f, float scale = 1.0f)
         {
             Stats stats = new Stats();
-            AccumulateAverageStats(stats, triggerIntervals, triggerChances, attackSpeed, fightDuration, scale);
+            AccumulateAverageStats(stats, triggerIntervals, triggerChances, attackSpeed, haste, fightDuration, scale);
             return stats;
         }
 
@@ -532,11 +570,11 @@ namespace Rawr
         /// <param name="attackSpeed">Average unhasted attack speed, used in PPM calculations.</param>
         /// <param name="fightDuration">Duration of fight in seconds.</param>
         /// <param name="scale">Scale factor.</param>
-        public float AccumulateAverageStats(Stats stats, Dictionary<Trigger, float> triggerIntervals, Dictionary<Trigger, float> triggerChances, float attackSpeed = 3.0f, float fightDuration = 0.0f, float scale = 1.0f)
+        public float AccumulateAverageStats(Stats stats, Dictionary<Trigger, float> triggerIntervals, Dictionary<Trigger, float> triggerChances, float attackSpeed = 3.0f, float haste = 1.0f, float fightDuration = 0.0f, float scale = 1.0f)
         {
             float factor = scale;
             if (triggerIntervals.ContainsKey(Trigger) && triggerChances.ContainsKey(Trigger))
-                factor *= GetAverageFactor(triggerIntervals[Trigger], triggerChances[Trigger], attackSpeed, fightDuration);
+                factor *= GetAverageFactor(triggerIntervals[Trigger], triggerChances[Trigger], attackSpeed, haste, fightDuration);
             else
                 factor *= 0;
 
@@ -552,7 +590,7 @@ namespace Rawr
                     {
                         // this assumes that the child effect gets consumed at the end of the duration
                         // this assumes that the child effect is off cooldown before the next occurrence of the parent effect
-                        effect.AccumulateAverageStats(effectStats, triggerIntervals, triggerChances, attackSpeed, Duration);
+                        effect.AccumulateAverageStats(effectStats, triggerIntervals, triggerChances, attackSpeed, haste, Duration);
                     }
                     stats.Accumulate(effectStats, factor);
                 }
@@ -563,7 +601,7 @@ namespace Rawr
                     {
                         // this assumes that the child effect gets consumed at the end of the duration
                         // this assumes that the child effect is off cooldown before the next occurrence of the parent effect
-                        effect.AccumulateAverageStats(stats, triggerIntervals, triggerChances, attackSpeed, Duration, factor);
+                        effect.AccumulateAverageStats(stats, triggerIntervals, triggerChances, attackSpeed, haste, Duration, factor);
                     }
                 }
             }
@@ -582,20 +620,20 @@ namespace Rawr
         /// <param name="attackSpeed">Average unhasted attack speed, used in PPM calculations.</param>
         /// <param name="fightDuration">Duration of fight in seconds.</param>
         /// <returns></returns>
-        public float GetAverageFactor(float triggerInterval, float triggerChance, float attackSpeed = 3.0f, float fightDuration = 0.0f)
+        public float GetAverageFactor(float triggerInterval, float triggerChance, float attackSpeed = 3.0f, float haste = 1.0f, float fightDuration = 0.0f)
         {
             float factor;
             if (MaxStack > 1)
             {
-                factor = GetAverageStackSize(triggerInterval, triggerChance, attackSpeed, fightDuration);
+                factor = GetAverageStackSize(triggerInterval, triggerChance, attackSpeed, haste, fightDuration);
             }
             else if (Duration == 0f)
             {
-                factor = GetAverageProcsPerSecond(triggerInterval, triggerChance, attackSpeed, fightDuration);
+                factor = GetAverageProcsPerSecond(triggerInterval, triggerChance, attackSpeed, haste, fightDuration);
             }
             else
             {
-                factor = GetAverageUptime(triggerInterval, triggerChance, attackSpeed, fightDuration);
+                factor = GetAverageUptime(triggerInterval, triggerChance, attackSpeed, haste, fightDuration);
             }
             return factor;
         }
@@ -609,9 +647,9 @@ namespace Rawr
         /// triggerChance to crit chance)</param>
         /// <param name="attackSpeed">Average unhasted attack speed, used in PPM calculations.</param>
         /// <param name="fightDuration">Duration of fight in seconds.</param>
-        public float GetAverageStackSize(float triggerInterval, float triggerChance, float attackSpeed, float fightDuration)
+        public float GetAverageStackSize(float triggerInterval, float triggerChance, float attackSpeed, float haste, float fightDuration)
         {
-            return GetAverageStackSize(triggerInterval, triggerChance, attackSpeed, fightDuration, 1);
+            return GetAverageStackSize(triggerInterval, triggerChance, attackSpeed, haste, fightDuration, 1);
         }
 
         /// <summary>
@@ -624,12 +662,12 @@ namespace Rawr
         /// <param name="attackSpeed">Average unhasted attack speed, used in PPM calculations.</param>
         /// <param name="fightDuration">Duration of fight in seconds.</param>
         /// <param name="stackReset">Number of times the stack resets.</param>
-        public float GetAverageStackSize(float triggerInterval, float triggerChance, float attackSpeed, float fightDuration, int stackReset)
+        public float GetAverageStackSize(float triggerInterval, float triggerChance, float attackSpeed, float haste, float fightDuration, int stackReset)
         {
             float averageStack = 0;
             if ((MaxStack > 1) && (Cooldown == 0f))
             {
-                float p = triggerChance * GetChance(attackSpeed);
+                float p = triggerChance * GetChance(attackSpeed, triggerInterval, haste);
                 float q = 1.0f - p;
                 float Q = (float)Math.Pow(q, Duration / triggerInterval);
                 float probToStack = 1.0f - Q;                
@@ -800,7 +838,7 @@ namespace Rawr
                 return averageStack;
             }
             else
-                return GetAverageUptime(triggerInterval, triggerChance, attackSpeed, fightDuration);
+                return GetAverageUptime(triggerInterval, triggerChance, attackSpeed, haste, fightDuration);
         }
 
         /// <summary>
@@ -812,7 +850,7 @@ namespace Rawr
         /// triggerChance to crit chance)</param>
         public float GetAverageUptime(float triggerInterval, float triggerChance)
         {
-            return GetAverageUptime(triggerInterval, triggerChance, 3f, 0f);
+            return GetAverageUptime(triggerInterval, triggerChance, 3f, 1f, 0f);
         }
 
         /// <summary>
@@ -823,9 +861,9 @@ namespace Rawr
         /// SpellCrit trigger you would set triggerInterval to average time between spell ticks and set
         /// triggerChance to crit chance)</param>
         /// <param name="attackSpeed">Average unhasted attack speed, used in PPM calculations.</param>
-        public float GetAverageUptime(float triggerInterval, float triggerChance, float attackSpeed)
+        public float GetAverageUptime(float triggerInterval, float triggerChance, float attackSpeed, float haste)
         {
-            return GetAverageUptime(triggerInterval, triggerChance, attackSpeed, 0f);
+            return GetAverageUptime(triggerInterval, triggerChance, attackSpeed, haste, 0f);
         }
 
         /// <summary>
@@ -837,7 +875,7 @@ namespace Rawr
         /// triggerChance to crit chance)</param>
         /// <param name="attackSpeed">Average unhasted attack speed, used in PPM calculations.</param>
         /// <param name="fightDuration">Duration of fight in seconds.</param>
-        public float GetAverageUptime(float triggerInterval, float triggerChance, float attackSpeed, float fightDuration)
+        public float GetAverageUptime(float triggerInterval, float triggerChance, float attackSpeed, float haste, float fightDuration)
         {
             bool discretizationCorrection = true;
             if (triggerChance == 0f || float.IsPositiveInfinity(triggerInterval))
@@ -852,11 +890,11 @@ namespace Rawr
                 {
                     if (discretizationCorrection)
                     {
-                        return Duration / (Cooldown - triggerInterval / 2 + triggerInterval / triggerChance / GetChance(attackSpeed));
+                        return Duration / (Cooldown - triggerInterval / 2 + triggerInterval / triggerChance / GetChance(attackSpeed, triggerInterval, haste));
                     }
                     else
                     {
-                        return Duration / (Cooldown - triggerInterval + triggerInterval / triggerChance / GetChance(attackSpeed));
+                        return Duration / (Cooldown - triggerInterval + triggerInterval / triggerChance / GetChance(attackSpeed, triggerInterval, haste));
                     }
                 }
                 else
@@ -1018,7 +1056,7 @@ namespace Rawr
                         double d = Duration / triggerInterval;
                         double d2 = d * 0.5;
                         double n = fightDuration / triggerInterval;
-                        double p = triggerChance * GetChance(attackSpeed);
+                        double p = triggerChance * GetChance(attackSpeed, triggerInterval, haste);
 
                         double c = Cooldown / triggerInterval;
                         if (discretizationCorrection)
@@ -1064,7 +1102,7 @@ namespace Rawr
                                 i = new UptimeInterpolator(this, fightDuration);
                                 interpolator[fightDuration] = i;
                             }
-                            return i[triggerChance * GetChance(attackSpeed), triggerInterval];
+                            return i[triggerChance * GetChance(attackSpeed, triggerInterval, haste), triggerInterval];
                         }
                     }
                     else if (triggerInterval == 0.0f)
@@ -1081,7 +1119,7 @@ namespace Rawr
                     {
                         double d = Duration / triggerInterval;
                         double n = fightDuration / triggerInterval;
-                        double p = triggerChance * GetChance(attackSpeed);
+                        double p = triggerChance * GetChance(attackSpeed, triggerInterval, haste);
 
                         double c = Cooldown / triggerInterval;
                         if (discretizationCorrection)
@@ -1098,8 +1136,8 @@ namespace Rawr
             }
             else if (Cooldown == 0.0f)
             {
-                if (triggerInterval >= Duration) return Duration / triggerInterval * GetChance(attackSpeed) * triggerChance;
-                else return 1.0f - (float)Math.Pow(1f - triggerChance * GetChance(attackSpeed), Duration / triggerInterval);
+                if (triggerInterval >= Duration) return Duration / triggerInterval * GetChance(attackSpeed, triggerInterval, haste) * triggerChance;
+                else return 1.0f - (float)Math.Pow(1f - triggerChance * GetChance(attackSpeed, triggerInterval, haste), Duration / triggerInterval);
             }
             else
             {
@@ -1234,7 +1272,7 @@ namespace Rawr
                 //= 1 - 1 / (1 + C * PT) * (1 - PEC)
 
                 //= 1 - 1 / (1 + C * PT) * (1 - PT) ^ (D - C)
-                return 1.0f - 1.0f / (1.0f + Cooldown / triggerInterval * triggerChance * GetChance(attackSpeed)) * (float)Math.Pow(1f - triggerChance * GetChance(attackSpeed), (Duration - Cooldown) / triggerInterval);
+                return 1.0f - 1.0f / (1.0f + Cooldown / triggerInterval * triggerChance * GetChance(attackSpeed, triggerInterval, haste)) * (float)Math.Pow(1f - triggerChance * GetChance(attackSpeed, triggerInterval, haste), (Duration - Cooldown) / triggerInterval);
             }
 
         }
@@ -1249,7 +1287,7 @@ namespace Rawr
         /// <param name="attackSpeed">Average unhasted attack speed, used in PPM calculations.</param>
         /// <param name="time">Time in seconds since fight start.</param>
         /// <returns>Returns chance that proc is up at specific time.</returns>
-        public float GetUptimePlot(float triggerInterval, float triggerChance, float attackSpeed, float time)
+        public float GetUptimePlot(float triggerInterval, float triggerChance, float attackSpeed, float haste, float time)
         {
             if (triggerChance == 0f || float.IsPositiveInfinity(triggerInterval))
             {
@@ -1264,7 +1302,7 @@ namespace Rawr
                 {
                     double d = Duration / triggerInterval;
                     double n = time / triggerInterval;
-                    double p = triggerChance * GetChance(attackSpeed);
+                    double p = triggerChance * GetChance(attackSpeed, triggerInterval, haste);
 
                     double c = Cooldown / triggerInterval;
                     if (discretizationCorrection)
@@ -1302,13 +1340,13 @@ namespace Rawr
             else if (Cooldown == 0.0f)
             {
                 // only stationary model so far
-                if (triggerInterval >= Duration) return Duration / triggerInterval * GetChance(attackSpeed) * triggerChance;
-                else return 1.0f - (float)Math.Pow(1f - triggerChance * GetChance(attackSpeed), Duration / triggerInterval);
+                if (triggerInterval >= Duration) return Duration / triggerInterval * GetChance(attackSpeed, triggerInterval, haste) * triggerChance;
+                else return 1.0f - (float)Math.Pow(1f - triggerChance * GetChance(attackSpeed, triggerInterval, haste), Duration / triggerInterval);
             }
             else
             {
                 // only stationary model so far
-                return 1.0f - 1.0f / (1.0f + Cooldown / triggerInterval * triggerChance * GetChance(attackSpeed)) * (float)Math.Pow(1f - triggerChance * GetChance(attackSpeed), (Duration - Cooldown) / triggerInterval);
+                return 1.0f - 1.0f / (1.0f + Cooldown / triggerInterval * triggerChance * GetChance(attackSpeed, triggerInterval, haste)) * (float)Math.Pow(1f - triggerChance * GetChance(attackSpeed, triggerInterval, haste), (Duration - Cooldown) / triggerInterval);
             }
         }
 
@@ -1321,7 +1359,7 @@ namespace Rawr
         /// triggerChance to crit chance)</param>
         /// <param name="attackSpeed">Average unhasted attack speed, used in PPM calculations.</param>
         /// <param name="fightDuration">Duration of fight in seconds.</param>
-        public float GetAverageProcsPerSecond(float triggerInterval, float triggerChance, float attackSpeed, float fightDuration)
+        public float GetAverageProcsPerSecond(float triggerInterval, float triggerChance, float attackSpeed, float haste, float fightDuration)
         {
             // derivation from recurrence relation
             // Procs[n] := average number of procs given fight length n
@@ -1411,7 +1449,7 @@ namespace Rawr
             if (fightDuration == 0.0f) {
                 // this is special case, meaning that we have infinite fight duration, so we have
                 // a proc on average every Cooldown + triggerInterval / p
-                float pp = triggerChance * GetChance(attackSpeed);
+                float pp = triggerChance * GetChance(attackSpeed, triggerInterval, haste);
                 if (pp == 0.0) return 0.0f;
                 if (discretizationCorrection)
                 {
@@ -1439,7 +1477,7 @@ namespace Rawr
                 if (c < 1.0) c = 1.0;
                 double n = fightDuration / triggerInterval;
                 double x = n;
-                double p = triggerChance * GetChance(attackSpeed);
+                double p = triggerChance * GetChance(attackSpeed, triggerInterval, haste);
 
                 double averageProcs = 0.0;
                 int r = 1;
@@ -1457,12 +1495,12 @@ namespace Rawr
                         i = new ProcsPerSecondInterpolator(this, fightDuration);
                         interpolator[fightDuration] = i;
                     }
-                    return i[triggerChance * GetChance(attackSpeed), triggerInterval];
+                    return i[triggerChance * GetChance(attackSpeed, triggerInterval, haste), triggerInterval];
                 }
             } else {
                 double d = Duration / triggerInterval;
                 double n = fightDuration / triggerInterval;
-                double p = triggerChance * GetChance(attackSpeed);
+                double p = triggerChance * GetChance(attackSpeed, triggerInterval, haste);
 
                 double c = Cooldown / triggerInterval;
                 if (discretizationCorrection)
@@ -1532,13 +1570,28 @@ namespace Rawr
             return Chance < 0;
         }
 
-        public float GetChance(float attackspeed)
+        /// <summary>
+        /// Converts PPM procs into % based.
+        /// </summary>
+        /// <param name="attackSpeed">Attack speed for old style PPM procs.</param>
+        /// <param name="triggerInterval">Interval between trigger events.</param>
+        /// <param name="haste">Haste factor for Real PPM procs (for example 1.2 for 20% haste)..</param>
+        /// <returns></returns>
+        public float GetChance(float attackSpeed, float triggerInterval, float haste)
         {
+            float modifier = ChanceModifier > 0 ? ChanceModifier : 1f;
             if (Chance < 0)
             {
-                return -Chance / 60f * attackspeed;
+                if (RealPPM)
+                {
+                    return (-Chance * modifier) * haste / 60f * triggerInterval;
+                }
+                else
+                {
+                    return (-Chance * modifier) / 60f * attackSpeed;
+                }
             }
-            else return Chance;
+            else return Chance * modifier;
         }
 
         private string StackString
@@ -1578,8 +1631,11 @@ namespace Rawr
         {
             get
             {
-                if (Chance < 0) return (-Chance).ToString("N2") + " PPM";
-                else return (Chance * 100).ToString("N0") + "%";
+                float modifier = ChanceModifier > 0 ? ChanceModifier : 1f;
+                string chanceString = Chance < 0 ? (-Chance).ToString("N2") : (Chance * 100).ToString("N0") + "%";
+                string modifierString = ChanceModifier > 0 ? String.Format(" ({0} x {1:N3})", chanceString, ChanceModifier) : "";
+                if (Chance < 0) return (-Chance * modifier).ToString("N2") + " PPM" + modifierString;
+                else return (Chance * modifier * 100).ToString("N0") + "%" + modifierString;
             }
         }
 
@@ -1716,6 +1772,9 @@ namespace Rawr
             {
                 if (needsSpace) s.Append(" ");
                 s.Append(ChanceString);
+                // Add a description of what this special effect's proc chance is modified by
+                if (ModifiedBy != null)
+                    s.Append(" modified by " + ModifiedBy);
                 needsSpace = true;
             }
 

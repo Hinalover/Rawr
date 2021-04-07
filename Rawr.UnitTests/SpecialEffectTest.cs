@@ -78,7 +78,7 @@ namespace Rawr.UnitTests
             float fightDuration = 300.0F;
             float expected = 70.0F / 300.0F;
             float actual;
-            actual = target.GetAverageUptime(triggerInterval, triggerChance, attackSpeed, fightDuration);
+            actual = target.GetAverageUptime(triggerInterval, triggerChance, attackSpeed, 1f, fightDuration);
             Assert.AreEqual(expected, actual);
         }
     }

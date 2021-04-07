@@ -15,7 +15,7 @@ namespace Rawr
         Shaman = 7,
         Mage = 8,
         Warlock = 9,
-        Monk = 10, // (TODO: Get correct enum)
+        Monk = 10,
         Druid = 11,
     }
 
@@ -32,27 +32,51 @@ namespace Rawr
 
     public enum CharacterRace
     {
-        None     =  0, // Used for the Race chart
-        Human    =  1,
-        Orc      =  2,
-        Dwarf    =  3,
-        NightElf =  4,
-        Undead   =  5,
-        Tauren   =  6,
-        Gnome    =  7,
-        Troll    =  8,
-        Goblin   =  9, // Cataclysm
-        BloodElf = 10, // Burning Crusade
-        Draenei  = 11, // Burning Crusade
-        PandarenAlliance = 12, // Mists of Pandaria (TODO: Get correct enum)
-        PandarenHorde = 13, // Mists of Pandaria (TODO: Get correct enum)
-        Worgen   = 22, // Cataclysm
+        None             =  0, // Used for the Race chart
+        Human            =  1,
+        Orc              =  2,
+        Dwarf            =  3,
+        /// <summary>
+        /// Night Elf
+        /// </summary>
+        NightElf         =  4,
+        Undead           =  5,
+        Tauren           =  6,
+        Gnome            =  7,
+        Troll            =  8,
+        Goblin           =  9, // Cataclysm
+        /// <summary>
+        /// Blood Elf
+        /// </summary>
+        BloodElf         = 10, // Burning Crusade
+        Draenei          = 11, // Burning Crusade
+        //FelOrc           = 12,
+        // Naga            = 13,
+        // Broken          = 14,
+        // Skeleton        = 15,
+        // Vrykul          = 16,
+        // Tuskarr         = 17,
+        // ForestTroll     = 18,
+        // Taunka          = 19,
+        // Skeleton        = 20,
+        // IceTroll        = 21,
+        Worgen           = 22, // Cataclysm
+        // Gilnean         = 23,
+        // Pandaren        = 24,
+        /// <summary>
+        /// Pandaren - Alliance
+        /// </summary>
+        PandarenAlliance = 25, // Mists of Pandaria
+        /// <summary>
+        /// Pandaren - Horde
+        /// </summary>
+        PandarenHorde    = 26, // Mists of Pandaria
     }
 
     public enum CharacterSlot
     {
         None = -1,
-        Projectile = 0,
+        //Projectile = 0,
         Head = 1,
         Neck = 2,
         Shoulders = 3,
@@ -69,8 +93,8 @@ namespace Rawr
         Back = 14,
         MainHand = 15,
         OffHand = 16,
-        Ranged = 17,
-        ProjectileBag = 18,
+        //Ranged = 17,
+        //ProjectileBag = 18,
         Tabard = 19,
         Shirt = 20,
 

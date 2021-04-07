@@ -57,9 +57,9 @@ namespace Rawr.Retribution
             dictValues["Melee Crit"] = string.Format("{0:P}*{1:0} Crit Rating ({2:P})", CombatStats.PhysicalCrit, BasicStats.CritRating, StatConversion.GetCritFromRating(BasicStats.CritRating, CharacterClass.Paladin));
             dictValues["Melee Haste"] = string.Format("{0:P}*{1:0} Haste Rating ({2:P})", CombatStats.PhysicalHaste, BasicStats.HasteRating, StatConversion.GetHasteFromRating(BasicStats.HasteRating, CharacterClass.Paladin));
             dictValues["Chance to Dodge"] = string.Format("{0:P}*{1:0} Expertise Rating ({2:F1})", ((BasePhysicalWhiteCombatTable)WhiteSkill.CT).ChanceToDodge, BasicStats.ExpertiseRating, BasicStats.Expertise);
-            dictValues["Mastery"] = string.Format("{0:F2}*{1:0} Mastery Rating ({2:F1})\n{3:P} Hand of Light", (8f + StatConversion.GetMasteryFromRating(CombatStats.MasteryRating, CharacterClass.Paladin)),
-                                                                                                               BasicStats.MasteryRating, StatConversion.GetMasteryFromRating(BasicStats.MasteryRating, CharacterClass.Paladin), 
-                                                                                                               (8f + StatConversion.GetMasteryFromRating(BasicStats.MasteryRating, CharacterClass.Paladin)) * PaladinConstants.HOL_COEFF);
+            dictValues["Mastery"] = string.Format("{0:F2}*{1:0} Mastery Rating ({2:F1})\n{3:P} Hand of Light", (CombatStats.Mastery),
+                                                                                                               BasicStats.MasteryRating, StatConversion.GetMasteryFromRating(BasicStats.MasteryRating, CharacterClass.Paladin),
+                                                                                                               (CombatStats.Mastery) * PaladinConstants.HOL_COEFF);
             dictValues["Miss Chance"] = string.Format("{0:P}*{1:0} Hit Rating ({2:P})", WhiteSkill.CT.ChanceToMiss, BasicStats.HitRating, StatConversion.GetHitFromRating(BasicStats.HitRating, CharacterClass.Paladin));
             dictValues["Spell Power"] = string.Format("{0:N0}*Base Spell Power: {1:N0}", CombatStats.SpellPower, BasicStats.SpellPower);
             dictValues["Spell Crit"] = string.Format("{0:P}*{1:0} Crit Rating ({2:P})", CombatStats.SpellCrit, BasicStats.CritRating, StatConversion.GetCritFromRating(BasicStats.CritRating, CharacterClass.Paladin));

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace Rawr.Hunter.Skills
 {
     public class AimedShot : Ability
     {
+        
+
         /// <summary>
         /// TODO Zhok: Careful Aim, Master Marksman, Sic 'Em
         /// <b>Aimed Shot</b>, 50 Focus, 5-40yd, Instant, 2.9 sec cast
@@ -22,57 +25,68 @@ namespace Rawr.Hunter.Skills
         public AimedShot(Character c, StatsHunter s, CombatFactors cf, WhiteAttacks wa, CalculationOptionsHunter co)
         {
             Char = c; StatS = s; combatFactors = cf; Whiteattacks = wa; CalcOpts = co;
+
+            
+
             //
             Name = "Aimed Shot";
+            shortName = "Aim";
+
+            SpellId = 19434;
+            SuppressesAutoShot = true;
+            
+
             ReqTalent = true; // Reqiures MM spec.
-            Talent2ChksValue = ((Specialization)Talents.HighestTree == Specialization.Marksmanship ? 1 : 0);
+            Talent2ChksValue = (c.HunterTalents.Specialization == (int)Specialization.Marksmanship ? 1 : 0);
             ReqRangedWeap = true;
-            ReqSkillsRange = true;
+            ReqSkillsRange = false;
+            DamageType = ItemDamageType.Physical;
             CastTime = 2.9f;
             FocusCost = 50f;
-            DamageBase = (combatFactors.AvgRwWeaponDmgUnhasted + (StatS.RangedAttackPower * 0.724f) + 776) * 1.60f + 100;
+            //TODO: Check if still accurate
+            DamageBase = combatFactors.NormalizedRwWeaponDmg * 2.8f + 19541f;
             Consumes_Tier12_4pc = true;
             eShot = Shots.AimedShot;
             Initialize();
         }
     }
 
-    public class MMMAimedShot : Ability
+    public class MMMAimedShot : AimedShot
     {
-        public MMMAimedShot(Character c, StatsHunter s, CombatFactors cf, WhiteAttacks wa, CalculationOptionsHunter co)
+        public MMMAimedShot(Character c, StatsHunter s, CombatFactors cf, WhiteAttacks wa, CalculationOptionsHunter co) : base(c, s, cf, wa, co)
         {
             Char = c; StatS = s; combatFactors = cf; Whiteattacks = wa; CalcOpts = co;
             //
             Name = "MMM Aimed Shot";
-            ReqTalent = true; // Reqiures MM spec.
-            Talent2ChksValue = Talents.MasterMarksman;
-            ReqRangedWeap = true;
-            ReqSkillsRange = true;
+            //ReqTalent = true; // Reqiures MM spec.
+            //Talent2ChksValue = Talents.MasterMarksman;
+            //ReqRangedWeap = true;
+            //ReqSkillsRange = true;
             CastTime = 0;
             FocusCost = 0;
-            DamageBase = (combatFactors.AvgRwWeaponDmgUnhasted + (StatS.RangedAttackPower * 0.724f) + 776) * 1.60f + 100;
-            Consumes_Tier12_4pc = true;
+            //DamageBase = (combatFactors.AvgRwWeaponDmgUnhasted + (StatS.RangedAttackPower * 0.724f) + 776) * 1.60f + 100;
+            //Consumes_Tier12_4pc = true;
             eShot = Shots.AimedShot_MMM;
             Initialize();
         }
     }
 
-    public class CAAimedShot : Ability
+    public class CAAimedShot : AimedShot
     {
-        public CAAimedShot(Character c, StatsHunter s, CombatFactors cf, WhiteAttacks wa, CalculationOptionsHunter co)
+        public CAAimedShot(Character c, StatsHunter s, CombatFactors cf, WhiteAttacks wa, CalculationOptionsHunter co) : base(c,s,cf,wa,co)
         {
             Char = c; StatS = s; combatFactors = cf; Whiteattacks = wa; CalcOpts = co;
             //
             Name = "CA Aimed Shot";
-            ReqTalent = true; // Reqiures MM spec.
-            Talent2ChksValue = Talents.CarefulAim;
-            ReqRangedWeap = true;
-            ReqSkillsRange = true;
-            CastTime = 2.9f;
-            FocusCost = 50f;
-            DamageBase = (combatFactors.AvgRwWeaponDmgUnhasted + (StatS.RangedAttackPower * 0.724f) + 776) * 1.60f + 100;
-            Consumes_Tier12_4pc = true;
-            BonusCritChance = 1.6f;
+            //ReqTalent = true; // Reqiures MM spec.
+            //Talent2ChksValue = Talents.CarefulAim;
+            //ReqRangedWeap = true;
+            //ReqSkillsRange = true;
+            //CastTime = 2.9f;
+            //FocusCost = 50f;
+            //DamageBase = (combatFactors.AvgRwWeaponDmgUnhasted + (StatS.RangedAttackPower * 0.724f) + 776) * 1.60f + 100;
+            //Consumes_Tier12_4pc = true;
+            BonusCritChance = 1.75f;
             eShot = Shots.AimedShot_CA;
             Initialize();
         }

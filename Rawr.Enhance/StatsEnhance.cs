@@ -16,6 +16,7 @@ namespace Rawr.Enhance
         public float BonusLavaLashDamageMultiplier { get; set; }
         public float BonusLightningBoltDamageMultiplier { get; set; }
         public float T11BonusLavaLashDamageMultiplier { get; set; }
+        public float T14BonusLavaLashDamageMultiplier { get; set; }
 
         public float PhysicalDamageProcs { get; set; }
     }

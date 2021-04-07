@@ -12,7 +12,7 @@ namespace Rawr {
     /// <summary>The role of the player, will allow certain lists to return filtered to things that affect said role</summary>
     public enum PLAYER_ROLES { MainTank = 0, OffTank, TertiaryTank, MeleeDPS, RangedDPS, MainTankHealer, OffAndTertTankHealer, RaidHealer, AlysrazorAirGroup }
     /// <summary>Enumerator for creating a list of possible values for the Level box</summary>
-    public enum POSSIBLE_LEVELS { LVLP0 = 85, LVLP1 = 86, LVLP2 = 87, LVLP3 = 88, }
+    public enum POSSIBLE_LEVELS { LVLP0 = 85, LVLP1 = 86, LVLP2 = 87, LVLP3 = 88, LVLP89 = 89, LVLP90 = 90, LVLP91 = 91, LVLP92 = 92, LVLP93 = 93, }
     /// <summary>Enumerator for creating a list of possible values for the Mob Type box</summary>
     public enum MOB_TYPES { BEAST = 0, DEMON, DRAGONKIN, ELEMENTAL, GIANT, HUMANOID, MECHANICAL, UNDEAD, UNCATEGORIZED }
     public enum ImpedanceTypes { Fear, Root, Stun, Move, Silence, Disarm };
@@ -689,7 +689,7 @@ namespace Rawr {
         /// </summary>
         public bool NearBoss = false;
         /// <summary>Level of the additional Targets, 85-88</summary>
-        public int LevelOfTargets = (int)POSSIBLE_LEVELS.LVLP2;
+        public int LevelOfTargets = 92; //(int)POSSIBLE_LEVELS.LVLP92;
         #endregion
         #region Player Targeting
         private SerializableDictionary<PLAYER_ROLES, bool> _affectsRole = null;
@@ -745,7 +745,7 @@ namespace Rawr {
         #region Functions
         public float GetAverageTargetGroupSize(float fightDuration) {
             if (!Validate) { return 0f; }
-            return new SpecialEffect(Trigger.Use, null, Duration / 1000f, Frequency, Chance, (int)NumTargs).GetAverageStackSize(0, 1f, 3, fightDuration);
+            return new SpecialEffect(Trigger.Use, null, Duration / 1000f, Frequency, Chance, (int)NumTargs).GetAverageStackSize(0, 1f, 3, 1, fightDuration);
         }
         /// <summary>
         /// Returns False if

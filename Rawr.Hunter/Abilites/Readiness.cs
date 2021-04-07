@@ -17,8 +17,14 @@ namespace Rawr.Hunter.Skills
             Char = c; StatS = s; combatFactors = cf; Whiteattacks = wa; CalcOpts = co;
             //
             Name = "Readiness";
+            shortName = "Rdy";
+
             Cd = 3f * 60f; // In Seconds
             Duration = 0f;
+            
+            ReqTalent = false;
+            //Talent2ChksValue = c.HunterTalents.Readiness;
+
             UseHitTable = false;
             eShot = Shots.Readiness;
             Initialize();

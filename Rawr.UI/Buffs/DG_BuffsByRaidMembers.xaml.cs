@@ -27,18 +27,19 @@ namespace Rawr.UI
 
             // Set up the dialog
             CB_RaidSize.SelectedIndex = 1;
-            CB_Class2Add.SelectedIndex = 9;
+            CB_Class2Add.SelectedIndex = 0;
             #region Individual Class Work
-            RB_Druid_Bear.IsChecked = true;
-            RB_DK_Frost.IsChecked = true;
-            RB_Hunter_MM.IsChecked = true;
+            RB_DK_Blood.IsChecked = true;
+            RB_Druid_Balance.IsChecked = true;
+            RB_Hunter_BM.IsChecked = true;
             RB_Mage_Arcane.IsChecked = true;
-            RB_Paladin_Ret.IsChecked = true;
-            RB_Priest_Holy.IsChecked = true;
-            RB_Rogue_Combat.IsChecked = true;
-            RB_Shaman_Enhance.IsChecked = true;
-            RB_Warlock_Demon.IsChecked = true;
-            RB_Warrior_Tank.IsChecked = true;
+            RB_Monk_Brewmaster.IsChecked = true;
+            RB_Paladin_Holy.IsChecked = true;
+            RB_Priest_D.IsChecked = true;
+            RB_Rogue_Assassin.IsChecked = true;
+            RB_Shaman_Elemental.IsChecked = true;
+            RB_Warlock_Afflic.IsChecked = true;
+            RB_Warrior_Arms.IsChecked = true;
             #endregion
         }
 
@@ -58,6 +59,7 @@ namespace Rawr.UI
 #endif
             return (Color)lne.Fill.GetValue(SolidColorBrush.ColorProperty);
         }
+
         private void RaidSizeCheck()
         {
             // Disable the Add button if we've hit raid size
@@ -83,75 +85,67 @@ namespace Rawr.UI
                 #region Death Knight
                 case "Death Knight": {
                     theSet.Class = CharacterClass.DeathKnight;
-                    theSet.Color = FromKnownColor("Maroon");
-                    theSet.Spec = (RB_DK_Frost.IsChecked.GetValueOrDefault(false) ? "Frost" :
-                                  RB_DK_Unholy.IsChecked.GetValueOrDefault(false) ? "Unholy" :
-                                  RB_DK_Blood.IsChecked.GetValueOrDefault(false) ? "Blood" : "Frost");
+                    theSet.Color = FromKnownColor("#c41e3b");
+                    theSet.Spec = (RB_DK_Blood.IsChecked.GetValueOrDefault(false) ? "Blood" : 
+                                  RB_DK_Frost.IsChecked.GetValueOrDefault(false) ? "Frost" :
+                                  RB_DK_Unholy.IsChecked.GetValueOrDefault(false) ? "Unholy" : "Blood");
                     // All Specs
-                    theSet.BuffsToAdd.Add("Horn of Winter", "Buff: Horn of Winter (Str, Agi)");
+                    theSet.BuffsToAdd.Add("Horn of Winter", "Buff: Horn of Winter (Attack Power)");
                     // Spec Specific
-                    if (theSet.Spec == "Frost") {
-                        theSet.BuffsToAdd.Add("Improved Icy Talons", "Buff: Improved Icy Talons (Haste)");
-                        theSet.BuffsToAdd.Add("Frost Fever", "Debuff: Frost Fever (Targ AtkSpd Reduc)");
-                        theSet.BuffsToAdd.Add("Brittle Bones", "Debuff: Brittle Bones (PhysDmg)");
+                    if (theSet.Spec == "Blood") {
+                        theSet.BuffsToAdd.Add("Scarlet Fever", "Debuff: Scarlet Fever (Weakened Blows)");
+                    } else if (theSet.Spec == "Frost") {
+                        theSet.BuffsToAdd.Add("Icy Talons", "Buff: Icy Talons (Attack Speed)");
+                        theSet.BuffsToAdd.Add("Brittle Bones", "Debuff: Brittle Bones (Physical Vulnerability)");
                     } else if (theSet.Spec == "Unholy") {
-                        theSet.BuffsToAdd.Add("Ebon Plaguebringer", "Buff: Ebon Plaguebringer (SpellDmg Multiplier)");
                         theSet.BuffsToAdd.Add("Unholy Frenzy", "Buff: Unholy Fenzy (Temp Haste)");
-                    } else if (theSet.Spec == "Blood") {
-                        theSet.BuffsToAdd.Add("Scarlet Fever", "Buff: Scarlet Fever (Targ Dmg Dealt Reduc)");
-                        theSet.BuffsToAdd.Add("Abomination's Might", "Buff: Abomination's Might (AP)");
-                    }
+                        theSet.BuffsToAdd.Add("Ebon Plaguebringer", "Ebon Plaguebringer (Physical Vulnerability)");
+                    } 
                     break;
                 }
                 #endregion
                 #region Druid
                 case "Druid": {
                     theSet.Class = CharacterClass.Druid;
-                    theSet.Color = FromKnownColor("Orange");
-                    theSet.Spec = RB_Druid_Bear.IsChecked.GetValueOrDefault(false) ? "Bear" :
-                                  RB_Druid_Cat.IsChecked.GetValueOrDefault(false) ? "Cat" :
-                                  RB_Druid_Moonkin.IsChecked.GetValueOrDefault(false) ? "Moonkin" :
-                                  RB_Druid_Tree.IsChecked.GetValueOrDefault(false) ? "Tree" : "Bear";
+                    theSet.Color = FromKnownColor("#ff7c0a");
+                    theSet.Spec = RB_Druid_Balance.IsChecked.GetValueOrDefault(false) ? "Balance" :
+                                  RB_Druid_Feral.IsChecked.GetValueOrDefault(false) ? "Feral" :
+                                  RB_Druid_Guardian.IsChecked.GetValueOrDefault(false) ? "Guardian" :
+                                  RB_Druid_Restoration.IsChecked.GetValueOrDefault(false) ? "Restoration" : "Balance";
                     // All Specs
-                    theSet.BuffsToAdd.Add("Mark of the Wild", "Buff: Mark of the Wild (Stat %, All Resist)");
-                    theSet.BuffsToAdd.Add("Fearie Fire", "Debuff: Fearie Fire (Target Armor Reduction)");
+                    theSet.BuffsToAdd.Add("Mark of the Wild", "Buff: Mark of the Wild (Stats)");
+                    theSet.BuffsToAdd.Add("Fearie Fire", "Debuff: Fearie Fire (Weakened Armor)");
                     // Spec Specific
-                    if (theSet.Spec == "Bear") {
-                        theSet.BuffsToAdd.Add("Leader of the Pack", "Buff: Leader of the Pack (Crit)");
-                        theSet.BuffsToAdd.Add("Infected Wounds", "Debuff: Infected Wounds (Targ AtkSpd Reduc)");
-                        theSet.BuffsToAdd.Add("Mangle", "Debuff: Mangle (Bleed Dmg Mult)");
-                        theSet.BuffsToAdd.Add("Demoralizing Roar", "Debuff: Demoralizing Roar (Targ Dmg Dealt Reduc)");
-                    } else if (theSet.Spec == "Cat") {
-                        theSet.BuffsToAdd.Add("Leader of the Pack", "Buff: Leader of the Pack (Crit)");
-                        theSet.BuffsToAdd.Add("Infected Wounds", "Debuff: Infected Wounds (Targ AtkSpd Reduc)");
-                        theSet.BuffsToAdd.Add("Mangle", "Debuff: Mangle (Bleed Dmg Mult)");
-                    } else if (theSet.Spec == "Moonkin") {
-                        theSet.BuffsToAdd.Add("Moonkin Form", "Buff: Moonkin Form (SpellHaste)");
-                        theSet.BuffsToAdd.Add("Earth and Moon", "Debuff: Earth and Moon (Targ Spell Dmg Vuln)");
-                    } else if (theSet.Spec == "Tree") {
-                        theSet.BuffsToAdd.Add("Revitalize", "Buff: Revitalize (Mana Regen)");
-                    }
+                    if (theSet.Spec == "Balance") {
+                        theSet.BuffsToAdd.Add("Moonkin Form", "Buff: Moonkin Form (Spell Haste)");
+                    } else if (theSet.Spec == "Feral") {
+                        theSet.BuffsToAdd.Add("Leader of the Pack", "Buff: Leader of the Pack (Critical Strike)");
+                        theSet.BuffsToAdd.Add("Thrash", "Debuff: Thrash (Weakened Blows)");
+                    } else if (theSet.Spec == "Guardian") {
+                        theSet.BuffsToAdd.Add("Leader of the Pack", "Buff: Leader of the Pack (Critical Strike)");
+                        theSet.BuffsToAdd.Add("Thrash", "Debuff: Thrash (Weakened Blows)");
+                    }  else if (theSet.Spec == "Restoration") { }
                     break;
                 }
                 #endregion
                 #region Hunter
                 case "Hunter": {
                     theSet.Class = CharacterClass.Hunter;
-                    theSet.Color = FromKnownColor("Green");
-                    theSet.Spec = RB_Hunter_BM.IsChecked.GetValueOrDefault(false) ? "BM" :
-                                  RB_Hunter_MM.IsChecked.GetValueOrDefault(false) ? "MM" :
-                                  RB_Hunter_SV.IsChecked.GetValueOrDefault(false) ? "SV" : "MM";
-                    theSet.BuffsToAdd.Add("Hunter's Mark", "Buff: Hunter's Mark");
+                    theSet.Color = FromKnownColor("#aad372");
+                    theSet.Spec = RB_Hunter_BM.IsChecked.GetValueOrDefault(false) ? "Beast Mastery" :
+                                  RB_Hunter_MM.IsChecked.GetValueOrDefault(false) ? "Marksmanship" :
+                                  RB_Hunter_SV.IsChecked.GetValueOrDefault(false) ? "Survival" : "Beast Mastery";
+                    theSet.BuffsToAdd.Add("Widow Venom", "Debuff: Widow Venom (Mortal Wounds)");
                     // Spec Specific
-                    if (theSet.Spec == "BM") {
-                        theSet.BuffsToAdd.Add("Ferocious Inspiration", "Buff: Ferocious Inspiration (Damage)");
-                    } else if (theSet.Spec == "MM") {
-                        theSet.BuffsToAdd.Add("Trueshot Aura", "Buff: Trueshot Aura (AP)");
-                    } else if (theSet.Spec == "SV") {
-                        theSet.BuffsToAdd.Add("Hunting Party", "Buff: Hunting Party (Haste)");
+                    if (theSet.Spec == "Beast Mastery") { }
+                    else if (theSet.Spec == "Marksmanship") {
+                        theSet.BuffsToAdd.Add("Trueshot Aura (Attack Power)", "Buff: Trueshot Aura (Attack Power)");
+                        theSet.BuffsToAdd.Add("Trueshot Aura (Critical Strike)", "Buff: Trueshot Aura (Critical Strike)");
+                    } else if (theSet.Spec == "Survival") {
+                        //theSet.BuffsToAdd.Add("Hunting Party", "Buff: Hunting Party (Haste)");
                     }
                     // Pet
-                    if (theSet.Spec == "BM") {
+                    if (theSet.Spec == "Beast Mastery") {
                         if ((string)CB_Hunter_Pet_BM.SelectedItem != "None" && (string)CB_Hunter_Pet_BM.SelectedItem != "Other") {
                             string buffname = (string)CB_Hunter_Pet_BM.SelectedItem;
                             int colon = buffname.IndexOf(": ") + 2;
@@ -167,72 +161,69 @@ namespace Rawr.UI
                             theSet.BuffsToAdd.Add(buffname.Substring(colon, (perentheses - colon)), "Buff: " + buffname.Substring(colon));
                         }
                     }
-                    // Sting
-                    //if ((string)CB_Hunter_Sting.SelectedItem != "None" && (string)CB_Hunter_Sting.SelectedItem != "Other") {
-                    //    theSet.BuffsToAdd.Add((string)CB_Hunter_Sting.SelectedItem, "Debuff: " + (string)CB_Hunter_Sting.SelectedItem);
-                    //}
-                    // Hunter's Mark
-                    //if ((string)CB_Hunter_Mark.SelectedItem != "None") {
-                    //    theSet.BuffsToAdd.Add((string)CB_Hunter_Mark.SelectedItem, "Debuff: " + (string)CB_Hunter_Mark.SelectedItem
-                    //        + (theSet.Spec == "MM" && CK_Hunter_Mark.IsChecked.GetValueOrDefault(false) ? " (Imp)" : ""));
-                    //}
-                    // Aspect
-                    if ((string)CB_Hunter_Aspect.SelectedItem != "None" && (string)CB_Hunter_Aspect.SelectedItem != "Other") {
-                        theSet.BuffsToAdd.Add((string)CB_Hunter_Aspect.SelectedItem, "Buff: " + (string)CB_Hunter_Aspect.SelectedItem);
-                    }
                     break;
                 }
                 #endregion
                 #region Mage
                 case "Mage": {
                     theSet.Class = CharacterClass.Mage;
-                    theSet.Color = FromKnownColor("LightBlue");
-                    theSet.Spec = RB_Mage_Frost.IsChecked.GetValueOrDefault(false) ? "Frost" :
+                    theSet.Color = FromKnownColor("#68ccef");
+                    theSet.Spec = RB_Mage_Arcane.IsChecked.GetValueOrDefault(false) ? "Arcane" : 
                                   RB_Mage_Fire.IsChecked.GetValueOrDefault(false) ? "Fire" :
-                                  RB_Mage_Arcane.IsChecked.GetValueOrDefault(false) ? "Arcane" : "Arcane";
+                                  RB_Mage_Frost.IsChecked.GetValueOrDefault(false) ? "Frost" : "Arcane";
                     // All Specs
-                    theSet.BuffsToAdd.Add("Arcane Brilliance", "Buff: Arcane Brilliance (Intellect)");
+                    theSet.BuffsToAdd.Add("Arcane Brilliance (Spell Power)", "Buff: Arcane Brilliance (Spell Power)");
+                    theSet.BuffsToAdd.Add("Arcane Brilliance (Critical Strike)", "Buff: Arcane Brilliance (Critical Strike)");
                     theSet.BuffsToAdd.Add("Time Warp", "Buff: Time Warp (Temp Haste)");
                     // Spec Specific
-                    if (theSet.Spec == "Frost") {
-                        theSet.BuffsToAdd.Add("Enduring Winter", "Buff: Enduring Winter (Mana Regen)");
-                    } else if (theSet.Spec == "Fire") {
-                        theSet.BuffsToAdd.Add("Critical Mass", "Debuff: Critical Mass (SpellCrit Debuff)");
-                    } else if (theSet.Spec == "Arcane") {
-                        theSet.BuffsToAdd.Add("Arcane Tactics", "Buff: Arcane Tactics (Bonus Damage)");
-                        // Focus Magic
-                        if ((string)CB_Mage_Focus.SelectedItem != "None")
-                        {
-                            theSet.BuffsToAdd.Add((string)CB_Mage_Focus.SelectedItem, "Buff: " + (string)CB_Mage_Focus.SelectedItem);
-                        }
-                    }
+                    if (theSet.Spec == "Arcane") { }
+                    else if (theSet.Spec == "Fire") { }
+                    else if (theSet.Spec == "Frost") { }
                     break;
                 }
+                #endregion
+                #region Monk
+                case "Monk":
+                    {
+                        theSet.Class = CharacterClass.Monk;
+                        theSet.Color = FromKnownColor("#02B66C");
+                        theSet.Spec = RB_Monk_Brewmaster.IsChecked.GetValueOrDefault(false) ? "Brewmaster" :
+                                      RB_Monk_Mistwalker.IsChecked.GetValueOrDefault(false) ? "Mistwalker" :
+                                      RB_Monk_Windwalker.IsChecked.GetValueOrDefault(false) ? "Windwalker" : "Windwalker";
+                        // All Specs
+                        theSet.BuffsToAdd.Add("Legacy of the Emperor", "Buff: Legacy of the Emperor (Stats)");
+                        // Spec Specific
+                        if (theSet.Spec == "Brewmaster") {
+                            theSet.BuffsToAdd.Add("Keg Smash", "Debuff: Keg Smash (Weakened Blows)");
+                        }
+                        else if (theSet.Spec == "Mistwalker") { }
+                        else if (theSet.Spec == "Windwalker") {
+                            theSet.BuffsToAdd.Add("Legacy of the White Tiger", "Buff: Legacy of the White Tiger (Mastery)");
+                        }
+                        break;
+                    }
                 #endregion
                 #region Paladin
                 case "Paladin": {
                     theSet.Class = CharacterClass.Paladin;
-                    theSet.Color = FromKnownColor("Pink");
-                    theSet.Spec = RB_Paladin_Prot.IsChecked.GetValueOrDefault(false) ? "Prot" :
-                                    RB_Paladin_Ret.IsChecked.GetValueOrDefault(false) ? "Retribution" :
-                                    RB_Paladin_Holy.IsChecked.GetValueOrDefault(false) ? "Holy" : "Retribution";
+                    theSet.Color = FromKnownColor("#f48cba");
+                    theSet.Spec = RB_Paladin_Holy.IsChecked.GetValueOrDefault(false) ? "Holy" : 
+                                  RB_Paladin_Prot.IsChecked.GetValueOrDefault(false) ? "Protection" :
+                                  RB_Paladin_Ret.IsChecked.GetValueOrDefault(false) ? "Retribution" : "Holy";
                     // All Specs
                     // Spec Specific
-                    if (theSet.Spec == "Prot") {
-                        theSet.BuffsToAdd.Add("Judgements of the Just", "Debuff: Judgements of the Just (Targ AtkSpd Reduc)");
-                        theSet.BuffsToAdd.Add("Vindication", "Debuff: Vindication (Targ Dmg Dealt Reduc)");
+                    if (theSet.Spec == "Holy") { }
+                    else if (theSet.Spec == "Protection") {
+                        theSet.BuffsToAdd.Add("Hammer of the Righteous", "Debuff: Hammer of the Righteous (Weakened Blows)");
                     } else if (theSet.Spec == "Retribution") {
-                        theSet.BuffsToAdd.Add("Communion", "Buff: Communion (Mana Regen)");
-                        theSet.BuffsToAdd.Add("Sanctified Retribution", "Buff: Sanctified Retribution (Dmg %)");
-                    } else if (theSet.Spec == "Holy") {
-                    }
-                    // Aura
-                    if ((string)CB_Paladin_Aura.SelectedItem != "None") {
-                        theSet.BuffsToAdd.Add((string)CB_Paladin_Aura.SelectedItem, "Buff: " + (string)CB_Paladin_Aura.SelectedItem);
+                        theSet.BuffsToAdd.Add("Judgments of the Bold", "Debuff: Judgments of the Bold (Physical Vulnerability)");
+                        theSet.BuffsToAdd.Add("Hammer of the Righteous", "Debuff: Hammer of the Righteous (Weakened Blows)");
                     }
                     // Blessing
                     if ((string)CB_Paladin_Blessing.SelectedItem != "None") {
-                        theSet.BuffsToAdd.Add((string)CB_Paladin_Blessing.SelectedItem, "Buff: " + (string)CB_Paladin_Blessing.SelectedItem);
+                        string sString = (string)CB_Paladin_Blessing.SelectedItem;
+                        int iString = sString.IndexOf(" (");
+                        theSet.BuffsToAdd.Add(sString.Substring(0, iString), "Buff: " + (string)CB_Paladin_Blessing.SelectedItem);
                     }
                     break;
                 }
@@ -240,22 +231,19 @@ namespace Rawr.UI
                 #region Priest
                 case "Priest": {
                     theSet.Class = CharacterClass.Priest;
-                    theSet.Color = FromKnownColor("LightGray");
-                    theSet.Spec = RB_Priest_D.IsChecked.GetValueOrDefault(false) ? "Disc" :
+                    theSet.Color = FromKnownColor("#f0ebe0");
+                    theSet.Spec = RB_Priest_D.IsChecked.GetValueOrDefault(false) ? "Disciplin" :
                                   RB_Priest_Holy.IsChecked.GetValueOrDefault(false) ? "Holy" :
-                                  RB_Priest_S.IsChecked.GetValueOrDefault(false) ? "Shadow" : "Holy";
+                                  RB_Priest_S.IsChecked.GetValueOrDefault(false) ? "Shadow" : "Disciplin";
                     // All Specs
-                    theSet.BuffsToAdd.Add("Power Word: Fortitude", "Buff: Power Word Fortitude (Stamina)");
-                    theSet.BuffsToAdd.Add("Shadow Protection", "Buff: Shadow Protection (Shadow Resist)");
+                    theSet.BuffsToAdd.Add("Power Word: Fortitude", "Buff: Power Word: Fortitude (Stamina)");
+                    theSet.BuffsToAdd.Add("Power Infusion", "Buff: Power Infusion (Temp Spell Haste)");
                     // Spec Specific
-                    if (theSet.Spec == "Disc") {
-                        theSet.BuffsToAdd.Add("Power Infusion", "Buff: Power Infusion (Temp Spell Haste, Mana Regen)");
-                    } else if (theSet.Spec == "Holy") {
-                        theSet.BuffsToAdd.Add("Inspiration", "Buff: Inspiration (Damage Taken Reduc)");
-                        theSet.BuffsToAdd.Add("Hymn of Hope", "Buff: Hymn of Hope (Mana, Burst Mana Regen)");
-                    } else if (theSet.Spec == "Shadow") {
-                        theSet.BuffsToAdd.Add("Vampiric Touch", "Buff: Vampiric Touch (Mana Regen)");
-                        theSet.BuffsToAdd.Add("Mind Quickening", "Buff: Mind Quickening (Spell Haste)");
+                    if (theSet.Spec == "Disciplin"){
+                        theSet.BuffsToAdd.Add("Hymn of Hope", "Buff: Hymn of Hope (Burst Mana Regeneration)");
+                    } else if (theSet.Spec == "Holy") { }
+                    else if (theSet.Spec == "Shadow") {
+                        theSet.BuffsToAdd.Add("Shadowform", "Buff: Shadowform (Spell Haste)");
                     }
                     break;
                 }
@@ -263,25 +251,34 @@ namespace Rawr.UI
                 #region Rogue
                 case "Rogue": {
                     theSet.Class = CharacterClass.Rogue;
-                    theSet.Color = FromKnownColor("Yellow");
-                    theSet.Spec = RB_Rogue_Combat.IsChecked.GetValueOrDefault(false) ? "Combat" :
-                                  RB_Rogue_Assassin.IsChecked.GetValueOrDefault(false) ? "Assassin" :
-                                  RB_Rogue_Subtlety.IsChecked.GetValueOrDefault(false) ? "Subtlety" : "Combat";
+                    theSet.Color = FromKnownColor("#fff468");
+                    theSet.Spec = RB_Rogue_Assassin.IsChecked.GetValueOrDefault(false) ? "Assassination" :
+                                  RB_Rogue_Combat.IsChecked.GetValueOrDefault(false) ? "Combat" :
+                                  RB_Rogue_Subtlety.IsChecked.GetValueOrDefault(false) ? "Subtlety" : "Assassination";
                     // All Specs
-                    theSet.BuffsToAdd.Add("Master Poisoner", "Debuff: Master Poisoner (Targ SplDmg Taken)");
-                    theSet.BuffsToAdd.Add("Expose Armor", "Debuff: Expose Armor (Targ Armor Reduc)");
+                    theSet.BuffsToAdd.Add("Swiftblade's Cunning", "Buff: Swiftblade's Cunning (Attack Speed)");
+                    theSet.BuffsToAdd.Add("Expose Armor", "Debuff: Expose Armor (Weakened Armor)");
+                    theSet.BuffsToAdd.Add("Master Poisoner", "Debuff: Master Poisoner (Magic Vulnerability)");
                     // Spec Specific
-                    if (theSet.Spec == "Combat") {
-                        theSet.BuffsToAdd.Add("Savage Combat", "Debuff: Savage Combat (Phys Dmg %)");
-                    } else if (theSet.Spec == "Assassin") {
-                    } else if (theSet.Spec == "Subtlety") {
-                        theSet.BuffsToAdd.Add("Honor Among Thieves", "Buff: Honor Among Thieves (Crit)");
-                        theSet.BuffsToAdd.Add("Hemorrhage", "Debuff: Hemorrhage (Bleed Dmg %)");
+                    if (theSet.Spec == "Assassination") { }
+                    else if (theSet.Spec == "Combat") { }
+                    else if (theSet.Spec == "Subtlety") { }
+                    // Poisons
+                    if ((string)CB_Rogue_Poisons.SelectedItem != "None")
+                    {
+                        string sString = (string)CB_Rogue_Poisons.SelectedItem;
+                        int iString = sString.IndexOf(" (");
+                        theSet.BuffsToAdd.Add(sString.Substring(0, iString), "Debuff: " + (string)CB_Rogue_Poisons.SelectedItem);
                     }
                     // Tricks of the Trade
                     if (CB_Rogue_Tricks.SelectedIndex == 1) {
-                        string text = "Tricks of the Trade" + (CK_Rogue_Tricks.IsChecked.GetValueOrDefault(false) ? " (Glyphed)" : "");
+                        string text = "Tricks of the Trade";
                         theSet.BuffsToAdd.Add(text, "Buff: " + text + " (Temp Dmg %)");
+                        if (CK_Rogue_Tricks.IsChecked.GetValueOrDefault(false))
+                        {
+                            text += " (Glyphed)";
+                            theSet.BuffsToAdd.Add(text, "Buff: " + text + " (Temp Dmg %)");
+                        }
                     }
                     break;
                 }
@@ -289,45 +286,25 @@ namespace Rawr.UI
                 #region Shaman
                 case "Shaman": {
                     theSet.Class = CharacterClass.Shaman;
-                    theSet.Color = FromKnownColor("Blue");
-                    theSet.Spec = RB_Shaman_Enhance.IsChecked.GetValueOrDefault(false) ? "Enhance" :
-                                  RB_Shaman_Elemental.IsChecked.GetValueOrDefault(false) ? "Elemental" :
-                                  RB_Shaman_Resto.IsChecked.GetValueOrDefault(false) ? "Resto" : "Enhance";
+                    theSet.Color = FromKnownColor("#2359ff");
+                    theSet.Spec = RB_Shaman_Enhance.IsChecked.GetValueOrDefault(false) ? "Elemental" :
+                                  RB_Shaman_Elemental.IsChecked.GetValueOrDefault(false) ? "Enhancement" :
+                                  RB_Shaman_Restoration.IsChecked.GetValueOrDefault(false) ? "Restoration" : "Elemental";
                     // All Specs
+                    theSet.BuffsToAdd.Add("Burning Wrath", "Buff: Burning Wrath (Spell Power)");
+                    theSet.BuffsToAdd.Add("Grace of Air", "Buff: Grace of Air (Mastery)");
                     theSet.BuffsToAdd.Add("Heroism/Bloodlust", "Buff: Heroism/Bloodlust (Temp Haste)");
+                    theSet.BuffsToAdd.Add("Stormlash Totem", "Buff: Stormlash Totem (Temp Power Boost)");
+                    theSet.BuffsToAdd.Add("Earth Shock", "Debuff: Earth Shock (Weakened Blows)");
                     // Spec Specific
-                    if (theSet.Spec == "Enhance") {
-                        theSet.BuffsToAdd.Add("Unleashed Rage", "Buff: Unleashed Rage (AP%)");
-                    } else if (theSet.Spec == "Elemental") {
-                        theSet.BuffsToAdd.Add("Elemental Oath", "Buff: Elemental Oath (Crit)");
-                        theSet.BuffsToAdd.Add("Totemic Wrath", "Buff: Totemic Wrath (SP%)");
-                    } else if (theSet.Spec == "Resto") {
-                        theSet.BuffsToAdd.Add("Mana Tide Totem", "Buff: Mana Tide Totem (Burst Mana Regen)");
-                        theSet.BuffsToAdd.Add("Ancestral Healing", "Buff: Ancestral Healing (DmgTakenReduc)");
+                    if (theSet.Spec == "Elemental") {
+                        theSet.BuffsToAdd.Add("Elemental Oath", "Elemental Oath (Spell Haste)");
                     }
-                    // Air Totem
-                    if (CB_Shaman_TotemAir.SelectedIndex == 1) {
-                        theSet.BuffsToAdd.Add("Wrath of Air Totem", "Buff: Wrath of Air Totem (SpellHaste)");
-                    } else if (CB_Shaman_TotemAir.SelectedIndex == 2) {
-                        theSet.BuffsToAdd.Add("Windfury Totem", "Buff: Windfury Totem (PhysicalHaste)");
+                    else if (theSet.Spec == "Enhancement") {
+                        theSet.BuffsToAdd.Add("Unleashed Rage", "Unleashed Rage (Attack Speed)");
                     }
-                    // Water Totem
-                    if (CB_Shaman_TotemWater.SelectedIndex == 1) {
-                        theSet.BuffsToAdd.Add("Mana Spring Totem", "Buff: Mana Spring Totem (Mana Regen)");
-                    } else if (CB_Shaman_TotemWater.SelectedIndex == 2) {
-                        theSet.BuffsToAdd.Add("Elemental Resistance Totem", "Buff: Elemental Resistance Totem (Fire, Frost, Nature Resist)");
-                    }
-                    // Fire Totem
-                    if (CB_Shaman_TotemFire.SelectedIndex == 1) {
-                        theSet.BuffsToAdd.Add("Flametongue Totem", "Buff: Flametongue Totem (SpellDamageAndHealingBonusMult)");
-                    } else if (CB_Shaman_TotemFire.SelectedIndex == 2) {
-                        theSet.BuffsToAdd.Add("Totem of Wrath", "Buff: Totem of Wrath (SpellPower)");
-                    }
-                    // Earth Totem
-                    if (CB_Shaman_TotemEarth.SelectedIndex == 1) {
-                        theSet.BuffsToAdd.Add("Stoneskin Totem", "Buff: Stoneskin Totem (BonusArmor)");
-                    } else if (CB_Shaman_TotemEarth.SelectedIndex == 2) {
-                        theSet.BuffsToAdd.Add("Strength of Earth Totem", "Buff: Strength of Earth Totem (Strength, Agility)");
+                    else if (theSet.Spec == "Restoration") {
+                        theSet.BuffsToAdd.Add("Mana Tide Totem", "Mana Tide Totem (Burst Mana Regeneration)");
                     }
                     break;
                 }
@@ -335,27 +312,26 @@ namespace Rawr.UI
                 #region Warlock
                 case "Warlock": {
                     theSet.Class = CharacterClass.Warlock;
-                    theSet.Color = FromKnownColor("Purple");
-                    theSet.Spec = RB_Warlock_Demon.IsChecked.GetValueOrDefault(false) ? "Demon" :
-                                  RB_Warlock_Afflic.IsChecked.GetValueOrDefault(false) ? "Afflic" :
-                                  RB_Warlock_Destro.IsChecked.GetValueOrDefault(false) ? "Destro" : "Demon";
+                    theSet.Color = FromKnownColor("#9382c9");
+                    theSet.Spec = RB_Warlock_Afflic.IsChecked.GetValueOrDefault(false) ? "Affliction" : 
+                                  RB_Warlock_Demon.IsChecked.GetValueOrDefault(false) ? "Demonology" :
+                                  RB_Warlock_Destro.IsChecked.GetValueOrDefault(false) ? "Destruction" : "Affliction";
                     // All Specs
-                    theSet.BuffsToAdd.Add("Fel Intelligence (Mana)", "Buff: Fel Intelligence (Mana)");
-                    theSet.BuffsToAdd.Add("Curse of Weakness", "Debuff: Curse of Weakness (Targ Dmg Dealt %)");
-                    theSet.BuffsToAdd.Add("Improved Shadow Bolt", "Debuff: Improved Shadow Bolt (Targ Crit %)");
-                    theSet.BuffsToAdd.Add("Curse of the Elements", "Debuff: Curse of the Elements (Targ SplDmg %)");
+                    theSet.BuffsToAdd.Add("Dark Intent", "Buff: Dark Intent (Spell Power)");
                     // Spec Specific
-                    if (theSet.Spec == "Demon") {
-                        theSet.BuffsToAdd.Add("Demonic Pact", "Buff: Demonic Pact (SP%)");
-                    } else if (theSet.Spec == "Afflic") {
-                    } else if (theSet.Spec == "Destro") {
-                        theSet.BuffsToAdd.Add("Soul Leech", "Buff: Soul Leech (Mana Regen)");
+                    if (theSet.Spec == "Affliction") { }
+                    else if (theSet.Spec == "Demonology") { }
+                    else if (theSet.Spec == "Destruction") { }
+                    // Curse
+                    if (CB_Warlock_Curse.SelectedIndex == 1) {
+                        theSet.BuffsToAdd.Add("Curse of Elements", "Debuff: Curse of Elements (Magic Vulnerability)");
+                    }
+                    else if (CB_Warlock_Curse.SelectedIndex == 2) {
+                        theSet.BuffsToAdd.Add("Curse of Enfeeblement", "Debuff: Curse of Enfeeblement (Weakened Blows)");
                     }
                     // Pet
                     if (CB_Warlock_Pet.SelectedIndex == 1) {
                         theSet.BuffsToAdd.Add("Blood Pact", "Buff: Blood Pact (Stamina)");
-                    } else if (CB_Warlock_Pet.SelectedIndex == 2) {
-                        theSet.BuffsToAdd.Add("Fel Intelligence (Mp5)", "Buff: Fel Intelligence (Mp5)");
                     }
                     break;
                 }
@@ -363,37 +339,32 @@ namespace Rawr.UI
                 #region Warrior
                 case "Warrior": {
                     theSet.Class = CharacterClass.Warrior;
-                    theSet.Color = FromKnownColor("BurlyWood");
+                    theSet.Color = FromKnownColor("#c69b6d");
                     theSet.Spec = RB_Warrior_Arms.IsChecked.GetValueOrDefault(false) ? "Arms" :
                                   RB_Warrior_Fury.IsChecked.GetValueOrDefault(false) ? "Fury" :
-                                  RB_Warrior_Tank.IsChecked.GetValueOrDefault(false) ? "Prot" : "Arms";
+                                  RB_Warrior_Tank.IsChecked.GetValueOrDefault(false) ? "Protection" : "Arms";
                     // All Specs
+                    theSet.BuffsToAdd.Add("Skull Banner", "Buff: Skull Banner (Temp Crit Bonus Damage)");
+                    theSet.BuffsToAdd.Add("Shattering Throw", "Debuff: Shattering Throw (Temp Armor Reduc)");
+                    theSet.BuffsToAdd.Add("Thunder Clap", "Debuff: Thunder Clap (Weakened Blows)");
                     // Spec Specific
-                    if (theSet.Spec == "Prot") {
-                    } else if (theSet.Spec == "Arms") {
-                        theSet.BuffsToAdd.Add("Trauma", "Debuff: Trauma (Bleed Bonus)");
-                        theSet.BuffsToAdd.Add("Blood Frenzy", "Debuff: Blood Frenzy (Phys Dmg Bonus)");
-                        theSet.BuffsToAdd.Add("Shattering Throw", "Debuff: Shattering Throw (Temp Armor Reduc)");
+                    if (theSet.Spec == "Arms") {
+                        theSet.BuffsToAdd.Add("Sunder Armor", "Debuff: Sunder Armor (Weakened Armor)");
+                        theSet.BuffsToAdd.Add("Colossus Smash", "Debuff: Colossus Smash (Physical Vulnerability)");
+                        theSet.BuffsToAdd.Add("Mortal Strike", "Debuff: Mortal Strike (Mortal Wounds)");
                     } else if (theSet.Spec == "Fury") {
-                        theSet.BuffsToAdd.Add("Rampage", "Buff: Rampage (Crit)");
+                        theSet.BuffsToAdd.Add("Sunder Armor", "Debuff: Sunder Armor (Weakened Armor)");
+                        theSet.BuffsToAdd.Add("Colossus Smash", "Debuff: Colossus Smash (Physical Vulnerability)");
+                        theSet.BuffsToAdd.Add("Wild Strike", "Debuff: Wild Strike (Mortal Wounds)");
+                    }
+                    else if (theSet.Spec == "Protection") {
+                        theSet.BuffsToAdd.Add("Devastate", "Debuff: Devastate (Weakened Armor)");
                     }
                     // Buff Shout
                     if (CB_Warrior_BuffShout.SelectedIndex == 1) {
-                        theSet.BuffsToAdd.Add("Battle Shout", "Buff: Battle Shout (Strength, Agility)");
-                    } else if (CB_Warrior_BuffShout.SelectedIndex == 2) {
                         theSet.BuffsToAdd.Add("Commanding Shout", "Buff: Commanding Shout (Stamina)");
-                    }
-                    // Debuff Shout
-                    if (CB_Warrior_DebuffShout.SelectedIndex == 1) {
-                        theSet.BuffsToAdd.Add("Demoralizing Shout", "Debuff: Demoralizing Shout (Target Dmg Reduc)");
-                    }
-                    // Thunderclap
-                    if (theSet.Spec == "Prot" || (theSet.Spec == "Arms" && CB_Warrior_Thunderclap.SelectedIndex == 1)) {
-                        theSet.BuffsToAdd.Add("Thunder Clap", "Debuff: Thunder Clap (Target AtkSpd Reduc)");
-                    }
-                    // Sunder Armor
-                    if (theSet.Spec == "Prot" || ((theSet.Spec == "Arms" || theSet.Spec == "Fury") && (CB_Warrior_Sunder.SelectedIndex == 1))) {
-                        theSet.BuffsToAdd.Add("Sunder Armor", "Debuff: Sunder Armor (Target Armor Reduc)");
+                    } else if (CB_Warrior_BuffShout.SelectedIndex == 2) {
+                        theSet.BuffsToAdd.Add("Battle Shout", "Buff: Battle Shout (Attack Power)");
                     }
                     break;
                 }
@@ -444,6 +415,7 @@ namespace Rawr.UI
             GB_Druid.Visibility = Visibility.Collapsed;
             GB_Hunter.Visibility = Visibility.Collapsed;
             GB_Mage.Visibility = Visibility.Collapsed;
+            GB_Monk.Visibility = Visibility.Collapsed;
             GB_Priest.Visibility = Visibility.Collapsed;
             GB_Paladin.Visibility = Visibility.Collapsed;
             GB_Rogue.Visibility = Visibility.Collapsed;
@@ -457,6 +429,7 @@ namespace Rawr.UI
                 case "Druid": { GB_Druid.Visibility = Visibility.Visible; break; }
                 case "Hunter": { GB_Hunter.Visibility = Visibility.Visible; break; }
                 case "Mage": { GB_Mage.Visibility = Visibility.Visible; break; }
+                case "Monk": { GB_Monk.Visibility = Visibility.Visible; break; }
                 case "Priest": { GB_Priest.Visibility = Visibility.Visible; break; }
                 case "Paladin": { GB_Paladin.Visibility = Visibility.Visible; break; }
                 case "Rogue": { GB_Rogue.Visibility = Visibility.Visible; break; }
@@ -485,47 +458,20 @@ namespace Rawr.UI
                 // Pet: Optional
                 LB_Hunter_Pet.Visibility = Visibility.Visible;
                 CB_Hunter_Pet_BM.Visibility = Visibility.Visible;
+                CB_Hunter_Pet_BM.SelectedIndex = 0;
                 CB_Hunter_Pet.Visibility = Visibility.Collapsed;
-                // Sting
-                //LB_Hunter_Sting.Visibility = Visibility.Visible;
-                //CB_Hunter_Sting.Visibility = Visibility.Visible;
-                // Hunter's Mark
-                //LB_Hunter_Mark.Visibility = Visibility.Visible;
-                //CB_Hunter_Mark.Visibility = Visibility.Visible;
-                //CK_Hunter_Mark.Visibility = Visibility.Collapsed;
-                // Aspect
-                LB_Hunter_Aspect.Visibility = Visibility.Visible;
-                CB_Hunter_Aspect.Visibility = Visibility.Visible;
             } else if (RB_Hunter_MM.IsChecked.GetValueOrDefault(false)) {
                 // Pet: Optional
                 LB_Hunter_Pet.Visibility = Visibility.Visible;
                 CB_Hunter_Pet_BM.Visibility = Visibility.Collapsed;
                 CB_Hunter_Pet.Visibility = Visibility.Visible;
-                // Sting
-                //LB_Hunter_Sting.Visibility = Visibility.Visible;
-                //CB_Hunter_Sting.Visibility = Visibility.Visible;
-                // Hunter's Mark
-                //LB_Hunter_Mark.Visibility = Visibility.Visible;
-                //CB_Hunter_Mark.Visibility = Visibility.Visible;
-                //CK_Hunter_Mark.Visibility = Visibility.Visible;
-                // Aspect
-                LB_Hunter_Aspect.Visibility = Visibility.Visible;
-                CB_Hunter_Aspect.Visibility = Visibility.Visible;
+                CB_Hunter_Pet.SelectedIndex = 0;
             } else if (RB_Hunter_SV.IsChecked.GetValueOrDefault(false)) {
                 // Pet: Optional
                 LB_Hunter_Pet.Visibility = Visibility.Visible;
                 CB_Hunter_Pet_BM.Visibility = Visibility.Collapsed;
                 CB_Hunter_Pet.Visibility = Visibility.Visible;
-                // Sting
-                //LB_Hunter_Sting.Visibility = Visibility.Visible;
-                //CB_Hunter_Sting.Visibility = Visibility.Visible;
-                // Hunter's Mark
-                //LB_Hunter_Mark.Visibility = Visibility.Visible;
-                //CB_Hunter_Mark.Visibility = Visibility.Visible;
-                //CK_Hunter_Mark.Visibility = Visibility.Collapsed;
-                // Aspect
-                LB_Hunter_Aspect.Visibility = Visibility.Visible;
-                CB_Hunter_Aspect.Visibility = Visibility.Visible;
+                CB_Hunter_Pet.SelectedIndex = 0;
             }
         }
         // Mage
@@ -533,21 +479,22 @@ namespace Rawr.UI
         {
             // Do nothing because there are no specialties to swap around
         }
+        // Monk
+        private void CK_MonkSpec_Changed(object sender, RoutedEventArgs e)
+        {
+            // Do nothing because there are no specialties to swap around
+        }
         // Paladin
         private void CK_PaladinSpec_Changed(object sender, RoutedEventArgs e)
         {
             if (RB_Paladin_Prot.IsChecked.GetValueOrDefault(false)) {
-                CB_Paladin_Aura.SelectedIndex = 2;
                 CB_Paladin_Blessing.SelectedIndex = 1;
             } else if (RB_Paladin_Ret.IsChecked.GetValueOrDefault(false)) {
-                CB_Paladin_Aura.SelectedIndex = 3;
                 CB_Paladin_Blessing.SelectedIndex = 2;
             } else if (RB_Paladin_Holy.IsChecked.GetValueOrDefault(false)) {
-                CB_Paladin_Aura.SelectedIndex = 1;
                 CB_Paladin_Blessing.SelectedIndex = 1;
             } else {
                 // Set them all to None
-                CB_Paladin_Aura.SelectedIndex = 0;
                 CB_Paladin_Blessing.SelectedIndex = 0;
             }
         }
@@ -565,26 +512,10 @@ namespace Rawr.UI
         private void CK_ShamanSpec_Changed(object sender, RoutedEventArgs e)
         {
             if (RB_Shaman_Enhance.IsChecked.GetValueOrDefault(false)) {
-                CB_Shaman_TotemAir.SelectedIndex = 2;
-                CB_Shaman_TotemWater.SelectedIndex = 1;
-                CB_Shaman_TotemFire.SelectedIndex = 3;
-                CB_Shaman_TotemEarth.SelectedIndex = 2;
             } else if (RB_Shaman_Elemental.IsChecked.GetValueOrDefault(false)) {
-                CB_Shaman_TotemAir.SelectedIndex = 1;
-                CB_Shaman_TotemWater.SelectedIndex = 1;
-                CB_Shaman_TotemFire.SelectedIndex = 2;
-                CB_Shaman_TotemEarth.SelectedIndex = 2;
-            } else if (RB_Shaman_Resto.IsChecked.GetValueOrDefault(false)) {
-                CB_Shaman_TotemAir.SelectedIndex = 1;
-                CB_Shaman_TotemWater.SelectedIndex = 1;
-                CB_Shaman_TotemFire.SelectedIndex = 1;
-                CB_Shaman_TotemEarth.SelectedIndex = 1;
+            } else if (RB_Shaman_Restoration.IsChecked.GetValueOrDefault(false)) {
             } else {
                 // Set them all to None
-                CB_Shaman_TotemAir.SelectedIndex = 0;
-                CB_Shaman_TotemWater.SelectedIndex = 0;
-                CB_Shaman_TotemFire.SelectedIndex = 0;
-                CB_Shaman_TotemEarth.SelectedIndex = 0;
             }
         }
         // Warlock
@@ -599,61 +530,24 @@ namespace Rawr.UI
             LB_Warrior_BuffShout.Visibility = Visibility.Collapsed;
             CB_Warrior_BuffShout.Visibility = Visibility.Collapsed;
             CB_Warrior_BuffShout.SelectedIndex = 0;
-            // Debuff Shouts
-            LB_Warrior_DebuffShout.Visibility = Visibility.Collapsed;
-            CB_Warrior_DebuffShout.Visibility = Visibility.Collapsed;
-            CB_Warrior_DebuffShout.SelectedIndex = 0;
-            // Thunderclap
-            LB_Warrior_Thunderclap.Visibility = Visibility.Collapsed;
-            CB_Warrior_Thunderclap.Visibility = Visibility.Collapsed;
-            CB_Warrior_Thunderclap.SelectedIndex = 0;
-            // Sunder Armor
-            LB_Warrior_Sunder.Visibility = Visibility.Collapsed;
-            CB_Warrior_Sunder.Visibility = Visibility.Collapsed;
-            CB_Warrior_Sunder.SelectedIndex = 0;
 
-            if        (RB_Warrior_Tank.IsChecked.GetValueOrDefault(false)) {
+            if (RB_Warrior_Tank.IsChecked.GetValueOrDefault(false)) {
                 // Buff Shout: Optional
                 LB_Warrior_BuffShout.Visibility = Visibility.Visible;
                 CB_Warrior_BuffShout.Visibility = Visibility.Visible;
-                CB_Warrior_BuffShout.SelectedIndex = 2;
-                // Debuff Shout: Optional
-                LB_Warrior_DebuffShout.Visibility = Visibility.Visible;
-                CB_Warrior_DebuffShout.Visibility = Visibility.Visible;
-                CB_Warrior_DebuffShout.SelectedIndex = 1;
+                CB_Warrior_BuffShout.SelectedIndex = 1;
                 // Thunderclap: Always
                 // Sunder: Always
             } else if (RB_Warrior_Arms.IsChecked.GetValueOrDefault(false)) {
                 // Buff Shout: Optional
                 LB_Warrior_BuffShout.Visibility = Visibility.Visible;
                 CB_Warrior_BuffShout.Visibility = Visibility.Visible;
-                CB_Warrior_BuffShout.SelectedIndex = 1;
-                // Debuff Shout: Optional
-                LB_Warrior_DebuffShout.Visibility = Visibility.Visible;
-                CB_Warrior_DebuffShout.Visibility = Visibility.Visible;
-                CB_Warrior_DebuffShout.SelectedIndex = 1;
-                // Thunderclap: Optional
-                LB_Warrior_Thunderclap.Visibility = Visibility.Visible;
-                CB_Warrior_Thunderclap.Visibility = Visibility.Visible;
-                CB_Warrior_Thunderclap.SelectedIndex = 1;
-                // Sunder: Optional
-                LB_Warrior_Sunder.Visibility = Visibility.Visible;
-                CB_Warrior_Sunder.Visibility = Visibility.Visible;
-                CB_Warrior_Sunder.SelectedIndex = 1;
+                CB_Warrior_BuffShout.SelectedIndex = 2;
             } else if (RB_Warrior_Fury.IsChecked.GetValueOrDefault(false)) {
                 // Buff Shout: Optional
                 LB_Warrior_BuffShout.Visibility = Visibility.Visible;
                 CB_Warrior_BuffShout.Visibility = Visibility.Visible;
-                CB_Warrior_BuffShout.SelectedIndex = 1;
-                // Debuff Shout: Optional
-                LB_Warrior_DebuffShout.Visibility = Visibility.Visible;
-                CB_Warrior_DebuffShout.Visibility = Visibility.Visible;
-                CB_Warrior_DebuffShout.SelectedIndex = 1;
-                // Thunderclap: Unavailable
-                // Sunder: Optional
-                LB_Warrior_Sunder.Visibility = Visibility.Visible;
-                CB_Warrior_Sunder.Visibility = Visibility.Visible;
-                CB_Warrior_Sunder.SelectedIndex = 1;
+                CB_Warrior_BuffShout.SelectedIndex = 2;
             }
         }
         #endregion

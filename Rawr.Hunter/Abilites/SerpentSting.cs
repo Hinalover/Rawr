@@ -21,21 +21,36 @@ namespace Rawr.Hunter.Skills
         {
             Char = c; StatS = s; combatFactors = cf; Whiteattacks = wa; CalcOpts = co;
             Name = "Serpent Sting";
+            shortName = "Sting";
+
             ReqRangedWeap = true;
             ReqSkillsRange = true;
             TimeBtwnTicks = 3f; // In Seconds
             Duration = 15f;
             FocusCost = 25f;
             eShot = Shots.SerpentSting;
-            DamageBase = (StatS.RangedAttackPower * 0.4f + (460f * 15f / 3f));
-            
-            BonusCritChance = 1f + (Talents.GlyphOfSerpentSting ? 0.06f : 0f) + (Talents.ImprovedSerpentSting * 0.05f);
-            MinRange = 5f;
+            DamageType = ItemDamageType.Nature;
+
+
+            DamageBase = (((StatS.RangedAttackPower * .08f) + 1620.19f) * 5f);
+
+            if (((Specialization)Talents.Specialization == Specialization.Survival))
+            {
+                // Improved Serpent Sting
+                DamageBase = (DamageBase * 1.5f) * 1.3f;
+            }
+            //TODO: Viper Venom -> Focus Recovery
+
+
+            //Commented out for MoP.. doubling of value is now pre-Crit (Improved Serpent Sting passive), and crit is on top of that value
+            //BonusCritChance = 1f + (Talents.GlyphOfSerpentSting ? 0.06f : 0f) + (Talents.ImprovedSerpentSting * 0.05f);
+
+            MinRange = 0f;
             MaxRange = 40f;
             CanCrit = true;
             StatS.BonusDamageMultiplier += (.05f * Talents.NoxiousStings);
             StatS.BonusCritDamageMultiplier += (.5f * Talents.Toxicology);
-            // Improved Serpent Sting
+            
             // Noxious Stings
             //
             Initialize();

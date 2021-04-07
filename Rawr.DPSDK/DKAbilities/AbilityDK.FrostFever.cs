@@ -26,20 +26,16 @@ namespace Rawr.DK
             this.Cooldown = 0;
             this.CastTime = 0;
             this.AbilityIndex = (int)DKability.FrostFever;
+            this.uDuration = 30000;
             uRange = 0;
             UpdateCombatState(CS);
         }
 
         public override void UpdateCombatState(CombatState CS)
         {
+            // TODO: Implement Chilblains:  (Currently there's no useful model for this)
+            // Victims of your Frost Fever disease are Chilled, reducing movement speed by 50% for 10 sec, and your Chains of Ice immobilizes targets for 3 sec.
             base.UpdateCombatState(CS);
-            if (CState.m_uDiseaseCount < (2 + CS.m_Talents.EbonPlaguebringer))
-                CState.m_uDiseaseCount++;
-            if (CS.m_Talents.Epidemic > 3)
-                // error
-                this.uDuration = 21000;
-            else
-                this.uDuration = 21 * 1000 + ((uint)CS.m_Talents.Epidemic * 4000);
         }
 
 

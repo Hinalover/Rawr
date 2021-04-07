@@ -34,22 +34,17 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Center" Width="Auto" Text="Player Level: " TextWrapping="Wrap" ToolTipService.ToolTip=""/>
                     <ComboBox Margin="0,2,0,2" Grid.Column="1" Grid.Row="0" Height="Auto" SelectedItem="{Binding Mode=TwoWay, Path=PlayerLevel}">
-                        <System:Int32>70</System:Int32>
-                        <System:Int32>71</System:Int32>
-                        <System:Int32>72</System:Int32>
-                        <System:Int32>73</System:Int32>
-                        <System:Int32>74</System:Int32>
-                        <System:Int32>75</System:Int32>
-                        <System:Int32>76</System:Int32>
-                        <System:Int32>77</System:Int32>
-                        <System:Int32>78</System:Int32>
-                        <System:Int32>79</System:Int32>
                         <System:Int32>80</System:Int32>
                         <System:Int32>81</System:Int32>
                         <System:Int32>82</System:Int32>
                         <System:Int32>83</System:Int32>
                         <System:Int32>84</System:Int32>
                         <System:Int32>85</System:Int32>
+                        <System:Int32>86</System:Int32>
+                        <System:Int32>87</System:Int32>
+                        <System:Int32>88</System:Int32>
+                        <System:Int32>89</System:Int32>
+                        <System:Int32>90</System:Int32>
                     </ComboBox>
                     <Button Grid.Row="1" Grid.ColumnSpan="2" Content="Scale Raid Buffs to Level" Margin="2,2,2,2" Click="ScaleRaidBuffsToLevel_Click" />
                     <TextBlock Height="Auto" Grid.Row="2" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Cast Latency: *" TextWrapping="Wrap" ToolTipService.ToolTip="Effective latency in seconds. The value should include the benefit of built-in /stopcasting."/>
@@ -102,17 +97,13 @@
                     <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Automatic Armor: *" TextWrapping="Wrap" ToolTipService.ToolTip="Optimize between mage and molten armor. Disable to improve performance." Grid.Row="0"/>
                     <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Text="Heroism/Bloodlust: *" TextWrapping="Wrap" ToolTipService.ToolTip="Enable use of Heroism." Grid.Row="1" d:LayoutOverrides="GridBox"/>
                     <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Power Infusion: *" TextWrapping="Wrap" ToolTipService.ToolTip="Enable use of Power Infusion (one priest only)." Grid.Row="2"/>
-                    <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Volcanic Potion: *" TextWrapping="Wrap" ToolTipService.ToolTip="Enable use of Potion of Wild Magic." Grid.Row="3"/>
-                    <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Flame Cap: *" TextWrapping="Wrap" ToolTipService.ToolTip="Enable use of Flame Caps." Grid.Row="5"/>
+                    <TextBlock Height="Auto" HorizontalAlignment="Left" Margin="2,2,0,0" VerticalAlignment="Top" Width="190" Text="Potion of the Jade Serpent: *" TextWrapping="Wrap" ToolTipService.ToolTip="Enable use of Potion of the Jade Serpent." Grid.Row="3"/>
                     <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Mirror Image: *" TextWrapping="Wrap" ToolTipService.ToolTip="Enable use of Mirror Image." Grid.Row="6"/>
-                    <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Flame Orb: *" TextWrapping="Wrap" ToolTipService.ToolTip="Enable use of Flame Orb either as averaged or as a cooldown." Grid.Row="7"/>
                     <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Center" Width="Auto" Text="Heroism Control:" TextWrapping="Wrap" ToolTipService.ToolTip="" Grid.Row="9"/>
                     <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Innervate: *" TextWrapping="Wrap" ToolTipService.ToolTip="Number of innervates received." Grid.Row="10"/>
-                    <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Ignite Munching: *" TextWrapping="Wrap" ToolTipService.ToolTip="How much of Ignite damage is lost due to the munching mechanics (typically 0.2-0.4)" Grid.Row="11"/>
                     <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Average Cooldowns: *" TextWrapping="Wrap" ToolTipService.ToolTip="Enable to make cooldown maximum usage gradually increases with fight duration (i.e. max 1.66 Arcane Power activations on a 5 minute fight)." Grid.Row="12"/>
                     <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Disable Cooldowns: *" TextWrapping="Wrap" ToolTipService.ToolTip="Disables other activatable cooldowns (talents and trinkets)." Grid.Row="13"/>
                     <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Evocation: *" TextWrapping="Wrap" ToolTipService.ToolTip="You can uncheck this to disable use of Evocation." Grid.Row="14"/>
-                    <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="2T10 Evocation: *" TextWrapping="Wrap" ToolTipService.ToolTip="Enable this to use Evocation with 2T10 buff, only has effect if you actually have 2T10 equipped." Grid.Row="15"/>
                     <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Mana Potion: *" TextWrapping="Wrap" ToolTipService.ToolTip="You can uncheck this to disable use of Mana Potions." Grid.Row="16"/>
                     <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Mana Gem: *" TextWrapping="Wrap" ToolTipService.ToolTip="You can uncheck this to disable use of Mana Gems." Grid.Row="17"/>
                     <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Center" Width="Auto" Text="Custom Spell Mix: *" TextWrapping="Wrap" ToolTipService.ToolTip="Enable and configure a special custom mix of spells." Grid.Row="18"/>
@@ -121,20 +112,12 @@
                     <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Disable Mana Regen Cycles: *" TextWrapping="Wrap" ToolTipService.ToolTip="If you include mana neutral cycle mix the mana regen cycles will almost never be optimal." Grid.Row="21"/>
                     <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Snared Time (0-1): *" TextWrapping="Wrap" ToolTipService.ToolTip="Percentage of time that the target is snared by someone else, cycles that provide snare override this to 1." Grid.Row="22"/>
                     <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Frostbite Utilization (0-1): *" TextWrapping="Wrap" ToolTipService.ToolTip="Utilization of 1 corresponds to no diminishing returns, only applies to Blizzard." Grid.Row="23"/>
-                    <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Focus Magic Rate: *" TextWrapping="Wrap" ToolTipService.ToolTip="Normalized crit rate of Focus Magic target, compute as [1 - (1 - crit chance) ^ (1 / cast time)] (example 50% crit change, 3 sec cast time =&gt; 0.206)" Grid.Row="24"/>
-                    <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Dark Intent Rate: *" TextWrapping="Wrap" ToolTipService.ToolTip="Normalized Dot crit rate of Dark Intent warlock, compute as [1 - (1 - crit chance) ^ (1 / time between dot ticks)] (example 35% crit change, 0.5 sec between dot ticks =&gt; 0.5775)" Grid.Row="25"/>
-                    <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Pyromaniac Uptime (0-1): *" TextWrapping="Wrap" ToolTipService.ToolTip="Percent of time that at least 3 targets are affected by fire dots." Grid.Row="26"/>
+                    <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Rune of Power Interval: *" TextWrapping="Wrap" ToolTipService.ToolTip="Refresh time for Rune of Power in seconds." Grid.Row="24"/>
                     <CheckBox Margin="0,2,0,2" Content="" Grid.Column="1" Grid.Row="0" IsChecked="{Binding Mode=TwoWay, Path=AutomaticArmor}"/>
                     <CheckBox Margin="0,2,0,2" Content="" Grid.Column="1" Grid.Row="1" IsChecked="{Binding Mode=TwoWay, Path=HeroismAvailable}" d:LayoutOverrides="Height, VerticalMargin"/>
                     <CheckBox Margin="0,2,0,2" Content="" Grid.Column="1" Grid.Row="2" IsChecked="{Binding Mode=TwoWay, Path=PowerInfusionAvailable}" d:LayoutOverrides="Height, VerticalMargin"/>
                     <CheckBox Margin="0,2,0,2" Content="" Grid.Column="1" Grid.Row="3" IsChecked="{Binding Mode=TwoWay, Path=VolcanicPotion}" d:LayoutOverrides="Height, VerticalMargin"/>
-                    <CheckBox Margin="0,2,0,2" Content="" Grid.Column="1" Grid.Row="5" IsChecked="{Binding Mode=TwoWay, Path=FlameCap}" d:LayoutOverrides="Height, VerticalMargin"/>
                     <ComboBox Margin="0,2,0,2" Grid.Column="1" Grid.Row="6" SelectedItem="{Binding Mode=TwoWay, Path=MirrorImageText}" Height="Auto">
-                        <System:String>Disabled</System:String>
-                        <System:String>Averaged</System:String>
-                        <System:String>Cooldown</System:String>
-                    </ComboBox>
-                    <ComboBox Margin="0,2,0,2" Grid.Column="1" Grid.Row="7" SelectedItem="{Binding Mode=TwoWay, Path=FlameOrbText}" Height="Auto">
                         <System:String>Disabled</System:String>
                         <System:String>Averaged</System:String>
                         <System:String>Cooldown</System:String>
@@ -146,11 +129,9 @@
                         <System:String>After 35%</System:String>
                     </ComboBox>
                     <TextBox Height="20" Margin="0,2,0,2" Grid.Column="1" Text="{Binding Mode=TwoWay, Path=Innervate}" TextWrapping="Wrap" Grid.Row="10"/>
-                    <TextBox Height="20" Margin="0,2,0,2" Grid.Column="1" Text="{Binding Mode=TwoWay, Path=IgniteMunching}" TextWrapping="Wrap" Grid.Row="11"/>
                     <CheckBox Margin="0,2,0,2" Content="" Grid.Column="1" Grid.Row="12" IsChecked="{Binding Mode=TwoWay, Path=AverageCooldowns}"/>
                     <CheckBox Margin="0,2,0,2" Content="" Grid.Column="1" Grid.Row="13" IsChecked="{Binding Mode=TwoWay, Path=DisableCooldowns}"/>
                     <CheckBox Margin="0,2,0,2" Content="" Grid.Column="1" Grid.Row="14" IsChecked="{Binding Mode=TwoWay, Path=EvocationEnabled}"/>
-                    <CheckBox Margin="0,2,0,2" Content="" Grid.Column="1" Grid.Row="15" IsChecked="{Binding Mode=TwoWay, Path=Enable2T10Evocation}"/>
                     <CheckBox Margin="0,2,0,2" Content="" Grid.Column="1" Grid.Row="16" IsChecked="{Binding Mode=TwoWay, Path=ManaPotionEnabled}"/>
                     <CheckBox Margin="0,2,0,2" Content="" Grid.Column="1" Grid.Row="17" IsChecked="{Binding Mode=TwoWay, Path=ManaGemEnabled}"/>
                     <CheckBox Margin="0,2,0,2" Content="" Grid.Column="1" Grid.Row="19" IsChecked="{Binding Mode=TwoWay, Path=CustomSpellMixOnly}"/>
@@ -160,9 +141,7 @@
                     <Button Margin="0,2,0,2" Content="..." Grid.Column="1" Grid.Row="18" Width="96" HorizontalAlignment="Right" VerticalAlignment="Stretch" Click="CustomSpellMix_Click" />
                     <TextBox Height="20" Margin="0,2,0,2" Grid.Column="1" Text="{Binding Mode=TwoWay, Path=SnaredTime}" TextWrapping="Wrap" Grid.Row="22"/>
                     <TextBox Height="20" Margin="0,2,0,2" Grid.Column="1" Text="{Binding Mode=TwoWay, Path=FrostbiteUtilization}" TextWrapping="Wrap" Grid.Row="23"/>
-                    <TextBox Height="20" Margin="0,2,0,2" Grid.Column="1" Text="{Binding Mode=TwoWay, Path=FocusMagicTargetCritRate}" TextWrapping="Wrap" Grid.Row="24"/>
-                    <TextBox Height="20" Margin="0,2,0,2" Grid.Column="1" Text="{Binding Mode=TwoWay, Path=DarkIntentWarlockCritRate}" TextWrapping="Wrap" Grid.Row="25"/>
-                    <TextBox Height="20" Margin="0,2,0,2" Grid.Column="1" Text="{Binding Mode=TwoWay, Path=PyromaniacUptime}" TextWrapping="Wrap" Grid.Row="26"/>
+                    <TextBox Height="20" Margin="0,2,0,2" Grid.Column="1" Text="{Binding Mode=TwoWay, Path=RuneOfPowerInterval}" TextWrapping="Wrap" Grid.Row="24"/>
                 </Grid>
             </controls:TabItem>
             <controls:TabItem Header="Fight">
@@ -203,7 +182,6 @@
                     <TextBlock Grid.Column="0" Grid.Row="0" Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Center" Width="Auto" Text="Boss Handler: " TextWrapping="Wrap" ToolTipService.ToolTip="Use Boss Handler settings instead of this page." />
                     <TextBlock Grid.Column="0" Grid.Row="1" Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Center" Width="Auto" Text="Target Level: " TextWrapping="Wrap" ToolTipService.ToolTip="" />
                     <TextBlock Grid.Column="0" Grid.Row="2" Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Fight Duration (sec):" TextWrapping="Wrap" ToolTipService.ToolTip="" />
-                    <TextBlock Grid.Column="0" Grid.Row="3" Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Tps Limit: *" TextWrapping="Wrap" ToolTipService.ToolTip="Threat per second limit. Set to 0 to disable threat constraint." />
                     <TextBlock Grid.Column="0" Grid.Row="4" Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Dps time (0-1): *" TextWrapping="Wrap" ToolTipService.ToolTip="Time spent casting (default value is 1 = 100%). This value is analogous to Dps time in WWS reports, use it to indicate how much time is lost on movement and waiting." />
                     <TextBlock Grid.Column="0" Grid.Row="5" Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="In Combat (0-1): *" TextWrapping="Wrap" ToolTipService.ToolTip="Indicates how much time you're in combat while not dpsing." />
                     <TextBlock Grid.Column="0" Grid.Row="6" Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Interrupt Frequency: *" TextWrapping="Wrap" ToolTipService.ToolTip="Frequency of pushbacks expressed as number of interrupts per second. An example value for Teron Gorefiend would be between 0.05 and 0.1." />
@@ -225,16 +203,6 @@
                     <TextBlock Grid.Column="0" Grid.Row="22" Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="Unlimited Mana: *" TextWrapping="Wrap" ToolTipService.ToolTip="Enable to completely ignore mana in evaluations." />
                     <TextBlock Grid.Column="0" Grid.Row="23" Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,2" VerticalAlignment="Top" Width="Auto" Text="PVP: *" TextWrapping="Wrap" ToolTipService.ToolTip="When enabled follows PVP rules." />
                     <ComboBox Grid.Column="1" Grid.Row="1" Margin="0,2,0,2" Height="Auto" SelectedItem="{Binding Mode=TwoWay, Path=CustomTargetLevel}">
-                        <System:Int32>70</System:Int32>
-                        <System:Int32>71</System:Int32>
-                        <System:Int32>72</System:Int32>
-                        <System:Int32>73</System:Int32>
-                        <System:Int32>74</System:Int32>
-                        <System:Int32>75</System:Int32>
-                        <System:Int32>76</System:Int32>
-                        <System:Int32>77</System:Int32>
-                        <System:Int32>78</System:Int32>
-                        <System:Int32>79</System:Int32>
                         <System:Int32>80</System:Int32>
                         <System:Int32>81</System:Int32>
                         <System:Int32>82</System:Int32>
@@ -244,18 +212,13 @@
                         <System:Int32>86</System:Int32>
                         <System:Int32>87</System:Int32>
                         <System:Int32>88</System:Int32>
+                        <System:Int32>89</System:Int32>
+                        <System:Int32>90</System:Int32>
+                        <System:Int32>91</System:Int32>
+                        <System:Int32>92</System:Int32>
+                        <System:Int32>93</System:Int32>
                     </ComboBox>
                     <ComboBox Grid.Column="1" Grid.Row="10" Margin="0,2,0,2" Height="Auto" SelectedItem="{Binding Mode=TwoWay, Path=AoeTargetLevel}">
-                        <System:Int32>70</System:Int32>
-                        <System:Int32>71</System:Int32>
-                        <System:Int32>72</System:Int32>
-                        <System:Int32>73</System:Int32>
-                        <System:Int32>74</System:Int32>
-                        <System:Int32>75</System:Int32>
-                        <System:Int32>76</System:Int32>
-                        <System:Int32>77</System:Int32>
-                        <System:Int32>78</System:Int32>
-                        <System:Int32>79</System:Int32>
                         <System:Int32>80</System:Int32>
                         <System:Int32>81</System:Int32>
                         <System:Int32>82</System:Int32>
@@ -265,9 +228,13 @@
                         <System:Int32>86</System:Int32>
                         <System:Int32>87</System:Int32>
                         <System:Int32>88</System:Int32>
+                        <System:Int32>89</System:Int32>
+                        <System:Int32>90</System:Int32>
+                        <System:Int32>91</System:Int32>
+                        <System:Int32>92</System:Int32>
+                        <System:Int32>93</System:Int32>
                     </ComboBox>
                     <TextBox Grid.Column="1" Grid.Row="2" Height="20" Margin="0,2,0,2" Text="{Binding Mode=TwoWay, Path=CustomFightDuration, UpdateSourceTrigger=Default}" TextWrapping="Wrap" />
-                    <TextBox Grid.Column="1" Grid.Row="3" Height="20" Margin="0,2,0,2" Text="{Binding Mode=TwoWay, Path=TpsLimit, UpdateSourceTrigger=Default}" TextWrapping="Wrap" />
                     <TextBox Grid.Column="1" Grid.Row="4" Height="20" Margin="0,2,0,2" Text="{Binding Mode=TwoWay, Path=DpsTime, UpdateSourceTrigger=Default}" TextWrapping="Wrap" />
                     <TextBox Grid.Column="1" Grid.Row="5" Height="20" Margin="0,2,0,2" Text="{Binding Mode=TwoWay, Path=Fragmentation, UpdateSourceTrigger=Default}" TextWrapping="Wrap" />
                     <TextBox Grid.Column="1" Grid.Row="6" Height="20" Margin="0,2,0,2" Text="{Binding Mode=TwoWay, Path=InterruptFrequency, UpdateSourceTrigger=Default}" TextWrapping="Wrap" />
@@ -471,8 +438,6 @@
                         <TextBox Height="20" Margin="0,2,0,2" Grid.Column="1" Text="{Binding Mode=TwoWay, Path=ChanceToLiveScore, UpdateSourceTrigger=Default}" TextWrapping="Wrap" Grid.Row="4"/>
                         <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,0" VerticalAlignment="Top" Width="Auto" Text="Survivability Attenuation: *" TextWrapping="Wrap" ToolTipService.ToolTip="Final Survivability value is calculated as Survivability Score * Chance To Live ^ Survivability Attenuation." Grid.Row="5"/>
                         <TextBox Height="20" Margin="0,2,0,2" Grid.Column="1" Text="{Binding Mode=TwoWay, Path=ChanceToLiveAttenuation, UpdateSourceTrigger=Default}" TextWrapping="Wrap" Grid.Row="5"/>
-                        <TextBlock Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,0" VerticalAlignment="Top" Width="Auto" Text="Use Mage Ward: *" TextWrapping="Wrap" ToolTipService.ToolTip="Allows use of Mage Ward every 30 seconds." Grid.Row="6"/>
-                        <CheckBox Margin="0,2,0,2" Content="" Grid.Column="1" Grid.Row="6" IsChecked="{Binding Mode=TwoWay, Path=UseMageWard, UpdateSourceTrigger=Default}" d:LayoutOverrides="Height"/>
                     </Grid>
                 </Grid>
             </controls:TabItem>
@@ -620,8 +585,6 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0" Text="Cycle Analysis:" Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,0" VerticalAlignment="Top" Width="Auto" TextWrapping="Wrap"/>
                     <Button Grid.Row="1" Content="Cycle Analyzer" Margin="2,2,2,2" Click="CycleAnalyzer_Click" />
-                    <Button Grid.Row="2" Content="Hot Streak Utilization" Margin="2,2,2,2" Click="HotStreakUtilization_Click" />
-                    <Button Grid.Row="3" Content="Combustion Model" Margin="2,2,2,2" Click="CombustionModel_Click" />
                     <TextBlock Grid.Row="5" Text="Editors:" Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,0" VerticalAlignment="Top" Width="Auto" TextWrapping="Wrap"/>
                     <Button Grid.Row="6" Content="Cooldown Editor" Margin="2,2,2,2" Click="CooldownEditor_Click" />
                     <TextBlock Grid.Row="9" Text="Performance:" Height="Auto" HorizontalAlignment="Stretch" Margin="2,2,0,0" VerticalAlignment="Top" Width="Auto" TextWrapping="Wrap"/>

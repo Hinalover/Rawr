@@ -9,8 +9,8 @@ namespace Rawr.Hunter.Skills
         /// <summary>
         /// TODO Zhok: Careful Aim, Dazzled Prey, Sniper Training, Termination
         /// <b>Steady Shot</b>, 5-40yd, 1.5 sec cast
-        /// <para>A steady shot that causes 100% weapon damage 
-        /// plus RAP*0.021+280. Generates 9 Focus.</para>
+        /// <para>A steady shot that causes 50% weapon damage 
+        /// plus 997. Generates 14 Focus.</para>
         /// </summary>
         /// <TalentsAffecting>
         /// Careful Aim - Increases the critical strike chance of your Steady Shot, Cobra Shot and Aimed Shot by 30/60% on targets who are above 80% health.
@@ -27,13 +27,17 @@ namespace Rawr.Hunter.Skills
             Char = c; StatS = s; combatFactors = cf; Whiteattacks = wa; CalcOpts = co;
             //
             Name = "Steady Shot";
+            shortName = "SS";
+
             ReqRangedWeap = true;
             ReqSkillsRange = true;
             UsesGCD = true;
             CastTime = 1.5f;
-            DamageBase = combatFactors.AvgRwWeaponDmgUnhasted + (StatS.RangedAttackPower * 0.021f) + 280f;
-            DamageBonus = 1f + (Talents.GlyphOfSteadyShot ? 0.10f : 0f);
-            FocusCost = -9;
+            DamageType = ItemDamageType.Physical;
+
+            DamageBase = (combatFactors.NormalizedRwWeaponDmg * .5f) + 997f;
+            
+            FocusCost = -14;
             //
             eShot = Shots.SteadyShot;
             Initialize();

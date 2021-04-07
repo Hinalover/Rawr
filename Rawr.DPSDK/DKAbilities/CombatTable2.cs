@@ -29,6 +29,7 @@ namespace Rawr.DK
         PlagueStrike,
         RuneStrike,
         ScourgeStrike,
+        SoulReaper,
         // Ranged/AOE abilities
         BloodBoil,
         DeathCoil,
@@ -36,6 +37,7 @@ namespace Rawr.DK
         HowlingBlast,
         IcyTouch,
         FrostFever,
+        UnholyBlight,
         // Pets
         Army,
         BloodParasite,
@@ -102,10 +104,9 @@ namespace Rawr.DK
             if (c != null) {
                 m_CState.m_Char = c;
                 m_CState.m_Talents = c.DeathKnightTalents;
-                m_CState.m_Spec = CalculationsDPSDK.GetSpec(c.DeathKnightTalents);
+                m_CState.m_Spec = (Rotation.Type)(c.DeathKnightTalents.Specialization+1);
             }
             m_CState.m_Stats = stats;
-            // TODO: Put in check here for null.
             m_Calcs = calcs as CharacterCalculationsDPSDK;
             m_Opts = calcOpts as CalculationOptionsDPSDK;
             m_CState.m_Presence = Presence.Frost;
@@ -116,9 +117,7 @@ namespace Rawr.DK
             try { m_CState.m_Presence = m_Opts.presence; } catch { } // pass  stay w/ default
             m_BO = bossOpts;
             if (m_BO == null) { m_BO = new BossOptions(); }
-            // JOTHAY TODO: Kind of an Ugly Hack to do this, but it will give them a value
             m_CState.m_NumberOfTargets = m_BO.MultiTargs ? m_BO.DynamicCompiler_MultiTargs.GetAverageTargetGroupSize(m_BO.BerserkTimer) : 1f;
-            //
             m_CState.m_bAttackingFromBehind = m_BO.InBack;
             m_CState.fBossArmor = m_BO.Armor;
             SetupExpertise(c);

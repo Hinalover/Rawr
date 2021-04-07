@@ -402,6 +402,15 @@ namespace Rawr
                             item.Cost = count;
                         }
                     }
+                    else if (li.Source == ItemSource.Faction)
+                    {
+                        FactionItem vendor = li as FactionItem;
+                        int count;
+                        if (vendor.TokenMap.TryGetValue(token, out count))
+                        {
+                            item.Cost = count;
+                        }
+                    }
                 }
             }
             // don't need to invalidate relevant caches, but still trigger event to refresh graphs etc.
@@ -487,7 +496,9 @@ namespace Rawr
                 // find all items in item cache with same name
                 Item item251 = null, item258 = null, item264 = null, item271 = null, item277 = null, item284 = null, item308 = null,
                     item316 = null, item333 = null, item346 = null, item359 = null, item372 = null, item378 = null, item391 = null,
-                    item384 = null, item390 = null, item397 = null, item403 = null, item410 = null, item416 = null;
+                    item384 = null, item390 = null, item397 = null, item403 = null, item410 = null, item416 = null, item435 = null, 
+                    item450 = null, item463 = null, item476 = null,  item483 = null, item489 = null, item496 = null, item502 = null,
+                    item509 = null, item516 = null;
 
                 lock (Items)
                 {
@@ -526,6 +537,16 @@ namespace Rawr
                             else if (i.ItemLevel == 403) { item403 = i; }
                             else if (i.ItemLevel == 410) { item410 = i; }
                             else if (i.ItemLevel == 416) { item416 = i; }
+                            else if (i.ItemLevel == 435) { item435 = i; }
+                            else if (i.ItemLevel == 450) { item450 = i; }
+                            else if (i.ItemLevel == 463) { item463 = i; }
+                            else if (i.ItemLevel == 476) { item476 = i; }
+                            else if (i.ItemLevel == 483) { item483 = i; }
+                            else if (i.ItemLevel == 489) { item489 = i; }
+                            else if (i.ItemLevel == 496) { item496 = i; }
+                            else if (i.ItemLevel == 502) { item502 = i; }
+                            else if (i.ItemLevel == 509) { item509 = i; }
+                            else if (i.ItemLevel == 516) { item516 = i; }
                         }
                     }
                 }
@@ -600,7 +621,7 @@ namespace Rawr
                     item397.UniqueId = new List<int>() { item384.Id, item397.Id };
                 }
 
-                // LFR/normal/heroic grouping Demon Soul raid with same name
+                // LFR/normal/heroic grouping Dragon Soul raid with same name
                 if ((object)item384 != null && (object)item397 != null && (object)item410 != null)
                 {
                     item384.UniqueId = new List<int>() { item384.Id, item397.Id, item410.Id };
@@ -614,6 +635,52 @@ namespace Rawr
                     item390.UniqueId = new List<int>() { item390.Id, item403.Id, item416.Id };
                     item403.UniqueId = new List<int>() { item390.Id, item403.Id, item416.Id };
                     item416.UniqueId = new List<int>() { item390.Id, item403.Id, item416.Id };
+                }
+
+                // normal/heroic grouping Temple of the Jade Serpent & Stormstout Brewery with same name
+                if ((object)item410 != null && (object)item463 != null)
+                {
+                    item410.UniqueId = new List<int>() { item410.Id, item463.Id };
+                    item463.UniqueId = new List<int>() { item410.Id, item463.Id };
+                }
+
+                // normal/heroic grouping Shado-Pan Monastery with same name
+                if ((object)item435 != null && (object)item463 != null)
+                {
+                    item435.UniqueId = new List<int>() { item435.Id, item463.Id };
+                    item463.UniqueId = new List<int>() { item435.Id, item463.Id };
+                }
+
+                // normal/heroic grouping Mogu'shan Palace with same name
+                if ((object)item450 != null && (object)item463 != null)
+                {
+                    item450.UniqueId = new List<int>() { item450.Id, item463.Id };
+                    item463.UniqueId = new List<int>() { item450.Id, item463.Id };
+                }
+
+                // LFR/normal/heroic grouping Mogu'shan Vaults raid with same name
+                if ((object)item476 != null && (object)item489 != null && (object)item502 != null)
+                {
+                    item476.UniqueId = new List<int>() { item476.Id, item489.Id, item502.Id };
+                    item489.UniqueId = new List<int>() { item476.Id, item489.Id, item502.Id };
+                    item502.UniqueId = new List<int>() { item476.Id, item489.Id, item502.Id };
+                }
+
+                // LFR/normal/heroic grouping Terrace of Endless Spring raid items with same name; includes Elite items that drop from Protector Kaolan
+                if ((object)item483 != null && (object)item496 != null && (object)item509 != null && (object)item516 != null)
+                {
+                    item483.UniqueId = new List<int>() { item483.Id, item496.Id, item509.Id, item516.Id };
+                    item496.UniqueId = new List<int>() { item483.Id, item496.Id, item509.Id, item516.Id };
+                    item509.UniqueId = new List<int>() { item483.Id, item496.Id, item509.Id, item516.Id };
+                    item516.UniqueId = new List<int>() { item483.Id, item496.Id, item509.Id, item516.Id };
+                }
+
+                // LFR/normal/heroic grouping Heart of Fear & Terrace of Endless Spring raids with same name
+                if ((object)item483 != null && (object)item496 != null && (object)item509 != null && (object)item516 == null)
+                {
+                    item483.UniqueId = new List<int>() { item483.Id, item496.Id, item509.Id };
+                    item496.UniqueId = new List<int>() { item483.Id, item496.Id, item509.Id };
+                    item509.UniqueId = new List<int>() { item483.Id, item496.Id, item509.Id };
                 }
 
                 // special rules for Ashen Verdict Rings
@@ -655,9 +722,45 @@ namespace Rawr
                 }
 
                 // special rules for alchemist stones
-                if (item.Id == 58483 || item.Id == 68776 || item.Id == 68777 || item.Id == 68775)
+                if (item.Id == 58483 || item.Id == 68776 || item.Id == 68777 || item.Id == 68775 || item.Id == 75274)
                 {
-                    item.UniqueId = new List<int>() { 58483, 68776, 68777, 68775 };
+                    item.UniqueId = new List<int>() { 58483, 68776, 68777, 68775, 75274 };
+                }
+
+                // Darkmoon Cards of the Mists (only 1 equip)
+                if (item.Id == 79327 || item.Id == 79328 || item.Id == 79329 || item.Id == 79330 || item.Id == 79331)
+                {
+                    item.UniqueId = new List<int>() { 79327, 79328, 79329, 79330, 79331 };
+                }
+
+                // Shado-Pan rep trinkets
+                if (item.Id == 89079 || item.Id == 89080 || item.Id == 89081 || item.Id == 89082 || item.Id == 89083)
+                {
+                    item.UniqueId = new List<int>() { 89079, 89080, 89081, 89082, 89083 };
+                }
+
+                // Greater Insignia of Operation: Shieldwall
+                if (item.Id == 93259 || item.Id == 93262 || item.Id == 93261 || item.Id == 93258 || item.Id == 93260)
+                {
+                    item.UniqueId = new List<int>() { 93259, 93262, 93261, 93258, 93260 };
+                }
+
+                // Curios of Operation: Shieldwall
+                if (item.Id == 93247 || item.Id == 93246 || item.Id == 93245 || item.Id == 93243 || item.Id == 93244)
+                {
+                    item.UniqueId = new List<int>() { 93247, 93246, 93245, 93243, 93244 };
+                }
+
+                // Brutal Insignia of the Dominance Offensive
+                if (item.Id == 93254 || item.Id == 93257 || item.Id == 93256 || item.Id == 93253 || item.Id == 93255)
+                {
+                    item.UniqueId = new List<int>() { 93254, 93257, 93256, 93253, 93255 };
+                }
+
+                // Curios of the Dominance Offensive
+                if (item.Id == 93252 || item.Id == 93251 || item.Id == 93250 || item.Id == 93248 || item.Id == 93249)
+                {
+                    item.UniqueId = new List<int>() { 93252, 93251, 93250, 93248, 93249 };
                 }
             }
         }

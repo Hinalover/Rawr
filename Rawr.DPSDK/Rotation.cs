@@ -79,22 +79,7 @@ namespace Rawr.DK
         /// <returns>Enum "Type" [Custom, Blood, Frost, Unholy, Unknown]</returns>
         public Type GetRotationType(DeathKnightTalents t)
         {
-            curRotationType = Type.Custom;
-            if (t.HighestTree == (int)TalentTrees.Blood)
-            {
-                // Blood
-                curRotationType = Rotation.Type.Blood;
-            }
-            else if (t.HighestTree == (int)TalentTrees.Frost)
-            {
-                // Frost
-                curRotationType = Rotation.Type.Frost;
-            }
-            if (t.HighestTree == (int)TalentTrees.Unholy)
-            {
-                // Unholy
-                curRotationType = Rotation.Type.Unholy;
-            }
+            curRotationType = (Rotation.Type)(t.Specialization + 1);
             return curRotationType;
         }
 
@@ -216,10 +201,10 @@ namespace Rawr.DK
         {
             get
             {
-                if (m_CT.m_CState.m_Talents.RunicCorruption > 0)
-                    return 0;
+                if (m_CT.m_CState.m_Talents.RunicEmpowerment == 0)
+                    return ((float)m_CountREAbilities / .45f);
                 else
-                    return ((float)m_CountREAbilities / .45f) * .75f;
+                    return 0;
             }
         }
         private uint SingleGCD 
@@ -718,11 +703,6 @@ namespace Rawr.DK
             ml_Rot.Add(PS);
             ml_Rot.Add(BP);
 
-            // TODO: 4.1 Blood Runes are ALWAYS Death Runes.
-            // These will create DeathRunes that can allow flexibility in the rotation later on.
-            // ml_Rot.Add(BS);
-            // ml_Rot.Add(BS);
-
             ml_Rot.Add(OB);
             ml_Rot.Add(OB);
 
@@ -747,7 +727,7 @@ namespace Rawr.DK
             }
             #endregion
             #region Talent: Rime
-            if (m_CT.m_CState.m_Talents.Rime > 0)
+            if (m_CT.m_CState.m_Spec == Rotation.Type.Frost)
             {
                 AbilityDK_Base ability;
                 // we want 1 full use, and then any sub values.
@@ -769,7 +749,7 @@ namespace Rawr.DK
                 ability.AbilityCost[(int)DKCostTypes.Death] = 0;
                 ability.AbilityCost[(int)DKCostTypes.RunicPower] += 10; // The initial 10 RP are not gained, but Chill of the Grave still has value
 
-                float fRimeMod = this.Count(DKability.Obliterate) * .15f * m_CT.m_CState.m_Talents.Rime;
+                float fRimeMod = this.Count(DKability.Obliterate) * .45f;
                 // 60% chance to proc 2 Rimes rather than 1.
                 if (m_CT.m_CState.m_Stats.b2T13_DPS)
                     fRimeMod *= 1.6f;
@@ -862,11 +842,11 @@ namespace Rawr.DK
 
             #region Talent: Killing Machine
             // Switching this back to PPM
-            if (m_CT.m_CState.m_Talents.KillingMachine > 0)
+            if (m_CT.m_CState.m_Spec == Rotation.Type.Frost)
             {
                 // TODO: Pull out this Normalizer crap - Fix the rotation.
                 const float fNormalizer = 1.612f;
-                float fPPRot = ((m_CT.m_CState.m_Talents.KillingMachine / 3f * 6.6f) * (1 + m_CT.m_CState.m_Stats.PhysicalHaste)) / 60f * CurRotationDuration;
+                float fPPRot = ((6.6f) * (1 + m_CT.m_CState.m_Stats.PhysicalHaste)) / 60f * CurRotationDuration;
                 float OBFSCount = Count(DKability.Obliterate) + Count(DKability.FrostStrike);
                 float fPctOBFSCrit = (fPPRot * m_CT.m_Opts.KMConsumeRate) / (OBFSCount / fNormalizer);
                 OB.SetKMCritChance(fPctOBFSCrit);
@@ -975,9 +955,9 @@ namespace Rawr.DK
             #endregion
 
             #region HB (Rime)
-            if (m_CT.m_CState.m_Talents.Rime > 0)
+            if (m_CT.m_CState.m_Spec == Rotation.Type.Frost)
             {
-                float procs = this.Count(DKability.Obliterate) * .15f * m_CT.m_CState.m_Talents.Rime;
+                float procs = this.Count(DKability.Obliterate) * .45f;
                 if (m_CT.m_CState.m_Stats.b2T13_DPS) {
                     procs *= 1.6f; // 60% chance to proc 2 Rimes
                 }
@@ -1079,11 +1059,11 @@ namespace Rawr.DK
 
             #region Talent: Killing Machine
             // Switching this back to PPM
-            if (m_CT.m_CState.m_Talents.KillingMachine > 0)
+            if (m_CT.m_CState.m_Spec == Rotation.Type.Frost)
             {
                 // TODO: Pull out this Normalizer crap - Fix the rotation.
                 const float fNormalizer = 1.612f;
-                float fPPRot = ((m_CT.m_CState.m_Talents.KillingMachine / 3f * 6.6f) * (1 + m_CT.m_CState.m_Stats.PhysicalHaste)) / 60f * duration;
+                float fPPRot = (6.6f * (1 + m_CT.m_CState.m_Stats.PhysicalHaste)) / 60f * duration;
                 float OBFSCount = PartialCount(DKability.Obliterate) + PartialCount(DKability.FrostStrike);
                 float fPctOBFSCrit = (fPPRot * m_CT.m_Opts.KMConsumeRate) / (OBFSCount / fNormalizer);
                 OB.SetKMCritChance(fPctOBFSCrit);
@@ -1204,7 +1184,7 @@ namespace Rawr.DK
             AvailableResources[(int)DKCostTypes.Blood] = 2;
             AvailableResources[(int)DKCostTypes.Frost] = 2;
             AvailableResources[(int)DKCostTypes.UnHoly] = 2;
-            if (m_CT.m_CState.m_Talents.DarkTransformation > 0)
+            if (m_CT.m_CState.m_Spec == Rotation.Type.Unholy)
             {
                 // this won't be there if they're not spec'd for it.
                 ml_Rot.Add(Dark); // Dark Transformation.
@@ -1333,7 +1313,7 @@ namespace Rawr.DK
 
             // Simple outbreak, Festx2 SSx6 & Fill w/ DCs
             int[] AvailableResources = new int[EnumHelper.GetCount(typeof(DKCostTypes))];
-            if (m_CT.m_CState.m_Talents.DarkTransformation > 0)
+            if (m_CT.m_CState.m_Spec == Rotation.Type.Unholy)
             {
                 // this won't be there if they're not spec'd for it.
                 ml_Rot.Add(Dark); // Dark Transformation.
@@ -1406,10 +1386,10 @@ namespace Rawr.DK
             BuildCosts();
 
             #region Sudden Doom
-            if (m_CT.m_CState.m_Talents.SuddenDoom > 0)
+            if (m_CT.m_CState.m_Spec == Rotation.Type.Unholy)
             {
                 AbilityDK_Base ability;
-                float fSDMod = this.Count(DKability.White) * (.05f * (float)m_CT.m_CState.m_Talents.SuddenDoom);
+                float fSDMod = this.Count(DKability.White) * .2f;
                 // 30% chance to proc 2 SDs rather than 1.
                 if (m_CT.m_CState.m_Stats.b2T13_DPS)
                     fSDMod *= 1.3f;
@@ -1551,10 +1531,10 @@ namespace Rawr.DK
             BuildCosts();
 
             #region Sudden Doom
-            if (m_CT.m_CState.m_Talents.SuddenDoom > 0)
+            if (m_CT.m_CState.m_Spec == Rotation.Type.Unholy)
             {
                 AbilityDK_Base ability;
-                float fRimeMod = this.Count(DKability.White) * (.05f * (float)m_CT.m_CState.m_Talents.SuddenDoom);
+                float fRimeMod = this.Count(DKability.White) * .2f;
                 if (fRimeMod > 1)
                 {
                     for (; fRimeMod > 1; fRimeMod--)
@@ -1766,10 +1746,8 @@ namespace Rawr.DK
             // Free Death Rune every 60 Sec.
             float BT_DeathRunes = 0;
             BT_DeathRunes = CurRotationDuration / (60f - ((float)m_CT.m_CState.m_Talents.ImprovedBloodTap * 15f));
-            // TODO: Start handling partial runes
             m_DeathRunes -= (int)BT_DeathRunes;
             abCost[(int)DKCostTypes.Death] = m_DeathRunes;
-            
 #endif
 
             int hiRuneIndex = DKCombatTable.GetHighestRuneCountIndex(abCost);

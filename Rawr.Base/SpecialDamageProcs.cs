@@ -319,7 +319,7 @@ namespace Rawr.DamageProcs
                     triggerChance = TriggerChances[Trigger.OffHandHit];
                 }
                 // Process the Effects
-                totalNumProcsPerSec = effect.GetAverageProcsPerSecond(triggerInterval, triggerChance, Char.MainHand.Speed, FightDuration);
+                totalNumProcsPerSec = effect.GetAverageProcsPerSecond(triggerInterval, triggerChance, Char.MainHand.Speed, 1.0f, FightDuration); // FIXME: needs haste passed for Real PPM effects
                 totalNumProcs = totalNumProcsPerSec * FightDuration;
                 totalDamage = totalNumProcs * CalculateThisDamage(type, baseDamage);
                 totalDamagePerSec = totalDamage / FightDuration;

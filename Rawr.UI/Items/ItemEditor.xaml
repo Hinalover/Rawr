@@ -6,7 +6,7 @@
     xmlns:System="clr-namespace:System;assembly=mscorlib"
     xmlns:basics="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
     xmlns:basics2="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
-    xmlns:toolkit="http://schemas.microsoft.com/winfx/2006/xaml/presentation/toolkit" 
+    xmlns:toolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Toolkit" 
     xmlns:layoutToolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Layout.Toolkit"
     xmlns:inputToolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
     xmlns:Rawr="clr-namespace:Rawr;assembly=Rawr.Base"
@@ -53,6 +53,7 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -64,9 +65,9 @@
                     <TextBlock x:Name="LB_SetName" Text="Set Name:" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2"/>
                     <TextBox x:Name="SetNameText" Margin="2" Grid.Column="1" Text="{Binding Mode=OneWay, Path=SetName}" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
                     <TextBlock x:Name="LB_iLevel" HorizontalAlignment="Right" Text="Item Level:" Grid.Row="3" VerticalAlignment="Center" Margin="2"/>
-                    <inputToolkit:NumericUpDown x:Name="IlvlNum" HorizontalAlignment="Left" Margin="2" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" Height="22" Width="60" Maximum="500" />
+                    <inputToolkit:NumericUpDown x:Name="IlvlNum" HorizontalAlignment="Left" Margin="2" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" Height="22" Width="60" Maximum="10000" />
                     <TextBlock x:Name="LB_Id" Text="ID:" VerticalAlignment="Center" Grid.Row="4" HorizontalAlignment="Right" Margin="2"/>
-                    <inputToolkit:NumericUpDown x:Name="IdNum" Height="22" HorizontalAlignment="Left" Margin="2,2,0,2" VerticalAlignment="Center" Grid.Column="1" Grid.Row="4" Width="60" Maximum="100000" Value="{Binding Mode=OneWay, Path=Id}"/>
+                    <inputToolkit:NumericUpDown x:Name="IdNum" Height="22" HorizontalAlignment="Left" Margin="2,2,0,2" VerticalAlignment="Center" Grid.Column="1" Grid.Row="4" Width="60" Maximum="200000" Value="{Binding Mode=OneWay, Path=Id}"/>
                     <TextBlock x:Name="LB_Icon" Text="Icon:" TextWrapping="Wrap" HorizontalAlignment="Right" Grid.Row="5" VerticalAlignment="Center" Margin="2"/>
                     <TextBox x:Name="IconPathText" Margin="2,2,0,2" Grid.Column="1" Text="{Binding Mode=OneWay, Path=IconPath}" Grid.Row="5" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
                     <TextBlock x:Name="LB_Type" HorizontalAlignment="Right" Text="Type:" Grid.Row="6" VerticalAlignment="Center" Margin="2"/>
@@ -83,10 +84,14 @@
                         <System:String>BoA</System:String>
                         <System:String>BoU</System:String>
                     </ComboBox>
-                    <TextBlock x:Name="LB_Cost" Text="Cost:" TextWrapping="Wrap" HorizontalAlignment="Right" Grid.Row="10" VerticalAlignment="Center" Margin="2"/>
-                    <inputToolkit:NumericUpDown x:Name="CostText" Margin="2,2,0,2" Grid.Column="1" Value="{Binding Mode=OneWay, Path=Cost}" Grid.Row="10" VerticalAlignment="Center" HorizontalAlignment="Left" Width="60" Maximum="100000" />
-                    <TextBlock x:Name="LB_Unique" VerticalAlignment="Center" Text="Unique:" Grid.Row="11" HorizontalAlignment="Right" Margin="2"/>
-                    <CheckBox x:Name="UniqueCheck" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Grid.Column="1" Grid.Row="11" IsChecked="{Binding Mode=OneWay, Path=Unique}"/>
+                    <TextBlock x:Name="LB_UpgradeLevel" Text="Upgrade Levels:" TextWrapping="Wrap" HorizontalAlignment="Right" Grid.Row="10" VerticalAlignment="Center" Margin="2"/>
+                    <inputToolkit:NumericUpDown x:Name="UpgradeCount" Margin="2,2,0,2" Grid.Column="1" Grid.Row="10" VerticalAlignment="Center" HorizontalAlignment="Left" Width="60" Maximum="2" />
+                    <TextBlock x:Name="LB_UpgradeTimes" Text="x" HorizontalAlignment="Center" Grid.Column="1" Grid.Row="10" VerticalAlignment="Center" Margin="2" />
+                    <inputToolkit:NumericUpDown x:Name="UpgradeAmount" Margin="2,2,0,2" Grid.Column="1" Grid.Row="10" VerticalAlignment="Center" HorizontalAlignment="Right" Width="60" Maximum="8" />
+                    <TextBlock x:Name="LB_Cost" Text="Cost:" TextWrapping="Wrap" HorizontalAlignment="Right" Grid.Row="11" VerticalAlignment="Center" Margin="2"/>
+                    <inputToolkit:NumericUpDown x:Name="CostText" Margin="2,2,0,2" Grid.Column="1" Value="{Binding Mode=OneWay, Path=Cost}" Grid.Row="11" VerticalAlignment="Center" HorizontalAlignment="Left" Width="60" Maximum="100000" />
+                    <TextBlock x:Name="LB_Unique" VerticalAlignment="Center" Text="Unique:" Grid.Row="12" HorizontalAlignment="Right" Margin="2"/>
+                    <CheckBox x:Name="UniqueCheck" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Grid.Column="1" Grid.Row="12" IsChecked="{Binding Mode=OneWay, Path=Unique}"/>
                 </Grid>
             </local:GroupBox>
             <local:GroupBox Margin="2,0" Width="260">
@@ -160,9 +165,9 @@
                     </Grid.ColumnDefinitions>
                     
                     <TextBlock Text="Damage Range:" Grid.Row="0" Grid.Column="0" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                    <inputToolkit:NumericUpDown x:Name="MinDamageNum" Grid.Row="0" Grid.Column="1" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Left" Width="60" Maximum="10000" Value="{Binding Mode=OneWay, Path=MinDamage}"/>
+                    <inputToolkit:NumericUpDown x:Name="MinDamageNum" Grid.Row="0" Grid.Column="1" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Left" Width="60" Maximum="100000" Value="{Binding Mode=OneWay, Path=MinDamage}"/>
                     <TextBlock Text="to" Grid.Row="0" Grid.Column="1" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <inputToolkit:NumericUpDown Grid.Row="0" x:Name="MaxDamageNum" Grid.Column="1" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right" Width="60" Maximum="10000" Value="{Binding Mode=OneWay, Path=MaxDamage}"/>
+                    <inputToolkit:NumericUpDown Grid.Row="0" x:Name="MaxDamageNum" Grid.Column="1" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right" Width="60" Maximum="100000" Value="{Binding Mode=OneWay, Path=MaxDamage}"/>
                     <TextBlock Text="Speed:" Grid.Row="1" Grid.Column="0" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                     <inputToolkit:NumericUpDown Grid.Row="1" x:Name="SpeedNum" Grid.Column="1" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Left" Width="60" Value="{Binding Mode=OneWay, Path=Speed}" Maximum="10" Increment="0.1" DecimalPlaces="1"/>
                     <TextBlock Text="Damage Type:" Grid.Row="2" Grid.Column="0" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
@@ -216,23 +221,25 @@
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" MaxWidth="250" />
+                        <ColumnDefinition Width="88*" MaxWidth="250" />
+                        <ColumnDefinition Width="69*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Required Classes" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Margin="2" HorizontalAlignment="Center" FontWeight="Bold" />
+                    <TextBlock Text="Required Classes" Grid.Row="5" Grid.ColumnSpan="2" Margin="77,2,8,2" HorizontalAlignment="Center" FontWeight="Bold" />
                     <CheckBox x:Name="DeathKnightCheckBox"  Content="Death Knight"  Grid.Row="6" Grid.Column="0" Margin="2"/>
                     <CheckBox x:Name="DruidCheckBox"        Content="Druid"         Grid.Row="7" Grid.Column="0" Margin="2"/>
                     <CheckBox x:Name="HunterCheckBox"       Content="Hunter"        Grid.Row="8" Grid.Column="0" Margin="2"/>
                     <CheckBox x:Name="MageCheckBox"         Content="Mage"          Grid.Row="9" Grid.Column="0" Margin="2"/>
-                    <CheckBox x:Name="PaladinCheckBox"      Content="Paladin"       Grid.Row="10" Grid.Column="0" Margin="2"/>
-                    <CheckBox x:Name="PriestCheckBox"       Content="Priest"        Grid.Row="6" Grid.Column="1" Margin="2"/>
-                    <CheckBox x:Name="RogueCheckBox"        Content="Rogue"         Grid.Row="7" Grid.Column="1" Margin="2"/>
-                    <CheckBox x:Name="ShamanCheckBox"       Content="Shaman"        Grid.Row="8" Grid.Column="1" Margin="2"/>
-                    <CheckBox x:Name="WarlockCheckBox"      Content="Warlock"       Grid.Row="9" Grid.Column="1" Margin="2"/>
-                    <CheckBox x:Name="WarriorCheckBox"      Content="Warrior"       Grid.Row="10" Grid.Column="1" Margin="2"/>
+                    <CheckBox x:Name="MonkCheckBox"         Content="Monk"          Grid.Row="6" Grid.Column="1" Margin="2"/>
+                    <CheckBox x:Name="PaladinCheckBox"      Content="Paladin"       Grid.Row="7" Grid.Column="1" Margin="2"/>
+                    <CheckBox x:Name="PriestCheckBox"       Content="Priest"        Grid.Row="8" Grid.Column="1" Margin="2"/>
+                    <CheckBox x:Name="RogueCheckBox"        Content="Rogue"         Grid.Row="9" Grid.Column="1" Margin="2"/>
+                    <CheckBox x:Name="ShamanCheckBox"       Content="Shaman"        Grid.Row="6" Grid.Column="2" Margin="2"/>
+                    <CheckBox x:Name="WarlockCheckBox"      Content="Warlock"       Grid.Row="7" Grid.Column="2" Margin="2"/>
+                    <CheckBox x:Name="WarriorCheckBox"      Content="Warrior"       Grid.Row="8" Grid.Column="2" Margin="2"/>
 
-                    <TextBlock Text="Required Faction" Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="3" Margin="2" HorizontalAlignment="Center" FontWeight="Bold" />
+                    <TextBlock Text="Required Faction" Grid.Row="11" Grid.ColumnSpan="2" Margin="76,2,7,2" HorizontalAlignment="Center" FontWeight="Bold" />
                     <ComboBox Name="CB_Faction" Grid.Row="12" Grid.ColumnSpan="3" Margin="2" MaxWidth="250">
                         <System:String>Neutral</System:String>
                         <System:String>Alliance</System:String>

@@ -58,6 +58,22 @@ namespace Rawr.Bear
             calcOpts = Character.CalculationOptions as CalculationOptionsBear;
             // Model Specific Code
             //
+            if (calcOpts.UseBossHandler)
+            {
+                ckbUseBossHandler.IsChecked = true;
+                NUD_BossUnmitigatedDamage.IsEnabled = false;
+                NUD_SwingSpeed.IsEnabled = false;
+                nudCharacterLevel.IsEnabled = false;
+                nudTargetLevel.IsEnabled = false;
+            }
+            else
+            {
+                ckbUseBossHandler.IsChecked = false;
+                NUD_BossUnmitigatedDamage.IsEnabled = true;
+                NUD_SwingSpeed.IsEnabled = true;
+                nudCharacterLevel.IsEnabled = true;
+                nudTargetLevel.IsEnabled = true;
+            }
             _loadingCalculationOptions = false;
         }
 
@@ -65,9 +81,22 @@ namespace Rawr.Bear
         {
             if (_loadingCalculationOptions) { return; }
             // This would handle any special changes, especially combobox assignments, but not when the pane is trying to load
-            if (e.PropertyName == "SomeProperty")
+            if (e.PropertyName == "ckbUseBossHandler")
             {
-                // Do some code
+                if (ckbUseBossHandler.IsChecked == true)
+                {
+                    NUD_BossUnmitigatedDamage.IsEnabled = true;
+                    NUD_SwingSpeed.IsEnabled = true;
+                    nudCharacterLevel.IsEnabled = true;
+                    nudTargetLevel.IsEnabled = true;
+                }
+                else
+                {
+                    NUD_BossUnmitigatedDamage.IsEnabled = false;
+                    NUD_SwingSpeed.IsEnabled = false;
+                    nudCharacterLevel.IsEnabled = false;
+                    nudTargetLevel.IsEnabled = false;
+                }
             }
             //
             if (Character != null) { Character.OnCalculationsInvalidated(); }

@@ -178,7 +178,7 @@ namespace Rawr.ShadowPriest
                 {
                     if (effect.Stats._rawSpecialEffectDataSize >= 1)
                     {
-                        upTime = effect.GetAverageUptime(0f, 1f, 0, FightDuration);
+                        upTime = effect.GetAverageUptime(0f, 1f, 0, 1f, FightDuration);
                         List<SpecialEffect> nestedEffect = new List<SpecialEffect>(effect.Stats.SpecialEffects());
                         Stats _stats2 = effectStats.Clone();
                         AccumulateSpecialEffects(character, ref _stats2, effect.Duration, triggerIntervals, triggerChances, nestedEffect, upTime);
@@ -186,18 +186,18 @@ namespace Rawr.ShadowPriest
                     }
                     else
                     {
-                        upTime = effect.GetAverageStackSize(0f, 1f, 0, FightDuration);
+                        upTime = effect.GetAverageStackSize(0f, 1f, 0, 1f, FightDuration); // FIXME: Pass haste for Real PPM effects
                     }
                 }
                 else if (effect.Duration == 0f)
                 {
                     upTime = effect.GetAverageProcsPerSecond(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger],
-                                                             0, FightDuration);
+                                                             0, 1f, FightDuration); // FIXME: Pass haste for Real PPM effects
                 }
                 else if (triggerIntervals.ContainsKey(effect.Trigger))
                 {
                     upTime = effect.GetAverageStackSize(triggerIntervals[effect.Trigger], triggerChances[effect.Trigger],
-                                                             0, FightDuration);
+                                                             0, 1f, FightDuration); // FIXME: Pass haste for Real PPM effects
                 }
 
                 if (upTime > 0f)

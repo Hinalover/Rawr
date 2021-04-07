@@ -82,6 +82,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\binaries\System.Windows.Controls.Layout.Toolkit.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -106,9 +107,43 @@
   </ItemGroup>
   <ItemGroup>
     <AppDesigner Include="Properties\" />
+    <Compile Include="Abilities\AbilityGuardian_Barkskin.cs" />
+    <Compile Include="Abilities\AbilityGuardian_Base.cs" />
+    <Compile Include="Abilities\AbilityGuardian_Berserk.cs" />
+    <Compile Include="Abilities\AbilityGuardian_BoneShield.cs" />
+    <Compile Include="Abilities\AbilityGuardian_CenarionWard.cs" />
+    <Compile Include="Abilities\AbilityGuardian_Consecration.cs" />
+    <Compile Include="Abilities\AbilityGuardian_ElusiveBrew.cs" />
+    <Compile Include="Abilities\AbilityGuardian_Enrage.cs" />
+    <Compile Include="Abilities\AbilityGuardian_FaerieFire.cs" />
+    <Compile Include="Abilities\AbilityGuardian_Feint.cs" />
+    <Compile Include="Abilities\AbilityGuardian_ForceOfNature.cs" />
+    <Compile Include="Abilities\AbilityGuardian_FrenziedRegen.cs" />
+    <Compile Include="Abilities\AbilityGuardian_HealingTouch.cs" />
+    <Compile Include="Abilities\AbilityGuardian_Incarnation.cs" />
+    <Compile Include="Abilities\AbilityGuardian_Lacerate.cs" />
+    <Compile Include="Abilities\AbilityGuardian_LeaderOfThePack.cs" />
+    <Compile Include="Abilities\AbilityGuardian_LifeTap.cs" />
+    <Compile Include="Abilities\AbilityGuardian_LightningShield.cs" />
+    <Compile Include="Abilities\AbilityGuardian_Mangle.cs" />
+    <Compile Include="Abilities\AbilityGuardian_Maul.cs" />
+    <Compile Include="Abilities\AbilityGuardian_MightofUrsoc.cs" />
+    <Compile Include="Abilities\AbilityGuardian_NaturesVigil.cs" />
+    <Compile Include="Abilities\AbilityGuardian_Renewal.cs" />
+    <Compile Include="Abilities\AbilityGuardian_SavageDefense.cs" />
+    <Compile Include="Abilities\AbilityGuardian_SurvivalInstincts.cs" />
+    <Compile Include="Abilities\AbilityGuardian_Swipe.cs" />
+    <Compile Include="Abilities\AbilityGuardian_Thrash.cs" />
+    <Compile Include="Abilities\AbilityGuardian_WhiteSwing.cs" />
+    <Compile Include="Abilities\GaurdianWeapon.cs" />
+    <Compile Include="Abilities\GuardianCombatState.cs" />
+    <Compile Include="Abilities\GuardianTemplate.cs" />
+    <Compile Include="GuardianConverters.cs" />
+    <Compile Include="GuardianMitigation.cs" />
+    <Compile Include="GuardianRecovery.cs" />
+    <Compile Include="GuardianRotation.cs" />
+    <Compile Include="GuardianSolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="BearAbilityStats.cs" />
-    <Compile Include="BearRotationCalculator.cs" />
     <Compile Include="CalculationOptionsBear.cs" />
     <Compile Include="CalculationOptionsConverters.cs" />
     <Compile Include="CalculationOptionsPanelBear.xaml.cs">
@@ -123,6 +158,10 @@
     <ProjectReference Include="..\Rawr.Base\Rawr.Base.WPF.csproj">
       <Project>{542537D3-F86B-4022-A161-B2FC6F0218B7}</Project>
       <Name>Rawr.Base.WPF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rawr.Feral\Rawr.Feral.WPF.csproj">
+      <Project>{A5B3AAD4-0B20-42E8-AA12-9D3B1FA0507D}</Project>
+      <Name>Rawr.Feral.WPF</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -188,7 +188,7 @@
                 <MenuItem Header="Reload Current Character from Rawr Addon" Click="RawrAddonReload_Click"/>
                 <Separator/>
                 <MenuItem Header="Load Possible Upgrades from Wowhead (NYI)"/>
-                <MenuItem Header="Load Items From Wowhead Filter (NYI)"/>
+                <MenuItem Header="Load Items From Wowhead Filter (NYI)" Click="LoadItemsFromWowheadFilter_Click"/>
                 <Separator/>
                 <MenuItem Header="Refresh Items Currently Worn from Wowhead" Click="RefreshItemsCurrentlyWorn_Click"/>
                 <MenuItem Header="Update Item Cache from Wowhead (NYI)" Click="UpdateItemCacheFromWowhead_Click"/>
@@ -265,7 +265,6 @@
             <StackPanel toolkit:DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Top" Orientation="Horizontal" Margin="2,2,2,0">
                 <local:ItemButtonWithEnchant x:Name="MainHandButton" d:LayoutOverrides="Width, Height" HorizontalAlignment="Center" Margin="8,0"/>
                 <local:ItemButtonWithEnchant x:Name="OffHandButton" d:LayoutOverrides="Height" HorizontalAlignment="Center" Margin="8,0" />
-                <local:ItemButtonWithEnchant x:Name="RangedButton" d:LayoutOverrides="Width, Height" HorizontalAlignment="Center" Margin="8,0"/>
             </StackPanel>
             <controls:TabControl toolkit:DockPanel.Dock="Top" VerticalAlignment="Stretch">
                 <controls:TabItem x:Name="StatsTab" Header="Stats">
@@ -326,7 +325,7 @@
                                         <ComboBoxItem Content="Shaman"/>
                                         <ComboBoxItem Content="Mage"/>
                                         <ComboBoxItem Content="Warlock"/>
-                                        <ComboBoxItem Visibility="Collapsed"/>
+                                        <ComboBoxItem Content="Monk"/>
                                         <ComboBoxItem Content="Druid"/>
                                     </ComboBox>
                                     <TextBlock x:Name="LB_Race" Margin="1,2,2,2" Text="Race:" TextWrapping="Wrap" Grid.Row="3"/>
@@ -354,6 +353,10 @@
                                         <ComboBoxItem Visibility="Collapsed"/><!-- 20 -->
                                         <ComboBoxItem Visibility="Collapsed"/><!-- 21 -->
                                         <ComboBoxItem Content="Worgen" /><!-- 22 -->
+                                        <ComboBoxItem Visibility="Collapsed"/><!-- 23 -->
+                                        <ComboBoxItem Visibility="Collapsed"/><!-- 24 -->
+                                        <ComboBoxItem Content="Pandaren (Alliance)" /><!-- 25 -->
+                                        <ComboBoxItem Content="Pandaren (Horde)" /><!-- 26 -->
                                     </ComboBox>
                                     <ComboBox x:Name="ModelCombo" SelectionChanged="ModelCombo_SelectionChanged" Margin="1,0,2,0" d:LayoutOverrides="HorizontalAlignment" Visibility="Collapsed" Grid.Row="2" Height="22" VerticalAlignment="Top" />
                                     <TextBlock x:Name="LB_ClassModel" Margin="1,2,2,2" Text="Class/Model:" TextWrapping="Wrap" Grid.Row="1"/>

@@ -167,7 +167,7 @@ namespace Rawr.Retribution
             CT.CanCrit = false;
             AbilityDamageMulitplier.Clear(); //Only benefit from Magical
             AbilityDamageMulitplier[Multiplier.Magical] = (1f + _stats.BonusHolyDamageMultiplier) * (1f + InqUptime * PaladinConstants.INQ_COEFF);
-            AbilityDamage = AmountBefore * (8f + StatConversion.GetMasteryFromRating(_stats.MasteryRating, CharacterClass.Paladin)) * PaladinConstants.HOL_COEFF;
+            AbilityDamage = AmountBefore * _stats.Mastery * PaladinConstants.HOL_COEFF;
         }
 
         public float AmountBefore { get; set; }

@@ -160,6 +160,280 @@ FAQStuff.Add(
         }
         private void SetUpPatchNotes()
         {
+            #region Rawr 5.4.2 (November 27, 2013) [r73409]
+            VNStuff.Add("Rawr 5.4.2 (November 27, 2013) [r73409]",
+                @"Mists of Pandaria Release
+Rawr.Base:
+- The Big Item Upgrade Patch: Item upgrades implemented properly for all 5.4 items.
+- Fix bug with certain characters not loading with certain types of randomly enchanted gear.
+
+Rawr.Moonkin:
+- Fix a bug in the calculation of Nature's Grace.
+- Add Nature's Swiftness to the calculations for Dream of Cenarius.
+
+Rawr.Mage:
+- Placeholder support for T16 set bonuses.  None implemented yet.
+");
+            #endregion
+            #region Rawr 5.4.1 (September 24, 2013) [r73055]
+            VNStuff.Add("Rawr 5.4.1 (September 24, 2013) [r73055]",
+                @"Mists of Pandaria Release
+Rawr.Base:
+- Implemented 5.4 RPPM nerf for 5.2 trinkets/enchants.
+- Fixed special effect editor to prevent extra 'modified by' strings.
+- Removed some nonexistent items from the item cache and cleaned up previously edited special effects.
+
+Rawr.Moonkin:
+- Implemented haste boosting RPPM procs.
+");
+            #endregion
+            #region Rawr 5.4.0 (September 23, 2013) [r73052]
+            VNStuff.Add("Rawr 5.4.0 (September 23, 2013) [r73052]",
+                @"Mists of Pandaria Release
+Rawr.Base:
+- Added new 5.4 randomly enchanted gear and bugfixes associated with randomly enchanted gear.
+- Added new 5.4 gear from Siege of Orgrimmar and the Timeless Isle to the Item Cache.
+- New caster DPS trinkets and legendary cloak have procs associated with them.
+- Multiple bugfixes to handle issues with gear whose database IDs are over 99999.
+
+Rawr.Moonkin:
+- 5.4 live realm talent math changes.
+- Tier 16 set bonuses.
+- 5.4 trinket procs and legendary cloak.
+- Assorted bugfixes related to talent math.
+- Remove option for Matching Eclipse rotation.
+
+Rawr.Mage:
+- Combustion 60% nerf.
+");
+            #endregion
+            #region Rawr 5.3.0 (August 18, 2013) [r72855]
+            VNStuff.Add("Rawr 5.3.0 (August 18, 2013) [r72855]",
+                @"Mists of Pandaria Release
+Rawr.Base:
+- Add new suffixes for newly added random items.
+
+Rawr.Moonkin:
+- 5.4 PTR stuff.
+
+Rawr.RestoSham:
+- Add healing spell triggers.
+");
+            #endregion
+            #region Rawr 5.2.1 (June 9, 2013) [r72304]
+            VNStuff.Add("Rawr 5.2.1 (June 9, 2013) [r72304]",
+                @"Mists of Pandaria Release
+Rawr.Base:
+- Fix formula for upgraded items to be more accurate.
+- Add new suffixes for newly added random items.
+
+Rawr.Mage:
+- 5.3: Living Bomb dot increased by 121% (2.21x) and explosion reduced by 78% (0.22x). No proper explosion scaling with ticks but assumes 5 effective ticks for now. AoE cap of 3
+targets also removed.
+");
+            #endregion
+            #region Rawr 5.2.0 (May 7, 2013) [r72048]
+            VNStuff.Add("Rawr 5.2.0 (May 7, 2013) [r72048]",
+                @"Mists of Pandaria Release
+Rawr.Base:
+- Update item cache to include 5.2 items.
+- Enable loading upgraded items from Battle.Net.
+- Miscellaneous code updates to enable new trinket procs and legendary metas.
+- Implement Wowhead parsing/updating code to enable loading future item caches from Wowhead.
+
+Rawr.Moonkin:
+- Implement 5.2 trinket/meta procs.
+
+Rawr.Mage:
+- T15 4-piece bonus for Arcane and Frost.
+- T15 2-piece bonus support.
+- Fingers of Frost proc rate increased to 15%.
+- Support for legendary metas and new trinket procs.
+");
+            #endregion
+            #region Rawr 5.0.5 (April 21, 2013) [r71925]
+            VNStuff.Add("Rawr 5.0.5 (April 26, 2013) [r71925]",
+                @"Mists of Pandaria Release
+Rawr.Base:
+- Fix for error when loading an item set.
+- Fix for error when loading a saved character.
+- Add ability to select Real PPM from the Special Effect Editor.
+- Performance increase in optimization and enchant listing.
+- Wowhead query update.
+- Enchant slot bugfix.
+
+Rawr.Moonkin:
+- Fix several stat display calculations.
+- Update to 5.2 live mechanics.
+- Implement T15 set bonuses.
+- Fix a mistake in the Eclipse multiplier calculations.
+- Add trigger for Relic of Yu'lon.
+
+Rawr.ProtPaladin:
+- Update mechanics and rotations to 5.1 standards.
+- Implement many special effects triggers.
+
+Rawr.Hunter:
+- Optimize calculation speed.
+- Reorder calculations for Marksmanship.
+- Make calculations for Hunter more granular and closer to expected results.
+
+Rawr.Mage:
+- Arcane 5.2 updates.
+- 5.2 hotfix: 40% buff to Mage Bombs.
+- 5.2: 10% pyroblast direct damage reduction.
+- 5.2 buff Frostbolt by 32%.
+- Add placeholders for T15 set bonuses.
+- T15 4-piece bonus for Fire.
+");
+            #endregion
+            #region Rawr 5.0.4 (December 26, 2012) [r70656]
+            VNStuff.Add("Rawr 5.0.4 (December 26, 2012) [r70656]",
+            @"Mists of Pandaria Release
+Note Rawr (Official) addon has been made to work with MoP, its release will happen shortly.
+
+Rawr.Base:
+- Base Stamina and in combat MP5
+- Fixed an error that was causing misordered ItemSets, with missing helm slots on export to addon
+- Removed discontinued tree druid glyphs.
+- Corrected description of Glyph of Rejuvenation
+- GetSpiritRegenSec formula changed to actually be per second, instead of Mp5
+- Add 'Crystal of Insanity' to list of buffs.
+
+Rawr.Mage:
+- Take out Pyro dot contribution from Combustion. Ignite contribution untouched, to reflect hotfix applied shortly after 5.1.
+- Arcane Charge damage buff updated to +25% per charge (up from +22%), and Arcane Blast mana cost increase updated to +75% per charge (down from +125%).
+- Fire: Update Critical Mass multiplier to 1.3x, down from 1.5x.
+
+Rawr.Hunter:
+- This change should fix numerous reported bugs regarding the inability to import Marksmanship and BM spec.  Note, these specs are still not considered operational, but they will now at least import from Battle.net.
+
+Rawr.Tree:
+- Changed Glyphs to use new Glyph naming
+- Implemented Glyph of Regrowth to be crit and not duration based (dropped UI field setting duration)
+- Added support for Glyph of Bloom
+- Got rid of a wrong basemana constant that was affecting spell costs
+- Replaced Insect Swarm with Moonfire as a potential damage trigger
+- Base regen now also correctly scales with mana pool scaling bonus of resto
+- Added support for T14 Set Bonuses
+- Fixed Tree of Life to be tied to Incarnation Talent
+- Fixed Haste Breakpoint graphs and extended graphs to 10k haste rating
+- Changed Tree status to partial
+
+Rawr.Moonkin:
+- Mana, MP5, Crit and Mastery so that information shown by Rawr matches the in-game values.
+
+Rawr.Enhance:
+- More work on setting up ability classes.
+- Work on a CombatTable
+");
+            #endregion
+
+            #region Rawr 5.0.3 (November 10, 2012) [r70237]
+            VNStuff.Add("Rawr 5.0.3 (November 10, 2012) [r70237]",
+            @"Mists of Pandaria Release
+Rawr.Base:
+- Fix for ring enchants.
+- Only enable rare jewelcrafting gemming templates by default.
+- Adjusted item level filtering to match live values.
+- All Perfect gems are implemented
+- Burning Primal has the 3% crit buff implemented
+- All Inscription weapons have their correct values associated
+- Fixed incorrect Engineering Tinker Gear stats
+- Added Unique Equip filtering for 5.1 Rep Trinkets and Rings.
+- Fix for crash related with druid glyphs.
+- Fix for offhand enchant.
+- Fixes for upgrades export.
+
+Rawr.Mage:
+- Fix for base stats.
+- Support for T14 set bonuses.
+- Support for frost spec.
+
+Rawr.Guardian:
+- Updated with inclusion of a PTR mode
+- Updated Thrash to the PTR changes
+
+Rawr.Feral:
+- Updated with inclusion of a PTR mode
+- Updated Thrash to the PTR changes
+");
+            #endregion
+            #region Rawr 5.0.2 (October 25, 2012) [r70039]
+            VNStuff.Add("Rawr 5.0.2 (October 25, 2012) [r70039]",
+            @"Mists of Pandaria Release
+Rawr.Base:
+- Fix for ranged weapons and enchants.
+- Fix for importing non-English server characters.
+- Updated server name list.
+- Added Pandaren to race dropdown.
+- Updated some stat conversions.
+
+Rawr.Guardian:
+- Updated Vengence change from 2% of Unmitigated damage to 1.8%.
+
+Rawr.ProtPaladin:
+- Updated Vengence to proc from all sources (not just hits and blocks).
+- Updated from 2% of Unmitigated damage to 1.8%.
+");
+            #endregion
+            #region Rawr 5.0.1 (October 18, 2012) [r69915]
+            VNStuff.Add("Rawr 5.0.1 (October 18, 2012) [r69915]",
+            @"Mists of Pandaria Release
+Rawr.Base:
+- Spellthread enchants
+- Include faction vendors when loading token costs
+- Fix for Jeweler's Facet requirements
+- Fix for raid buffs
+- Updated Wowhead lookup to include new PvP Power
+- Updated Dodge Tinker with hotfix
+- Updated all JP items to their 458 ilvl values
+- Updated all Honor gear to their hotfixed 458 ilvl values
+- Updated Darkmoon Stamina Trinket with missing Stamina
+- Support for Real PPM effects
+
+Rawr.Hunter:
+- Expertise/Dodge is now modeled for hunters
+- Survival calculation method has been revised to be usable in realtime
+- Some talent shots (Tier 6 and Dire Beast) are now implemented. Others are coming, still need to tie out damage values to other calculations to validate
+- Survival Spec now includes approximate value for Pet DPS based solely on linear regression estimates
+
+Rawr.Guardian:
+- Added clarification on an option label
+- Implemented the Thrash hotfix
+- Implemented the recent hotfix to vengence that allows for stacking of Vengence even when avoiding attacks
+
+Rawr.Mage:
+- Support for crit effects and ppm effects
+- Updated gemming templates
+- Fix for off-hand enchant filter
+- More special effect support
+- Expertise to hit conversion
+- Setting for Rune of Power refresh interval
+- Fix for potion values
+- Update for PVP Power and Resilience
+- Updated default buffs
+- Fire specialization now supported (Frost still in the works)
+
+Rawr.Tree:
+-Updates spells to new coefficients
+-Removed Cataclysm talent checks
+
+Rawr.Feral:
+- Slight temporary adjustement to rotation
+- Updated Damage values to updated hotfixes
+");
+            #endregion
+            #region Rawr 5.0.0 (September 24, 2012) [r69617]
+            VNStuff.Add("Rawr 5.0.0 (September 24, 2012) [r69617]",
+            @"Mists of Pandaria Release
+
+This is a beta release with only partial support for the following models:
+Bear, Feral, Moonkin, DPSDK, TankDK, Hunter, Mage, Brewmaster, Windwalker, ProtPaladin
+
+The rest of the models are not supported at the moment.
+");
+            #endregion
             #region Rawr 4.3.8 (February 20, 2012) [r65268]
             VNStuff.Add("Rawr 4.3.8 (February 20, 2012) [r65268]",
             @"Cataclysm Release

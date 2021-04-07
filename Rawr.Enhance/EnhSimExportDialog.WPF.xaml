@@ -31,9 +31,9 @@ Text="NOTE: Since this method of export is brand new there are bound to be issue
 
         <!-- Instructions -->
         <TextBlock Grid.Column="0" Grid.Row="1" FontSize="10" TextWrapping="Wrap" Margin="4,4,4,0" Text="Instructions:" FontWeight="Bold"/>
-        <TextBlock Grid.Column="0" Grid.Row="2" FontSize="10" TextWrapping="Wrap" Margin="4,0" Text="1) " />
-        <TextBlock Grid.Column="0" Grid.Row="3" FontSize="10" TextWrapping="Wrap" Margin="4,0" Text="2) " />
-        <TextBlock Grid.Column="0" Grid.Row="4" FontSize="10" TextWrapping="Wrap" Margin="4,0" Text="3) " />
+        <TextBlock Grid.Column="0" Grid.Row="2" FontSize="10" TextWrapping="Wrap" Margin="4,0" Text="1)    Select and copy the text from the textbox below." />
+        <TextBlock Grid.Column="0" Grid.Row="3" FontSize="10" TextWrapping="Wrap" Margin="4,0" Text="2a)  Use the 'Copy from Clipboard' option in EnhSimGUI v1.9.6.0 (or higher) to import it, or" />
+        <TextBlock Grid.Column="0" Grid.Row="4" FontSize="10" TextWrapping="Wrap" Margin="4,0" Text="2b)  Paste the config data into your EnhSim config file in a decent text editor (not Notepad!)" />
 
         <!-- Export Box -->
         <TextBox x:Name="Export_Dump" Grid.Column="0" Grid.Row="6" FontSize="10" Text="" Margin="4" IsReadOnly="True" VerticalScrollBarVisibility="Visible" />
@@ -45,7 +45,7 @@ Text="NOTE: Since this method of export is brand new there are bound to be issue
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Button x:Name="CloseButton" Grid.Column="1" Content="OK" Click="CloseButton_Click" Width="75" Height="23" Margin="4"/>
+            <Button x:Name="CloseButton" Grid.Column="1" Content="Close" Click="CloseButton_Click" Width="75" Height="23" Margin="4"/>
         </Grid>
     </Grid>
 </basics2:ChildWindow>

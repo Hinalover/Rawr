@@ -1,4 +1,5 @@
 using Rawr.Rogue;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Rawr.UnitTests.Rogue
 {
@@ -9,7 +10,16 @@ namespace Rawr.UnitTests.Rogue
         {
             Class = CharacterClass.Rogue;
             RogueTalents = talents;
-            CurrentModel = "Rogue";
+            
+            
+            //OpOv: Direct private access of fields is no longer allowed
+            PrivateObject po = new PrivateObject(this,new PrivateType(typeof(RogueTestCharacter)));
+            string p = (string)po.GetField("CurrentModel");
+            p = "Rogue";
+            
+            //CurrentModel = "Rogue";
+            
+            
             CalculationOptions = new CalculationOptionsRogue();
         }
     }

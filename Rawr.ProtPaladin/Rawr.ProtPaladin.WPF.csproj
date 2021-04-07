@@ -119,9 +119,13 @@
     <Compile Include="DefendModel.cs" />
     <Compile Include="Enum.cs" />
     <Compile Include="Lookup.cs" />
+    <Compile Include="PaladinDefensiveSolver.cs" />
+    <Compile Include="PaladinOffensiveSolver.cs" />
     <Compile Include="ParryModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <AppDesigner Include="Properties\" />
+    <Compile Include="ProtPaladinMarkovSolver.cs" />
+    <Compile Include="ProtPaladinSolver.cs" />
     <Compile Include="StatsPaladin.cs" />
   </ItemGroup>
   <ItemGroup>

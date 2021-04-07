@@ -20,11 +20,14 @@ namespace Rawr.Hunter.Skills
             Char = c; StatS = s; combatFactors = cf; Whiteattacks = wa; CalcOpts = co;
             //
             Name = "Bestial Wrath";
+            shortName = "BW";
+
             Cd = ((2f * 60f) * (1f - Talents.Longevity)) - (Talents.GlyphOfBestialWrath ? 20f : 0f); // In Seconds
             Duration = 10f;
             UseHitTable = false;
             ReqTalent = true;
-            Talent2ChksValue = Talents.BestialWrath;
+            Talent2ChksValue = (c.HunterTalents.Specialization == (int)Specialization.BeastMastery ? 1 : 0);
+
             // TODO: Move these to static SEs.
             Effect = new SpecialEffect(Trigger.Use,
                 new Stats() { BonusPetDamageMultiplier = 0.20f }, Duration, Cd);

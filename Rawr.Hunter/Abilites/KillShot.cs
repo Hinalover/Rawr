@@ -6,6 +6,8 @@ namespace Rawr.Hunter.Skills
 {
     public class KillShot : Ability
     {
+        public static int Cooldown = 10;
+
         /// <summary>
         /// TODO Zhok: Sniper Training
         /// <b>Kill Shot</b>, 45 Focus, 45yd, Instant, 10 sec Cd
@@ -20,13 +22,22 @@ namespace Rawr.Hunter.Skills
         {
             Char = c; StatS = s; combatFactors = cf; Whiteattacks = wa; CalcOpts = co;
             Name = "Kill Shot";
+            shortName = "KS";
+
             ReqRangedWeap = true;
             ReqSkillsRange = true;
-            // In terms of modeling, the Glyph of Kill Shot is basically a 4 second cooldown reduction.
-            Cd = 10 - (Talents.GlyphOfKillShot ? 4f : 0f);
+            DamageType = ItemDamageType.Physical;
+            // TODO: Implement new CD reset once every 6 seconds
+            Cd = Cooldown;
+
+            //Every other CD resets immediately, so add 2 GCDs and divide by 2, net 6 second cooldown average
+            Cd = (Cd + 2 * 1)/2;
+
+
             FocusCost = 0;
-            // 150% weapon dmg + 45% RAP + 543
-            DamageBase = (cf.AvgRwWeaponDmgUnhasted * 1.5f) + (StatS.RangedAttackPower * 0.45f) + 543f;
+
+            // 420% weapon damage
+            DamageBase = (cf.NormalizedRwWeaponDmg * 4.2f);
             eShot = Shots.KillShot;
             Initialize();
         }

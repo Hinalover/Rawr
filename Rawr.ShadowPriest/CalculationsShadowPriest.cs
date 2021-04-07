@@ -460,6 +460,7 @@ namespace Rawr.ShadowPriest
                 CritRating = stats.CritRating,
                 HasteRating = stats.HasteRating,
                 HitRating = stats.HitRating,
+                Mastery = stats.Mastery,
                 MasteryRating = stats.MasteryRating,
                 SpellShadowDamageRating = stats.SpellShadowDamageRating,
                 SpellFrostDamageRating = stats.SpellFrostDamageRating,
@@ -568,6 +569,7 @@ namespace Rawr.ShadowPriest
                 stats.SpellFrostDamageRating +
                 stats.ManaRestoreFromMaxManaPerSecond +
                 stats.ManaRestore +
+                stats.Mastery +
                 stats.MasteryRating +
                 stats.MovementSpeed +
                 stats.SnareRootDurReduc +

@@ -17,116 +17,25 @@ namespace Rawr.Mage
         FrostfireBolt,
         ArcaneManaNeutral,
         ArcaneBlastSpam,
-        ABSpam234AM,
-        ABSpam34AM,
-        ABSpam4AM,
-        AB3ABar023AM,
-        AB23ABar023AM,
-        AB2ABar02AMABABar,
-        AB2ABar12AMABABar,
-        ABarAM,
-        ABP,
-        ABAM,
-        ABABar,
-        ABABar3C,
-        ABABar2C,
-        ABABar2MBAM,
-        ABABar1MBAM,
-        ABABar0MBAM,
-        ABSpamMBAM,
-        ABSpam03C,
-        ABSpam3C,
-        ABSpam03MBAM,
-        ABSpam3MBAM,
-        ABAMABar,
-        AB2AMABar,
-        AB32AMABar,
-        AB3ABar3MBAM,
-        AB2AM,
-        AB3AM,
-        ABABar1AM,
-        AB3AM23MBAM,
-        AB3ABar123AM,
-        AB4ABar1234AM,
-        AB4ABar34AM,
+        AB4AM,
         AB4ABar4AM,
-        AB4AM234MBAM,
-        AB3AM023MBAM,
-        AB4AM0234MBAM,
-        ABSpam04MBAM,
-        ABSpam024MBAM,
-        ABSpam034MBAM,
-        ABSpam0234MBAM,
-        ABSpam0234AMABar,
-        ABSpam0234AMABABar,
-        AB2ABar2AMABar0AMABABar,
-        ABSpam4MBAM,
-        ABSpam24MBAM,
-        ABSpam234MBAM,
-        AB3AM2MBAM,
-        ABABar0C,
-        ABABar1C,
-        ABABarY,
-        AB2ABar,
-        AB2ABarMBAM,
-        AB2ABar2C,
-        AB2ABar2MBAM,
-        AB2ABar3C,
-        AB3AMABar,
-        AB3AMABar2C,
-        AB3ABar,
-        AB3ABar3C,
-        AB3ABarX,
-        AB3ABarY,
-        FBABar,
-        FrBABar,
-        FFBABar,
-        //ABAMP,
-        //AB3AMSc,
-        //ABAM3Sc,
-        //ABAM3Sc2,
-        //ABAM3FrB,
-        //ABAM3FrB2,
-        //ABFrB,
-        //AB3FrB,
-        //ABFrB3FrB,
-        //ABFrB3FrB2,
-        //ABFrB3FrBSc,
-        //ABFB3FBSc,
-        //AB3Sc,
-        FB2ABar,
-        FrB2ABar,
-        ScLBPyro,
+        AB4ABar34AM,
+        AB34ABar34AM,
+        AB24ABar34AM,
+        AB234ABar34AM,
+        AB2ABar0AM,
         FrBFB,
         FrBIL,
         FrBILFB,
         FrBDFFBIL,
         FrBDFFFBIL,
+        FFBILFrOFrB,
         FrBDFFFB,
         FrBFBIL,
         FrBFFB,
-        FBSc,
-        FBFBlast,
-        FBPyro,
-        FBLBPyro,
-        FBLB3Pyro,
-        FFBLBPyro,
-        FFBLB3Pyro,
-        FFBPyro,
-        FBScPyro,
-        FFBScPyro,
-        FBScLBPyro,
-        FFBScLBPyro,
-        ABABarSlow,
-        FBABarSlow,
-        FrBABarSlow,
-        /*ABAM3ScCCAM,
-        ABAM3Sc2CCAM,
-        ABAM3FrBCCAM,
-        ABAM3FrBCCAMFail,
-        ABAM3FrBScCCAM,
-        ABAMCCAM,
-        ABAM3CCAM,*/
+        FBIBPyro,
+        FFBIBPyro,
+        ScIBPyro,
         CustomSpellMix,
         ArcaneExplosion,
         AE4AB,
@@ -205,6 +114,7 @@ namespace Rawr.Mage
             NukeProcs2 += weight * cycle.NukeProcs2;
             Ticks += weight * cycle.Ticks;
             HitProcs += weight * cycle.HitProcs;
+            HitPPM += weight * cycle.HitPPM;
             CritProcs += weight * cycle.CritProcs;
             IgniteProcs += weight * cycle.IgniteProcs;
             dotProcs += weight * cycle.dotProcs;
@@ -213,7 +123,7 @@ namespace Rawr.Mage
             Absorbed += weight * cycle.Absorbed;
             costPerSecond += weight * cycle.CastTime * cycle.costPerSecond;
             damagePerSecond += weight * cycle.CastTime * cycle.damagePerSecond;
-            threatPerSecond += weight * cycle.CastTime * cycle.threatPerSecond;
+            //threatPerSecond += weight * cycle.CastTime * cycle.threatPerSecond;
             DpsPerSpellPower += weight * cycle.CastTime * cycle.DpsPerSpellPower;
             DpsPerMastery += weight * cycle.CastTime * cycle.DpsPerMastery;
             DpsPerCrit += weight * cycle.CastTime * cycle.DpsPerCrit;
@@ -221,9 +131,12 @@ namespace Rawr.Mage
 
         private void AddSpellsFromCycle(Cycle cycle, double weight)
         {
-            foreach (var spell in cycle.Spell)
+            if (cycle.Spell != null)
             {
-                Spell.Add(new SpellData() { Spell = spell.Spell, DotUptime = spell.DotUptime, Weight = (float)weight * spell.Weight });
+                foreach (var spell in cycle.Spell)
+                {
+                    Spell.Add(new SpellData() { Spell = spell.Spell, DotUptime = spell.DotUptime, Weight = (float)weight * spell.Weight });
+                }
             }
         }
 
@@ -240,6 +153,7 @@ namespace Rawr.Mage
             NukeProcs2 += weight * spell.NukeProcs2;
             Ticks += weight * spell.Ticks;
             HitProcs += weight * spell.HitProcs;
+            HitPPM += weight * spell.HitPPM;
             CritProcs += weight * spell.CritProcs;
             IgniteProcs += weight * spell.IgniteProcs;
             dotProcs += weight * spell.DotProcs;
@@ -248,7 +162,7 @@ namespace Rawr.Mage
             Absorbed += weight * spell.TotalAbsorb;
             costPerSecond += weight * spell.AverageCost;
             damagePerSecond += weight * spell.AverageDamage;
-            threatPerSecond += weight * spell.AverageThreat;
+            //threatPerSecond += weight * spell.AverageThreat;
             DpsPerSpellPower += weight * spell.DamagePerSpellPower;
             DpsPerMastery += weight * spell.DamagePerMastery;
             DpsPerCrit += weight * spell.DamagePerCrit;
@@ -267,6 +181,7 @@ namespace Rawr.Mage
             NukeProcs2 += weight * spell.NukeProcs2;
             Ticks += weight * spell.Ticks;
             HitProcs += weight * spell.HitProcs;
+            HitPPM += weight * spell.HitPPM;
             CritProcs += weight * spell.CritProcs;
             IgniteProcs += weight * spell.IgniteProcs;
             dotProcs += weight * dotUptime * spell.DotProcs;
@@ -275,7 +190,7 @@ namespace Rawr.Mage
             Absorbed += weight * spell.TotalAbsorb;
             costPerSecond += weight * spell.AverageCost;
             damagePerSecond += weight * (spell.AverageDamage + dotUptime * spell.DotAverageDamage);
-            threatPerSecond += weight * (spell.AverageThreat + dotUptime * spell.DotAverageThreat);
+            //threatPerSecond += weight * (spell.AverageThreat + dotUptime * spell.DotAverageThreat);
             DpsPerSpellPower += weight * (spell.DamagePerSpellPower + dotUptime * spell.DotDamagePerSpellPower);
             DpsPerMastery += weight * (spell.DamagePerMastery + dotUptime * spell.DotDamagePerMastery);
             DpsPerCrit += weight * (spell.DamagePerCrit + dotUptime * spell.DotDamagePerCrit);
@@ -290,7 +205,7 @@ namespace Rawr.Mage
         {
             costPerSecond /= CastTime;
             damagePerSecond /= CastTime;
-            threatPerSecond /= CastTime;
+            //threatPerSecond /= CastTime;
             DpsPerSpellPower /= CastTime;
             DpsPerMastery /= CastTime;
             DpsPerCrit /= CastTime;
@@ -332,8 +247,8 @@ namespace Rawr.Mage
             effectDamageProcs = 0;
             effectDotProcs = 0;
             effectManaAdeptMultiplier = 1;
-            threatPerSecond = 0;
-            effectThreatPerSecond = 0;
+            //threatPerSecond = 0;
+            //effectThreatPerSecond = 0;
             costPerSecond = 0;
             manaRegenPerSecond = 0;
             DpsPerSpellPower = 0;
@@ -342,12 +257,12 @@ namespace Rawr.Mage
             Absorbed = 0;
 
             ProvidesSnare = false;
-            ProvidesScorch = false;
 
             AreaEffect = false;
             //AoeSpell = null;
 
             HitProcs = 0;
+            HitPPM = 0;
             Ticks = 0;
             CastProcs = 0;
             CastProcs2 = 0;
@@ -397,6 +312,10 @@ namespace Rawr.Mage
                 costPerSecond += x;
                 damagePerSecond += x * DpmConversion;
             }
+            if (manaRegenPerSecond >= costPerSecond && CastingState.CalculationOptions.DisableManaRegenCycles)
+            {
+                costPerSecond = manaRegenPerSecond;
+            }
         }
 
         public double GetDamagePerSecond(double manaAdeptBonus, double manaPercent)
@@ -408,7 +327,7 @@ namespace Rawr.Mage
             // but it's as close as we can get without major rework, will probably overestimate a bit
             if (CastingState.Solver.Specialization == Specialization.Arcane)
             {
-                manaAdeptBonus += 0.015f * effectMasteryRating / 14 * CastingState.CalculationOptions.LevelScalingFactor;
+                manaAdeptBonus += 0.015f * effectMasteryRating / CastingState.CalculationOptions.MasteryRatingMultiplier;
             }
 
             return (damagePerSecond + effectDamagePerSecondSpell) * (1 + manaPercent * manaAdeptBonus * effectManaAdeptMultiplier) + effectDamagePerSecondProc;
@@ -423,10 +342,10 @@ namespace Rawr.Mage
             // sum_i dps[i] * (1 + mm[i] * (k + mas[i])) * x[i]  -  0.5 * sum_i sum_j dps[i] * mps[j] / M * mm[i] * (k + mas[i])) * x[i] * x[j]
             // dps[i] * mps[j] / M * k   =>  [dps[i] * mm[i] * (k + mas[i])] * mps[j] / M
 
-            return (damagePerSecond + effectDamagePerSecondSpell) * (CastingState.ManaAdeptBonus + CastingState.Solver.ManaAdeptMultiplier * effectMasteryRating / 14 * CastingState.CalculationOptions.LevelScalingFactor) * effectManaAdeptMultiplier;
+            return (damagePerSecond + effectDamagePerSecondSpell) * (CastingState.ManaAdeptBonus + CastingState.Solver.ManaAdeptMultiplier * effectMasteryRating / CastingState.CalculationOptions.MasteryRatingMultiplier) * effectManaAdeptMultiplier;
         }
 
-        internal double threatPerSecond;
+        /*internal double threatPerSecond;
         internal double effectThreatPerSecond;
         public double ThreatPerSecond
         {
@@ -435,7 +354,7 @@ namespace Rawr.Mage
                 CalculateEffects();
                 return threatPerSecond + effectThreatPerSecond;
             }
-        }
+        }*/
 
         internal double costPerSecond;
         public double CostPerSecond
@@ -471,12 +390,12 @@ namespace Rawr.Mage
         public double DpsPerCrit;
 
         public bool ProvidesSnare;
-        public bool ProvidesScorch;
 
         public bool AreaEffect;
         //public Spell AoeSpell;
 
         public double HitProcs;
+        public double HitPPM;
         public double Ticks;
         public double CastProcs;
         public double CastProcs2; // variant with only one proc from AM
@@ -565,15 +484,16 @@ namespace Rawr.Mage
                     SpecialEffect effect = CastingState.Solver.IntellectEffects[i];
                     float uptime = GetAverageFactor(effect);
                     effectIntellect += (effect.Stats.Intellect + effect.Stats.HighestStat) * uptime;
-                    if (CastingState.Solver.Specialization == Specialization.Arcane && !CastingState.CalculationOptions.ModeMOP)
-                    {
-                        effectManaAdeptMultiplier *= 1 - uptime + uptime * stateMaxMana / (stateMaxMana + (effect.Stats.Intellect + effect.Stats.HighestStat) * (1 + CastingState.BaseStats.BonusIntellectMultiplier) * 15 * (1 + CastingState.BaseStats.BonusManaMultiplier));
-                    }
                 }
                 for (int i = 0; i < CastingState.Solver.MasteryRatingEffectsCount; i++)
                 {
                     SpecialEffect effect = CastingState.Solver.MasteryRatingEffects[i];
                     effectMasteryRating += effect.Stats.MasteryRating * GetAverageFactor(effect);
+                }
+                for (int i = 0; i < CastingState.Solver.CritRatingEffectsCount; i++)
+                {
+                    SpecialEffect effect = CastingState.Solver.CritRatingEffects[i];
+                    effectCrit += effect.Stats.CritRating * 0.01f / CastingState.CalculationOptions.CritRatingMultiplier * GetAverageFactor(effect);
                 }
                 for (int i = 0; i < CastingState.Solver.ResetStackingEffectsCount; i++)
                 {
@@ -588,31 +508,46 @@ namespace Rawr.Mage
                             {
                                 float triggerInterval;
                                 float triggerChance;
+                                float attackSpeed;
                                 float fightDuration = CastingState.CalculationOptions.FightDuration;
-                                if (GetTriggerData(e, out triggerInterval, out triggerChance))
+                                if (GetTriggerData(e, out triggerInterval, out triggerChance, out attackSpeed))
                                 {
                                     int stackReset = 2 + (int)(fightDuration / effect.Cooldown); // assume after first initial stack they use and start stacking again (i.e. Heart of Ignacius)
-                                    spellPower += outerUptime * e.Stats.SpellPower * e.GetAverageStackSize(triggerInterval, triggerChance, 3, fightDuration, stackReset);
+                                    spellPower += outerUptime * e.Stats.SpellPower * e.GetAverageStackSize(triggerInterval, triggerChance, attackSpeed, fightDuration, stackReset);
                                 }
                             }
                         }
                     }
                 }
             }
-            if (CastingState.MageTalents.IncantersAbsorption > 0)
+            /*if (CastingState.MageTalents.IncantersAbsorption > 0)
             {
                 //float incanterSpellPower = Math.Min((float)Math.Min(calculationOptions.AbsorptionPerSecond, calculationResult.IncomingDamageDps) * 0.05f * talents.IncantersAbsorption * 10, 0.05f * baseStats.Health);
                 spellPower += Absorbed / CastTime * 0.05f * CastingState.MageTalents.IncantersAbsorption * 10;
                 //spellPower += Math.Min((float)Math.Min(CastingState.CalculationOptions.AbsorptionPerSecond + Absorbed / CastTime, CastingState.Calculations.IncomingDamageDps) * 0.05f * CastingState.MageTalents.IncantersAbsorption * 10, 0.05f * baseStats.Health);
-            }
+            }*/
             effectIntellect *= (1 + CastingState.BaseStats.BonusIntellectMultiplier);
             spellPower += effectIntellect;
             spellPower *= (1 + CastingState.BaseStats.BonusSpellPowerMultiplier);
             effectSpellPower = spellPower;
             effectDamagePerSecondSpell += spellPower * DpsPerSpellPower;
-            effectMastery = effectMasteryRating / 14 * CastingState.CalculationOptions.LevelScalingFactor;
+            effectMastery = effectMasteryRating / CastingState.CalculationOptions.MasteryRatingMultiplier;
             effectDamagePerSecondSpell += effectMastery * DpsPerMastery;
             effectCrit += effectIntellect * 0.01f * CastingState.Solver.SpellCritPerInt;
+            if (Ticks > 0)
+            {
+                for (int i = 0; i < CastingState.Solver.CritRatingEffectsCount; i++)
+                {
+                    SpecialEffect effect = CastingState.Solver.CritRatingEffects[i];
+                    if (effect.Stats.SpellCrit > 0)
+                    {
+                        // off, but better than nothing
+                        double baseCrit = CastingState.CritRate + effectCrit;
+                        double actualCritBonus = Math.Min(1, baseCrit + effect.Stats.SpellCrit) - baseCrit;
+                        effectCrit += actualCritBonus * GetAverageFactor(effect);
+                    }
+                }
+            }
             effectDamagePerSecondSpell += effectCrit * DpsPerCrit;
             //effectThreatPerSecond += spellPower * TpsPerSpellPower; // do we really need more threat calculations???
             if (CastingState.WaterElemental)
@@ -625,7 +560,7 @@ namespace Rawr.Mage
                 Spell mirrorImage = CastingState.GetSpell(SpellId.MirrorImage);
                 effectDamagePerSecondProc += (mirrorImage.AverageDamage + spellPower * mirrorImage.DamagePerSpellPower) / mirrorImage.CastTime;
             }
-            if (CastingState.CalculationOptions.ProcCombustion && CastingState.MageTalents.Combustion == 1)
+            if (CastingState.CalculationOptions.ProcCombustion && CastingState.Solver.Specialization == Specialization.Fire)
             {
                 double damage;
                 if (HasteProcs != null)
@@ -643,7 +578,11 @@ namespace Rawr.Mage
                     damage = (combustion.AverageDamage + combustion.DamagePerSpellPower * effectSpellPower + combustion.DamagePerMastery * effectMastery + combustion.DamagePerCrit * effectCrit) / 10f;
                 }
                 double factor;
-                if (CastingState.Solver.Mage4T13)
+                if (CastingState.Solver.Mage4T14)
+                {
+                    factor = GetAverageFactor(Solver.SpecialEffectCombustion4T14);
+                }
+                else if (CastingState.Solver.Mage4T13)
                 {
                     factor = GetAverageFactor(Solver.SpecialEffectCombustion4T13);
                 }
@@ -663,55 +602,55 @@ namespace Rawr.Mage
                     {
                         float boltDps = CastingState.ArcaneAverageDamage * (effect.Stats.ArcaneDamage + effect.SpellPowerScaling * CastingState.BaseStats.SpellPower) * effectsPerSecond;
                         effectDamagePerSecondSpell += boltDps;
-                        effectThreatPerSecond += boltDps * CastingState.ArcaneThreatMultiplier;
+                        //effectThreatPerSecond += boltDps * CastingState.ArcaneThreatMultiplier;
                     }
                     if (effect.Stats.FireDamage > 0)
                     {
                         float boltDps = CastingState.FireAverageDamage * (effect.Stats.FireDamage + effect.SpellPowerScaling * CastingState.BaseStats.SpellPower) * effectsPerSecond;
                         effectDamagePerSecondSpell += boltDps;
-                        effectThreatPerSecond += boltDps * CastingState.FireThreatMultiplier;
+                        //effectThreatPerSecond += boltDps * CastingState.FireThreatMultiplier;
                     }
                     if (effect.Stats.FrostDamage > 0)
                     {
                         float boltDps = CastingState.FrostAverageDamage * (effect.Stats.FrostDamage + effect.SpellPowerScaling * CastingState.BaseStats.SpellPower) * effectsPerSecond;
                         effectDamagePerSecondSpell += boltDps;
-                        effectThreatPerSecond += boltDps * CastingState.FrostThreatMultiplier;
+                        //effectThreatPerSecond += boltDps * CastingState.FrostThreatMultiplier;
                     }
                     if (effect.Stats.ShadowDamage > 0)
                     {
                         float boltDps = CastingState.ShadowAverageDamage * (effect.Stats.ShadowDamage + effect.SpellPowerScaling * CastingState.BaseStats.SpellPower) * effectsPerSecond;
                         effectDamagePerSecondSpell += boltDps;
-                        effectThreatPerSecond += boltDps * CastingState.ShadowThreatMultiplier;
+                        //effectThreatPerSecond += boltDps * CastingState.ShadowThreatMultiplier;
                     }
                     if (effect.Stats.NatureDamage > 0)
                     {
                         float boltDps = CastingState.NatureAverageDamage * (effect.Stats.NatureDamage + effect.SpellPowerScaling * CastingState.BaseStats.SpellPower) * effectsPerSecond;
                         effectDamagePerSecondSpell += boltDps;
-                        effectThreatPerSecond += boltDps * CastingState.NatureThreatMultiplier;
+                        //effectThreatPerSecond += boltDps * CastingState.NatureThreatMultiplier;
                     }
                     if (effect.Stats.HolyDamage > 0)
                     {
                         float boltDps = CastingState.HolyAverageDamage * (effect.Stats.HolyDamage + effect.SpellPowerScaling * CastingState.BaseStats.SpellPower) * effectsPerSecond;
                         effectDamagePerSecondSpell += boltDps;
-                        effectThreatPerSecond += boltDps * CastingState.HolyThreatMultiplier;
+                        //effectThreatPerSecond += boltDps * CastingState.HolyThreatMultiplier;
                     }
                     if (effect.Stats.HolySummonedDamage > 0)
                     {
                         float boltDps = CastingState.HolySummonedAverageDamage * effect.Stats.HolySummonedDamage * effectsPerSecond;
                         effectDamagePerSecondProc += boltDps;
-                        effectThreatPerSecond += boltDps * CastingState.HolyThreatMultiplier;
+                        //effectThreatPerSecond += boltDps * CastingState.HolyThreatMultiplier;
                     }
                     if (effect.Stats.FireSummonedDamage > 0)
                     {
                         float boltDps = CastingState.FireSummonedAverageDamage * effect.Stats.FireSummonedDamage * effectsPerSecond;
                         effectDamagePerSecondProc += boltDps;
-                        effectThreatPerSecond += boltDps * CastingState.FireThreatMultiplier;
+                        //effectThreatPerSecond += boltDps * CastingState.FireThreatMultiplier;
                     }
                 }
             }
         }
 
-        public bool GetTriggerData(SpecialEffect effect, out float triggerInterval, out float triggerChance)
+        public bool GetTriggerData(SpecialEffect effect, out float triggerInterval, out float triggerChance, out float attackSpeed)
         {
             switch (effect.Trigger)
             {
@@ -720,18 +659,22 @@ namespace Rawr.Mage
                     triggerChance = 1;
                     break;
                 case Trigger.DamageSpellCrit:
+                case Trigger.DamageSpellOrDoTCrit:
                 case Trigger.SpellCrit:
                     triggerInterval = (float)(CastTime / Ticks);
                     triggerChance = (float)(CritProcs / Ticks);
+                    attackSpeed = 0;
                     return true;
                 case Trigger.DamageSpellHit:
                 case Trigger.SpellHit:
                     triggerInterval = (float)(CastTime / Ticks);
                     triggerChance = (float)(HitProcs / Ticks);
+                    attackSpeed = (float)(HitPPM / Ticks);
                     return true;
                 case Trigger.SpellMiss:
                     triggerInterval = (float)(CastTime / Ticks);
                     triggerChance = (float)(1 - HitProcs / Ticks);
+                    attackSpeed = 0;
                     return true;
                 case Trigger.DamageSpellCast:
                 case Trigger.SpellCast:
@@ -746,6 +689,7 @@ namespace Rawr.Mage
                             triggerInterval = (float)(CastTime / CastProcs);
                         }
                         triggerChance = 1;
+                        attackSpeed = 0;
                         return true;
                     }
                     break;
@@ -754,6 +698,7 @@ namespace Rawr.Mage
                     {
                         triggerInterval = (float)(CastTime / NukeProcs);
                         triggerChance = 1;
+                        attackSpeed = 0;
                         return true;
                     }
                     break;
@@ -762,15 +707,18 @@ namespace Rawr.Mage
                     {
                         triggerInterval = (float)(CastTime / NukeProcs2);
                         triggerChance = 1;
+                        attackSpeed = 0;
                         return true;
                     }
                     break;
                 case Trigger.DamageDone:
                 case Trigger.DamageOrHealingDone:
+                case Trigger.DamageSpellHitorDoTTick:
                     if (damageProcs + effectDamageProcs > 0)
                     {
                         triggerInterval = (float)(CastTime / (damageProcs + effectDamageProcs));
                         triggerChance = 1;
+                        attackSpeed = 0;
                         return true;
                     }
                     break;
@@ -779,12 +727,14 @@ namespace Rawr.Mage
                     {
                         triggerInterval = (float)(CastTime / (dotProcs + effectDotProcs));
                         triggerChance = 1;
+                        attackSpeed = 0;
                         return true;
                     }
                     break;
             }
             triggerInterval = 0;
             triggerChance = 0;
+            attackSpeed = 0;
             return false;
         }
 
@@ -792,7 +742,7 @@ namespace Rawr.Mage
         {
             if (CastingState.CalculationOptions.EffectDisableManaSources) return;
             Stats baseStats = CastingState.BaseStats;
-            manaRegenPerSecond = CastingState.ManaRegen5SR + OO5SR * (CastingState.ManaRegen - CastingState.ManaRegen5SR) + baseStats.ManaRestoreFromMaxManaPerSecond * effectIntellect * 15 * (1 + CastingState.BaseStats.BonusManaMultiplier);
+            manaRegenPerSecond = CastingState.ManaRegen5SR + OO5SR * (CastingState.ManaRegen - CastingState.ManaRegen5SR);
             for (int i = 0; i < CastingState.Solver.ManaRestoreEffectsCount; i++)
             {
                 SpecialEffect effect = CastingState.Solver.ManaRestoreEffects[i];
@@ -851,10 +801,14 @@ namespace Rawr.Mage
                 contrib.Hits += 3 * (CastingState.MageTalents.GlyphOfMirrorImage ? 4 : 3) * duration / mirrorImage.CastTime;
                 contrib.Damage += (float)(mirrorImage.AverageDamage + effectSpellPower * mirrorImage.DamagePerSpellPower) / mirrorImage.CastTime * duration;
             }
-            if (CastingState.CalculationOptions.ProcCombustion && CastingState.MageTalents.Combustion == 1)
+            if (CastingState.CalculationOptions.ProcCombustion && CastingState.Solver.Specialization == Specialization.Fire)
             {
                 float factor;
-                if (CastingState.Solver.Mage4T13)
+                if (CastingState.Solver.Mage4T14)
+                {
+                    factor = GetAverageFactor(Solver.SpecialEffectCombustion4T14);
+                }
+                else if (CastingState.Solver.Mage4T13)
                 {
                     factor = GetAverageFactor(Solver.SpecialEffectCombustion4T13);
                 }
@@ -887,7 +841,7 @@ namespace Rawr.Mage
                     float spellMultiplier = 1f;
                     if (CastingState.Solver.Specialization == Specialization.Arcane)
                     {
-                        double manaAdeptBonus = CastingState.ManaAdeptBonus + 0.015f * effectMasteryRating / 14 * CastingState.CalculationOptions.LevelScalingFactor;
+                        double manaAdeptBonus = CastingState.ManaAdeptBonus + 0.015f * effectMasteryRating / CastingState.CalculationOptions.MasteryRatingMultiplier;
                         spellMultiplier = (float)(1 + averageMana / CastingState.BaseStats.Mana * manaAdeptBonus * effectManaAdeptMultiplier);
                     }
                     if (effect.Stats.ArcaneDamage > 0)
@@ -956,7 +910,8 @@ namespace Rawr.Mage
         {
             float triggerInterval;
             float triggerChance;
-            if (GetTriggerData(effect, out triggerInterval, out triggerChance))
+            float attackSpeed;
+            if (GetTriggerData(effect, out triggerInterval, out triggerChance, out attackSpeed))
             {
                 float durationMultiplier = 1;
                 if (effect.LimitedToExecutePhase)
@@ -965,15 +920,15 @@ namespace Rawr.Mage
                 }
                 if (effect.MaxStack > 1)
                 {
-                    return durationMultiplier * effect.GetAverageStackSize(triggerInterval, triggerChance, 3f, durationMultiplier * CastingState.CalculationOptions.FightDuration);
+                    return durationMultiplier * effect.GetAverageStackSize(triggerInterval, triggerChance, attackSpeed, CastingState.CastingSpeed, durationMultiplier * CastingState.CalculationOptions.FightDuration);
                 }
                 else if (effect.Duration > 0)
                 {
-                    return durationMultiplier * effect.GetAverageUptime(triggerInterval, triggerChance, 3f, durationMultiplier * CastingState.CalculationOptions.FightDuration);
+                    return durationMultiplier * effect.GetAverageUptime(triggerInterval, triggerChance, attackSpeed, CastingState.CastingSpeed, durationMultiplier * CastingState.CalculationOptions.FightDuration);
                 }
                 else
                 {
-                    return durationMultiplier * effect.GetAverageProcsPerSecond(triggerInterval, triggerChance, 3f, durationMultiplier * CastingState.CalculationOptions.FightDuration);
+                    return durationMultiplier * effect.GetAverageProcsPerSecond(triggerInterval, triggerChance, attackSpeed, CastingState.CastingSpeed, durationMultiplier * CastingState.CalculationOptions.FightDuration);
                 }
             }
             return 0;
@@ -1175,7 +1130,7 @@ namespace Rawr.Mage
                 foreach (KeyValuePair<Spell, double> kvp in SpellWeight)
                 {
                     AddSpell(needsDisplayCalculations, kvp.Key, (float)kvp.Value);
-                    if (kvp.Value > 0) sb.AppendFormat("{0}:\t{1:F}%\r\n", kvp.Key.Label ?? kvp.Key.SpellId.ToString(), 100.0 * kvp.Value);
+                    if (kvp.Value > 0) sb.AppendFormat("{0}:\t{1}%\r\n", kvp.Key.Label ?? kvp.Key.SpellId.ToString(), 100.0 * kvp.Value);
                 }
                 foreach (KeyValuePair<Spell, double> kvp in DWSpellWeight)
                 {
@@ -1184,7 +1139,7 @@ namespace Rawr.Mage
                 foreach (KeyValuePair<Cycle, double> kvp in CycleWeight)
                 {
                     AddCycle(needsDisplayCalculations, kvp.Key, (float)kvp.Value);
-                    if (kvp.Value > 0) sb.AppendFormat("{0}:\t{1:F}%\r\n", kvp.Key.CycleId, 100.0 * kvp.Value);
+                    if (kvp.Value > 0) sb.AppendFormat("{0}:\t{1}%\r\n", kvp.Key.CycleId, 100.0 * kvp.Value);
                 }
 
                 Calculate();
@@ -1403,12 +1358,17 @@ namespace Rawr.Mage
             return new GenericCycle(name, castingState, StateList, false);
         }
 
-        public List<Cycle> Analyze(CastingState castingState, Cycle wand)
+        public List<Cycle> Analyze(CastingState castingState)
         {
-            return Analyze(castingState, wand, null);
+            return Analyze(castingState, null);
         }
 
-        public List<Cycle> Analyze(CastingState castingState, Cycle wand, System.ComponentModel.BackgroundWorker worker)
+        public virtual Cycle WrapCycle(Cycle baseCycle, CastingState castingState)
+        {
+            return baseCycle;
+        }
+
+        public List<Cycle> Analyze(CastingState castingState, System.ComponentModel.BackgroundWorker worker)
         {
             Dictionary<string, Cycle> cycleDict = new Dictionary<string, Cycle>();
             int j;
@@ -1457,10 +1417,12 @@ namespace Rawr.Mage
                 {
                     name += ControlValue[i].ToString();
                 }
-                GenericCycle generic = new GenericCycle(name, castingState, StateList, false);
+                GenericCycle generic = new GenericCycle(name, castingState, StateList, false);                
                 if (!cycleDict.ContainsKey(generic.SpellDistribution))
                 {
-                    cycleDict.Add(generic.SpellDistribution, generic);
+                    Cycle c = WrapCycle(generic, castingState);
+                    c.Name = name;
+                    cycleDict.Add(generic.SpellDistribution, c);
                 }
                 // increment control
                 j = ControlValue.Length - 1;
@@ -1476,11 +1438,6 @@ namespace Rawr.Mage
                     ControlValue[j]++;
                 }
             } while (j >= 0);
-
-            if (wand != null)
-            {
-                cycleDict["Wand"] = wand;
-            }
 
             List<Cycle> cyclePalette = new List<Cycle>();
 

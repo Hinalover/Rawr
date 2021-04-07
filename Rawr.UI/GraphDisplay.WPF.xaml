@@ -471,24 +471,30 @@
                                 <CheckBox x:Name="CK_iLvl_0" Margin="4,0" Content="000-001 (Heirloom)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
                                 <CheckBox x:Name="CK_iLvl_1" Margin="4,0" Content="002-199 (Tier 01-06)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
                                 <CheckBox x:Name="CK_iLvl_2" Margin="4,0" Content="200-284 (Tier 07-10)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
-                                <CheckBox x:Name="CK_iLvl_3" Margin="4,0" Content="285-333 (Cata Dungeons)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
-                                <CheckBox x:Name="CK_iLvl_4" Margin="4,0" Content="334-352 (Cata Heroics)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
-                                <CheckBox x:Name="CK_iLvl_5" Margin="4,0" Content="353-358 (Rise of Zandalar)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
-                                <CheckBox x:Name="CK_iLvl_6" Margin="4,0" Content="359-364 (Tier 11.0)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
-                                <CheckBox x:Name="CK_iLvl_7" Margin="4,0" Content="365-371 (Molten Front)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
-                                <CheckBox x:Name="CK_iLvl_8" Margin="4,0" Content="372-377 (Tier 11.5)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
-                                <CheckBox x:Name="CK_iLvl_9" Margin="4,0" Content="378-383 (Tier 12.0/Hour of Twilight)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
-                                <CheckBox x:Name="CK_iLvl_10" Margin="4,0" Content="384-390 (Tier 13.LFR)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
-                                <CheckBox x:Name="CK_iLvl_11" Margin="4,0" Content="391-396 (Tier 12.5)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
-                                <CheckBox x:Name="CK_iLvl_12" Margin="4,0" Content="397-409 (Tier 13.0)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
-                                <CheckBox x:Name="CK_iLvl_13" Margin="4,0" Content="410-416 (Tier 13.5)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
+                                <CheckBox x:Name="CK_iLvl_3" Margin="4,0" Content="285-410 (Tier 11-13)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
+                                <CheckBox x:Name="CK_iLvl_4" Margin="4,0" Content="411-462 (MoP Dungeons)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
+                                <CheckBox x:Name="CK_iLvl_5" Margin="4,0" Content="463-475 (MoP Heroics)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
+                                <CheckBox x:Name="CK_iLvl_6" Margin="4,0" Content="476-485 (Tier 14.LFR)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
+                                <CheckBox x:Name="CK_iLvl_7" Margin="4,0" Content="486-501 (Tier 14.0)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
+                                <CheckBox x:Name="CK_iLvl_8" Margin="4,0" Content="502-516 (Tier 14.5)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
+                                <CheckBox x:Name="CK_iLvl_9" Margin="4,0" Content="502-502 (Tier 15 LFR)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
+                                <CheckBox x:Name="CK_iLvl_10" Margin="4,0" Content="522-522 (Tier 15)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
+                                <CheckBox x:Name="CK_iLvl_11" Margin="4,0" Content="535-535 (Tier 15.5)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
+                                <CheckBox x:Name="CK_iLvl_12" Margin="4,0" Content="541-541 (Tier 15 Thunderforged)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
+                                <CheckBox x:Name="CK_iLvl_13" Margin="4,0" Content="528-528 (Tier 16 LFR)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
+                                <CheckBox x:Name="CK_iLvl_14" Margin="4,0" Content="540-540 (Tier 16 Flex)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
+                                <CheckBox x:Name="CK_iLvl_15" Margin="4,0" Content="553-553 (Tier 16)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
+                                <CheckBox x:Name="CK_iLvl_16" Margin="4,0" Content="559-559 (Tier 16 Warforged)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
+                                <CheckBox x:Name="CK_iLvl_17" Margin="4,0" Content="566-566 (Tier 16.5)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
+                                <CheckBox x:Name="CK_iLvl_18" Margin="4,0" Content="572-572 (Tier 16.5 Warforged)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
+                                <CheckBox x:Name="CK_iLvl_19" Margin="4,0" Content="600-600 (Legendaries)" IsEnabled="{Binding ElementName=RB_iLvl_Checks, Path=IsChecked}" />
                             </StackPanel>
 
                             <RadioButton Grid.ColumnSpan="3" x:Name="RB_iLvl_Sliders" Margin="4,0" Grid.Row="4" Content="By Custom Slider" IsChecked="True" GroupName="Filters_iLvL"/>
                             <local:RangeSlider x:Name="RS_iLvl" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="2" IsEnabled="{Binding ElementName=RB_iLvl_Sliders, Path=IsChecked}"
-                                                Minimum="0" LowerValue="285" UpperValue="397" Maximum="500" d:TickFrequency="50" ShowTicks="True" ShowLabels="True" IsHorizontal="True" TickFrequency="50" />
+                                                Minimum="0" LowerValue="404" UpperValue="541" Maximum="562" d:TickFrequency="50" ShowTicks="True" ShowLabels="True" IsHorizontal="True" TickFrequency="50" />
                             <inputToolkit:NumericUpDown Grid.Row="5" Grid.Column="0" IsEnabled="{Binding ElementName=RB_iLvl_Sliders, Path=IsChecked}" Value="{Binding ElementName=RS_iLvl, Path=LowerValue, Mode=TwoWay}" Minimum="0"    Maximum="{Binding ElementName=RS_iLvl, Path=UpperValue}" Name="NUD_iLvl_Min" MinWidth="50" Margin="2" />
-                            <inputToolkit:NumericUpDown Grid.Row="5" Grid.Column="2" IsEnabled="{Binding ElementName=RB_iLvl_Sliders, Path=IsChecked}" Value="{Binding ElementName=RS_iLvl, Path=UpperValue, Mode=TwoWay}" Minimum="{Binding ElementName=RS_iLvl, Path=LowerValue}" Maximum="500" Name="NUD_iLvl_Max" MinWidth="50" Margin="2" />
+                            <inputToolkit:NumericUpDown Grid.Row="5" Grid.Column="2" IsEnabled="{Binding ElementName=RB_iLvl_Sliders, Path=IsChecked}" Value="{Binding ElementName=RS_iLvl, Path=UpperValue, Mode=TwoWay}" Minimum="{Binding ElementName=RS_iLvl, Path=LowerValue}" Maximum="10000" Name="NUD_iLvl_Max" MinWidth="50" Margin="2" />
                         </Grid>
                     </ScrollViewer>
                 </layoutToolkit:AccordionItem>

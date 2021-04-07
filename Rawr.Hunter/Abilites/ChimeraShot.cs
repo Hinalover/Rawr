@@ -25,15 +25,23 @@ namespace Rawr.Hunter.Skills
             Char = c; StatS = s; combatFactors = cf; Whiteattacks = wa; CalcOpts = co;
 
             Name = "Chimera Shot";
+            shortName = "Chim";
+
             ReqTalent = true;
-            Talent2ChksValue = Talents.ChimeraShot;
+            
+            Talent2ChksValue = (c.HunterTalents.Specialization == (int)Specialization.Marksmanship ? 1 : 0);
             ReqRangedWeap = true;
             ReqSkillsRange = true;
+            DamageType = ItemDamageType.Nature;
             //Targets += StatS.BonusTargets;
-            Cd = 10f - (Talents.GlyphOfChimeraShot ? 1f : 0f); // In Seconds
-            FocusCost = 50f - (Talents.Efficiency * 2f);
-            DamageBase = combatFactors.AvgRwWeaponDmgUnhasted + StatS.RangedAttackPower * 0.732f + 1620;
+            Cd = 9f;
+            FocusCost = 45f;
+            MaxRange = 40f;
+            FocusCost = 45f;
+            DamageBase = combatFactors.NormalizedRwWeaponDmg * 2.1f + 2617f;
             RefreshesSS = true;
+
+            //TODO: Heals you for 3% of total health
 
             eShot = Shots.ChimeraShot;
 

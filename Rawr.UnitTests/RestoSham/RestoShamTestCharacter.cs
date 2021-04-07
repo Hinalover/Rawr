@@ -1,4 +1,5 @@
 ﻿using Rawr.RestoSham;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Rawr.UnitTests.RestoSham
 {
@@ -10,7 +11,13 @@ namespace Rawr.UnitTests.RestoSham
             this.Realm = "TestRealm";
             this.Race = CharacterRace.Tauren;       // needs more cowbell
             this.Class = CharacterClass.Shaman;
-            this.CurrentModel = "RestoSham";
+
+            //OpOv: Direct private access of fields is no longer allowed
+            PrivateObject po = new PrivateObject(this, new PrivateType(typeof(RestoShamTestCharacter)));
+            string p = (string)po.GetField("CurrentModel");
+            p = "RestoSham";
+            
+            //this.CurrentModel = "RestoSham";
 
             // Use the default options
             CalculationOptionsRestoSham opts = new CalculationOptionsRestoSham();

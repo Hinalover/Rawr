@@ -445,20 +445,11 @@ namespace Rawr.ProtPaladin
 
             #endregion
 
-            #region Model "B", Judgement of Righteousness and Judgement of Truth
+            #region Model "B", Judgment
 
-            if (CalcOpts.SealChoice == "Truth")
-            {
-                modelThreat += Abilities[Ability.JudgementOfTruth].Threat;
-                modelDamage += Abilities[Ability.JudgementOfTruth].Damage;
-                modelCrits  += Abilities[Ability.JudgementOfTruth].CritPercentage;
-            }
-            else
-            {
-                modelThreat += Abilities[Ability.JudgementOfRighteousness].Threat;
-                modelDamage += Abilities[Ability.JudgementOfRighteousness].Damage;
-                modelCrits  += Abilities[Ability.JudgementOfRighteousness].CritPercentage;
-            }
+            modelThreat += Abilities[Ability.Judgment].Threat;
+            modelDamage += Abilities[Ability.Judgment].Damage;
+            modelCrits += Abilities[Ability.Judgment].CritPercentage;
 
             #endregion
 
@@ -491,8 +482,7 @@ namespace Rawr.ProtPaladin
 
             #region White Damage, including Reckoning procs
 
-            float reckoningUptime = 1f - (float)Math.Pow((1f - 0.02f * Character.PaladinTalents.Reckoning * DefendTable.Block), (Math.Min(8f, 4f * ParryModel.WeaponSpeed) / BossOpts.DefaultMeleeAttack.AttackSpeed));
-            float weaponSwings = modelLength / ParryModel.WeaponSpeed / (1 - reckoningUptime);
+            float weaponSwings = modelLength / ParryModel.WeaponSpeed;
             modelThreat += Abilities[Ability.MeleeSwing].Threat * weaponSwings;
             modelDamage += Abilities[Ability.MeleeSwing].Damage * weaponSwings;
             modelCrits += Abilities[Ability.MeleeSwing].CritPercentage * weaponSwings;
@@ -506,7 +496,7 @@ namespace Rawr.ProtPaladin
             switch (CalcOpts.SealChoice) {
                 // Seal of Righteousness
                 case "Seal of Righteousness":				
-                    weaponHits  += Abilities[Ability.JudgementOfRighteousness].AttackTable.AnyHit; // Only add Judgements that hit
+                    //weaponHits  += Abilities[Ability.Judgment].AttackTable.AnyHit; // Only add Judgements that hit
                     
                     modelThreat += Abilities[Ability.SealOfRighteousness].Threat * weaponHits;
                     modelDamage += Abilities[Ability.SealOfRighteousness].Damage * weaponHits;
@@ -514,7 +504,7 @@ namespace Rawr.ProtPaladin
                     break;
                 //Seal of Truth Mode
                 case "Seal of Truth":
-                    weaponHits  += Abilities[Ability.JudgementOfTruth].AttackTable.AnyHit; // Only add Judgements that hit
+                    //weaponHits  += Abilities[Ability.Judgment].AttackTable.AnyHit; // Only add Judgements that hit
 
                     modelThreat += Abilities[Ability.SealOfTruth].Threat * weaponHits;
                     modelDamage += Abilities[Ability.SealOfTruth].Damage * weaponHits;
@@ -553,10 +543,8 @@ namespace Rawr.ProtPaladin
             Abilities.Add(Ability.HammerOfTheRighteousProc, character, stats, calcOpts, bossOpts);
             Abilities.Add(Ability.HammerOfWrath, character, stats, calcOpts, bossOpts);
             Abilities.Add(Ability.HolyWrath, character, stats, calcOpts, bossOpts);
-            Abilities.Add(Ability.JudgementOfRighteousness, character, stats, calcOpts, bossOpts);
-            Abilities.Add(Ability.JudgementOfTruth, character, stats, calcOpts, bossOpts);
+            Abilities.Add(Ability.Judgment, character, stats, calcOpts, bossOpts);
             Abilities.Add(Ability.MeleeSwing, character, stats, calcOpts, bossOpts);
-            Abilities.Add(Ability.RetributionAura, character, stats, calcOpts, bossOpts);
             Abilities.Add(Ability.SealOfRighteousness, character, stats, calcOpts, bossOpts);
             Abilities.Add(Ability.SealOfTruth, character, stats, calcOpts, bossOpts);
             Abilities.Add(Ability.ShieldOfTheRighteous, character, stats, calcOpts, bossOpts);

@@ -88,6 +88,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormTalentClassGeneratorBattleNet.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormTalentClassGeneratorBattleNet.Designer.cs">
+      <DependentUpon>FormTalentClassGeneratorBattleNet.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormTalentClassGeneratorWowTal.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -97,6 +103,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringExtensions.cs" />
+    <EmbeddedResource Include="FormTalentClassGeneratorBattleNet.resx">
+      <DependentUpon>FormTalentClassGeneratorBattleNet.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormTalentClassGeneratorWowTal.resx">
       <DependentUpon>FormTalentClassGeneratorWowTal.cs</DependentUpon>
     </EmbeddedResource>

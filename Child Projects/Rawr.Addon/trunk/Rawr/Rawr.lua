@@ -160,6 +160,17 @@ Version 0.68
 	Tooltip item drop locations now wrap so that 
 	tooltips are not stupidly large and unreadable
 	
+Version 0.71
+	Hideous abomination posted by someone unknown that screwed up installs 
+		-	damaged language files by removing curse coding files
+		-	completely failed to include libraries
+		
+Version 0.72
+	Drycoded fix to hopefully allow users to use addon again
+
+Version 0.73
+	Updated to get some functionality working with MoP
+	
 --]]
 
 local L = LibStub("AceLocale-3.0"):GetLocale("Rawr")
@@ -189,7 +200,6 @@ Rawr.slots = { { slotName = "Head", slotId = 1, frame = "HeadSlot" },
 				{ slotName = "Back", slotId = 15, frame = "BackSlot" }, 
 				{ slotName = "MainHand", slotId = 16, frame = "MainHandSlot" }, 
 				{ slotName = "OffHand", slotId = 17, frame = "SecondaryHandSlot" }, 
-				{ slotName = "Ranged", slotId = 18, frame = "RangedSlot" },
 				{ slotName = "Tabard", slotId = 19, frame = "TabardSlot" },
 			}
 					
@@ -315,7 +325,7 @@ end
 function Rawr:LOOT_OPENED()
 	local numLootItems = GetNumLootItems()
 	for index = 1, numLootItems do
-		if LootSlotIsItem(index) then
+		if LootSlotHasItem(index) then
 			local slotlink = GetLootSlotLink(index)
 			if slotlink then
 				local itemId = Rawr:GetItemID(slotlink)

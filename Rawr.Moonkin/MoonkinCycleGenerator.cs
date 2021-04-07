@@ -485,7 +485,7 @@ namespace Rawr.Moonkin
             double[] retval = new double[8];
             foreach (KeyValuePair<MoonkinCycleAbility, double> kvp in _process.AbilityWeight)
             {
-                int idx = Array.IndexOf(MoonkinSolver.CastDistributionSpells, kvp.Key.Name);
+                int idx = Array.IndexOf(CastDistributions.CastDistributionSpells, kvp.Key.Name);
                 retval[idx] = kvp.Value;
             }
 
