@@ -1,0 +1,108 @@
+<basics2:ChildWindow
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:basics="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:basics2="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls"
+    mc:Ignorable="d"
+    xmlns:local="clr-namespace:Rawr.UI"
+    x:Class="Rawr.UI.OptimizerResults"
+    Title="Optimizer Results"
+    SizeToContent="Width"
+    Height="600">
+
+    <basics2:ChildWindow.Resources>
+        <Style x:Key="ItemDisplayStyle" TargetType="local:ItemDisplay">
+            <Setter Property="Margin" Value="2,2,2,2"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+        </Style>
+    </basics2:ChildWindow.Resources>
+
+    <Grid x:Name="LayoutRoot" Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock x:Name="CurrentScoreLabel" HorizontalAlignment="Center" Margin="4,4,2,2" VerticalAlignment="Center" FontSize="12" Text="Current: 99999" FontWeight="Bold"/>
+        <TextBlock x:Name="OptimizedScoreLabel" HorizontalAlignment="Center" Margin="2,4,4,2" VerticalAlignment="Center" Grid.Column="1" FontSize="12" Text="Optimized: 99999" d:LayoutOverrides="Width" FontWeight="Bold"/>
+        <basics:TabControl Margin="4,2,4,2" Grid.Row="1" Grid.ColumnSpan="2" Width="680" x:Name="Tabs" SelectionChanged="Tabs_SelectionChanged">
+            <basics:TabItem Header="Items" x:Name="ItemsTab">
+                <ScrollViewer d:LayoutOverrides="Margin" VerticalScrollBarVisibility="Auto" BorderThickness="0,0,0,0">
+                    <Grid x:Name="ItemGrid">                        
+                        <Grid.RowDefinitions>                            
+                            <RowDefinition Height="0" />                            
+                            <RowDefinition Height="0" />                            
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="CharName1" FontSize="16" FontWeight="Bold" VerticalAlignment="Top" Grid.ColumnSpan="2" />
+                        <TextBlock x:Name="ItemCurrentScoreLabel" Margin="4,4,2,2" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" Text="{Binding ElementName=CurrentScoreLabel, Path=Text}" Grid.Row="1" />
+                        <TextBlock x:Name="ItemOptimizedScoreLabel" Grid.Column="1" Margin="2,4,4,2" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" Text="{Binding ElementName=OptimizedScoreLabel, Path=Text}" Grid.Row="1" />
+                    </Grid>
+                </ScrollViewer>
+            </basics:TabItem>
+            <basics:TabItem Header="Calculations" x:Name="CalculationsTab">
+                <Grid x:Name="CalcGrid">
+                    <Grid.RowDefinitions>                       
+                        <RowDefinition Height="0" />                       
+                        <RowDefinition Height="*" />                       
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="CharName2" FontSize="16" FontWeight="Bold" VerticalAlignment="Top" Grid.ColumnSpan="2" />
+                    <local:CalculationDisplay x:Name="CurrentCalculations" Margin="0,0,2,0" Grid.Row="1"/>
+                    <local:CalculationDisplay x:Name="OptimizedCalculations" Grid.Column="1" Margin="2,0,0,0" Grid.Row="1"/>
+                </Grid>
+            </basics:TabItem>
+            <basics:TabItem Header="Talents" x:Name="TalentsTab">
+                <Grid x:Name="TalentGrid">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="CharName3" FontSize="16" FontWeight="Bold" VerticalAlignment="Top" Grid.ColumnSpan="2" />
+                    <local:TalentPicker x:Name="CurrentTalents" Margin="0,0,2,0" Grid.Row="1"/>
+                    <local:TalentPicker x:Name="OptimizedTalents" Grid.Column="1" Margin="2,0,0,0" Grid.Row="1"/>
+                </Grid>
+            </basics:TabItem>
+            <basics:TabItem Header="Buffs">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <local:BuffsControl x:Name="CurrentBuffs" Grid.Column="0" Margin="0,0,2,0" />
+                    <local:BuffsControl x:Name="OptimizedBuffs" Grid.Column="1" Margin="2,0,0,0"/>
+                </Grid>
+            </basics:TabItem>
+        </basics:TabControl>
+        <Button x:Name="PrintButton" Grid.ColumnSpan="2" Grid.Row="2" Height="36" Margin="2,2,4,4" Padding="8,3" Click="Print_Click" HorizontalAlignment="Left" ToolTipService.ToolTip="Print" VerticalAlignment="Center">
+            <!--IFSL
+            <Image Source="/Rawr.UI;component/Images/print.png" />
+            ENDIFSL-->
+            <!--IFWPF-->
+            <Image Source="/Rawr.UI.WPF;component/Images/print.png" />
+            <!--ENDIFWPF-->
+        </Button>
+        <Button x:Name="OKButton" Content="Load Optimized" Click="OKButton_Click" Height="23" HorizontalAlignment="Center" Grid.Row="2" Margin="2,2,4,4" VerticalAlignment="Center" Grid.Column="1" Padding="8,3" />
+        <Button x:Name="BT_StoreIt" Content="Store Item Set (only stores item set)" Click="BT_StoreIt_Click" Height="23" HorizontalAlignment="Center" Grid.ColumnSpan="2" Grid.Row="2" Margin="2,2,4,4" VerticalAlignment="Center" Grid.Column="0" Padding="8,3" />
+        <Button x:Name="CancelButton" Content="Keep Existing" Click="CancelButton_Click" Height="23" Margin="4,2,2,4" Grid.Row="2" HorizontalAlignment="Center" Grid.Column="0" d:LayoutOverrides="VerticalMargin" Padding="8,3" />
+    </Grid>
+</basics2:ChildWindow>
